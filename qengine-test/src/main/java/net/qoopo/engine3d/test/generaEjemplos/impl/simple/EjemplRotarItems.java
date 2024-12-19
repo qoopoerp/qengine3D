@@ -9,25 +9,26 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import net.qoopo.engine3d.componentes.QEntidad;
-import net.qoopo.engine3d.core.escena.QEscena;
-import net.qoopo.engine3d.test.generaEjemplos.GeneraEjemplo;
-import net.qoopo.engine3d.engines.render.QMotorRender;
+
+import net.qoopo.engine.core.entity.Entity;
+import net.qoopo.engine.core.renderer.RenderEngine;
+import net.qoopo.engine.core.scene.Scene;
+import net.qoopo.engine3d.test.generaEjemplos.MakeTestScene;
 
 /**
  *
  * @author alberto
  */
-public class EjemplRotarItems extends GeneraEjemplo {
+public class EjemplRotarItems extends MakeTestScene {
 
-    public void iniciar(QEscena mundo) {
+    public void make(Scene mundo) {
         try {
-            this.mundo = mundo;
+            this.scene = mundo;
 
             //uso esta lista en lugar del mundo par arotar.. para rotar solo aquellas entidades creadas antes de llamar a esta clase.. y asi evitar rotar las posteriores como terrenos o pisos que no desean ser rotados
-            List<QEntidad> lista = new ArrayList<>();
+            List<Entity> lista = new ArrayList<>();
 
-            for (QEntidad entidad : mundo.getListaEntidades()) {
+            for (Entity entidad : mundo.getEntities()) {
                 lista.add(entidad);
             }
 
@@ -42,8 +43,8 @@ public class EjemplRotarItems extends GeneraEjemplo {
                             Thread.sleep(100);
                         } catch (InterruptedException ex) {
                         }
-                        for (QEntidad entidad : lista) {
-                            entidad.rotar(angulo, angulo, angulo);
+                        for (Entity entidad : lista) {
+                            entidad.rotate(angulo, angulo, angulo);
                         }
                         angulo += (float) Math.toRadians(10);
                     }
@@ -58,7 +59,7 @@ public class EjemplRotarItems extends GeneraEjemplo {
     }
 
     @Override
-    public void accion(int numAccion, QMotorRender render) {
+    public void accion(int numAccion, RenderEngine render) {
     }
 
 }

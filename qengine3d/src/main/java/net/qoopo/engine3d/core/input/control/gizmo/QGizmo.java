@@ -5,7 +5,7 @@
  */
 package net.qoopo.engine3d.core.input.control.gizmo;
 
-import net.qoopo.engine3d.componentes.QEntidad;
+import net.qoopo.engine.core.entity.Entity;
 
 /**
  * Los gizmos son los objetos que permitiran la interacción con el mouse para el
@@ -14,34 +14,34 @@ import net.qoopo.engine3d.componentes.QEntidad;
  *
  * @author alberto
  */
-public abstract class QGizmo extends QEntidad {
+public abstract class QGizmo extends Entity {
 
     /**
-     * La entidad que manipula
+     * La entity que manipula
      */
-    protected QEntidad entidad;
+    protected Entity entity;
 
     public abstract void mouseMove(float deltaX, float deltaY);
 
-    public  void actualizarPosicionGizmo(){
-        
+    public void actualizarPosicionGizmo() {
+
     }
 
-    public QEntidad getEntidad() {
-        return entidad;
+    public Entity getEntidad() {
+        return entity;
     }
 
-    public void setEntidad(QEntidad entidad) {
-        this.entidad = entidad;
+    public void setEntidad(Entity entity) {
+        this.entity = entity;
     }
 
     public static float getDelta(float deltaX, float deltaY) {
-//        return (float) Math.sqrt(deltaX * deltaX + deltaY * deltaY)/100.0f;
+        // return (float) Math.sqrt(deltaX * deltaX + deltaY * deltaY)/100.0f;
         return deltaX / 100.0f;
     }
 
     public static float getDelta(float delta) {
-//        return (float) Math.sqrt(deltaX * deltaX + deltaY * deltaY)/100.0f;
+        // return (float) Math.sqrt(deltaX * deltaX + deltaY * deltaY)/100.0f;
         return delta / 100.0f;
     }
 

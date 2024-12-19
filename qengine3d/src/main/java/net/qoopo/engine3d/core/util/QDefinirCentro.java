@@ -7,11 +7,12 @@ package net.qoopo.engine3d.core.util;
 
 import java.util.ArrayList;
 import java.util.List;
-import net.qoopo.engine3d.componentes.QComponente;
-import net.qoopo.engine3d.componentes.QEntidad;
-import net.qoopo.engine3d.componentes.geometria.QGeometria;
-import net.qoopo.engine3d.componentes.geometria.primitivas.QVertice;
-import net.qoopo.engine3d.core.math.QVector3;
+
+import net.qoopo.engine.core.entity.Entity;
+import net.qoopo.engine.core.entity.component.EntityComponent;
+import net.qoopo.engine.core.entity.component.mesh.Mesh;
+import net.qoopo.engine.core.entity.component.mesh.primitive.QVertex;
+import net.qoopo.engine.core.math.QVector3;
 
 /**
  *
@@ -20,48 +21,49 @@ import net.qoopo.engine3d.core.math.QVector3;
 public class QDefinirCentro {
 
     /**
-     * Traslada la ubicación de la entidad al centro del origen y sus vertices
+     * Traslada la ubicación de la entity al centro del origen y sus vertices
      * acorde al traslado
      *
-     * @param entidad
+     * @param entity
      */
-    public static void definirCentroGeometriaAlOrigen(QEntidad entidad) {
+    public static void definirCentroGeometriaAlOrigen(Entity entity) {
 
     }
 
     /**
-     * Traslada la ubicación de la entidad al centro de la geometria
+     * Traslada la ubicación de la entity al centro de la geometria
      *
-     * @param entidad
+     * @param entity
      */
-    public static void definirCentroOrigenAGeometria(QEntidad entidad) {
-        //paso 1 . Obtener el centro de todos los vertices pues sera la nueva ubicación de la trasnformación
-        List<QVertice> vertices = new ArrayList<>();
-        for (QComponente com : entidad.getComponentes()) {
-            if (com instanceof QGeometria) {
-                for (QVertice ver : ((QGeometria) com).vertices) {
+    public static void definirCentroOrigenAGeometria(Entity entity) {
+        // paso 1 . Obtener el centro de todos los vertices pues sera la nueva ubicación
+        // de la trasnformación
+        List<QVertex> vertices = new ArrayList<>();
+        for (EntityComponent com : entity.getComponents()) {
+            if (com instanceof Mesh) {
+                for (QVertex ver : ((Mesh) com).vertices) {
                     vertices.add(ver);
                 }
             }
         }
 
-        //recorrer los vertice sy sacar punto medio
-        QVector3 centro = new QVector3();
+        // recorrer los vertice sy sacar punto medio
+        QVector3 centro = QVector3.empty();
         int c = 0;
-        for (QVertice vertice : vertices) {
-//            centro.add(new QVector3(vertice.x, vertice.y, vertice.z));
-            centro.add(vertice.ubicacion.getVector3());
+        for (QVertex vertice : vertices) {
+            // centro.add(QVector3.of(vertice.x, vertice.y, vertice.z));
+            centro.add(vertice.location.getVector3());
             c++;
         }
-        centro.multiply(1.0f / c);//divido para obtener promedio
-        //Paso 2. A todos los vertices restar el centro 
-        for (QVertice vertice : vertices) {
-            vertice.ubicacion.x -= centro.x;
-            vertice.ubicacion.y -= centro.y;
-            vertice.ubicacion.z -= centro.z;
+        centro.multiply(1.0f / c);// divido para obtener promedio
+        // Paso 2. A todos los vertices restar el centro
+        for (QVertex vertice : vertices) {
+            vertice.location.x -= centro.x;
+            vertice.location.y -= centro.y;
+            vertice.location.z -= centro.z;
         }
 
-        //Paso 3 . a LA trasnformación dar la ubicación del centro
-        entidad.getTransformacion().getTraslacion().set(centro);
+        // Paso 3 . a LA trasnformación dar la ubicación del centro
+        entity.getTransformacion().getTraslacion().set(centro);
     }
 }

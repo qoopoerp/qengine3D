@@ -6,18 +6,19 @@
 package net.qoopo.engine3d.test.juegotest.generadores;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 
-import net.qoopo.engine3d.componentes.QEntidad;
-import net.qoopo.engine3d.core.math.QVector3;
-import net.qoopo.engine3d.componentes.geometria.primitivas.formas.QCilindro;
-import net.qoopo.engine3d.componentes.geometria.primitivas.formas.QCono;
-import net.qoopo.engine3d.componentes.geometria.primitivas.formas.QEsfera;
-import net.qoopo.engine3d.componentes.iluminacion.QLuzPuntual;
-import net.qoopo.engine3d.componentes.iluminacion.QLuzSpot;
-import net.qoopo.engine3d.core.util.QGlobal;
-import net.qoopo.engine3d.core.carga.impl.CargaWaveObject;
-import net.qoopo.engine3d.core.textura.mapeo.QMaterialUtil;
-import net.qoopo.engine3d.core.math.QColor;
+import net.qoopo.engine.core.assets.AssetManager;
+import net.qoopo.engine.core.entity.Entity;
+import net.qoopo.engine.core.entity.component.ligth.QPointLigth;
+import net.qoopo.engine.core.entity.component.ligth.QSpotLigth;
+import net.qoopo.engine.core.entity.component.mesh.primitive.shape.QCilindro;
+import net.qoopo.engine.core.entity.component.mesh.primitive.shape.QCono;
+import net.qoopo.engine.core.entity.component.mesh.primitive.shape.QEsfera;
+import net.qoopo.engine.core.math.QColor;
+import net.qoopo.engine.core.math.QVector3;
+import net.qoopo.engine.core.texture.util.QMaterialUtil;
+import net.qoopo.engine.core.util.QGlobal;
 
 /**
  * Clase para crear personajes del juego
@@ -26,131 +27,149 @@ import net.qoopo.engine3d.core.math.QColor;
  */
 public class GeneradorLamparas {
 
-//    private QEntidad lampara;
-//    private QEntidad cono;
-//    private QEntidad tronco;
-//    private QEntidad base;
-    private static int secciones = 10;
+        // private Entity lampara;
+        // private Entity cono;
+        // private Entity tronco;
+        // private Entity base;
+        private static int secciones = 10;
 
-    public boolean shift = false;
+        public boolean shift = false;
 
-    public static QEntidad crearLamparaVelador() {
+        public static Entity crearLamparaVelador() {
 
-        QEntidad lampara = new QEntidad("Lampara");
+                Entity lampara = new Entity("Lampara");
 
-        QEntidad cono = new QEntidad("cono");
-        cono.mover(0, 0.35f, 0);//a metro y medio de altura
-        cono.agregarComponente(QMaterialUtil.aplicarColor(new QCono(0.15f, 0.15f, secciones), 0.7f, 1f, 1f, 0, 1, 1, 1, 1, 64));
-        cono.agregarComponente(new QLuzPuntual(.5f, QColor.YELLOW, 5f, false, false));
-//        cono.agregarComponente(new QLuz(QLuz.LUZ_PUNTUAL, .5f, 255, 255, 255, true));
+                Entity cono = new Entity("cono");
+                cono.move(0, 0.35f, 0);// a metro y medio de altura
+                cono.addComponent(QMaterialUtil.aplicarColor(new QCono(0.15f, 0.15f, secciones), 0.7f, 1f, 1f, 0, 1, 1,
+                                1, 1, 64));
+                cono.addComponent(new QPointLigth(.5f, QColor.YELLOW, 5f, false, false));
+                // cono.agregarComponente(new QLuz(QLuz.LUZ_PUNTUAL, .5f, 255, 255, 255, true));
 
-        QEntidad tronco = new QEntidad("tronco");
-        tronco.mover(0, 0.15f, 0);
-        tronco.agregarComponente(new QCilindro(0.35f, 0.01f, secciones));
+                Entity tronco = new Entity("tronco");
+                tronco.move(0, 0.15f, 0);
+                tronco.addComponent(new QCilindro(0.35f, 0.01f, secciones));
 
-        QEntidad base = new QEntidad("Base");
-        base.agregarComponente(new QCilindro(0.02f, 0.15f, secciones));
+                Entity base = new Entity("Base");
+                base.addComponent(new QCilindro(0.02f, 0.15f, secciones));
 
-        lampara.agregarHijo(cono);
-        lampara.agregarHijo(tronco);
-        lampara.agregarHijo(base);
+                lampara.addChild(cono);
+                lampara.addChild(tronco);
+                lampara.addChild(base);
 
-        return lampara;
-    }
+                return lampara;
+        }
 
-    public static QEntidad crearLinterna() {
+        public static Entity crearLinterna() {
 
-        QEntidad lampara = new QEntidad("Linterna");
+                Entity lampara = new Entity("Linterna");
 
-        QEntidad cono = new QEntidad("li-cono");
-        cono.mover(0, 0.35f, 0);
-//        cono.agregarComponente(QMaterialUtil.aplicarColor(new QCono(0.15f, 0.05f, secciones), 1f, QColor.YELLOW, QColor.WHITE, 1, 64));
-        cono.agregarComponente(QMaterialUtil.aplicarColor(new QEsfera(0.03f, 8), 1f, QColor.YELLOW, QColor.WHITE, 1, 64));
-        cono.agregarComponente(new QLuzSpot(2.5f, QColor.YELLOW, 20f, new QVector3(0, 0, -1), (float) Math.toRadians(30f), (float) Math.toRadians(25f), false, false));
-//        cono.agregarComponente(new QLuzPuntual(2.5f, QColor.YELLOW, true, 20));
+                Entity cono = new Entity("li-cono");
+                cono.move(0, 0.35f, 0);
+                // cono.agregarComponente(QMaterialUtil.aplicarColor(new QCono(0.15f, 0.05f,
+                // secciones), 1f, QColor.YELLOW, QColor.WHITE, 1, 64));
+                cono.addComponent(QMaterialUtil.aplicarColor(new QEsfera(0.03f, 8), 1f, QColor.YELLOW, QColor.WHITE, 1,
+                                64));
+                cono.addComponent(new QSpotLigth(2.5f, QColor.YELLOW, 20f, QVector3.of(0, 0, -1),
+                                (float) Math.toRadians(30f), (float) Math.toRadians(25f), false, false));
+                // cono.agregarComponente(new QLuzPuntual(2.5f, QColor.YELLOW, true, 20));
 
-//        cono.agregarComponente(new QLuzPuntual(2.5f, QColor.YELLOW, true, 20f));
-        QEntidad tronco = new QEntidad("li-tronco");
-        tronco.mover(0, 0.15f, 0);
-        tronco.agregarComponente(new QCilindro(0.35f, 0.01f, 8));
+                // cono.agregarComponente(new QLuzPuntual(2.5f, QColor.YELLOW, true, 20f));
+                Entity tronco = new Entity("li-tronco");
+                tronco.move(0, 0.15f, 0);
+                tronco.addComponent(new QCilindro(0.35f, 0.01f, 8));
 
-        lampara.agregarHijo(cono);
-        lampara.agregarHijo(tronco);
+                lampara.addChild(cono);
+                lampara.addChild(tronco);
 
-        return lampara;
-    }
+                return lampara;
+        }
 
-    public static QEntidad crearLamparaPiso2() {
-        QEntidad lampara = new QEntidad("Lampara");
-        QEntidad cono = new QEntidad("cono");
-        cono.mover(0, 3f, 0);
+        public static Entity crearLamparaPiso2() {
+                Entity lampara = new Entity("Lampara");
+                Entity cono = new Entity("cono");
+                cono.move(0, 3f, 0);
 
-        cono.agregarComponente(new QLuzPuntual(1f, QColor.YELLOW, 10, false, false));
+                cono.addComponent(new QPointLigth(1f, QColor.YELLOW, 10, false, false));
 
-        lampara.agregarHijo(cono);
-        QEntidad cuerpo = CargaWaveObject.cargarWaveObject(new File(QGlobal.RECURSOS + "objetos/formato_obj/ARQUITECTURA/baja_calidad/lampara/lamp.obj")).get(0);
-        cuerpo.escalar(0.3f, 0.3f, 0.3f);
+                lampara.addChild(cono);
+                Entity cuerpo;
+                try {
+                        cuerpo = AssetManager.get().loadModel(new File("assets/"
+                                        + "models/obj/ARQUITECTURA/baja_calidad/lampara/lamp.obj"));
 
-        lampara.agregarHijo(cuerpo);
-        //se agrga la animacino a la entidad
-//        personaje.agregarComponente(animacion);
-        return lampara;
-    }
+                        cuerpo.scale(0.3f, 0.3f, 0.3f);
 
-    public static QEntidad crearLamparaPiso() {
-        QEntidad lampara = new QEntidad("Lampara");
+                        lampara.addChild(cuerpo);
+                        // se agrga la animacino a la entidad
+                        // personaje.agregarComponente(animacion);
+                } catch (FileNotFoundException e) {
+                        // TODO Auto-generated catch block
+                        e.printStackTrace();
+                }
+                return lampara;
+        }
 
-        QEntidad cono = new QEntidad("l-foco");
-        cono.mover(0, 2.25f, 0);
+        public static Entity crearLamparaPiso() {
+                Entity lampara = new Entity("Lampara");
 
-//        cono.agregarComponente(QNormales.invertirNormales(QMaterialUtil.aplicarColor(new QEsfera(0.25f, 8), 0.7f, 1f, 1f, 0, 1, 1, 1, 64)));
-//        cono.agregarComponente(QMaterialUtil.aplicarColor(new QEsfera(0.5f, 8), 0.15f, QColor.YELLOW, QColor.YELLOW, 1, 1000000));//el efecto aura
-        cono.agregarComponente(QMaterialUtil.aplicarColor(new QEsfera(0.25f, 8), 1f, QColor.YELLOW, QColor.WHITE, 1, 64));//el real
-        cono.agregarComponente(new QLuzPuntual(2.5f, QColor.YELLOW, 30, false, false));
-//        cono.agregarComponente(new QLuz(QLuz.LUZ_PUNTUAL, .5f, 255, 255, 255, true));
+                Entity cono = new Entity("l-foco");
+                cono.move(0, 2.25f, 0);
 
-        QEntidad tronco = new QEntidad("l-faro");
-        tronco.mover(0, 1f, 0);
-        tronco.agregarComponente(new QCilindro(2f, 0.01f, 8));
+                // cono.agregarComponente(QNormales.invertirNormales(QMaterialUtil.aplicarColor(new
+                // QEsfera(0.25f, 8), 0.7f, 1f, 1f, 0, 1, 1, 1, 64)));
+                // cono.agregarComponente(QMaterialUtil.aplicarColor(new QEsfera(0.5f, 8),
+                // 0.15f, QColor.YELLOW, QColor.YELLOW, 1, 1000000));//el efecto aura
+                cono.addComponent(QMaterialUtil.aplicarColor(new QEsfera(0.25f, 8), 1f, QColor.YELLOW, QColor.WHITE, 1,
+                                64));// el real
+                cono.addComponent(new QPointLigth(2.5f, QColor.YELLOW, 30, false, false));
+                // cono.agregarComponente(new QLuz(QLuz.LUZ_PUNTUAL, .5f, 255, 255, 255, true));
 
-        QEntidad base = new QEntidad("l-base");
-        base.agregarComponente(new QCilindro(0.02f, 0.15f, secciones));
+                Entity tronco = new Entity("l-faro");
+                tronco.move(0, 1f, 0);
+                tronco.addComponent(new QCilindro(2f, 0.01f, 8));
 
-        lampara.agregarHijo(cono);
-        lampara.agregarHijo(tronco);
-        lampara.agregarHijo(base);
+                Entity base = new Entity("l-base");
+                base.addComponent(new QCilindro(0.02f, 0.15f, secciones));
 
-        //se agrga la animacino a la entidad
-//        personaje.agregarComponente(animacion);
-        return lampara;
-    }
+                lampara.addChild(cono);
+                lampara.addChild(tronco);
+                lampara.addChild(base);
 
-    public static QEntidad crearLamparaPisoMonstruos() {
-        QEntidad lampara = new QEntidad("Lampara");
+                // se agrga la animacino a la entidad
+                // personaje.agregarComponente(animacion);
+                return lampara;
+        }
 
-        QEntidad cono = new QEntidad("l-foco");
-        cono.mover(0, 2.25f, 0);
+        public static Entity crearLamparaPisoMonstruos() {
+                Entity lampara = new Entity("Lampara");
 
-//        cono.agregarComponente(QNormales.invertirNormales(QMaterialUtil.aplicarColor(new QEsfera(0.25f, 8), 0.7f, 1f, 1f, 0, 1, 1, 1, 64)));
-//        cono.agregarComponente(QMaterialUtil.aplicarColor(new QEsfera(0.5f, 8), 0.15f, QColor.YELLOW, QColor.YELLOW, 1, 1000000));//el efecto aura
-        cono.agregarComponente(QMaterialUtil.aplicarColor(new QEsfera(0.25f, 8), 1f, QColor.YELLOW, QColor.WHITE, 1, 64));//el real
-        cono.agregarComponente(new QLuzPuntual(100f, QColor.YELLOW, 1000, false, false));
-//        cono.agregarComponente(new QLuz(QLuz.LUZ_PUNTUAL, .5f, 255, 255, 255, true));
+                Entity cono = new Entity("l-foco");
+                cono.move(0, 2.25f, 0);
 
-        QEntidad tronco = new QEntidad("l-faro");
-        tronco.mover(0, 1f, 0);
-        tronco.agregarComponente(new QCilindro(2f, 0.01f, 8));
+                // cono.agregarComponente(QNormales.invertirNormales(QMaterialUtil.aplicarColor(new
+                // QEsfera(0.25f, 8), 0.7f, 1f, 1f, 0, 1, 1, 1, 64)));
+                // cono.agregarComponente(QMaterialUtil.aplicarColor(new QEsfera(0.5f, 8),
+                // 0.15f, QColor.YELLOW, QColor.YELLOW, 1, 1000000));//el efecto aura
+                cono.addComponent(QMaterialUtil.aplicarColor(new QEsfera(0.25f, 8), 1f, QColor.YELLOW, QColor.WHITE, 1,
+                                64));// el real
+                cono.addComponent(new QPointLigth(100f, QColor.YELLOW, 1000, false, false));
+                // cono.agregarComponente(new QLuz(QLuz.LUZ_PUNTUAL, .5f, 255, 255, 255, true));
 
-        QEntidad base = new QEntidad("l-base");
-        base.agregarComponente(new QCilindro(0.02f, 0.15f, secciones));
+                Entity tronco = new Entity("l-faro");
+                tronco.move(0, 1f, 0);
+                tronco.addComponent(new QCilindro(2f, 0.01f, 8));
 
-        lampara.agregarHijo(cono);
-        lampara.agregarHijo(tronco);
-        lampara.agregarHijo(base);
+                Entity base = new Entity("l-base");
+                base.addComponent(new QCilindro(0.02f, 0.15f, secciones));
 
-        //se agrga la animacino a la entidad
-//        personaje.agregarComponente(animacion);
-        return lampara;
-    }
+                lampara.addChild(cono);
+                lampara.addChild(tronco);
+                lampara.addChild(base);
+
+                // se agrga la animacino a la entidad
+                // personaje.agregarComponente(animacion);
+                return lampara;
+        }
 
 }

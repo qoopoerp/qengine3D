@@ -6,123 +6,128 @@
 package net.qoopo.engine3d.test.generaEjemplos.impl.nodos;
 
 import java.io.File;
-import net.qoopo.engine3d.componentes.QEntidad;
-import net.qoopo.engine3d.componentes.geometria.primitivas.formas.QCaja;
-import net.qoopo.engine3d.core.escena.QEscena;
-import net.qoopo.engine3d.test.generaEjemplos.GeneraEjemplo;
-import net.qoopo.engine3d.componentes.geometria.primitivas.formas.QEsfera;
-import net.qoopo.engine3d.componentes.geometria.primitivas.formas.QTeapot;
-import net.qoopo.engine3d.componentes.reflexiones.QMapaCubo;
-import net.qoopo.engine3d.core.material.nodos.QMaterialNodo;
-import net.qoopo.engine3d.core.math.QColor;
-import net.qoopo.engine3d.core.recursos.QGestorRecursos;
-import net.qoopo.engine3d.core.textura.mapeo.QMaterialUtil;
-import net.qoopo.engine3d.core.textura.procesador.QProcesadorSimple;
-import net.qoopo.engine3d.core.util.QGlobal;
-import net.qoopo.engine3d.engines.render.QMotorRender;
-import net.qoopo.engine3d.engines.render.interno.shader.pixelshader.nodos.nodos.core.QNodoEnlace;
-import net.qoopo.engine3d.engines.render.interno.shader.pixelshader.nodos.nodos.salida.QNodoMaterial;
-import net.qoopo.engine3d.engines.render.interno.shader.pixelshader.nodos.nodos.sombreado.QNodoColorIluminacion;
-import net.qoopo.engine3d.engines.render.interno.shader.pixelshader.nodos.nodos.sombreado.QNodoColorReflexion;
-import net.qoopo.engine3d.engines.render.interno.shader.pixelshader.nodos.nodos.sombreado.QNodoColorTextura;
-import net.qoopo.engine3d.engines.render.interno.shader.pixelshader.nodos.nodos.sombreado.QNodoEmision;
+
+import net.qoopo.engine.core.assets.AssetManager;
+import net.qoopo.engine.core.entity.Entity;
+import net.qoopo.engine.core.entity.component.cubemap.QCubeMap;
+import net.qoopo.engine.core.entity.component.mesh.primitive.shape.QCaja;
+import net.qoopo.engine.core.entity.component.mesh.primitive.shape.QEsfera;
+import net.qoopo.engine.core.entity.component.mesh.primitive.shape.QTeapot;
+import net.qoopo.engine.core.material.node.MaterialNode;
+import net.qoopo.engine.core.material.node.core.QNodoEnlace;
+import net.qoopo.engine.core.material.node.core.output.MaterialOutputNode;
+import net.qoopo.engine.core.math.QColor;
+import net.qoopo.engine.core.renderer.RenderEngine;
+import net.qoopo.engine.core.scene.Scene;
+import net.qoopo.engine.core.texture.procesador.QProcesadorSimple;
+import net.qoopo.engine.core.texture.util.QMaterialUtil;
+import net.qoopo.engine.core.util.QGlobal;
+import net.qoopo.engine.renderer.shader.pixelshader.nodos.shader.QNodoColorIluminacion;
+import net.qoopo.engine.renderer.shader.pixelshader.nodos.shader.QNodoColorReflexion;
+import net.qoopo.engine.renderer.shader.pixelshader.nodos.shader.QNodoColorTextura;
+import net.qoopo.engine.renderer.shader.pixelshader.nodos.shader.QNodoEmision;
+import net.qoopo.engine3d.test.generaEjemplos.MakeTestScene;
 
 /**
  *
  * @author alberto
  */
-public class NodosVarios extends GeneraEjemplo {
+public class NodosVarios extends MakeTestScene {
 
     public NodosVarios() {
 
     }
 
-    public void iniciar(QEscena mundo) {
-        this.mundo = mundo;
+    public void make(Scene mundo) {
+        this.scene = mundo;
 
         // materiales con difuso
-        QMaterialNodo material = new QMaterialNodo("Nodo_Esfera");
+        MaterialNode material = new MaterialNode("Nodo_Esfera");
 
         QNodoColorIluminacion ilum1 = new QNodoColorIluminacion(QColor.RED);
-        QNodoMaterial nodosalida = new QNodoMaterial();
+        MaterialOutputNode nodosalida = new MaterialOutputNode();
         QNodoEnlace enlace = new QNodoEnlace(ilum1.getSaColor(), nodosalida.getEnColor());
 
         material.setNodo(nodosalida);
 
-        QEntidad esfera = new QEntidad("esfera");
-        esfera.agregarComponente(QMaterialUtil.aplicarMaterial(new QEsfera(2), material));
-        esfera.mover(-5, 5, 0);
-        mundo.agregarEntidad(esfera);
+        Entity esfera = new Entity("esfera");
+        esfera.addComponent(QMaterialUtil.aplicarMaterial(new QEsfera(2), material));
+        esfera.move(-5, 5, 0);
+        mundo.addEntity(esfera);
 
         // con textura e iluminacion (Nodo) con mapa de normales
-        QMaterialNodo materialC6 = new QMaterialNodo();
+        MaterialNode materialC6 = new MaterialNode();
 
-        QNodoColorTextura nodoTexturaC6_1 = new QNodoColorTextura(new QProcesadorSimple(QGestorRecursos.cargarTextura("difusa", new File(QGlobal.RECURSOS + "texturas/poliigon/bricks/RockGrey016/1K/RockGrey016_COL_VAR1_1K.jpg"))));
-        QNodoColorTextura nodoTexturaC6_2 = new QNodoColorTextura(new QProcesadorSimple(QGestorRecursos.cargarTextura("normal", new File(QGlobal.RECURSOS + "texturas/poliigon/bricks/RockGrey016/1K/RockGrey016_NRM_1K.jpg"))));
+        QNodoColorTextura nodoTexturaC6_1 = new QNodoColorTextura(new QProcesadorSimple(AssetManager.get().loadTexture(
+                "difusa",
+                new File("assets/textures/poliigon/bricks/RockGrey016/1K/RockGrey016_COL_VAR1_1K.jpg"))));
+        QNodoColorTextura nodoTexturaC6_2 = new QNodoColorTextura(new QProcesadorSimple(AssetManager.get().loadTexture(
+                "normal",
+                new File("assets/textures/poliigon/bricks/RockGrey016/1K/RockGrey016_NRM_1K.jpg"))));
         QNodoColorIluminacion nodoDifusoC6_1 = new QNodoColorIluminacion();
 
         // enlace que une la salida de la textura con con difuso
         QNodoEnlace enlaceC6_1 = new QNodoEnlace(nodoTexturaC6_1.getSaColor(), nodoDifusoC6_1.getEnColor());
-        //enlace que une la salida de DifusoC4 con la entrada1 de mix
+        // enlace que une la salida de DifusoC4 con la entrada1 de mix
         QNodoEnlace enlaceC6_2 = new QNodoEnlace(nodoTexturaC6_2.getSaColor(), nodoDifusoC6_1.getEnNormal());
-        //enlace que une la salida del primer difuso con la entrada1 de mix
+        // enlace que une la salida del primer difuso con la entrada1 de mix
 
-        QNodoMaterial nodosalida2 = new QNodoMaterial();
+        MaterialOutputNode nodosalida2 = new MaterialOutputNode();
         QNodoEnlace enlace2_c6 = new QNodoEnlace(nodoDifusoC6_1.getSaColor(), nodosalida2.getEnColor());
 
         materialC6.setNodo(nodosalida2);
-        QEntidad cubo6 = new QEntidad("Caja");
-        cubo6.agregarComponente(QMaterialUtil.aplicarMaterial(new QCaja(2), materialC6));
-        cubo6.mover(0, 0, 0);
+        Entity cubo6 = new Entity("Caja");
+        cubo6.addComponent(QMaterialUtil.aplicarMaterial(new QCaja(2), materialC6));
+        cubo6.move(0, 0, 0);
 
-        mundo.agregarEntidad(cubo6);
+        mundo.addEntity(cubo6);
 
         // reflejos
         // reflejos con pbr
-        QEntidad tetera = new QEntidad("Tetera");
-        QMapaCubo mapa2 = new QMapaCubo(QGlobal.MAPA_CUPO_RESOLUCION);
+        Entity tetera = new Entity("Tetera");
+        QCubeMap mapa2 = new QCubeMap(QGlobal.MAPA_CUPO_RESOLUCION);
 
-//        QGeometria esfera2 = new QEsfera(1);
-        QMaterialNodo mat5 = new QMaterialNodo("Reflexion");
+        // QGeometria esfera2 = new QEsfera(1);
+        MaterialNode mat5 = new MaterialNode("Reflexion");
 
         QNodoColorReflexion nodoreflexion = new QNodoColorReflexion(new QProcesadorSimple(mapa2.getTexturaEntorno()));
-        nodoreflexion.setTipoMapaEntorno(QMapaCubo.FORMATO_MAPA_CUBO);
+        nodoreflexion.setTipoMapaEntorno(QCubeMap.FORMATO_MAPA_CUBO);
         QNodoColorIluminacion nodoDifuso = new QNodoColorIluminacion();
 
         // enlace que une la salida de la textura con con difuso
         QNodoEnlace enlace3 = new QNodoEnlace(nodoreflexion.getSaColor(), nodoDifuso.getEnColor());
 
-        QNodoMaterial nodosalida3 = new QNodoMaterial();
+        MaterialOutputNode nodosalida3 = new MaterialOutputNode();
         QNodoEnlace enlace4 = new QNodoEnlace(nodoDifuso.getSaColor(), nodosalida3.getEnColor());
 
         mat5.setNodo(nodosalida3);
-//        mat5.setNodo(nodoreflexion);
+        // mat5.setNodo(nodoreflexion);
 
-        tetera.agregarComponente(QMaterialUtil.aplicarMaterial(new QTeapot(), mat5));
-        tetera.agregarComponente(mapa2);
-        tetera.mover(2, 0.5f, 0);
-        mapa2.aplicar(QMapaCubo.FORMATO_MAPA_CUBO, 1, 0);
+        tetera.addComponent(QMaterialUtil.aplicarMaterial(new QTeapot(), mat5));
+        tetera.addComponent(mapa2);
+        tetera.move(2, 0.5f, 0);
+        mapa2.aplicar(QCubeMap.FORMATO_MAPA_CUBO, 1, 0);
 
-        mundo.agregarEntidad(tetera);
+        mundo.addEntity(tetera);
 
         // emisivo
-        QEntidad entEmisivo = new QEntidad("emision");
+        Entity entEmisivo = new Entity("emision");
 
-        QMaterialNodo matEmisivo = new QMaterialNodo("Emisión");
+        MaterialNode matEmisivo = new MaterialNode("Emisión");
         QNodoEmision nodoEmision = new QNodoEmision(QColor.YELLOW, 1.0f);
 
-        QNodoMaterial nodosalida5 = new QNodoMaterial();
+        MaterialOutputNode nodosalida5 = new MaterialOutputNode();
         QNodoEnlace enlace5 = new QNodoEnlace(nodoEmision.getSaColor(), nodosalida5.getEnColor());
 
         matEmisivo.setNodo(nodosalida5);
-        entEmisivo.agregarComponente(QMaterialUtil.aplicarMaterial(new QEsfera(0.25f), matEmisivo));
-        entEmisivo.mover(4, 4, 4);
-        mundo.agregarEntidad(entEmisivo);
+        entEmisivo.addComponent(QMaterialUtil.aplicarMaterial(new QEsfera(0.25f), matEmisivo));
+        entEmisivo.move(4, 4, 4);
+        mundo.addEntity(entEmisivo);
 
     }
 
     @Override
-    public void accion(int numAccion, QMotorRender render) {
+    public void accion(int numAccion, RenderEngine render) {
     }
 
 }

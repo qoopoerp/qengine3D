@@ -7,104 +7,106 @@ package net.qoopo.engine3d.test.generaEjemplos.impl.simple;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import net.qoopo.engine3d.componentes.QEntidad;
-import net.qoopo.engine3d.componentes.geometria.QGeometria;
-import net.qoopo.engine3d.core.escena.QEscena;
-import net.qoopo.engine3d.core.util.QUtilNormales;
-import net.qoopo.engine3d.test.generaEjemplos.GeneraEjemplo;
-import net.qoopo.engine3d.componentes.geometria.primitivas.formas.QCaja;
-import net.qoopo.engine3d.componentes.geometria.primitivas.formas.QCilindro;
-import net.qoopo.engine3d.componentes.geometria.primitivas.formas.QCono;
-import net.qoopo.engine3d.componentes.geometria.primitivas.formas.QEsfera;
-import net.qoopo.engine3d.componentes.geometria.primitivas.formas.QToro;
-import net.qoopo.engine3d.componentes.iluminacion.QLuzDireccional;
-import net.qoopo.engine3d.componentes.iluminacion.QLuzPuntual;
-import net.qoopo.engine3d.componentes.iluminacion.QLuzSpot;
-import net.qoopo.engine3d.core.math.QColor;
-import net.qoopo.engine3d.core.math.QVector3;
-import net.qoopo.engine3d.engines.render.QMotorRender;
+
+import net.qoopo.engine.core.entity.Entity;
+import net.qoopo.engine.core.entity.component.ligth.QDirectionalLigth;
+import net.qoopo.engine.core.entity.component.ligth.QPointLigth;
+import net.qoopo.engine.core.entity.component.ligth.QSpotLigth;
+import net.qoopo.engine.core.entity.component.mesh.Mesh;
+import net.qoopo.engine.core.entity.component.mesh.primitive.shape.QCaja;
+import net.qoopo.engine.core.entity.component.mesh.primitive.shape.QCilindro;
+import net.qoopo.engine.core.entity.component.mesh.primitive.shape.QCono;
+import net.qoopo.engine.core.entity.component.mesh.primitive.shape.QEsfera;
+import net.qoopo.engine.core.entity.component.mesh.primitive.shape.QToro;
+import net.qoopo.engine.core.math.QColor;
+import net.qoopo.engine.core.math.QVector3;
+import net.qoopo.engine.core.renderer.RenderEngine;
+import net.qoopo.engine.core.scene.Scene;
+import net.qoopo.engine.core.util.mesh.QUtilNormales;
+import net.qoopo.engine3d.test.generaEjemplos.MakeTestScene;
 
 /**
  *
  * @author alberto
  */
-public class Ejemplo2 extends GeneraEjemplo {
+public class Ejemplo2 extends MakeTestScene {
 
-    public void iniciar(QEscena mundo) {
+    public void make(Scene mundo) {
         try {
-            this.mundo = mundo;
+            this.scene = mundo;
 
-            QEntidad cube = new QEntidad("Doodster");
+            Entity cube = new Entity("Doodster");
 
-            QGeometria cubGeometria = new QGeometria();
-            cubGeometria.agregarVertice(1, 1, 1);
-            cubGeometria.agregarVertice(1, 1, -1);
-            cubGeometria.agregarVertice(-1, 1, -1);
-            cubGeometria.agregarVertice(-1, 1, 1);
-            cubGeometria.agregarVertice(1, -1, 1);
-            cubGeometria.agregarVertice(1, -1, -1);
-            cubGeometria.agregarVertice(-1, -1, -1);
-            cubGeometria.agregarVertice(-1, -1, 1);
-            cubGeometria.agregarPoligono(0, 1, 2, 3);
-            cubGeometria.agregarPoligono(0, 4, 5, 1);
-            cubGeometria.agregarPoligono(3, 2, 6, 7);
-            cubGeometria.agregarPoligono(0, 3, 7, 4);
-            cubGeometria.agregarPoligono(1, 5, 6, 2);
-            cubGeometria.agregarPoligono(4, 7, 6, 5);
+            Mesh cubGeometria = new Mesh();
+            cubGeometria.addVertex(1, 1, 1);
+            cubGeometria.addVertex(1, 1, -1);
+            cubGeometria.addVertex(-1, 1, -1);
+            cubGeometria.addVertex(-1, 1, 1);
+            cubGeometria.addVertex(1, -1, 1);
+            cubGeometria.addVertex(1, -1, -1);
+            cubGeometria.addVertex(-1, -1, -1);
+            cubGeometria.addVertex(-1, -1, 1);
+            cubGeometria.addPoly(0, 1, 2, 3);
+            cubGeometria.addPoly(0, 4, 5, 1);
+            cubGeometria.addPoly(3, 2, 6, 7);
+            cubGeometria.addPoly(0, 3, 7, 4);
+            cubGeometria.addPoly(1, 5, 6, 2);
+            cubGeometria.addPoly(4, 7, 6, 5);
             cubGeometria = QUtilNormales.calcularNormales(cubGeometria);
 
-            cube.agregarComponente(cubGeometria);
+            cube.addComponent(cubGeometria);
 
-            mundo.agregarEntidad(cube);
+            mundo.addEntity(cube);
 
-            QEntidad luzSpot = new QEntidad("luz spot");
-            luzSpot.agregarComponente(new QLuzSpot(0.5f, QColor.YELLOW, 30, new QVector3(-1, 0, 0), (float) Math.toRadians(60), (float) Math.toRadians(50), true, false));
-            luzSpot.mover(8, 0, 0);
-            mundo.agregarEntidad(luzSpot);
+            Entity luzSpot = new Entity("luz spot");
+            luzSpot.addComponent(new QSpotLigth(0.5f, QColor.YELLOW, 30, QVector3.of(-1, 0, 0),
+                    (float) Math.toRadians(60), (float) Math.toRadians(50), true, false));
+            luzSpot.move(8, 0, 0);
+            mundo.addEntity(luzSpot);
 
-            QEntidad luz1 = new QEntidad("luz1");
-            luz1.agregarComponente(new QLuzPuntual(0.5f, new QColor(0.5f, 1, 0), 10, true, false));
-            luz1.mover(1.5f, -.8f, 1.5f);
-            mundo.agregarEntidad(luz1);
+            Entity luz1 = new Entity("luz1");
+            luz1.addComponent(new QPointLigth(0.5f, new QColor(0.5f, 1, 0), 10, true, false));
+            luz1.move(1.5f, -.8f, 1.5f);
+            mundo.addEntity(luz1);
 
-            QEntidad luz2 = new QEntidad("luz1");
-            luz2.agregarComponente(new QLuzPuntual(0.5f, new QColor(1, 0, 0.5f), 10, true, false));
-            luz2.mover(-1.5f, -.8f, 1.5f);
-            mundo.agregarEntidad(luz2);
+            Entity luz2 = new Entity("luz1");
+            luz2.addComponent(new QPointLigth(0.5f, new QColor(1, 0, 0.5f), 10, true, false));
+            luz2.move(-1.5f, -.8f, 1.5f);
+            mundo.addEntity(luz2);
 
-            QEntidad sol = new QEntidad("Sol");
-            sol.agregarComponente(new QLuzDireccional(.5f, new QColor(0.5f, 0.5f, 1), 10, true, false));
-            mundo.agregarEntidad(sol);
-            QEntidad cuboBeto = new QEntidad("cubo");
-            cuboBeto.agregarComponente(new QCaja(2));
+            Entity sol = new Entity("Sol");
+            sol.addComponent(new QDirectionalLigth(.5f, new QColor(0.5f, 0.5f, 1), 10, true, false));
+            mundo.addEntity(sol);
+            Entity cuboBeto = new Entity("cubo");
+            cuboBeto.addComponent(new QCaja(2));
             cuboBeto.getTransformacion().getTraslacion().x += 2;
             cuboBeto.getTransformacion().getTraslacion().y += 2;
-            mundo.agregarEntidad(cuboBeto);
+            mundo.addEntity(cuboBeto);
 
-            QEntidad cilindroBeto = new QEntidad("cilindro");
-            cilindroBeto.agregarComponente(new QCilindro(2, 1));
+            Entity cilindroBeto = new Entity("cilindro");
+            cilindroBeto.addComponent(new QCilindro(2, 1));
             cilindroBeto.getTransformacion().getTraslacion().x += 5;
             cilindroBeto.getTransformacion().getTraslacion().z += 5;
-            mundo.agregarEntidad(cilindroBeto);
+            mundo.addEntity(cilindroBeto);
 
-            QEntidad esfera = new QEntidad("esfera");
-            esfera.agregarComponente(new QEsfera(2));
+            Entity esfera = new Entity("esfera");
+            esfera.addComponent(new QEsfera(2));
             esfera.getTransformacion().getTraslacion().x += 5;
             esfera.getTransformacion().getTraslacion().z -= 5;
-            mundo.agregarEntidad(esfera);
-//
-            QEntidad toro = new QEntidad("toro");
-            toro.agregarComponente(new QToro(4, 2));
+            mundo.addEntity(esfera);
+            //
+            Entity toro = new Entity("toro");
+            toro.addComponent(new QToro(4, 2));
             toro.getTransformacion().getTraslacion().x -= 5;
             toro.getTransformacion().getTraslacion().z -= 5;
-            mundo.agregarEntidad(toro);
+            mundo.addEntity(toro);
 
-            QEntidad cono = new QEntidad("cono");
-            cono.agregarComponente(new QCono(4, 2));
+            Entity cono = new Entity("cono");
+            cono.addComponent(new QCono(4, 2));
             cono.getTransformacion().getTraslacion().x -= 5;
 
             cono.getTransformacion().getTraslacion().z += 5;
-            mundo.agregarEntidad(cono);
+            mundo.addEntity(cono);
         } catch (Exception ex) {
             Logger.getLogger(Ejemplo2.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -112,7 +114,7 @@ public class Ejemplo2 extends GeneraEjemplo {
     }
 
     @Override
-    public void accion(int numAccion, QMotorRender render) {
+    public void accion(int numAccion, RenderEngine render) {
     }
 
 }

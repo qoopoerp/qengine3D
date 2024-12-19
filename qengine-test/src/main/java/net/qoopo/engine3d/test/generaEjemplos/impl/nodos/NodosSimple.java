@@ -5,61 +5,61 @@
  */
 package net.qoopo.engine3d.test.generaEjemplos.impl.nodos;
 
-import net.qoopo.engine3d.componentes.QEntidad;
-import net.qoopo.engine3d.core.escena.QEscena;
-import net.qoopo.engine3d.test.generaEjemplos.GeneraEjemplo;
-import net.qoopo.engine3d.componentes.geometria.primitivas.formas.QCaja;
-import net.qoopo.engine3d.componentes.geometria.primitivas.formas.QEsfera;
-import net.qoopo.engine3d.core.material.nodos.QMaterialNodo;
-import net.qoopo.engine3d.core.math.QColor;
-import net.qoopo.engine3d.core.textura.mapeo.QMaterialUtil;
-import net.qoopo.engine3d.engines.render.QMotorRender;
-import net.qoopo.engine3d.engines.render.interno.shader.pixelshader.nodos.nodos.core.QNodoEnlace;
-import net.qoopo.engine3d.engines.render.interno.shader.pixelshader.nodos.nodos.salida.QNodoMaterial;
-import net.qoopo.engine3d.engines.render.interno.shader.pixelshader.nodos.nodos.sombreado.QNodoColorIluminacion;
+import net.qoopo.engine.core.entity.Entity;
+import net.qoopo.engine.core.entity.component.mesh.primitive.shape.QCaja;
+import net.qoopo.engine.core.entity.component.mesh.primitive.shape.QEsfera;
+import net.qoopo.engine.core.material.node.MaterialNode;
+import net.qoopo.engine.core.material.node.core.QNodoEnlace;
+import net.qoopo.engine.core.material.node.core.output.MaterialOutputNode;
+import net.qoopo.engine.core.math.QColor;
+import net.qoopo.engine.core.renderer.RenderEngine;
+import net.qoopo.engine.core.scene.Scene;
+import net.qoopo.engine.core.texture.util.QMaterialUtil;
+import net.qoopo.engine.renderer.shader.pixelshader.nodos.shader.QNodoColorIluminacion;
+import net.qoopo.engine3d.test.generaEjemplos.MakeTestScene;
 
 /**
  *
  * @author alberto
  */
-public class NodosSimple extends GeneraEjemplo {
+public class NodosSimple extends MakeTestScene {
 
     public NodosSimple() {
 
     }
 
-    public void iniciar(QEscena mundo) {
-        this.mundo = mundo;
+    public void make(Scene mundo) {
+        this.scene = mundo;
 
         QNodoColorIluminacion ilum1 = new QNodoColorIluminacion(QColor.RED);
-        QNodoMaterial nodosalida = new QNodoMaterial();
+        MaterialOutputNode nodosalida = new MaterialOutputNode();
         QNodoEnlace enlace = new QNodoEnlace(ilum1.getSaColor(), nodosalida.getEnColor());
 //
-        QMaterialNodo material = new QMaterialNodo("Nodo_Esfera");
+        MaterialNode material = new MaterialNode("Nodo_Esfera");
         material.setNodo(nodosalida);
 
-        QEntidad esfera = new QEntidad("esfera");
-        esfera.agregarComponente(QMaterialUtil.aplicarMaterial(new QEsfera(2), material));
-        esfera.mover(-5, 5, 0);
-        mundo.agregarEntidad(esfera);
+        Entity esfera = new Entity("esfera");
+        esfera.addComponent(QMaterialUtil.aplicarMaterial(new QEsfera(2), material));
+        esfera.move(-5, 5, 0);
+        mundo.addEntity(esfera);
 //-----------------------
 
         QNodoColorIluminacion ilum2 = new QNodoColorIluminacion(QColor.BLUE);
-        QNodoMaterial nodosalida2 = new QNodoMaterial();
+        MaterialOutputNode nodosalida2 = new MaterialOutputNode();
         QNodoEnlace enlace2 = new QNodoEnlace(ilum2.getSaColor(), nodosalida2.getEnColor());
 
-        QMaterialNodo materialCubo = new QMaterialNodo("Nodo_Cubo");
+        MaterialNode materialCubo = new MaterialNode("Nodo_Cubo");
         materialCubo.setNodo(nodosalida2);
 
-        QEntidad cubo = new QEntidad("Cubo");
-        cubo.agregarComponente(QMaterialUtil.aplicarMaterial(new QCaja(2), materialCubo));
-        cubo.mover(5, 5, 0);
-        mundo.agregarEntidad(cubo);
+        Entity cubo = new Entity("Cubo");
+        cubo.addComponent(QMaterialUtil.aplicarMaterial(new QCaja(2), materialCubo));
+        cubo.move(5, 5, 0);
+        mundo.addEntity(cubo);
 
     }
 
     @Override
-    public void accion(int numAccion, QMotorRender render) {
+    public void accion(int numAccion, RenderEngine render) {
     }
 
 }

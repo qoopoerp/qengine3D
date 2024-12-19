@@ -5,13 +5,13 @@
  */
 package net.qoopo.engine3d.test.generaEjemplos.impl.fisica;
 
-import net.qoopo.engine3d.componentes.QEntidad;
+import net.qoopo.engine.core.entity.Entity;
 
 /**
  *
  * @author alberto
  */
-public class EntidadTestFisica extends QEntidad {
+public class EntidadTestFisica extends Entity {
 
     public EntidadTestFisica() {
         super();
@@ -24,9 +24,9 @@ public class EntidadTestFisica extends QEntidad {
 
     @Override
     public void comprobarMovimiento() {
-//        if (transformacion.getTraslacion().y < 0.5f) {
-//            transformacion.getTraslacion().y = 0.5f;
-//        }
+        // if (transformacion.getTraslacion().y < 0.5f) {
+        // transformacion.getTraslacion().y = 0.5f;
+        // }
     }
 
 }

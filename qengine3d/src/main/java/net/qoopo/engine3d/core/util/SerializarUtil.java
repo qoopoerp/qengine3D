@@ -83,7 +83,7 @@ public class SerializarUtil {
 
     public static void agregarObjeto(String filename, Object obj, boolean append, boolean comprimir) {
         File file = new File(filename);
-        //si no existe la carpeta contenedora, la creo
+        // si no existe la carpeta contenedora, la creo
         File carpe = file.getParentFile();
         if (!carpe.exists()) {
             carpe.mkdirs();
@@ -124,8 +124,8 @@ public class SerializarUtil {
                 ois = new ObjectInputStream(new FileInputStream(filename));
                 while (true) {
                     lst.add(ois.readObject());
-//                    String s = (String) ois.readObject();
-//                    System.out.println(s);
+                    // String s = (String) ois.readObject();
+                    // System.out.println(s);
                 }
             } catch (EOFException e) {
 
@@ -154,13 +154,13 @@ public class SerializarUtil {
                 while (true) {
                     ois.readObject();
                     total++;
-//                    String s = (String) ois.readObject();
-//                    System.out.println(s);
+                    // String s = (String) ois.readObject();
+                    // System.out.println(s);
                 }
             } catch (EOFException e) {
 
             } catch (Exception e) {
-//                e.printStackTrace();
+                // e.printStackTrace();
             } finally {
                 try {
                     if (ois != null) {
@@ -190,7 +190,7 @@ public class SerializarUtil {
                 while (seguir) {
                     objeto = ois.readObject();
                     if (total == indice) {
-                        //descomprimo
+                        // descomprimo
                         if (comprimido) {
                             objeto = descomprimirObjeto((byte[]) objeto);
                         }
@@ -199,8 +199,8 @@ public class SerializarUtil {
                         objeto = null;
                     }
                     total++;
-//                    String s = (String) ois.readObject();
-//                    System.out.println(s);
+                    // String s = (String) ois.readObject();
+                    // System.out.println(s);
                 }
                 ois = null;
             } catch (EOFException e) {
@@ -234,16 +234,18 @@ public class SerializarUtil {
             reset();
         }
     }
-//    public static void main(String[] args) throws IOException, ClassNotFoundException {
-//        List list = new ArrayList();
-//        list.add("uno");
-//        list.add("dos");
-//        list.add("tres");
-//        list.add("cuatro");
-//        SerializarUtil.convertirBytes(list, "prueba.txt");
-//        List otherList = (List) SerializarUtil.leerObjeto("prueba.txt");
-//        System.out.println("La lista original es igual a la leida ? " + list.equals(otherList));
-//    }
+    // public static void main(String[] args) throws IOException,
+    // ClassNotFoundException {
+    // List list = new ArrayList();
+    // list.add("uno");
+    // list.add("dos");
+    // list.add("tres");
+    // list.add("cuatro");
+    // SerializarUtil.convertirBytes(list, "prueba.txt");
+    // List otherList = (List) SerializarUtil.leerObjeto("prueba.txt");
+    // System.out.println("La lista original es igual a la leida ? " +
+    // list.equals(otherList));
+    // }
 
     public static byte[] comprimirObjeto(Object objeto) {
 

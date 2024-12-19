@@ -5,24 +5,23 @@
  */
 package net.qoopo.engine3d.test.juegotest.mundo.niveles;
 
-import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.IOException;
 import java.util.Random;
-import javax.imageio.ImageIO;
+import java.util.logging.Logger;
+
+import net.qoopo.engine.core.assets.AssetManager;
+import net.qoopo.engine.core.entity.Entity;
+import net.qoopo.engine.core.entity.component.physics.collision.detector.shape.mallas.QColisionMallaIndexada;
+import net.qoopo.engine.core.entity.component.physics.dinamica.QObjetoDinamico;
+import net.qoopo.engine.core.entity.component.physics.dinamica.QObjetoRigido;
+import net.qoopo.engine.core.entity.component.terrain.HeightMapTerrain;
+import net.qoopo.engine.core.entity.component.terrain.Terrain;
+import net.qoopo.engine.core.material.basico.QMaterialBas;
+import net.qoopo.engine.core.scene.QEscenario;
+import net.qoopo.engine.core.scene.Scene;
+import net.qoopo.engine.core.texture.QTextura;
+import net.qoopo.engine.core.util.QUtilComponentes;
 import net.qoopo.engine3d.test.juegotest.monstruos.QDoomMonster;
-import net.qoopo.engine3d.componentes.QEntidad;
-import net.qoopo.engine3d.componentes.fisica.colisiones.QComponenteColision;
-import net.qoopo.engine3d.componentes.fisica.dinamica.QObjetoDinamico;
-import net.qoopo.engine3d.componentes.fisica.dinamica.QObjetoRigido;
-import net.qoopo.engine3d.core.util.QGlobal;
-import net.qoopo.engine3d.core.util.QLogger;
-import net.qoopo.engine3d.core.recursos.QGestorRecursos;
-import net.qoopo.engine3d.core.escena.QEscena;
-import net.qoopo.engine3d.core.textura.QTextura;
-import net.qoopo.engine3d.core.math.QVector3;
-import net.qoopo.engine3d.componentes.terreno.QTerreno;
-import net.qoopo.engine3d.core.escena.QEscenario;
 
 /**
  *
@@ -30,44 +29,53 @@ import net.qoopo.engine3d.core.escena.QEscenario;
  */
 public class DoomTest extends QEscenario {
 
+    private static Logger logger = Logger.getLogger("test");
+
     private static boolean monstruoDoom1 = true;
     private static boolean monstruoQuake1 = true;
     private static boolean monstruoQuake2 = true;
 
-    public void cargar(QEscena escena) {
-        QLogger.info("Cargando nivel...");
-        cargarTexturas();
-//        universo.luzAmbiente = 0.5f;
+    public void cargar(Scene escena) {
+        logger.info("Cargando nivel...");
+        loadTextures();
+        // universo.luzAmbiente = 0.5f;
         crearTerreno(escena);
-//        crearLago1(universo);
-//        crearLago2(universo);
+        // crearLago1(universo);
+        // crearLago2(universo);
         crearObjetosAleatorios(terreno, escena);
-//        QLogger.info("Configurando neblina");
-//        QEscena.INSTANCIA.neblina = new QNeblina(true, QColor.GRAY, 0.015f);// como 100 metros
-//        QEscena.INSTANCIA.neblina = new QNeblina(true, QColor.GRAY, 0.01f);// como 2 metros
+        // logger.info("Configurando neblina");
+        // QEscena.INSTANCIA.neblina = new QNeblina(true, QColor.GRAY, 0.015f);// como
+        // 100 metros
+        // QEscena.INSTANCIA.neblina = new QNeblina(true, QColor.GRAY, 0.01f);// como 2
+        // metros
 
-//        crearCielo(escena);
-        QLogger.info("Nivel cargado");
+        // crearCielo(escena);
+        logger.info("Nivel cargado");
     }
 
-//    private void crearCielo(QEscena escena) {
-//
-//        //sol
-//        QEntidad sol = new QEntidad("Sol");
-//        QLuzDireccional solLuz = new QLuzDireccional(1.1f, QColor.WHITE, 1, new QVector3(0, 0, 0), true, true);
-//        sol.agregarComponente(solLuz);
-//        escena.agregarEntidad(sol);
-//
-//        QTextura cieloDia = QGestorRecursos.cargarTextura("dia", QGlobal.RECURSOS + "texturas/cielo/esfericos/cielo_dia.jpg");
-//        QTextura cieloNoche = QGestorRecursos.cargarTextura("noche", QGlobal.RECURSOS + "texturas/cielo/esfericos/cielo_noche.png");
-////        QTextura cieloNoche = QGestorRecursos.cargarTextura("noche", "res/texturas/cielo/esfericos/cielo_noche_2.jpg");
-//
-//        escena.setLuzAmbiente(0.5f);
-//        QCielo cielo = new QEsferaCielo(cieloDia, cieloNoche, escena.UM.convertirPixel(500, QUnidadMedida.METRO));
-//        escena.agregarEntidad(cielo.getEntidad());
-//    }
+    // private void crearCielo(QEscena escena) {
+    //
+    // //sol
+    // Entity sol = new Entity("Sol");
+    // QLuzDireccional solLuz = new QLuzDireccional(1.1f, QColor.WHITE, 1,
+    // QVector3.of(0, 0, 0), true, true);
+    // sol.agregarComponente(solLuz);
+    // escena.addEntity(sol);
+    //
+    // QTextura cieloDia = QGestorRecursos.loadTexture("dia", "assets/"+
+    // "textures/cielo/esfericos/cielo_dia.jpg");
+    // QTextura cieloNoche = QGestorRecursos.loadTexture("noche", "assets/"+
+    // "textures/cielo/esfericos/cielo_noche.png");
+    //// QTextura cieloNoche = QGestorRecursos.loadTexture("noche",
+    // "res/textures/cielo/esfericos/cielo_noche_2.jpg");
+    //
+    // escena.setLuzAmbiente(0.5f);
+    // QCielo cielo = new QEsferaCielo(cieloDia, cieloNoche,
+    // escena.UM.convertirPixel(500, QUnidadMedida.METRO));
+    // escena.addEntity(cielo.getEntidad());
+    // }
 
-    private void crearObjetosAleatorios(QTerreno terreno, QEscena escena) {
+    private void crearObjetosAleatorios(HeightMapTerrain terreno, Scene escena) {
 
         Random rnd = new Random();
 
@@ -75,43 +83,43 @@ public class DoomTest extends QEscenario {
         for (int i = 1; i <= 25; i++) {
 
             if (monstruoDoom1) {
-//                if (i % 10 == 0) {
-//                    if (i % 5 == 0) {
-//                        x = rnd.nextFloat() * terreno.getAncho() - terreno.getAncho() - terreno.getInicioX();
-//                        z = rnd.nextFloat() * terreno.getLargo() - terreno.getLargo() - terreno.getInicioZ();
-//                        y = terreno.getAltura(x, z);
-//                        QEntidad doomMonster = QDoomMonster.
-//                        doomMonster.mover(x, y, z);
-////                    doomMonster.mover(-100, y + 0.8f, 10);
-//                        doomMonster.escalar(new QVector3(0.04f, 0.04f, 0.04f));
-//                        escena.agregarEntidad(doomMonster);
-//                    }
-//                }
+                if (i % 10 == 0) {
+                    if (i % 5 == 0) {
+                        x = rnd.nextFloat() * terreno.getWidth() - terreno.getWidth() - terreno.getInicioX();
+                        z = rnd.nextFloat() * terreno.getHeight() - terreno.getHeight() - terreno.getInicioZ();
+                        y = terreno.getAltura(x, z);
+                        Entity doomMonster = QDoomMonster.quakeMonster();
+                        doomMonster.move(x, y, z);
+                        // doomMonster.mover(-100, y + 0.8f, 10);
+                        doomMonster.scale(0.04f, 0.04f, 0.04f);
+                        escena.addEntity(doomMonster);
+                    }
+                }
             }
             if (monstruoQuake1) {
                 if (i % 5 == 0) {
-                    x = rnd.nextFloat() * terreno.getAncho() - terreno.getAncho() - terreno.getInicioX();
-                    z = rnd.nextFloat() * terreno.getLargo() - terreno.getLargo() - terreno.getInicioZ();
+                    x = rnd.nextFloat() * terreno.getWidth() - terreno.getWidth() - terreno.getInicioX();
+                    z = rnd.nextFloat() * terreno.getHeight() - terreno.getHeight() - terreno.getInicioZ();
                     y = terreno.getAltura(x, z);
-                    QEntidad doomMonster = QDoomMonster.quakeMonster();
-                    doomMonster.mover(x, y, z);
-//                    doomMonster.mover(-100, y + 0.8f, 10);
-                    doomMonster.escalar(0.04f, 0.04f, 0.04f);
-                    escena.agregarEntidad(doomMonster);
+                    Entity doomMonster = QDoomMonster.quakeMonster();
+                    doomMonster.move(x, y, z);
+                    // doomMonster.mover(-100, y + 0.8f, 10);
+                    doomMonster.scale(0.04f, 0.04f, 0.04f);
+                    escena.addEntity(doomMonster);
                 }
 
             }
 
             if (monstruoQuake2) {
                 if (i % 5 == 0) {
-                    x = rnd.nextFloat() * terreno.getAncho() - terreno.getAncho() - terreno.getInicioX();
-                    z = rnd.nextFloat() * terreno.getLargo() - terreno.getLargo() - terreno.getInicioZ();
+                    x = rnd.nextFloat() * terreno.getWidth() - terreno.getWidth() - terreno.getInicioX();
+                    z = rnd.nextFloat() * terreno.getHeight() - terreno.getHeight() - terreno.getInicioZ();
                     y = terreno.getAltura(x, z);
-                    QEntidad doomMonster = QDoomMonster.quakeMonster2();
-                    doomMonster.mover(x, y, z);
-//                    doomMonster.mover(-100, y + 0.8f, 10);
-                    doomMonster.escalar(0.04f, 0.04f, 0.04f);
-                    escena.agregarEntidad(doomMonster);
+                    Entity doomMonster = QDoomMonster.quakeMonster2();
+                    doomMonster.move(x, y, z);
+                    // doomMonster.mover(-100, y + 0.8f, 10);
+                    doomMonster.scale(0.04f, 0.04f, 0.04f);
+                    escena.addEntity(doomMonster);
                 }
 
             }
@@ -119,51 +127,49 @@ public class DoomTest extends QEscenario {
         }
     }
 
-    private void crearTerreno(QEscena escena) {
-        //el terreno generado con mapas de altura
-        QLogger.info("Creando terreno...");
+    private void crearTerreno(Scene universo) {
+        // el terreno generado con mapas de altura
+        logger.info("Creando terreno...");
 
-        QEntidad entidadTerreno = new QEntidad("Terreno");
+        Entity entidadTerreno = new Entity("Terreno");
 
-        terreno = new QTerreno();
-        entidadTerreno.agregarComponente(terreno);
-        QTextura textura = null;
-        try {
-            textura = QGestorRecursos.getTextura("terreno");
-        } catch (Exception ex) {
+        QTextura terrainTexture = AssetManager.get().loadTexture("terreno",
+                "assets/textures/terrain/rocky_terrain/rocky_terrain_02_diff_4k.jpg");
+        QMaterialBas materialTerrain = new QMaterialBas(terrainTexture);
+        materialTerrain.setMapaNormal(AssetManager.get().loadTexture("terreno_normal",
+                "assets/textures/terrain/rocky_terrain/rocky_terrain_02_nor_gl_4k.png"));
+        materialTerrain.setMapaEspecular(AssetManager.get().loadTexture("terreno_normal",
+                "assets/textures/terrain/rocky_terrain/rocky_terrain_02_spec_4k.png"));
+        materialTerrain.setMapaRugosidad(AssetManager.get().loadTexture("terreno_normal",
+                "assets/textures/terrain/rocky_terrain/rocky_terrain_02_rough_4k.png"));
 
-        }
+        Terrain terreno = new HeightMapTerrain(new File("assets/heightmaps/heightmap.png"), 1, -5, 15f,
+                1,
+                materialTerrain, true);
+        entidadTerreno.addComponent(terreno);
 
-        try {
-            BufferedImage img1 = ImageIO.read(new File(QGlobal.RECURSOS + "mapas_altura/heightmap1.png"));
-            textura.setMuestrasU(5);
-            textura.setMuestrasV(5);
-            terreno.generar(img1, 1, -5f, 10f, textura, 2);
-        } catch (IOException ex) {
-            ex.printStackTrace();
-        }
-
+        // QColisionTerreno colision = new QColisionTerreno(terreno);
+        // entidadTerreno.agregarComponente(colision);
+        QColisionMallaIndexada colision = new QColisionMallaIndexada(QUtilComponentes.getMesh(entidadTerreno));
         QObjetoRigido terrenoRigidez = new QObjetoRigido(QObjetoDinamico.ESTATICO);
-        terrenoRigidez.setMasa(200, QVector3.zero.clone());
-        terrenoRigidez.tipoContenedorColision = QComponenteColision.TIPO_CONTENEDOR_AABB;
-        entidadTerreno.agregarComponente(terrenoRigidez);
-        escena.agregarEntidad(entidadTerreno);
-        QLogger.info("Terreno cargado...");
-
+        terrenoRigidez.setFormaColision(colision);
+        entidadTerreno.addComponent(terrenoRigidez);
+        universo.addEntity(entidadTerreno);
+        logger.info("Terreno cargado...");
     }
 
-    private void cargarTexturas() {
-        QLogger.info("Cargando texturas...");
-        QGestorRecursos.cargarTextura("terreno", QGlobal.RECURSOS + "texturas/terreno/text4.jpg");
-        QGestorRecursos.cargarTextura("lagoNormal", QGlobal.RECURSOS + "texturas/agua/matchingNormalMap.png");
-        QLogger.info("Texturas cargadas...");
+    private void loadTextures() {
+        logger.info("Cargando textures...");
+        AssetManager.get().loadTexture("terreno", "assets/textures/terreno/text4.jpg");
+        AssetManager.get().loadTexture("lagoNormal", "assets/textures/agua/matchingNormalMap.png");
+        logger.info("Texturas cargadas...");
     }
 
-    public QTerreno getTerreno() {
+    public HeightMapTerrain getTerreno() {
         return terreno;
     }
 
-    public void setTerreno(QTerreno terreno) {
+    public void setTerreno(HeightMapTerrain terreno) {
         this.terreno = terreno;
     }
 

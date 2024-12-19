@@ -7,20 +7,21 @@ package net.qoopo.engine3d.editor.assets;
 
 import java.awt.Color;
 import java.awt.Component;
+
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JTree;
-import static javax.swing.SwingConstants.CENTER;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeCellRenderer;
-import net.qoopo.engine3d.componentes.QEntidad;
-import net.qoopo.engine3d.componentes.audio.openal.QBufferSonido;
-import net.qoopo.engine3d.componentes.geometria.QGeometria;
-import net.qoopo.engine3d.core.material.basico.QMaterialBas;
-import net.qoopo.engine3d.core.recursos.QGestorRecursos;
-import net.qoopo.engine3d.core.textura.QTextura;
+
+import net.qoopo.engine.core.assets.AssetManager;
+import net.qoopo.engine.core.entity.Entity;
+import net.qoopo.engine.core.entity.component.mesh.Mesh;
+import net.qoopo.engine.core.lwjgl.audio.component.AudioBufferAL;
+import net.qoopo.engine.core.material.basico.QMaterialBas;
+import net.qoopo.engine.core.texture.QTextura;
 import net.qoopo.engine3d.editor.util.QArbolWrapper;
 import net.qoopo.engine3d.editor.util.Util;
 
@@ -56,16 +57,16 @@ public class PnlGestorRecursos extends javax.swing.JPanel {
         raiz.add(mats);
         raiz.add(text);
         raiz.add(audi);
-        for (Object objeto : QGestorRecursos.mapa.values()) {
-            if (objeto instanceof QEntidad) {
-                ent.add(new DefaultMutableTreeNode(new QArbolWrapper(((QEntidad) objeto).getNombre(), objeto)));
-            } else if (objeto instanceof QGeometria) {
-                geom.add(new DefaultMutableTreeNode(new QArbolWrapper(((QGeometria) objeto).nombre, objeto)));
+        for (Object objeto : AssetManager.mapa.values()) {
+            if (objeto instanceof Entity) {
+                ent.add(new DefaultMutableTreeNode(new QArbolWrapper(((Entity) objeto).getName(), objeto)));
+            } else if (objeto instanceof Mesh) {
+                geom.add(new DefaultMutableTreeNode(new QArbolWrapper(((Mesh) objeto).nombre, objeto)));
             } else if (objeto instanceof QMaterialBas) {
                 mats.add(new DefaultMutableTreeNode(new QArbolWrapper(((QMaterialBas) objeto).getNombre(), objeto)));
             } else if (objeto instanceof QTextura) {
                 text.add(new DefaultMutableTreeNode(new QArbolWrapper("Textura", objeto)));
-            } else if (objeto instanceof QBufferSonido) {
+            } else if (objeto instanceof AudioBufferAL) {
                 audi.add(new DefaultMutableTreeNode(new QArbolWrapper("Buffer", objeto)));
             }
         }
@@ -119,15 +120,15 @@ public class PnlGestorRecursos extends javax.swing.JPanel {
                     QArbolWrapper wraper = (QArbolWrapper) valor;                    
                     if (wraper.getObjeto() == null) {
 //                        icon = Util.cargarIcono16("/cube.png");
-                    } else if (wraper.getObjeto() instanceof QGeometria) {
+                    } else if (wraper.getObjeto() instanceof Mesh) {
                         icon = Util.cargarIcono16("/teapot_16.png");
                     } else if (wraper.getObjeto() instanceof QMaterialBas) {
                         icon = Util.cargarIcono16("/text_quad_16.png");
-                    } else if (wraper.getObjeto() instanceof QEntidad) {
+                    } else if (wraper.getObjeto() instanceof Entity) {
                         icon = Util.cargarIcono16("/cube.png");
                     } else if (wraper.getObjeto() instanceof QTextura) {
                         icon = Util.cargarIcono16("/text_16.png");
-                    } else if (wraper.getObjeto() instanceof QBufferSonido) {
+                    } else if (wraper.getObjeto() instanceof AudioBufferAL) {
                         icon = Util.cargarIcono16("/sound_on_16.png");
                     } else {
 //                        icon = Util.cargarIcono16("/teapot_16.png");

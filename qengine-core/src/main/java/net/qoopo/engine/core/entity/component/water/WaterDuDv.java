@@ -1,0 +1,88 @@
+package net.qoopo.engine.core.entity.component.water;
+
+import lombok.Getter;
+import lombok.Setter;
+import net.qoopo.engine.core.assets.AssetManager;
+import net.qoopo.engine.core.entity.component.mesh.primitive.shape.QPlano;
+import net.qoopo.engine.core.entity.component.water.texture.WaterTextureProcessor;
+import net.qoopo.engine.core.material.basico.QMaterialBas;
+import net.qoopo.engine.core.math.QColor;
+import net.qoopo.engine.core.renderer.RenderEngine;
+import net.qoopo.engine.core.scene.Scene;
+import net.qoopo.engine.core.texture.QTextura;
+import net.qoopo.engine.core.texture.util.QMaterialUtil;
+
+@Getter
+@Setter
+public class WaterDuDv extends Water {
+
+    protected final static int MUESTRAS_TEXTURAS = 2;
+    protected QTextura textNormal = null;
+    protected QTextura dudvMaps = null;
+
+    public WaterDuDv(Scene scene, int width, int height) {
+        this.width = width;
+        this.height = height;
+        this.universo = scene;
+    }
+
+    public void build() {
+        super.build();
+        try {
+            textNormal = AssetManager.get().loadTexture("textNormal",
+                    "assets/textures/water/waterNormal.png");
+            textNormal.setMuestrasU(MUESTRAS_TEXTURAS);
+            textNormal.setMuestrasV(MUESTRAS_TEXTURAS);
+        } catch (Exception e) {
+        }
+        try {
+            dudvMaps = AssetManager.get().loadTexture("dudvMaps", "assets/textures/water/waterDUDV.png");
+            dudvMaps.setMuestrasU(MUESTRAS_TEXTURAS);
+            dudvMaps.setMuestrasV(MUESTRAS_TEXTURAS);
+        } catch (Exception e) {
+        }
+
+        // sobrecarga la textura de salida con el mapa de distorsion
+        outputTexture = new WaterTextureProcessor(textReflexion, textRefraccion, dudvMaps);
+
+        // Material
+        material = new QMaterialBas("water");
+        material.setColorBase(new QColor(1, 0, 0, 0.7f));
+        material.setSpecularExponent(64);
+        material.setMapaNormal(getTextNormal());
+        material.setMapaColor(getOutputTexture());
+
+        mesh = new QPlano(width, height);
+
+        entity.addComponent(QMaterialUtil.aplicarMaterial(mesh, material));
+    }
+
+    @Override
+    public void update(RenderEngine mainRender, Scene universo) {
+        // evita la ejecucion si no esta activo los materiales
+
+        if (!mainRender.opciones.isMaterial()) {
+            return;
+        }
+        if (mainRender.getFrameBuffer() == null) {
+            return;
+        }
+
+        super.update(mainRender, universo);
+
+        if (textNormal != null) {
+            textNormal.setOffsetX(factorX);
+            textNormal.setOffsetY(factorY);
+        }
+
+    }
+
+    public void destruir() {
+        super.destruir();
+        if (textNormal != null) {
+            textNormal.destruir();
+            textNormal = null;
+        }
+    }
+
+}

@@ -1,25 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>net.qoopo.qengine</groupId>
     <artifactId>qengine3d</artifactId>
     <version>1.0.0</version>
     <packaging>jar</packaging>
-        
-<!--    <parent>
+
+    <!--    <parent>
         <groupId>net.qoopo.qengine</groupId>
         <artifactId>qengine</artifactId>
         <version>1.0.0</version>
     </parent>    -->
-   
-<!--    <repositories>
+
+    <!--    <repositories>
         <repository>
             <id>talan</id> 
             <name>Talan Repository</name>
             <url>https://nexus.talanlabs.com/content/repositories/releases/</url>
         </repository>
     </repositories>-->
-  
+
     <dependencyManagement>
         <dependencies>
             <dependency>
@@ -33,6 +35,50 @@
     </dependencyManagement>
 
     <dependencies>
+        <!-- CORE -->
+        <dependency>
+            <groupId>net.qoopo.qengine</groupId>
+            <artifactId>qengine-core</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>net.qoopo.qengine</groupId>
+            <artifactId>qengine-load-model</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>net.qoopo.qengine</groupId>
+            <artifactId>qengine-lwjgl</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>net.qoopo.qengine</groupId>
+            <artifactId>qengine-renderer</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>net.qoopo.qengine</groupId>
+            <artifactId>qengine-java3d</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>net.qoopo.qengine</groupId>
+            <artifactId>qengine-jbullet</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+
+
+        <dependency>
+            <groupId>net.qoopo.qengine</groupId>
+            <artifactId>qengine-terrain</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+
         <dependency>
             <groupId>org.lwjgl</groupId>
             <artifactId>lwjgl</artifactId>
@@ -326,13 +372,13 @@
             <groupId>org.lwjgl</groupId>
             <artifactId>lwjgl-zstd</artifactId>
             <classifier>${lwjgl.natives}</classifier>
-        </dependency> 
-        
+        </dependency>
+
         <dependency>
             <groupId>org.joml</groupId>
             <artifactId>joml</artifactId>
             <version>1.10.2</version>
-        </dependency>       
+        </dependency>
 
         <!-- https://mvnrepository.com/artifact/javax.vecmath/vecmath -->
         <dependency>
@@ -341,19 +387,19 @@
             <version>1.5.2</version>
         </dependency>
 
-        <!--https://mvnrepository.com/artifact/java3d/j3d-core-utils--> 
+        <!--https://mvnrepository.com/artifact/java3d/j3d-core-utils-->
         <dependency>
             <groupId>java3d</groupId>
             <artifactId>j3d-core-utils</artifactId>
             <version>1.3.1</version>
         </dependency>
-        <!--https://mvnrepository.com/artifact/java3d/j3d-core--> 
+        <!--https://mvnrepository.com/artifact/java3d/j3d-core-->
         <dependency>
             <groupId>java3d</groupId>
             <artifactId>j3d-core</artifactId>
             <version>1.3.1</version>
         </dependency>
-        
+
         <!-- https://mvnrepository.com/artifact/java3d/j3dcore -->
         <!--        <dependency>
             <groupId>java3d</groupId>
@@ -378,8 +424,8 @@
     </dependencies>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.compiler.source>1.8</maven.compiler.source>
-        <maven.compiler.target>1.8</maven.compiler.target>
+        <maven.compiler.source>11</maven.compiler.source>
+        <maven.compiler.target>11</maven.compiler.target>
         <lwjgl.version>3.2.3</lwjgl.version>
         <lwjgl.natives>natives-linux</lwjgl.natives>
     </properties>

@@ -5,44 +5,45 @@
  */
 package net.qoopo.engine3d.test.generaEjemplos.impl.particulas;
 
-import net.qoopo.engine3d.componentes.QEntidad;
-import net.qoopo.engine3d.core.escena.QEscena;
-import net.qoopo.engine3d.core.math.QVector3;
-import net.qoopo.engine3d.componentes.geometria.primitivas.QVertice;
-import net.qoopo.engine3d.componentes.modificadores.particulas.nieve.QEmisorNieve;
-import net.qoopo.engine3d.test.generaEjemplos.GeneraEjemplo;
-import net.qoopo.engine3d.componentes.fisica.colisiones.detectores.contenedores.primitivas.AABB;
-import net.qoopo.engine3d.componentes.geometria.primitivas.formas.QPlano;
-import net.qoopo.engine3d.engines.render.QMotorRender;
+import net.qoopo.engine.core.entity.Entity;
+import net.qoopo.engine.core.entity.component.mesh.primitive.QVertex;
+import net.qoopo.engine.core.entity.component.mesh.primitive.shape.QPlano;
+import net.qoopo.engine.core.entity.component.particles.nieve.QEmisorNieve;
+import net.qoopo.engine.core.entity.component.physics.collision.detector.shape.primitivas.AABB;
+import net.qoopo.engine.core.math.QVector3;
+import net.qoopo.engine.core.renderer.RenderEngine;
+import net.qoopo.engine.core.scene.Scene;
+import net.qoopo.engine3d.test.generaEjemplos.MakeTestScene;
 
 /**
  *
  *
  * @author alberto
  */
-public class Nieve extends GeneraEjemplo {
+public class Nieve extends MakeTestScene {
 
-    public void iniciar(QEscena mundo) {
-        this.mundo = mundo;
-//        mundo.agregarLuz(new QLuz(0, 2, 128, 255, 0, 1.5f, -.8f, 1.5f, true));
-//        mundo.agregarLuz(new QLuz(QLuz.TYPE_POINT, 2.5f, 255, 255, 255, 0, 0.5f, 5f, true));
+    public void make(Scene mundo) {
+        this.scene = mundo;
+        // mundo.agregarLuz(new QLuz(0, 2, 128, 255, 0, 1.5f, -.8f, 1.5f, true));
+        // mundo.agregarLuz(new QLuz(QLuz.TYPE_POINT, 2.5f, 255, 255, 255, 0, 0.5f, 5f,
+        // true));
 
-//** Crea un emisor de nieve, se define el ambito
-        QEntidad emisor = new QEntidad("Emisor");
+        // ** Crea un emisor de nieve, se define el ambito
+        Entity emisor = new Entity("Emisor");
 
-        AABB ambito = new AABB(new QVertice(-10, 0, -10), new QVertice(10, 10, 10));//
+        AABB ambito = new AABB(new QVertex(-10, 0, -10), new QVertex(10, 10, 10));//
         QEmisorNieve emisorNieve = new QEmisorNieve(ambito, 300, 1000, 5, QVector3.unitario_y.clone().multiply(-1));
-        emisor.agregarComponente(emisorNieve);
-        mundo.agregarEntidad(emisor);
+        emisor.addComponent(emisorNieve);
+        mundo.addEntity(emisor);
 
-        QEntidad plano = new QEntidad("plano");
-        plano.agregarComponente(new QPlano(10, 10));
-        mundo.agregarEntidad(plano);
+        Entity plano = new Entity("plano");
+        plano.addComponent(new QPlano(10, 10));
+        mundo.addEntity(plano);
 
     }
 
     @Override
-    public void accion(int numAccion, QMotorRender render) {
+    public void accion(int numAccion, RenderEngine render) {
     }
 
 }

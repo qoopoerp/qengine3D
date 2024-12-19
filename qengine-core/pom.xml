@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>net.qoopo.qengine</groupId>
+    <artifactId>qengine-core</artifactId>
+    <version>1.0.0</version>
+    <packaging>jar</packaging>
+
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.lwjgl</groupId>
+                <artifactId>lwjgl-bom</artifactId>
+                <version>${lwjgl.version}</version>
+                <scope>import</scope>
+                <type>pom</type>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <dependencies>
+
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>1.18.24</version>
+            <scope>provided</scope>
+        </dependency>
+
+
+        <dependency>
+            <groupId>org.joml</groupId>
+            <artifactId>joml</artifactId>
+            <version>1.10.2</version>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/javax.vecmath/vecmath -->
+        <dependency>
+            <groupId>javax.vecmath</groupId>
+            <artifactId>vecmath</artifactId>
+            <version>1.5.2</version>
+        </dependency>
+
+
+        <!-- https://mvnrepository.com/artifact/java3d/j3dcore -->
+        <!--        <dependency>
+            <groupId>java3d</groupId>
+            <artifactId>j3dcore</artifactId>
+            <version>1.5.2</version>
+        </dependency>-->
+
+        <!-- https://mvnrepository.com/artifact/java3d/j3dutils -->
+        <!--        <dependency>
+            <groupId>java3d</groupId>
+            <artifactId>j3dutils</artifactId>
+            <version>1.5.2</version>
+        </dependency>-->
+
+        <!-- https://mvnrepository.com/artifact/com.github.stephengold/jbullet -->
+        <dependency>
+            <groupId>com.github.stephengold</groupId>
+            <artifactId>jbullet</artifactId>
+            <version>1.0.1</version>
+        </dependency>
+
+    </dependencies>
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven.compiler.source>11</maven.compiler.source>
+        <maven.compiler.target>11</maven.compiler.target>
+        <lwjgl.version>3.2.3</lwjgl.version>
+        <lwjgl.natives>natives-linux</lwjgl.natives>
+    </properties>
+</project>

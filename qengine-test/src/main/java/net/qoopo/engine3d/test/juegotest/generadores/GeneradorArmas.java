@@ -6,10 +6,11 @@
 package net.qoopo.engine3d.test.juegotest.generadores;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 
-import net.qoopo.engine3d.componentes.QEntidad;
-import net.qoopo.engine3d.core.util.QGlobal;
-import net.qoopo.engine3d.core.carga.impl.CargaWaveObject;
+import net.qoopo.engine.core.assets.AssetManager;
+import net.qoopo.engine.core.entity.Entity;
+import net.qoopo.engine.core.util.QGlobal;
 
 /**
  * Clase para crear personajes del juego
@@ -20,15 +21,24 @@ public class GeneradorArmas {
 
     public boolean shift = false;
 
-    public static QEntidad crearAK47() {
+    public static Entity crearAK47() {
 
-//        QGeometria geometria = CargaEstatica.cargarWaveObject(new File(QGlobal.RECURSOS + "objetos/formato_obj/ARMAS/AK47_Free/ak_body/aknewlow.obj")).get(0);
-//
-//        QEntidad arma = new QEntidad("pistola");
-//        arma.agregarComponente(geometria);
-//        return arma;
-        QEntidad arma = CargaWaveObject.cargarWaveObject(new File(QGlobal.RECURSOS + "objetos/formato_obj/ARMAS/AK47_Free/ak_body/aknewlow.obj")).get(0);
-        arma.setNombre("Pistola");
+        // QGeometria geometria = CargaEstatica.cargarWaveObject(new
+        // File("assets/"+
+        // "models/obj/ARMAS/AK47_Free/ak_body/aknewlow.obj")).get(0);
+        //
+        // Entity arma = new Entity("pistola");
+        // arma.agregarComponente(geometria);
+        // return arma;
+        Entity arma = null;
+        try {
+            arma = AssetManager.get()
+                    .loadModel(new File("assets/models/obj/ARMAS/AK47_Free/ak_body/aknewlow.obj"));
+            arma.setName("Pistola");
+        } catch (FileNotFoundException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
         return arma;
     }
 

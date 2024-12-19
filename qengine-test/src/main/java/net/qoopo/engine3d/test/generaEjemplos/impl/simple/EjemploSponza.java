@@ -8,27 +8,29 @@ package net.qoopo.engine3d.test.generaEjemplos.impl.simple;
 import java.io.File;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import net.qoopo.engine3d.componentes.QEntidad;
-import net.qoopo.engine3d.core.escena.QEscena;
-import net.qoopo.engine3d.test.generaEjemplos.GeneraEjemplo;
-import net.qoopo.engine3d.core.carga.impl.assimp.imp.AssimpLoader;
-import net.qoopo.engine3d.core.util.QGlobal;
-import net.qoopo.engine3d.engines.render.QMotorRender;
+
+import net.qoopo.engine.core.assets.model.ModelLoader;
+import net.qoopo.engine.core.entity.Entity;
+import net.qoopo.engine.core.lwjgl.asset.AssimpModelLoader;
+import net.qoopo.engine.core.renderer.RenderEngine;
+import net.qoopo.engine.core.scene.Scene;
+import net.qoopo.engine3d.test.generaEjemplos.MakeTestScene;
 
 /**
  *
  * @author alberto
  */
-public class EjemploSponza extends GeneraEjemplo {
+public class EjemploSponza extends MakeTestScene {
 
-    public void iniciar(QEscena mundo) {
+    public void make(Scene mundo) {
         try {
-            this.mundo = mundo;
+            this.scene = mundo;
 
-            for (QEntidad entidad : AssimpLoader.cargarAssimpItems(new File(QGlobal.RECURSOS + "objetos/formato_obj/ESCENARIOS/sponza/sponza.obj"))) {
-                entidad.escalar(0.1f, 0.1f, 0.1f);
-                this.mundo.agregarEntidad(entidad);
-            }
+            ModelLoader modelLoader = new AssimpModelLoader();
+            Entity entidad = modelLoader
+                    .loadModel(new File("assets/models/obj/escenarios/Sponza/sponza.obj"));
+            entidad.scale(0.1f, 0.1f, 0.1f);
+            this.scene.addEntity(entidad);
 
         } catch (Exception ex) {
             Logger.getLogger(EjemploSponza.class.getName()).log(Level.SEVERE, null, ex);
@@ -37,7 +39,7 @@ public class EjemploSponza extends GeneraEjemplo {
     }
 
     @Override
-    public void accion(int numAccion, QMotorRender render) {
+    public void accion(int numAccion, RenderEngine render) {
     }
 
 }

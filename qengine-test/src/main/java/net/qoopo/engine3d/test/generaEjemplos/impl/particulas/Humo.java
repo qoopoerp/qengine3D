@@ -5,42 +5,42 @@
  */
 package net.qoopo.engine3d.test.generaEjemplos.impl.particulas;
 
-import net.qoopo.engine3d.componentes.QEntidad;
-import net.qoopo.engine3d.core.escena.QEscena;
-import net.qoopo.engine3d.componentes.geometria.primitivas.QVertice;
-import net.qoopo.engine3d.test.generaEjemplos.GeneraEjemplo;
-import net.qoopo.engine3d.componentes.fisica.colisiones.detectores.contenedores.primitivas.AABB;
-import net.qoopo.engine3d.componentes.geometria.primitivas.formas.QPlano;
-import net.qoopo.engine3d.componentes.modificadores.particulas.humo.QEmisorHumo;
-import net.qoopo.engine3d.engines.render.QMotorRender;
+import net.qoopo.engine.core.entity.Entity;
+import net.qoopo.engine.core.entity.component.mesh.primitive.QVertex;
+import net.qoopo.engine.core.entity.component.mesh.primitive.shape.QPlano;
+import net.qoopo.engine.core.entity.component.particles.humo.QEmisorHumo;
+import net.qoopo.engine.core.entity.component.physics.collision.detector.shape.primitivas.AABB;
+import net.qoopo.engine.core.renderer.RenderEngine;
+import net.qoopo.engine.core.scene.Scene;
+import net.qoopo.engine3d.test.generaEjemplos.MakeTestScene;
 
 /**
  *
  *
  * @author alberto
  */
-public class Humo extends GeneraEjemplo {
+public class Humo extends MakeTestScene {
 
-    public void iniciar(QEscena mundo) {
-        this.mundo = mundo;
+    public void make(Scene mundo) {
+        this.scene = mundo;
 
-        QEntidad emisorHumo = new QEntidad("Emisor");
+        Entity emisorHumo = new Entity("Emisor");
 
-        AABB ambitoHumo = new AABB(new QVertice(-0.15f, 0, -0.15f, 1), new QVertice(.15f, 3.5f, .15f, 1));//
+        AABB ambitoHumo = new AABB(new QVertex(-0.15f, 0, -0.15f, 1), new QVertex(.15f, 3.5f, .15f, 1));//
         QEmisorHumo emisor = new QEmisorHumo(ambitoHumo, 5000, 400, 4);
-        emisorHumo.agregarComponente(emisor);
-        emisorHumo.mover(0, 1.5f, 0);
+        emisorHumo.addComponent(emisor);
+        emisorHumo.move(0, 1.5f, 0);
 
-        mundo.agregarEntidad(emisorHumo);
+        mundo.addEntity(emisorHumo);
 
-        QEntidad plano = new QEntidad("plano");
-        plano.agregarComponente(new QPlano(10, 10));
-        mundo.agregarEntidad(plano);
+        Entity plano = new Entity("plano");
+        plano.addComponent(new QPlano(10, 10));
+        mundo.addEntity(plano);
 
     }
 
     @Override
-    public void accion(int numAccion, QMotorRender render) {
+    public void accion(int numAccion, RenderEngine render) {
     }
 
 }

@@ -6,20 +6,22 @@
 package net.qoopo.engine3d.test.generaEjemplos.impl.fisica;
 
 import java.io.File;
+
 import javax.imageio.ImageIO;
-import net.qoopo.engine3d.componentes.QEntidad;
-import net.qoopo.engine3d.componentes.fisica.dinamica.QObjetoDinamico;
-import net.qoopo.engine3d.componentes.fisica.dinamica.QObjetoRigido;
-import net.qoopo.engine3d.core.escena.QEscena;
-import net.qoopo.engine3d.core.math.QVector3;
-import net.qoopo.engine3d.componentes.geometria.util.QUnidadMedida;
-import net.qoopo.engine3d.componentes.fisica.colisiones.detectores.contenedores.primitivas.QColisionCaja;
-import net.qoopo.engine3d.componentes.geometria.QGeometria;
-import net.qoopo.engine3d.componentes.geometria.primitivas.formas.QCaja;
-import net.qoopo.engine3d.core.util.QGlobal;
-import net.qoopo.engine3d.core.material.basico.QMaterialBas;
-import net.qoopo.engine3d.core.textura.QTextura;
-import net.qoopo.engine3d.core.textura.mapeo.QMaterialUtil;
+
+import net.qoopo.engine.core.entity.Entity;
+import net.qoopo.engine.core.entity.component.mesh.Mesh;
+import net.qoopo.engine.core.entity.component.mesh.primitive.shape.QCaja;
+import net.qoopo.engine.core.entity.component.mesh.util.QUnidadMedida;
+import net.qoopo.engine.core.entity.component.physics.collision.detector.shape.primitivas.QColisionCaja;
+import net.qoopo.engine.core.entity.component.physics.dinamica.QObjetoDinamico;
+import net.qoopo.engine.core.entity.component.physics.dinamica.QObjetoRigido;
+import net.qoopo.engine.core.material.basico.QMaterialBas;
+import net.qoopo.engine.core.math.QVector3;
+import net.qoopo.engine.core.scene.Scene;
+import net.qoopo.engine.core.texture.QTextura;
+import net.qoopo.engine.core.texture.util.QMaterialUtil;
+import net.qoopo.engine.core.util.QGlobal;
 
 /**
  *
@@ -34,33 +36,33 @@ public class EjemploFisica2 extends FisicaDisparar {
     private static QMaterialBas materialLadrillo;
 
     @Override
-    public void iniciar(QEscena mundo) {
-        super.iniciar(mundo);
-        //el mundo por default esta con unidades de medida en metro
-        //al non usar el conversor d eunidades de media, se toma como metros
-        //Piso
-        QEntidad piso = new QEntidad("piso");
+    public void make(Scene mundo) {
+        super.make(mundo);
+        // el mundo por default esta con unidades de medida en metro
+        // al non usar el conversor d eunidades de media, se toma como metros
+        // Piso
+        Entity piso = new Entity("piso");
         piso.getTransformacion().getTraslacion().y = 0f;
-        piso.mover(0, 0, 0);
+        piso.move(0, 0, 0);
 
-        piso.agregarComponente(new QCaja(0.1f, mundo.UM.convertirPixel(50), mundo.UM.convertirPixel(50)));
+        piso.addComponent(new QCaja(0.1f, mundo.UM.convertirPixel(50), mundo.UM.convertirPixel(50)));
 
         QColisionCaja colision = new QColisionCaja(mundo.UM.convertirPixel(50), 0.1f, mundo.UM.convertirPixel(50));
-        piso.agregarComponente(colision);
+        piso.addComponent(colision);
 
         QObjetoRigido pisoRigidez = new QObjetoRigido(QObjetoDinamico.ESTATICO);
         pisoRigidez.setMasa(0, QVector3.zero.clone());
         pisoRigidez.setFormaColision(colision);
 
-        piso.agregarComponente(pisoRigidez);
+        piso.addComponent(pisoRigidez);
 
-        mundo.agregarEntidad(piso);
+        mundo.addEntity(piso);
 
-//        crearEsferas(mundo);
+        // crearEsferas(mundo);
         construirMuro(mundo);
     }
 
-    private void construirMuro(QEscena mundo) {
+    private void construirMuro(Scene mundo) {
         largoLadrillo = mundo.UM.convertirPixel(50, QUnidadMedida.CENTIMETRO);
         anchoLadrillo = mundo.UM.convertirPixel(50, QUnidadMedida.CENTIMETRO);
         altoLadrillo = mundo.UM.convertirPixel(50, QUnidadMedida.CENTIMETRO);
@@ -69,8 +71,9 @@ public class EjemploFisica2 extends FisicaDisparar {
 
         materialLadrillo = null;
         try {
-            materialLadrillo = new QMaterialBas(new QTextura(ImageIO.read(new File(QGlobal.RECURSOS + "texturas/muro/ladrillo_1.jpg"))), 64);
-//            materialLadrillo.alpha = 1;
+            materialLadrillo = new QMaterialBas(
+                    new QTextura(ImageIO.read(new File("assets/textures/muro/ladrillo_1.jpg"))), 64);
+            // materialLadrillo.alpha = 1;
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -79,7 +82,7 @@ public class EjemploFisica2 extends FisicaDisparar {
         float alto = -altoLadrillo / 2;
         for (int j = 0; j < 15; j++) {
             for (int i = 0; i < 16; i++) {
-                QVector3 vt = new QVector3(i * anchoLadrillo + inicio - 7, altoLadrillo + alto, 0);
+                QVector3 vt = QVector3.of(i * anchoLadrillo + inicio - 7, altoLadrillo + alto, 0);
                 hacerLadrillo(vt, mundo);
             }
             inicio = -inicio;
@@ -87,19 +90,19 @@ public class EjemploFisica2 extends FisicaDisparar {
         }
     }
 
-    private void hacerLadrillo(QVector3 loc, QEscena mundo) {
-        QEntidad bloque = new QEntidad();
-        bloque.mover(loc);
-        QGeometria geometria = new QCaja(altoLadrillo, anchoLadrillo, largoLadrillo);
+    private void hacerLadrillo(QVector3 loc, Scene mundo) {
+        Entity bloque = new Entity();
+        bloque.move(loc);
+        Mesh geometria = new QCaja(altoLadrillo, anchoLadrillo, largoLadrillo);
         QMaterialUtil.aplicarMaterial(geometria, materialLadrillo);
         QColisionCaja formaColision = new QColisionCaja(anchoLadrillo, altoLadrillo, largoLadrillo);
         QObjetoRigido bloquefisica = new QObjetoRigido(QObjetoDinamico.DINAMICO);
         bloquefisica.setMasa(4f, QVector3.zero.clone());
         bloquefisica.setFormaColision(formaColision);
-        bloque.agregarComponente(bloquefisica);
-        bloque.agregarComponente(formaColision);
-        bloque.agregarComponente(geometria);
-        mundo.agregarEntidad(bloque);
+        bloque.addComponent(bloquefisica);
+        bloque.addComponent(formaColision);
+        bloque.addComponent(geometria);
+        mundo.addEntity(bloque);
     }
 
 }

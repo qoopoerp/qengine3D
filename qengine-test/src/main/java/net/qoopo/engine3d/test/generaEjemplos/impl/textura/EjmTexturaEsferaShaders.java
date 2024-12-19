@@ -6,60 +6,62 @@
 package net.qoopo.engine3d.test.generaEjemplos.impl.textura;
 
 import java.io.File;
-import net.qoopo.engine3d.componentes.QEntidad;
-import net.qoopo.engine3d.core.escena.QEscena;
-import net.qoopo.engine3d.core.textura.mapeo.QMaterialUtil;
-import net.qoopo.engine3d.test.generaEjemplos.GeneraEjemplo;
-import net.qoopo.engine3d.componentes.geometria.primitivas.formas.QEsfera;
-import net.qoopo.engine3d.componentes.shader.QShaderComponente;
-import net.qoopo.engine3d.core.util.QGlobal;
-import net.qoopo.engine3d.core.recursos.QGestorRecursos;
-import net.qoopo.engine3d.core.material.basico.QMaterialBas;
-import net.qoopo.engine3d.core.textura.procesador.QProcesadorSimple;
-import net.qoopo.engine3d.engines.render.QMotorRender;
-import net.qoopo.engine3d.engines.render.interno.shader.pixelshader.basico.parciales.QFlatShaderBAS;
-import net.qoopo.engine3d.engines.render.interno.shader.pixelshader.basico.parciales.QSimpleShaderBAS;
-import net.qoopo.engine3d.engines.render.interno.shader.pixelshader.basico.parciales.QTexturaShaderBAS;
+
+import net.qoopo.engine.core.assets.AssetManager;
+import net.qoopo.engine.core.entity.Entity;
+import net.qoopo.engine.core.entity.component.mesh.primitive.shape.QEsfera;
+import net.qoopo.engine.core.material.basico.QMaterialBas;
+import net.qoopo.engine.core.renderer.RenderEngine;
+import net.qoopo.engine.renderer.shader.component.QShaderComponente;
+import net.qoopo.engine.renderer.shader.pixelshader.basico.parciales.QFlatShaderBAS;
+import net.qoopo.engine.renderer.shader.pixelshader.basico.parciales.QSimpleShaderBAS;
+import net.qoopo.engine.renderer.shader.pixelshader.basico.parciales.QTexturaShaderBAS;
+import net.qoopo.engine.core.scene.Scene;
+import net.qoopo.engine.core.texture.procesador.QProcesadorSimple;
+import net.qoopo.engine.core.texture.util.QMaterialUtil;
+import net.qoopo.engine.core.util.QGlobal;
+import net.qoopo.engine3d.test.generaEjemplos.MakeTestScene;
 
 /**
  *
  * @author alberto
  */
-public class EjmTexturaEsferaShaders extends GeneraEjemplo {
+public class EjmTexturaEsferaShaders extends MakeTestScene {
 
-    public void iniciar(QEscena mundo) {
-        this.mundo = mundo;
+    public void make(Scene mundo) {
+        this.scene = mundo;
 
         QMaterialBas mat1 = new QMaterialBas();
         mat1.setFactorNormal(0.5f);
-        mat1.setMapaColor(new QProcesadorSimple(QGestorRecursos.cargarTextura("difusa", new File(QGlobal.RECURSOS + "texturas/basicas/planetas/tierra/text3/earthmap1k.jpg"))));
+        mat1.setMapaColor(new QProcesadorSimple(AssetManager.get().loadTexture("difusa",
+                new File("assets/textures/solar_system/2k_earth_daymap.jpg"))));
 
-        QEntidad esfera = new QEntidad("Esfera1");
-        esfera.mover(5, 5, 5);
-        esfera.agregarComponente(QMaterialUtil.aplicarMaterial(new QEsfera(2.5f, 36), mat1));
-        mundo.agregarEntidad(esfera);
+        Entity esfera = new Entity("Esfera1");
+        esfera.move(5, 5, 5);
+        esfera.addComponent(QMaterialUtil.aplicarMaterial(new QEsfera(2.5f, 36), mat1));
+        mundo.addEntity(esfera);
 
-        QEntidad esfera2 = new QEntidad("Esfera2");
-        esfera2.mover(-5, 5, 5);
-        esfera2.agregarComponente(QMaterialUtil.aplicarMaterial(new QEsfera(2.5f, 36), mat1));
-        esfera2.agregarComponente(new QShaderComponente(new QFlatShaderBAS(null)));
-        mundo.agregarEntidad(esfera2);
+        Entity esfera2 = new Entity("Esfera2");
+        esfera2.move(-5, 5, 5);
+        esfera2.addComponent(QMaterialUtil.aplicarMaterial(new QEsfera(2.5f, 36), mat1));
+        esfera2.addComponent(new QShaderComponente(new QFlatShaderBAS(null)));
+        mundo.addEntity(esfera2);
 
-        QEntidad esfera3 = new QEntidad("Esfera3");
-        esfera3.mover(-5, -5, 5);
-        esfera3.agregarComponente(QMaterialUtil.aplicarMaterial(new QEsfera(2.5f, 36), mat1));
-        esfera3.agregarComponente(new QShaderComponente(new QSimpleShaderBAS(null)));
-        mundo.agregarEntidad(esfera3);
+        Entity esfera3 = new Entity("Esfera3");
+        esfera3.move(-5, -5, 5);
+        esfera3.addComponent(QMaterialUtil.aplicarMaterial(new QEsfera(2.5f, 36), mat1));
+        esfera3.addComponent(new QShaderComponente(new QSimpleShaderBAS(null)));
+        mundo.addEntity(esfera3);
 
-        QEntidad esfera4 = new QEntidad("Esfera4");
-        esfera4.mover(5, -5, 5);
-        esfera4.agregarComponente(QMaterialUtil.aplicarMaterial(new QEsfera(2.5f, 36), mat1));
-        esfera4.agregarComponente(new QShaderComponente(new QTexturaShaderBAS(null)));
-        mundo.agregarEntidad(esfera4);
+        Entity esfera4 = new Entity("Esfera4");
+        esfera4.move(5, -5, 5);
+        esfera4.addComponent(QMaterialUtil.aplicarMaterial(new QEsfera(2.5f, 36), mat1));
+        esfera4.addComponent(new QShaderComponente(new QTexturaShaderBAS(null)));
+        mundo.addEntity(esfera4);
     }
 
     @Override
-    public void accion(int numAccion, QMotorRender render) {
+    public void accion(int numAccion, RenderEngine render) {
     }
 
 }

@@ -6,86 +6,87 @@
 package net.qoopo.engine3d.test.generaEjemplos.impl.nodos;
 
 import java.io.File;
-import net.qoopo.engine3d.componentes.QEntidad;
-import net.qoopo.engine3d.core.escena.QEscena;
-import net.qoopo.engine3d.test.generaEjemplos.GeneraEjemplo;
-import net.qoopo.engine3d.componentes.geometria.primitivas.formas.QCaja;
-import net.qoopo.engine3d.core.material.basico.QMaterialBas;
-import net.qoopo.engine3d.core.material.nodos.QMaterialNodo;
-import net.qoopo.engine3d.core.math.QColor;
-import net.qoopo.engine3d.core.recursos.QGestorRecursos;
-import net.qoopo.engine3d.core.textura.mapeo.QMaterialUtil;
-import net.qoopo.engine3d.core.textura.procesador.QProcesadorSimple;
-import net.qoopo.engine3d.core.util.QGlobal;
-import net.qoopo.engine3d.engines.render.QMotorRender;
-import net.qoopo.engine3d.engines.render.interno.shader.pixelshader.nodos.nodos.core.QNodoEnlace;
-import net.qoopo.engine3d.engines.render.interno.shader.pixelshader.nodos.nodos.salida.QNodoMaterial;
-import net.qoopo.engine3d.engines.render.interno.shader.pixelshader.nodos.nodos.sombreado.QNodoColorIluminacion;
-import net.qoopo.engine3d.engines.render.interno.shader.pixelshader.nodos.nodos.sombreado.QNodoColorMix;
-import net.qoopo.engine3d.engines.render.interno.shader.pixelshader.nodos.nodos.sombreado.QNodoColorTextura;
+
+import net.qoopo.engine.core.assets.AssetManager;
+import net.qoopo.engine.core.entity.Entity;
+import net.qoopo.engine.core.entity.component.mesh.primitive.shape.QCaja;
+import net.qoopo.engine.core.material.basico.QMaterialBas;
+import net.qoopo.engine.core.material.node.MaterialNode;
+import net.qoopo.engine.core.material.node.core.QNodoEnlace;
+import net.qoopo.engine.core.material.node.core.output.MaterialOutputNode;
+import net.qoopo.engine.core.math.QColor;
+import net.qoopo.engine.core.renderer.RenderEngine;
+import net.qoopo.engine.core.scene.Scene;
+import net.qoopo.engine.core.texture.procesador.QProcesadorSimple;
+import net.qoopo.engine.core.texture.util.QMaterialUtil;
+import net.qoopo.engine.core.util.QGlobal;
+import net.qoopo.engine.renderer.shader.pixelshader.nodos.shader.QNodoColorIluminacion;
+import net.qoopo.engine.renderer.shader.pixelshader.nodos.shader.QNodoColorMix;
+import net.qoopo.engine.renderer.shader.pixelshader.nodos.shader.QNodoColorTextura;
+import net.qoopo.engine3d.test.generaEjemplos.MakeTestScene;
 
 /**
  *
  * @author alberto
  */
-public class NodosSimple2 extends GeneraEjemplo {
+public class NodosSimple2 extends MakeTestScene {
 
     public NodosSimple2() {
 
     }
 
-    public void iniciar(QEscena mundo) {
-        this.mundo = mundo;
+    public void make(Scene mundo) {
+        this.scene = mundo;
 
         // con textura (BASICO)
         QMaterialBas mat1 = new QMaterialBas();
-        mat1.setMapaColor(new QProcesadorSimple(QGestorRecursos.cargarTextura("difusa", new File(QGlobal.RECURSOS + "texturas/testNormal/test1-color.jpg"))));
-        mat1.setMapaNormal(new QProcesadorSimple(QGestorRecursos.cargarTextura("normal", new File(QGlobal.RECURSOS + "texturas/testNormal/test1-normal.jpg"))));
+        mat1.setMapaColor(new QProcesadorSimple(AssetManager.get().loadTexture("difusa", new File("assets/textures/testNormal/test1-color.jpg"))));
+        mat1.setMapaNormal(new QProcesadorSimple(AssetManager.get().loadTexture("normal", new File("assets/textures/testNormal/test1-normal.jpg"))));
 
-        QEntidad cubo1 = new QEntidad("text BAS");
-        cubo1.agregarComponente(QMaterialUtil.aplicarMaterial(new QCaja(2), mat1));
-        cubo1.mover(-5, 5, 5);
+        Entity cubo1 = new Entity("text BAS");
+        cubo1.addComponent(QMaterialUtil.aplicarMaterial(new QCaja(2), mat1));
+        cubo1.move(-5, 5, 5);
 
-        mundo.agregarEntidad(cubo1);
+        mundo.addEntity(cubo1);
         // con textura (Nodo)
-        QMaterialNodo matSoloTextura = new QMaterialNodo();
+        MaterialNode matSoloTextura = new MaterialNode();
 
-        QNodoColorTextura text1 = new QNodoColorTextura(new QProcesadorSimple(QGestorRecursos.cargarTextura("difusa2", new File(QGlobal.RECURSOS + "texturas/testNormal/test1-color.jpg"))));
+        QNodoColorTextura text1 = new QNodoColorTextura(new QProcesadorSimple(AssetManager.get().loadTexture("difusa2", new File("assets/textures/testNormal/test1-color.jpg"))));
 
-        QNodoMaterial nodosalida1 = new QNodoMaterial();
+        MaterialOutputNode nodosalida1 = new MaterialOutputNode();
         QNodoEnlace enlace = new QNodoEnlace(text1.getSaColor(), nodosalida1.getEnColor());
 
         matSoloTextura.setNodo(nodosalida1);
 
-        QEntidad cubo2 = new QEntidad("SoloText");
-        cubo2.agregarComponente(QMaterialUtil.aplicarMaterial(new QCaja(2), matSoloTextura));
-        cubo2.mover(5, 5, 5);
+        Entity cubo2 = new Entity("SoloText");
+        cubo2.addComponent(QMaterialUtil.aplicarMaterial(new QCaja(2), matSoloTextura));
+        cubo2.move(5, 5, 5);
 
-        mundo.agregarEntidad(cubo2);
+        mundo.addEntity(cubo2);
         //--------------------------------------------------------------------------------------------------
         // con textura e iluminacion (Nodo)
-        QMaterialNodo matNodoTextIlum = new QMaterialNodo();
+        MaterialNode matNodoTextIlum = new MaterialNode();
 
-        QNodoColorTextura nodoTextura = new QNodoColorTextura(new QProcesadorSimple(QGestorRecursos.cargarTextura("difusa3", new File(QGlobal.RECURSOS + "texturas/testNormal/test1-color.jpg"))));
+        QNodoColorTextura nodoTextura = new QNodoColorTextura(new QProcesadorSimple(AssetManager.get().loadTexture("difusa3", new File("assets/textures/testNormal/test1-color.jpg"))));
         QNodoColorIluminacion nodoDifuso = new QNodoColorIluminacion();
         // al instanciar el enlace, este se agrega a los perifericos
         QNodoEnlace enCubo3_1 = new QNodoEnlace(nodoTextura.getSaColor(), nodoDifuso.getEnColor());
 
-        QNodoMaterial nodosalida2 = new QNodoMaterial();
+        MaterialOutputNode nodosalida2 = new MaterialOutputNode();
         QNodoEnlace enlace2 = new QNodoEnlace(nodoDifuso.getSaColor(), nodosalida2.getEnColor());
 
         matNodoTextIlum.setNodo(nodosalida2);
 
-        QEntidad cubo3 = new QEntidad("nodo.textura.iluminacion");
-        cubo3.agregarComponente(QMaterialUtil.aplicarMaterial(new QCaja(2), matNodoTextIlum));
-        cubo3.mover(5, 5, -5);
+        Entity cubo3 = new Entity("nodo.textura.iluminacion");
+        cubo3.addComponent(QMaterialUtil.aplicarMaterial(new QCaja(2), matNodoTextIlum));
+        cubo3.move(5, 5, -5);
 
-        mundo.agregarEntidad(cubo3);
+        mundo.addEntity(cubo3);
         //--------------------------------------------------------------------------------------------------
         // con textura e iluminacion (Nodo), tambien mezcla la textura con un color
-        QMaterialNodo materialC4 = new QMaterialNodo();
+        MaterialNode materialC4 = new MaterialNode();
 
-        QNodoColorTextura nodoTexturaC4 = new QNodoColorTextura(new QProcesadorSimple(QGestorRecursos.cargarTextura("difusa4", new File(QGlobal.RECURSOS + "texturas/testNormal/test1-color.jpg"))));
+        QNodoColorTextura nodoTexturaC4 = new QNodoColorTextura(new QProcesadorSimple(AssetManager.get().loadTexture("difusa4", new File("assets/textures/testNormal/test1-color.jpg"))));
         QNodoColorIluminacion nodoDifusoC4 = new QNodoColorIluminacion();
         QNodoColorIluminacion nodDifusoAzul = new QNodoColorIluminacion(QColor.BLUE);
         QNodoColorMix nodMix = new QNodoColorMix();
@@ -97,22 +98,22 @@ public class NodosSimple2 extends GeneraEjemplo {
         QNodoEnlace enlaceC4_3 = new QNodoEnlace(nodDifusoAzul.getSaColor(), nodMix.getEnColor2());
 
         QNodoColorIluminacion ilum1 = new QNodoColorIluminacion(QColor.RED);
-        QNodoMaterial nodosalida3 = new QNodoMaterial();
+        MaterialOutputNode nodosalida3 = new MaterialOutputNode();
         QNodoEnlace enlace3 = new QNodoEnlace(nodMix.getSaColor(), nodosalida3.getEnColor());
 
         materialC4.setNodo(nodosalida3);
 
-        QEntidad cubo4 = new QEntidad("nodo.text.ilum.mezcla");
-        cubo4.agregarComponente(QMaterialUtil.aplicarMaterial(new QCaja(2), materialC4));
-        cubo4.mover(-5, 5, -5);
+        Entity cubo4 = new Entity("nodo.text.ilum.mezcla");
+        cubo4.addComponent(QMaterialUtil.aplicarMaterial(new QCaja(2), materialC4));
+        cubo4.move(-5, 5, -5);
 
-        mundo.agregarEntidad(cubo4);
+        mundo.addEntity(cubo4);
         //--------------------------------------------------------------------------------------------------
-        // con textura e iluminacion (Nodo),mexcla 2 texturas
-        QMaterialNodo materialC5 = new QMaterialNodo();
+        // con textura e iluminacion (Nodo),mexcla 2 textures
+        MaterialNode materialC5 = new MaterialNode();
 
-        QNodoColorTextura nodoTexturaC5_1 = new QNodoColorTextura(new QProcesadorSimple(QGestorRecursos.cargarTextura("difusa5", new File(QGlobal.RECURSOS + "texturas/testNormal/test1-color.jpg"))));
-        QNodoColorTextura nodoTexturaC5_2 = new QNodoColorTextura(new QProcesadorSimple(QGestorRecursos.cargarTextura("difusa6", new File(QGlobal.RECURSOS + "texturas/textura3.jpg"))));
+        QNodoColorTextura nodoTexturaC5_1 = new QNodoColorTextura(new QProcesadorSimple(AssetManager.get().loadTexture("difusa5", new File("assets/textures/testNormal/test1-color.jpg"))));
+        QNodoColorTextura nodoTexturaC5_2 = new QNodoColorTextura(new QProcesadorSimple(AssetManager.get().loadTexture("difusa6", new File("assets/textures/textura3.jpg"))));
         QNodoColorIluminacion nodoDifusoC5_1 = new QNodoColorIluminacion();
         QNodoColorIluminacion nodoDifusoC5_2 = new QNodoColorIluminacion();
 
@@ -126,23 +127,23 @@ public class NodosSimple2 extends GeneraEjemplo {
         //enlace que une la salida del segundo difuso con la entrada1 de mix
         QNodoEnlace enlaceC5_4 = new QNodoEnlace(nodoDifusoC5_2.getSaColor(), nodMixC5.getEnColor2());
 
-        QNodoMaterial nodosalida5 = new QNodoMaterial();
+        MaterialOutputNode nodosalida5 = new MaterialOutputNode();
         QNodoEnlace enlace5 = new QNodoEnlace(nodMixC5.getSaColor(), nodosalida5.getEnColor());
 
         materialC5.setNodo(nodosalida5);
 
-        QEntidad cubo5 = new QEntidad("nodo.mexcla.texturas");
-        cubo5.agregarComponente(QMaterialUtil.aplicarMaterial(new QCaja(2), materialC5));
-        cubo5.mover(-5, -5, -5);
+        Entity cubo5 = new Entity("nodo.mexcla.textures");
+        cubo5.addComponent(QMaterialUtil.aplicarMaterial(new QCaja(2), materialC5));
+        cubo5.move(-5, -5, -5);
 
-        mundo.agregarEntidad(cubo5);
+        mundo.addEntity(cubo5);
 
         //--------------------------------------------------------------------------------------------------
         // con textura e iluminacion (Nodo) con mapa de normales
-        QMaterialNodo materialC6 = new QMaterialNodo();
+        MaterialNode materialC6 = new MaterialNode();
 
-        QNodoColorTextura nodoTexturaC6_1 = new QNodoColorTextura(new QProcesadorSimple(QGestorRecursos.cargarTextura("difusa7", new File(QGlobal.RECURSOS + "texturas/testNormal/test1-color.jpg"))));
-        QNodoColorTextura nodoTexturaC6_2 = new QNodoColorTextura(new QProcesadorSimple(QGestorRecursos.cargarTextura("difusa8", new File(QGlobal.RECURSOS + "texturas/testNormal/test1-normal.jpg"))));
+        QNodoColorTextura nodoTexturaC6_1 = new QNodoColorTextura(new QProcesadorSimple(AssetManager.get().loadTexture("difusa7", new File("assets/textures/testNormal/test1-color.jpg"))));
+        QNodoColorTextura nodoTexturaC6_2 = new QNodoColorTextura(new QProcesadorSimple(AssetManager.get().loadTexture("difusa8", new File("assets/textures/testNormal/test1-normal.jpg"))));
         QNodoColorIluminacion nodoDifusoC6_1 = new QNodoColorIluminacion();
 
         // enlace que une la salida de la textura con con difuso
@@ -151,21 +152,21 @@ public class NodosSimple2 extends GeneraEjemplo {
         QNodoEnlace enlaceC6_2 = new QNodoEnlace(nodoTexturaC6_2.getSaColor(), nodoDifusoC6_1.getEnNormal());
         //enlace que une la salida del primer difuso con la entrada1 de mix
 
-        QNodoMaterial nodosalida6 = new QNodoMaterial();
+        MaterialOutputNode nodosalida6 = new MaterialOutputNode();
         QNodoEnlace enlace6 = new QNodoEnlace(nodoDifusoC6_1.getSaColor(), nodosalida6.getEnColor());
 
         materialC6.setNodo(nodosalida6);
 
-        QEntidad cubo6 = new QEntidad("nodo.text.normales");
-        cubo6.agregarComponente(QMaterialUtil.aplicarMaterial(new QCaja(2), materialC6));
-        cubo6.mover(0, 0, 0);
+        Entity cubo6 = new Entity("nodo.text.normales");
+        cubo6.addComponent(QMaterialUtil.aplicarMaterial(new QCaja(2), materialC6));
+        cubo6.move(0, 0, 0);
 
-        mundo.agregarEntidad(cubo6);
+        mundo.addEntity(cubo6);
 
     }
 
     @Override
-    public void accion(int numAccion, QMotorRender render) {
+    public void accion(int numAccion, RenderEngine render) {
     }
 
 }

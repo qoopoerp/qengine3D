@@ -6,45 +6,36 @@
 package net.qoopo.engine3d.test.generaEjemplos.impl.textura;
 
 import java.io.File;
-import net.qoopo.engine3d.componentes.QEntidad;
-import net.qoopo.engine3d.core.escena.QEscena;
-import net.qoopo.engine3d.core.textura.mapeo.QMaterialUtil;
-import net.qoopo.engine3d.test.generaEjemplos.GeneraEjemplo;
-import net.qoopo.engine3d.componentes.geometria.primitivas.formas.QCaja;
-import net.qoopo.engine3d.core.util.QGlobal;
-import net.qoopo.engine3d.core.recursos.QGestorRecursos;
-import net.qoopo.engine3d.core.material.basico.QMaterialBas;
-import net.qoopo.engine3d.core.textura.procesador.QProcesadorSimple;
-import net.qoopo.engine3d.engines.render.QMotorRender;
+
+import net.qoopo.engine.core.assets.AssetManager;
+import net.qoopo.engine.core.entity.Entity;
+import net.qoopo.engine.core.entity.component.mesh.primitive.shape.QCaja;
+import net.qoopo.engine.core.material.basico.QMaterialBas;
+import net.qoopo.engine.core.renderer.RenderEngine;
+import net.qoopo.engine.core.scene.Scene;
+import net.qoopo.engine.core.texture.procesador.QProcesadorSimple;
+import net.qoopo.engine.core.texture.util.QMaterialUtil;
+import net.qoopo.engine.core.util.QGlobal;
+import net.qoopo.engine3d.test.generaEjemplos.MakeTestScene;
 
 /**
  *
  * @author alberto
  */
-public class EjmTexturaCubo extends GeneraEjemplo {
+public class EjmTexturaCubo extends MakeTestScene {
 
-    public void iniciar(QEscena mundo) {
-        this.mundo = mundo;
-
-////        QTextura textura = QGestorRecursos.cargarTextura("difusa", new File(QGlobal.RECURSOS + "texturas/entorno/hdri/exteriores/cubemap.jpg"));
-//        QTextura textura = QGestorRecursos.cargarTextura("difusa", new File(QGlobal.RECURSOS + "texturas/cube_map.png"));
-////        QTextura textura = QGestorRecursos.cargarTextura("difusa", new File(QGlobal.RECURSOS + "texturas/cube_map2.png"));
-//        QProcesadorMipMap mimap = new QProcesadorMipMap(textura, 5, QProcesadorMipMap.TIPO_BLUR);
-////        QProcesadorMipMap mimap = new QProcesadorMipMap(textura, 5);
-//        mimap.setNivel(3);
-
-        QEntidad cubo = new QEntidad("cubo");
+    public void make(Scene mundo) {
+        this.scene = mundo;
+        Entity cubo = new Entity("cubo");
         QMaterialBas material = new QMaterialBas();
-        material.setMapaColor(new QProcesadorSimple(QGestorRecursos.cargarTextura("difusa", new File(QGlobal.RECURSOS + "texturas/testNormal/rocasColor.jpg"))));
-        material.setMapaNormal(new QProcesadorSimple(QGestorRecursos.cargarTextura("normal", new File(QGlobal.RECURSOS + "texturas/testNormal/rocasNormal.jpg"))));
-//        material.setMapaMetalico(new QProcesadorSimple(mimap.getTexturaAtlas()));
-//        material.setMapaRugosidad(mimap);
-        cubo.agregarComponente(QMaterialUtil.aplicarMaterial(new QCaja(2), material));
-        mundo.agregarEntidad(cubo);
+        material.setMapaColor(new QProcesadorSimple(
+                AssetManager.get().loadTexture("difusa", new File("assets/textures/cube_map.png"))));
+        cubo.addComponent(QMaterialUtil.aplicarMaterial(new QCaja(2), material));
+        mundo.addEntity(cubo);
     }
 
     @Override
-    public void accion(int numAccion, QMotorRender render) {
+    public void accion(int numAccion, RenderEngine render) {
     }
 
 }

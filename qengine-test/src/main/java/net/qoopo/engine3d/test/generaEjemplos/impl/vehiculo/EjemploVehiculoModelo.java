@@ -7,204 +7,220 @@ package net.qoopo.engine3d.test.generaEjemplos.impl.vehiculo;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.logging.Logger;
+
 import javax.imageio.ImageIO;
-import net.qoopo.engine3d.componentes.QEntidad;
-import net.qoopo.engine3d.componentes.QUtilComponentes;
-import net.qoopo.engine3d.componentes.fisica.colisiones.detectores.QFormaColision;
-import net.qoopo.engine3d.componentes.fisica.colisiones.detectores.contenedores.mallas.QColisionMallaConvexa;
-import net.qoopo.engine3d.componentes.fisica.colisiones.detectores.contenedores.mallas.QColisionMallaIndexada;
-import net.qoopo.engine3d.componentes.fisica.dinamica.QObjetoDinamico;
-import net.qoopo.engine3d.componentes.fisica.dinamica.QObjetoRigido;
-import net.qoopo.engine3d.componentes.fisica.vehiculo.QRueda;
-import net.qoopo.engine3d.componentes.fisica.vehiculo.QVehiculo;
-import net.qoopo.engine3d.componentes.fisica.vehiculo.QVehiculoControl;
-import net.qoopo.engine3d.componentes.geometria.QGeometria;
-import net.qoopo.engine3d.componentes.geometria.primitivas.formas.QCilindroX;
-import net.qoopo.engine3d.componentes.geometria.primitivas.formas.QMalla;
-import net.qoopo.engine3d.componentes.terreno.QTerreno;
-import net.qoopo.engine3d.core.util.QGlobal;
-import net.qoopo.engine3d.core.util.QLogger;
-import net.qoopo.engine3d.core.carga.impl.CargaWaveObject;
-import net.qoopo.engine3d.core.escena.QEscena;
-import net.qoopo.engine3d.test.generaEjemplos.GeneraEjemplo;
-import net.qoopo.engine3d.core.material.basico.QMaterialBas;
-import net.qoopo.engine3d.core.math.QColor;
-import net.qoopo.engine3d.core.math.QVector3;
-import net.qoopo.engine3d.core.textura.QTextura;
-import net.qoopo.engine3d.core.textura.mapeo.QMaterialUtil;
-import net.qoopo.engine3d.engines.render.QMotorRender;
+
+import net.qoopo.engine.core.assets.AssetManager;
+import net.qoopo.engine.core.entity.Entity;
+import net.qoopo.engine.core.entity.component.mesh.Mesh;
+import net.qoopo.engine.core.entity.component.mesh.primitive.shape.QCilindroX;
+import net.qoopo.engine.core.entity.component.mesh.primitive.shape.PlanarMesh;
+import net.qoopo.engine.core.entity.component.physics.collision.detector.CollisionShape;
+import net.qoopo.engine.core.entity.component.physics.collision.detector.shape.mallas.QColisionMallaConvexa;
+import net.qoopo.engine.core.entity.component.physics.collision.detector.shape.mallas.QColisionMallaIndexada;
+import net.qoopo.engine.core.entity.component.physics.dinamica.QObjetoDinamico;
+import net.qoopo.engine.core.entity.component.physics.dinamica.QObjetoRigido;
+import net.qoopo.engine.core.entity.component.physics.vehiculo.QRueda;
+import net.qoopo.engine.core.entity.component.physics.vehiculo.QVehiculo;
+import net.qoopo.engine.core.entity.component.physics.vehiculo.QVehiculoControl;
+import net.qoopo.engine.core.entity.component.terrain.HeightMapTerrain;
+import net.qoopo.engine.core.entity.component.terrain.Terrain;
+import net.qoopo.engine.core.material.basico.QMaterialBas;
+import net.qoopo.engine.core.math.QColor;
+import net.qoopo.engine.core.math.QVector3;
+import net.qoopo.engine.core.renderer.RenderEngine;
+import net.qoopo.engine.core.scene.Scene;
+import net.qoopo.engine.core.texture.QTextura;
+import net.qoopo.engine.core.texture.util.QMaterialUtil;
+import net.qoopo.engine.core.util.QUtilComponentes;
+import net.qoopo.engine3d.test.generaEjemplos.MakeTestScene;
 
 /**
  *
  * @author alberto
  */
-public class EjemploVehiculoModelo extends GeneraEjemplo {
+public class EjemploVehiculoModelo extends MakeTestScene {
+
+    private static Logger logger = Logger.getLogger("test");
 
     @Override
-    public void iniciar(QEscena mundo) {
-        this.mundo = mundo;
+    public void make(Scene mundo) {
+        this.scene = mundo;
 
-//        crearPiso(mundo);
+        // crearPiso(mundo);
         crearTerreno(mundo);
         crearVehiculo(mundo);
     }
 
-    private void crearPiso(QEscena mundo) {
+    private void crearPiso(Scene mundo) {
         // piso
-        QEntidad piso = new QEntidad("Piso", false);
-        QMalla geom = new QMalla(20, 20, 20, 20);
+        Entity piso = new Entity("Piso", false);
+        PlanarMesh geom = new PlanarMesh(20, 20, 20, 20);
         QColisionMallaConvexa colision = new QColisionMallaConvexa(geom);
         QObjetoRigido rigido = new QObjetoRigido(QObjetoDinamico.ESTATICO, 0);
         rigido.setFormaColision(colision);
 
-        piso.agregarComponente(geom);
-        piso.agregarComponente(colision);
-        piso.agregarComponente(rigido);
-        piso.escalar(10, 10, 10);
-        mundo.agregarEntidad(piso);
+        piso.addComponent(geom);
+        piso.addComponent(colision);
+        piso.addComponent(rigido);
+        piso.scale(10, 10, 10);
+        mundo.addEntity(piso);
     }
 
-    private void crearTerreno(QEscena universo) {
-        //el terreno generado con mapas de altura
-        QLogger.info("Creando terreno...");
-        QEntidad entidadTerreno = new QEntidad("Terreno");
-        QTerreno terreno = new QTerreno();
-        entidadTerreno.agregarComponente(terreno);
-        QTextura textura = null;
-        try {
-            textura = new QTextura(ImageIO.read(new File(QGlobal.RECURSOS + "texturas/terreno/text4.jpg")));
-        } catch (Exception ex) {
+    
+    private void crearTerreno(Scene universo) {
+        // el terreno generado con mapas de altura
+        logger.info("Creando terreno...");
 
-        }
+        Entity entidadTerreno = new Entity("Terreno");
 
-        try {
-            textura.setMuestrasU(20);
-            textura.setMuestrasV(20);
-            BufferedImage img1 = ImageIO.read(new File(QGlobal.RECURSOS + "mapas_altura/map10.png"));
-//            BufferedImage img1 = ImageIO.read(new File(QGlobal.RECURSOS + "mapas_altura/map11.png"));
-            terreno.generar(img1, 1, 0f, 20f, textura, 5);
-        } catch (Exception ex) {
+        QTextura terrainTexture = AssetManager.get().loadTexture("terreno",
+                "assets/textures/terrain/rocky_terrain/rocky_terrain_02_diff_4k.jpg");
+        QMaterialBas materialTerrain = new QMaterialBas(terrainTexture);
+        materialTerrain.setMapaNormal(AssetManager.get().loadTexture("terreno_normal",
+                "assets/textures/terrain/rocky_terrain/rocky_terrain_02_nor_gl_4k.png"));
+        materialTerrain.setMapaEspecular(AssetManager.get().loadTexture("terreno_normal",
+                "assets/textures/terrain/rocky_terrain/rocky_terrain_02_spec_4k.png"));
+        materialTerrain.setMapaRugosidad(AssetManager.get().loadTexture("terreno_normal",
+                "assets/textures/terrain/rocky_terrain/rocky_terrain_02_rough_4k.png"));
 
-        }
+        Terrain terreno = new HeightMapTerrain(new File("assets/heightmaps/heightmap.png"), 1, -5, 15f,
+                1,
+                materialTerrain, true);
+        entidadTerreno.addComponent(terreno);
 
-        QFormaColision colision = new QColisionMallaIndexada(QUtilComponentes.getGeometria(entidadTerreno));
-        entidadTerreno.agregarComponente(colision);
-
-        QObjetoRigido terrenoRigidez = new QObjetoRigido(QObjetoDinamico.ESTATICO, 0);
+        // QColisionTerreno colision = new QColisionTerreno(terreno);
+        // entidadTerreno.agregarComponente(colision);
+        QColisionMallaIndexada colision = new QColisionMallaIndexada(QUtilComponentes.getMesh(entidadTerreno));
+        QObjetoRigido terrenoRigidez = new QObjetoRigido(QObjetoDinamico.ESTATICO);
         terrenoRigidez.setFormaColision(colision);
-        entidadTerreno.agregarComponente(terrenoRigidez);
-        universo.agregarEntidad(entidadTerreno);
-        QLogger.info("Terreno cargado...");
-
+        entidadTerreno.addComponent(terrenoRigidez);
+        universo.addEntity(entidadTerreno);
+        logger.info("Terreno cargado...");
     }
 
-    private void crearVehiculo(QEscena mundo) {
+
+    private void crearVehiculo(Scene mundo) {
 
         float alturaLlantaConexion = 0.25f;
         float px = 0.5f;
         float pz = 0.8f;
 
-        QEntidad carro = CargaWaveObject.cargarWaveObject(new File(QGlobal.RECURSOS + "objetos/formato_obj/VEHICULOS/AUTOMOVILES/BAJA_CALIDAD/auto1/Car.obj")).get(0);
-        QGeometria geom = QUtilComponentes.getGeometria(carro);
-//        carro.agregarComponente(geom);
+        Entity carro;
+        try {
+            carro = AssetManager.get().loadModel(new File(
+                    "assets/models/obj/VEHICULOS/AUTOMOVILES/BAJA_CALIDAD/auto1/Car.obj"));
 
-        QFormaColision colision = new QColisionMallaConvexa(geom);
-        carro.agregarComponente(colision);
-//        QFormaColision colision = new QColisionCaja(2,1f,3);
-//        QColisionCompuesta colisionCom = new QColisionCompuesta();
-//        colisionCom.agregarHijo(colision, new QVector3(0, 1f, 0));
-//        carro.agregarComponente(colisionCom);
+            Mesh geom = QUtilComponentes.getMesh(carro);
+            // carro.agregarComponente(geom);
 
-        QObjetoRigido rigido = new QObjetoRigido(QObjetoDinamico.DINAMICO, 800);
-//        rigido.setFormaColision(colisionCom);
-        rigido.setFormaColision(colision);
-        carro.agregarComponente(rigido);
+            CollisionShape colision = new QColisionMallaConvexa(geom);
+            carro.addComponent(colision);
+            // CollisionShape colision = new QColisionCaja(2,1f,3);
+            // QColisionCompuesta colisionCom = new QColisionCompuesta();
+            // colisionCom.agregarHijo(colision, QVector3.of(0, 1f, 0));
+            // carro.agregarComponente(colisionCom);
 
-        QVehiculo vehiculo = new QVehiculo(rigido);
-        carro.agregarComponente(vehiculo);
+            QObjetoRigido rigido = new QObjetoRigido(QObjetoDinamico.DINAMICO, 800);
+            // rigido.setFormaColision(colisionCom);
+            rigido.setFormaColision(colision);
+            carro.addComponent(rigido);
 
-        //ruedas
-        QMaterialBas materialRueda = new QMaterialBas("Rueda");
-        materialRueda.setColorBase(QColor.DARK_GRAY);
+            QVehiculo vehiculo = new QVehiculo(rigido);
+            carro.addComponent(vehiculo);
 
-        QCilindroX forma = new QCilindroX(0.1f, 0.25f);
-        QMaterialUtil.aplicarMaterial(forma, materialRueda);
-        //--
+            // ruedas
+            QMaterialBas materialRueda = new QMaterialBas("Rueda");
+            materialRueda.setColorBase(QColor.DARK_GRAY);
 
-        QEntidad rueda1E = new QEntidad("rueda1", false);// la entidad que se actualizara su transformacion con el vehiculo        
-        rueda1E.agregarComponente(forma.clone());
-        rueda1E.mover(-px, alturaLlantaConexion, pz);
-        mundo.agregarEntidad(rueda1E);
+            QCilindroX forma = new QCilindroX(0.1f, 0.25f);
+            QMaterialUtil.aplicarMaterial(forma, materialRueda);
+            // --
 
-        QEntidad rueda2E = new QEntidad("rueda2", false);// la entidad que se actualizara su transformacion con el vehiculo        
-        rueda2E.agregarComponente(forma.clone());
-        rueda2E.mover(px, alturaLlantaConexion, pz);
-        mundo.agregarEntidad(rueda2E);
+            Entity rueda1E = new Entity("rueda1", false);// la entidad que se actualizara su transformacion con el
+                                                         // vehiculo
+            rueda1E.addComponent(forma.clone());
+            rueda1E.move(-px, alturaLlantaConexion, pz);
+            mundo.addEntity(rueda1E);
 
-        QEntidad rueda3E = new QEntidad("rueda3", false);// la entidad que se actualizara su transformacion con el vehiculo        
-        rueda3E.agregarComponente(forma.clone());
-        rueda3E.mover(-px, alturaLlantaConexion, -pz);
-        mundo.agregarEntidad(rueda3E);
-        QEntidad rueda4E = new QEntidad("rueda4", false);// la entidad que se actualizara su transformacion con el vehiculo        
-        rueda4E.agregarComponente(forma.clone());
-        rueda4E.mover(px, alturaLlantaConexion, -pz);
-        mundo.agregarEntidad(rueda4E);
-        //----------------
-        //1
-        QRueda rueda1 = new QRueda();
-        rueda1.setEntidadRueda(rueda1E);
-        rueda1.setFriccion(1000f);
-        rueda1.setFrontal(true);
-        rueda1.setAncho(0.1f);
-        rueda1.setRadio(0.25f);
-        rueda1.setUbicacion(new QVector3(-px, alturaLlantaConexion, pz));
-        vehiculo.agregarRueda(rueda1);
-        //2
-        QRueda rueda2 = new QRueda();
-        rueda2.setEntidadRueda(rueda2E);
-        rueda2.setFriccion(1000f);
-        rueda2.setFrontal(true);
-        rueda2.setAncho(0.1f);
-        rueda2.setRadio(0.25f);
-        rueda2.setUbicacion(new QVector3(px, alturaLlantaConexion, pz));
-        vehiculo.agregarRueda(rueda2);
-        //3
+            Entity rueda2E = new Entity("rueda2", false);// la entidad que se actualizara su transformacion con el
+                                                         // vehiculo
+            rueda2E.addComponent(forma.clone());
+            rueda2E.move(px, alturaLlantaConexion, pz);
+            mundo.addEntity(rueda2E);
 
-        QRueda rueda3 = new QRueda();
-        rueda3.setEntidadRueda(rueda3E);
-        rueda3.setFriccion(1000f);
-        rueda3.setFrontal(false);
-        rueda3.setAncho(0.1f);
-        rueda3.setRadio(0.25f);
-        rueda3.setUbicacion(new QVector3(-px, alturaLlantaConexion, -pz));
-        vehiculo.agregarRueda(rueda3);
-        //4
+            Entity rueda3E = new Entity("rueda3", false);// la entidad que se actualizara su transformacion con el
+                                                         // vehiculo
+            rueda3E.addComponent(forma.clone());
+            rueda3E.move(-px, alturaLlantaConexion, -pz);
+            mundo.addEntity(rueda3E);
+            Entity rueda4E = new Entity("rueda4", false);// la entidad que se actualizara su transformacion con el
+                                                         // vehiculo
+            rueda4E.addComponent(forma.clone());
+            rueda4E.move(px, alturaLlantaConexion, -pz);
+            mundo.addEntity(rueda4E);
+            // ----------------
+            // 1
+            QRueda rueda1 = new QRueda();
+            rueda1.setEntidadRueda(rueda1E);
+            rueda1.setFriccion(1000f);
+            rueda1.setFrontal(true);
+            rueda1.setAncho(0.1f);
+            rueda1.setRadio(0.25f);
+            rueda1.setUbicacion(QVector3.of(-px, alturaLlantaConexion, pz));
+            vehiculo.agregarRueda(rueda1);
+            // 2
+            QRueda rueda2 = new QRueda();
+            rueda2.setEntidadRueda(rueda2E);
+            rueda2.setFriccion(1000f);
+            rueda2.setFrontal(true);
+            rueda2.setAncho(0.1f);
+            rueda2.setRadio(0.25f);
+            rueda2.setUbicacion(QVector3.of(px, alturaLlantaConexion, pz));
+            vehiculo.agregarRueda(rueda2);
+            // 3
 
-        QRueda rueda4 = new QRueda();
-        rueda4.setEntidadRueda(rueda4E);
-        rueda4.setFriccion(1000f);
-        rueda4.setFrontal(false);
-        rueda4.setAncho(0.1f);
-        rueda4.setRadio(0.25f);
-        rueda4.setUbicacion(new QVector3(pz, alturaLlantaConexion, -pz));
-        vehiculo.agregarRueda(rueda4);
-//control del vehiculo
+            QRueda rueda3 = new QRueda();
+            rueda3.setEntidadRueda(rueda3E);
+            rueda3.setFriccion(1000f);
+            rueda3.setFrontal(false);
+            rueda3.setAncho(0.1f);
+            rueda3.setRadio(0.25f);
+            rueda3.setUbicacion(QVector3.of(-px, alturaLlantaConexion, -pz));
+            vehiculo.agregarRueda(rueda3);
+            // 4
 
-        QVehiculoControl control = new QVehiculoControl(vehiculo);
+            QRueda rueda4 = new QRueda();
+            rueda4.setEntidadRueda(rueda4E);
+            rueda4.setFriccion(1000f);
+            rueda4.setFrontal(false);
+            rueda4.setAncho(0.1f);
+            rueda4.setRadio(0.25f);
+            rueda4.setUbicacion(QVector3.of(pz, alturaLlantaConexion, -pz));
+            vehiculo.agregarRueda(rueda4);
+            // control del vehiculo
 
-        //agrego los componentes
-        carro.agregarComponente(control);
+            QVehiculoControl control = new QVehiculoControl(vehiculo);
 
-        carro.mover(0, 25, 0);
-//        carro.agregarHijo(rueda1E);
-//        carro.agregarHijo(rueda2E);
-//        carro.agregarHijo(rueda3E);
-//        carro.agregarHijo(rueda4E);
-        mundo.agregarEntidad(carro);
+            // agrego los componentes
+            carro.addComponent(control);
+
+            carro.move(0, 25, 0);
+            // carro.agregarHijo(rueda1E);
+            // carro.agregarHijo(rueda2E);
+            // carro.agregarHijo(rueda3E);
+            // carro.agregarHijo(rueda4E);
+            mundo.addEntity(carro);
+        } catch (FileNotFoundException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
     }
 
     @Override
-    public void accion(int numAccion, QMotorRender render) {
+    public void accion(int numAccion, RenderEngine render) {
 
     }
 

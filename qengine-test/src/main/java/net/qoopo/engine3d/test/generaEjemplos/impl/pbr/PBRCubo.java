@@ -6,58 +6,66 @@
 package net.qoopo.engine3d.test.generaEjemplos.impl.pbr;
 
 import java.io.File;
-import net.qoopo.engine3d.componentes.QEntidad;
-import net.qoopo.engine3d.core.escena.QEscena;
-import net.qoopo.engine3d.core.textura.mapeo.QMaterialUtil;
-import net.qoopo.engine3d.test.generaEjemplos.GeneraEjemplo;
-import net.qoopo.engine3d.componentes.geometria.primitivas.formas.QCaja;
-import net.qoopo.engine3d.componentes.reflexiones.QMapaCubo;
-import net.qoopo.engine3d.core.util.QGlobal;
-import net.qoopo.engine3d.core.recursos.QGestorRecursos;
-import net.qoopo.engine3d.core.material.basico.QMaterialBas;
-import net.qoopo.engine3d.core.textura.QTextura;
-import net.qoopo.engine3d.core.textura.procesador.QProcesadorSimple;
-import net.qoopo.engine3d.engines.render.QMotorRender;
+
+import net.qoopo.engine.core.assets.AssetManager;
+import net.qoopo.engine.core.entity.Entity;
+import net.qoopo.engine.core.entity.component.cubemap.QCubeMap;
+import net.qoopo.engine.core.entity.component.mesh.primitive.shape.QCaja;
+import net.qoopo.engine.core.material.basico.QMaterialBas;
+import net.qoopo.engine.core.renderer.RenderEngine;
+import net.qoopo.engine.core.scene.Scene;
+import net.qoopo.engine.core.texture.QTextura;
+import net.qoopo.engine.core.texture.procesador.QProcesadorSimple;
+import net.qoopo.engine.core.texture.util.QMaterialUtil;
+import net.qoopo.engine.core.util.QGlobal;
+import net.qoopo.engine3d.test.generaEjemplos.MakeTestScene;
 
 /**
  *
  * @author alberto
  */
-public class PBRCubo extends GeneraEjemplo {
+public class PBRCubo extends MakeTestScene {
 
-    public void iniciar(QEscena mundo) {
-        this.mundo = mundo;
+        public void make(Scene mundo) {
+                this.scene = mundo;
 
-        QMaterialBas material = new QMaterialBas();
+                QMaterialBas material = new QMaterialBas();
 
-        QTextura albedo = QGestorRecursos.cargarTextura("difusa", new File(QGlobal.RECURSOS + "texturas/PBR/metal/MetalSpottyDiscoloration001/METALNESS/2K/MetalSpottyDiscoloration001_COL_2K_METALNESS.jpg"));
-        QTextura normal = QGestorRecursos.cargarTextura("normal", new File(QGlobal.RECURSOS + "texturas/PBR/metal/MetalSpottyDiscoloration001/METALNESS/2K/MetalSpottyDiscoloration001_NRM_2K_METALNESS.jpg"));
-        QTextura rugoso = QGestorRecursos.cargarTextura("rugoso", new File(QGlobal.RECURSOS + "texturas/PBR/metal/MetalSpottyDiscoloration001/METALNESS/2K/MetalSpottyDiscoloration001_ROUGHNESS_2K_METALNESS.jpg"));
-        QTextura metalico = QGestorRecursos.cargarTextura("metalico", new File(QGlobal.RECURSOS + "texturas/PBR/metal/MetalSpottyDiscoloration001/METALNESS/2K/MetalSpottyDiscoloration001_METALNESS_2K_METALNESS.jpg"));
+                QTextura albedo = AssetManager.get().loadTexture("difusa", new File("assets/"
+                                + "textures/pbr/metal/used-stainless-steel/albedo.png"));
+                QTextura normal = AssetManager.get().loadTexture("normal", new File("assets/"
+                                + "textures/pbr/metal/used-stainless-steel/normal.png"));
+                QTextura rugoso = AssetManager.get().loadTexture("rugoso", new File("assets/"
+                                + "textures/pbr/metal/used-stainless-steel/roughness.png"));
+                QTextura metalico = AssetManager.get().loadTexture("metalico", new File("assets/"
+                                + "textures/pbr/metal/used-stainless-steel/metallic.png"));
+                QTextura sombras = AssetManager.get().loadTexture("ao", new File("assets/"+
+                                "textures/pbr/metal/used-stainless-steel/ao.png"));
 
-        material.setMapaColor(new QProcesadorSimple(albedo));
-        material.setMapaNormal(new QProcesadorSimple(normal));
-        material.setMapaRugosidad(new QProcesadorSimple(rugoso));
-        material.setMapaMetalico(new QProcesadorSimple(metalico));
-        QEntidad objeto = new QEntidad("cubo");
-        objeto.agregarComponente(QMaterialUtil.aplicarMaterial(new QCaja(2), material));
+                material.setMapaColor(new QProcesadorSimple(albedo));
+                material.setMapaNormal(new QProcesadorSimple(normal));
+                material.setMapaRugosidad(new QProcesadorSimple(rugoso));
+                material.setMapaMetalico(new QProcesadorSimple(metalico));
+                material.setMapaSAO(new QProcesadorSimple(sombras));
+                Entity objeto = new Entity("cubo");
+                objeto.addComponent(QMaterialUtil.aplicarMaterial(new QCaja(2), material));
 
-        //-------------------------------------
-        QMapaCubo mapa = new QMapaCubo(QGlobal.MAPA_CUPO_RESOLUCION);
-        material.setMapaEntorno(new QProcesadorSimple(mapa.getTexturaEntorno()));
-        material.setTipoMapaEntorno(QMapaCubo.FORMATO_MAPA_CUBO);
-        objeto.agregarComponente(mapa);
-        mapa.aplicar(QMapaCubo.FORMATO_MAPA_CUBO, 0.8f, 0);
+                // -------------------------------------
+                QCubeMap mapa = new QCubeMap(QGlobal.MAPA_CUPO_RESOLUCION);
+                material.setMapaEntorno(new QProcesadorSimple(mapa.getTexturaEntorno()));
+                material.setTipoMapaEntorno(QCubeMap.FORMATO_MAPA_CUBO);
+                objeto.addComponent(mapa);
+                mapa.aplicar(QCubeMap.FORMATO_MAPA_CUBO, 0.8f, 0);
 
-        mundo.agregarEntidad(objeto);
+                mundo.addEntity(objeto);
 
-//        QEntidad malla = new QEntidad("Malla");
-//        malla.agregarComponente(new QMalla(true,30, 30, 1));
-//        mundo.agregarEntidad(malla);
-    }
+                // Entity malla = new Entity("Malla");
+                // malla.agregarComponente(new QMalla(true,30, 30, 1));
+                // mundo.addEntity(malla);
+        }
 
-    @Override
-    public void accion(int numAccion, QMotorRender render) {
-    }
+        @Override
+        public void accion(int numAccion, RenderEngine render) {
+        }
 
 }

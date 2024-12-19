@@ -6,88 +6,133 @@
 package net.qoopo.engine3d.test.generaEjemplos.impl.textura;
 
 import java.io.File;
-import net.qoopo.engine3d.componentes.QEntidad;
-import net.qoopo.engine3d.componentes.geometria.QGeometria;
-import net.qoopo.engine3d.componentes.geometria.primitivas.formas.QEsfera;
-import net.qoopo.engine3d.core.escena.QEscena;
-import net.qoopo.engine3d.core.material.basico.QMaterialBas;
-import net.qoopo.engine3d.core.math.QVector3;
-import net.qoopo.engine3d.core.recursos.QGestorRecursos;
-import net.qoopo.engine3d.core.textura.mapeo.QMaterialUtil;
-import net.qoopo.engine3d.core.util.QGlobal;
-import net.qoopo.engine3d.engines.render.QMotorRender;
-import net.qoopo.engine3d.test.generaEjemplos.GeneraEjemplo;
+
+import net.qoopo.engine.core.assets.AssetManager;
+import net.qoopo.engine.core.entity.Entity;
+import net.qoopo.engine.core.entity.component.mesh.Mesh;
+import net.qoopo.engine.core.entity.component.mesh.primitive.shape.QEsfera;
+import net.qoopo.engine.core.material.basico.QMaterialBas;
+import net.qoopo.engine.core.math.QVector3;
+import net.qoopo.engine.core.renderer.RenderEngine;
+import net.qoopo.engine.core.scene.Scene;
+import net.qoopo.engine.core.texture.util.QMaterialUtil;
+import net.qoopo.engine.core.util.QGlobal;
+import net.qoopo.engine.core.util.mesh.QUtilNormales;
+import net.qoopo.engine3d.test.generaEjemplos.MakeTestScene;
 
 /**
  *
  * @author alberto
  */
-public class EjmTexturaSistemaSolar extends GeneraEjemplo {
+public class EjmTexturaSistemaSolar extends MakeTestScene {
 
-    public void iniciar(QEscena mundo) {
-        this.mundo = mundo;
+        public void make(Scene mundo) {
+                this.scene = mundo;
 
-        QEntidad sol = new QEntidad("Sol");
-        QGeometria geomeSol = QMaterialUtil.aplicarMaterial(new QEsfera(2, 36), new QMaterialBas(QGestorRecursos.cargarTextura("sol", new File(QGlobal.RECURSOS + "texturas/basicas/planetas/sol.jpg"))));
-       ((QMaterialBas) geomeSol.primitivas[0].material).setFactorEmision(1.0f);
-        sol.agregarComponente(geomeSol);
-        sol.mover(QVector3.zero);
-        mundo.agregarEntidad(sol);
+                Entity sky = new Entity("universe");
+                Mesh universeGeometry = QMaterialUtil.aplicarMaterial(new QEsfera(20, 36), new QMaterialBas(
+                                AssetManager.get().loadTexture("sol", new File(
+                                                "assets/textures/solar_system/2k_stars_milky_way.jpg"))));
+                ((QMaterialBas) universeGeometry.primitivas[0].material).setFactorEmision(1.0f);
+                QUtilNormales.invertirNormales(universeGeometry);
+                sky.addComponent(universeGeometry);
+                sky.move(QVector3.zero);
 
-        QEntidad mercurio = new QEntidad("Mercurio");
-        mercurio.agregarComponente(QMaterialUtil.aplicarMaterial(new QEsfera(0.1f, 36), new QMaterialBas(QGestorRecursos.cargarTextura("mercurio", new File(QGlobal.RECURSOS + "texturas/basicas/planetas/mercurio_color.jpg")))));
-        mercurio.mover(new QVector3(4, 0, 0));
-        mundo.agregarEntidad(mercurio);
+                mundo.addEntity(sky);
 
-        QEntidad venus = new QEntidad("Venus");
-        venus.agregarComponente(QMaterialUtil.aplicarMaterial(new QEsfera(0.15f, 36), new QMaterialBas(QGestorRecursos.cargarTextura("venus", new File(QGlobal.RECURSOS + "texturas/basicas/planetas/venus_color.jpg")))));
-        venus.mover(new QVector3(5, 0, 0));
-        mundo.agregarEntidad(venus);
+                Entity sol = new Entity("Sol");
+                Mesh geomeSol = QMaterialUtil.aplicarMaterial(new QEsfera(2, 36), new QMaterialBas(
+                                AssetManager.get().loadTexture("sol",
+                                                new File("assets/textures/solar_system/2k_sun.jpg"))));
+                ((QMaterialBas) geomeSol.primitivas[0].material).setFactorEmision(1.0f);
+                sol.addComponent(geomeSol);
+                sol.move(QVector3.zero);
+                mundo.addEntity(sol);
 
-        QEntidad tierra = new QEntidad("Tierra");
-        tierra.agregarComponente(QMaterialUtil.aplicarMaterial(new QEsfera(0.2f, 36), new QMaterialBas(QGestorRecursos.cargarTextura("venus", new File(QGlobal.RECURSOS + "texturas/basicas/planetas/tierra/text4/tierra.jpg")))));
-        tierra.mover(new QVector3(6, 0, 0));
-        mundo.agregarEntidad(tierra);
+                Entity mercurio = new Entity("Mercurio");
+                mercurio.addComponent(QMaterialUtil.aplicarMaterial(new QEsfera(0.1f, 36),
+                                new QMaterialBas(AssetManager.get().loadTexture("mercurio",
+                                                new File("assets/textures/solar_system/2k_mercury.jpg")))));
+                mercurio.move(QVector3.of(4, 0, 0));
+                mundo.addEntity(mercurio);
 
-        QEntidad luna = new QEntidad("Luna");
-        luna.agregarComponente(QMaterialUtil.aplicarMaterial(new QEsfera(0.02f, 36), new QMaterialBas(QGestorRecursos.cargarTextura("venus", new File(QGlobal.RECURSOS + "texturas/basicas/planetas/luna/text1/moonmap1k.jpg")))));
-        luna.mover(new QVector3(6, 0, 0.35f));
-        mundo.agregarEntidad(luna);
+                Entity venus = new Entity("Venus");
+                venus.addComponent(QMaterialUtil.aplicarMaterial(new QEsfera(0.15f, 36), new QMaterialBas(AssetManager
+                                .get()
+                                .loadTexture("venus", new File(
+                                                "assets/textures/solar_system/2k_venus_surface.jpg")))));
+                venus.move(QVector3.of(5, 0, 0));
+                mundo.addEntity(venus);
 
-        QEntidad marte = new QEntidad("Marte");
-        marte.agregarComponente(QMaterialUtil.aplicarMaterial(new QEsfera(0.18f, 36), new QMaterialBas(QGestorRecursos.cargarTextura("venus", new File(QGlobal.RECURSOS + "texturas/basicas/planetas/marte/text2/marte_color.jpg")))));
-        marte.mover(new QVector3(7, 0, 0));
-        mundo.agregarEntidad(marte);
+                Entity tierra = new Entity("Tierra");
+                tierra.addComponent(QMaterialUtil.aplicarMaterial(new QEsfera(0.2f, 36), new QMaterialBas(AssetManager
+                                .get()
+                                .loadTexture("venus", new File(
+                                                "assets/textures/solar_system/2k_earth_daymap.jpg")))));
+                tierra.move(QVector3.of(6, 0, 0));
+                mundo.addEntity(tierra);
 
-        QEntidad jupiter = new QEntidad("Júpiter");
-        jupiter.agregarComponente(QMaterialUtil.aplicarMaterial(new QEsfera(0.5f, 36), new QMaterialBas(QGestorRecursos.cargarTextura("venus", new File(QGlobal.RECURSOS + "texturas/basicas/planetas/jupiter_color.jpg")))));
-        jupiter.mover(new QVector3(8.5f, 0, 0));
-        mundo.agregarEntidad(jupiter);
+                Entity luna = new Entity("Luna");
+                luna.addComponent(QMaterialUtil.aplicarMaterial(new QEsfera(0.02f, 36), new QMaterialBas(AssetManager
+                                .get()
+                                .loadTexture("venus",
+                                                new File("assets/textures/solar_system/2k_moon.jpg")))));
+                luna.move(QVector3.of(6, 0, 0.35f));
+                mundo.addEntity(luna);
 
-        QEntidad saturno = new QEntidad("Saturno");
-        saturno.agregarComponente(QMaterialUtil.aplicarMaterial(new QEsfera(0.4f, 36), new QMaterialBas(QGestorRecursos.cargarTextura("venus", new File(QGlobal.RECURSOS + "texturas/basicas/planetas/saturno_color.jpg")))));
-        saturno.mover(new QVector3(10.5f, 0, 0));
-        mundo.agregarEntidad(saturno);
+                Entity marte = new Entity("Marte");
+                marte.addComponent(QMaterialUtil.aplicarMaterial(new QEsfera(0.18f, 36), new QMaterialBas(AssetManager
+                                .get()
+                                .loadTexture("venus",
+                                                new File("assets/textures/solar_system/2k_mars.jpg")))));
+                marte.move(QVector3.of(7, 0, 0));
+                mundo.addEntity(marte);
 
-        QEntidad urano = new QEntidad("Urano");
-        urano.agregarComponente(QMaterialUtil.aplicarMaterial(new QEsfera(0.3f, 36), new QMaterialBas(QGestorRecursos.cargarTextura("venus", new File(QGlobal.RECURSOS + "texturas/basicas/planetas/urano_color.jpg")))));
-        urano.mover(new QVector3(11.5f, 0, 0));
-        mundo.agregarEntidad(urano);
+                Entity jupiter = new Entity("Júpiter");
+                jupiter.addComponent(QMaterialUtil.aplicarMaterial(new QEsfera(0.5f, 36), new QMaterialBas(AssetManager
+                                .get()
+                                .loadTexture("venus",
+                                                new File("assets/textures/solar_system/2k_jupiter.jpg")))));
+                jupiter.move(QVector3.of(8.5f, 0, 0));
+                mundo.addEntity(jupiter);
 
-        QEntidad neptuno = new QEntidad("Neptuno");
-        neptuno.agregarComponente(QMaterialUtil.aplicarMaterial(new QEsfera(0.25f, 36), new QMaterialBas(QGestorRecursos.cargarTextura("venus", new File(QGlobal.RECURSOS + "texturas/basicas/planetas/neptuno_color.jpg")))));
-        neptuno.mover(new QVector3(12.5f, 0, 0));
-        mundo.agregarEntidad(neptuno);
+                Entity saturno = new Entity("Saturno");
+                saturno.addComponent(QMaterialUtil.aplicarMaterial(new QEsfera(0.4f, 36), new QMaterialBas(AssetManager
+                                .get()
+                                .loadTexture("venus",
+                                                new File("assets/textures/solar_system/2k_saturn.jpg")))));
+                saturno.move(QVector3.of(10.5f, 0, 0));
+                mundo.addEntity(saturno);
 
-        QEntidad pluton = new QEntidad("Plutón");
-        pluton.agregarComponente(QMaterialUtil.aplicarMaterial(new QEsfera(0.05f, 36), new QMaterialBas(QGestorRecursos.cargarTextura("venus", new File(QGlobal.RECURSOS + "texturas/basicas/planetas/pluton_color.jpg")))));
-        pluton.mover(new QVector3(13.5f, 0, 0));
-        mundo.agregarEntidad(pluton);
+                Entity urano = new Entity("Urano");
+                urano.addComponent(QMaterialUtil.aplicarMaterial(new QEsfera(0.3f, 36), new QMaterialBas(AssetManager
+                                .get()
+                                .loadTexture("venus",
+                                                new File("assets/textures/solar_system/2k_uranus.jpg")))));
+                urano.move(QVector3.of(11.5f, 0, 0));
+                mundo.addEntity(urano);
 
-    }
+                Entity neptuno = new Entity("Neptuno");
+                neptuno.addComponent(
+                                QMaterialUtil.aplicarMaterial(new QEsfera(0.25f, 36), new QMaterialBas(AssetManager
+                                                .get()
+                                                .loadTexture("venus", new File("assets/"
+                                                                + "textures/solar_system/2k_neptune.jpg")))));
+                neptuno.move(QVector3.of(12.5f, 0, 0));
+                mundo.addEntity(neptuno);
 
-    @Override
-    public void accion(int numAccion, QMotorRender render) {
-    }
+                Entity pluton = new Entity("Plutón");
+                pluton.addComponent(QMaterialUtil.aplicarMaterial(new QEsfera(0.05f, 36), new QMaterialBas(AssetManager
+                                .get()
+                                .loadTexture("venus", new File(
+                                                "assets/textures/solar_system/2k_stars_milky_way.jpg")))));
+                pluton.move(QVector3.of(13.5f, 0, 0));
+                mundo.addEntity(pluton);
+
+        }
+
+        @Override
+        public void accion(int numAccion, RenderEngine render) {
+        }
 
 }

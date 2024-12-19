@@ -5,17 +5,16 @@
  */
 package net.qoopo.engine3d.core.input.control.gizmo.transformacion.rotacion;
 
-import java.util.List;
-import net.qoopo.engine3d.componentes.QEntidad;
-import net.qoopo.engine3d.componentes.QUtilComponentes;
-import net.qoopo.engine3d.componentes.geometria.QGeometria;
-import net.qoopo.engine3d.core.carga.impl.CargaWaveObject;
+import net.qoopo.engine.core.assets.model.ModelLoader;
+import net.qoopo.engine.core.assets.model.waveobject.LoadModelObj;
+import net.qoopo.engine.core.entity.Entity;
+import net.qoopo.engine.core.entity.component.mesh.Mesh;
+import net.qoopo.engine.core.material.basico.QMaterialBas;
+import net.qoopo.engine.core.math.QColor;
+import net.qoopo.engine.core.texture.util.QMaterialUtil;
+import net.qoopo.engine.core.util.QGlobal;
+import net.qoopo.engine.core.util.QUtilComponentes;
 import net.qoopo.engine3d.core.input.control.gizmo.QGizmo;
-import net.qoopo.engine3d.core.input.control.gizmo.transformacion.traslacion.QGizmoTraslacion;
-import net.qoopo.engine3d.core.material.basico.QMaterialBas;
-import net.qoopo.engine3d.core.math.QColor;
-import net.qoopo.engine3d.core.textura.mapeo.QMaterialUtil;
-import net.qoopo.engine3d.core.util.QGlobal;
 
 /**
  *
@@ -23,52 +22,60 @@ import net.qoopo.engine3d.core.util.QGlobal;
  */
 public class QGizmoRotacion extends QGizmo {
 
-    private static final List<QEntidad> ent =  CargaWaveObject.cargarWaveObject(QGizmoTraslacion.class.getResourceAsStream("/gizmos/Giz_rot.obj"));
-    private static final QGeometria formaY = QUtilComponentes.getGeometria(ent.get(0));
-    private static final QGeometria formaZ = QUtilComponentes.getGeometria(ent.get(1));
-    private static final QGeometria formaX = QUtilComponentes.getGeometria(ent.get(2));
+    // private static final List<QEntity> ent =
+    // LoadModelObj.cargarWaveObject(QGizmoTraslacion.class.getResourceAsStream("/gizmos/Giz_rot.obj"));
+    private static final Mesh formaY;// = QUtilComponentes.getMesh(ent.get(0));
+    private static final Mesh formaZ;// = QUtilComponentes.getMesh(ent.get(1));
+    private static final Mesh formaX;// = QUtilComponentes.getMesh(ent.get(2));
     private static final QMaterialBas matX;
     private static final QMaterialBas matY;
     private static final QMaterialBas matZ;
 
-  
     static {
+
+        ModelLoader loadModel = new LoadModelObj();
+        Entity ent = loadModel.loadModel(QGizmoRotacion.class.getResourceAsStream("/gizmos/Giz_rot.obj"));
+
+        formaY = QUtilComponentes.getMesh(ent.getChilds().get(0));
+        formaX = QUtilComponentes.getMesh(ent.getChilds().get(1));
+        formaZ = QUtilComponentes.getMesh(ent.getChilds().get(2));
+
         matX = new QMaterialBas("x");
         matX.setColorBase(QColor.RED);
         matX.setFactorEmision(0.85f);
-//        matX.setTransparencia(true);
-//        matX.setTransAlfa(0.9f);
+        // matX.setTransparencia(true);
+        // matX.setTransAlfa(0.9f);
         QMaterialUtil.aplicarMaterial(formaX, matX);
         matY = new QMaterialBas("y");
         matY.setColorBase(QColor.GREEN);
         matY.setFactorEmision(0.85f);
-//        matY.setTransparencia(true);
-//        matY.setTransAlfa(0.9f);
+        // matY.setTransparencia(true);
+        // matY.setTransAlfa(0.9f);
         QMaterialUtil.aplicarMaterial(formaY, matY);
         matZ = new QMaterialBas("z");
         matZ.setColorBase(QColor.BLUE);
         matZ.setFactorEmision(0.85f);
-//        matZ.setTransparencia(true);
-//        matZ.setTransAlfa(0.9f);        
+        // matZ.setTransparencia(true);
+        // matZ.setTransAlfa(0.9f);
         QMaterialUtil.aplicarMaterial(formaZ, matZ);
     }
 
     public QGizmoRotacion() {
-        agregarHijo(crearControladorX());
-        agregarHijo(crearControladorY());
-        agregarHijo(crearControladorZ());
+        addChild(crearControladorX());
+        addChild(crearControladorY());
+        addChild(crearControladorZ());
     }
 
     private QGizmo crearControladorX() {
         QGizmo conX = new QGizmo() {
             @Override
             public void mouseMove(float deltaX, float deltaY) {
-                QGizmoRotacion.this.entidad.aumentarRotX(getDelta(deltaX, deltaY));
+                QGizmoRotacion.this.entity.aumentarRotX(getDelta(deltaX, deltaY));
                 actualizarPosicionGizmo();
             }
         };
 
-        conX.agregarComponente(formaX);
+        conX.addComponent(formaX);
         return conX;
 
     }
@@ -77,11 +84,11 @@ public class QGizmoRotacion extends QGizmo {
         QGizmo conY = new QGizmo() {
             @Override
             public void mouseMove(float deltaX, float deltaY) {
-                QGizmoRotacion.this.entidad.aumentarRotY(getDelta(deltaX, deltaY));
+                QGizmoRotacion.this.entity.aumentarRotY(getDelta(deltaX, deltaY));
                 actualizarPosicionGizmo();
             }
         };
-        conY.agregarComponente(formaY);
+        conY.addComponent(formaY);
         return conY;
     }
 
@@ -89,21 +96,23 @@ public class QGizmoRotacion extends QGizmo {
         QGizmo conZ = new QGizmo() {
             @Override
             public void mouseMove(float deltaX, float deltaY) {
-                QGizmoRotacion.this.entidad.aumentarRotZ(getDelta(deltaX, deltaY));
+                QGizmoRotacion.this.entity.aumentarRotZ(getDelta(deltaX, deltaY));
                 actualizarPosicionGizmo();
             }
         };
-        conZ.agregarComponente(formaZ);
+        conZ.addComponent(formaZ);
         return conZ;
     }
 
     @Override
     public void actualizarPosicionGizmo() {
         try {
-            if (entidad != null) {
-                //actualizo posicion y rotacion
-                this.transformacion.getTraslacion().set(entidad.getMatrizTransformacion(QGlobal.tiempo).toTranslationVector());
-                this.transformacion.getRotacion().setCuaternion(entidad.getMatrizTransformacion(QGlobal.tiempo).toRotationQuat());
+            if (entity != null) {
+                // actualizo posicion y rotacion
+                this.transformacion.getTraslacion()
+                        .set(entity.getMatrizTransformacion(QGlobal.tiempo).toTranslationVector());
+                this.transformacion.getRotacion()
+                        .setCuaternion(entity.getMatrizTransformacion(QGlobal.tiempo).toRotationQuat());
                 this.transformacion.getRotacion().actualizarAngulos();
             }
         } catch (Exception e) {

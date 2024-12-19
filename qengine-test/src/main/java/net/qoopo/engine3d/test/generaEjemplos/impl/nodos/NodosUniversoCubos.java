@@ -7,96 +7,99 @@ package net.qoopo.engine3d.test.generaEjemplos.impl.nodos;
 
 import java.io.File;
 import java.util.Random;
-import net.qoopo.engine3d.componentes.QEntidad;
-import net.qoopo.engine3d.componentes.geometria.QGeometria;
-import net.qoopo.engine3d.componentes.geometria.primitivas.formas.QCaja;
-import net.qoopo.engine3d.core.escena.QEscena;
-import net.qoopo.engine3d.core.material.nodos.QMaterialNodo;
-import net.qoopo.engine3d.core.recursos.QGestorRecursos;
-import net.qoopo.engine3d.core.textura.mapeo.QMaterialUtil;
-import net.qoopo.engine3d.core.textura.procesador.QProcesadorSimple;
-import net.qoopo.engine3d.core.util.QGlobal;
-import net.qoopo.engine3d.test.generaEjemplos.GeneraEjemplo;
-import net.qoopo.engine3d.engines.render.QMotorRender;
-import net.qoopo.engine3d.engines.render.interno.shader.pixelshader.nodos.nodos.core.QNodoEnlace;
-import net.qoopo.engine3d.engines.render.interno.shader.pixelshader.nodos.nodos.salida.QNodoMaterial;
-import net.qoopo.engine3d.engines.render.interno.shader.pixelshader.nodos.nodos.sombreado.QNodoColorIluminacion;
-import net.qoopo.engine3d.engines.render.interno.shader.pixelshader.nodos.nodos.sombreado.QNodoColorTextura;
+
+import net.qoopo.engine.core.assets.AssetManager;
+import net.qoopo.engine.core.entity.Entity;
+import net.qoopo.engine.core.entity.component.mesh.Mesh;
+import net.qoopo.engine.core.entity.component.mesh.primitive.shape.QCaja;
+import net.qoopo.engine.core.material.node.MaterialNode;
+import net.qoopo.engine.core.material.node.core.QNodoEnlace;
+import net.qoopo.engine.core.material.node.core.output.MaterialOutputNode;
+import net.qoopo.engine.core.renderer.RenderEngine;
+import net.qoopo.engine.core.scene.Scene;
+import net.qoopo.engine.core.texture.procesador.QProcesadorSimple;
+import net.qoopo.engine.core.texture.util.QMaterialUtil;
+import net.qoopo.engine.core.util.QGlobal;
+import net.qoopo.engine.renderer.shader.pixelshader.nodos.shader.QNodoColorIluminacion;
+import net.qoopo.engine.renderer.shader.pixelshader.nodos.shader.QNodoColorTextura;
+import net.qoopo.engine3d.test.generaEjemplos.MakeTestScene;
 
 /**
  *
  * @author alberto
  */
-public class NodosUniversoCubos extends GeneraEjemplo {
+public class NodosUniversoCubos extends MakeTestScene {
 
     public NodosUniversoCubos() {
 
     }
 
-    private QMaterialNodo material = null;
+    private MaterialNode material = null;
 
     private void cargarMaterial() {
         material = null;
         try {
-//            int colorTransparencia = -1;
-            material = new QMaterialNodo();
+            // int colorTransparencia = -1;
+            material = new MaterialNode();
 
-            QNodoColorTextura nodoTextura = new QNodoColorTextura(new QProcesadorSimple(QGestorRecursos.cargarTextura("difusa", new File(QGlobal.RECURSOS + "texturas/Skybox_example.png"))));
+            QNodoColorTextura nodoTextura = new QNodoColorTextura(new QProcesadorSimple(
+                    AssetManager.get().loadTexture("difusa", new File("assets/textures/Skybox_example.png"))));
             QNodoColorIluminacion nodoDifuso = new QNodoColorIluminacion();
             // al instanciar el enlace, este se agrega a los perifericos
             QNodoEnlace enlace = new QNodoEnlace(nodoTextura.getSaColor(), nodoDifuso.getEnColor());
 
-            QNodoMaterial nodosalida = new QNodoMaterial();
+            MaterialOutputNode nodosalida = new MaterialOutputNode();
             QNodoEnlace enlace2 = new QNodoEnlace(nodoDifuso.getSaColor(), nodosalida.getEnColor());
 
             material.setNodo(nodosalida);
-//            material.texturaColorTransparente = colorTransparencia;
-//            if (colorTransparencia != -1) {
-//                material.transAlfa = 0.99f;// el objeto tiene una transparencia 
-//            }
+            // material.texturaColorTransparente = colorTransparencia;
+            // if (colorTransparencia != -1) {
+            // material.transAlfa = 0.99f;// el objeto tiene una transparencia
+            // }
         } catch (Exception e) {
             e.printStackTrace();
         }
 
     }
 
-    public void iniciar(QEscena mundo) {
-        this.mundo = mundo;
+    public void make(Scene mundo) {
+        this.scene = mundo;
         cargarMaterial();
         Random rnd = new Random();
         float tamUniverso = 200;
 
-//        Color colores[] = {
-//            Color.YELLOW,
-//            Color.RED,
-//            Color.GREEN,
-//            Color.PINK,
-//            Color.MAGENTA,
-//            Color.ORANGE,
-//            Color.BLUE,
-//            Color.CYAN,
-//            Color.LIGHT_GRAY,
-//            //            Color.BLACK,
-//            Color.WHITE,
-//            Color.GRAY,
-//            Color.DARK_GRAY
-//        };
-//        Color actual;
+        // Color colores[] = {
+        // Color.YELLOW,
+        // Color.RED,
+        // Color.GREEN,
+        // Color.PINK,
+        // Color.MAGENTA,
+        // Color.ORANGE,
+        // Color.BLUE,
+        // Color.CYAN,
+        // Color.LIGHT_GRAY,
+        // // Color.BLACK,
+        // Color.WHITE,
+        // Color.GRAY,
+        // Color.DARK_GRAY
+        // };
+        // Color actual;
 
-        QGeometria geometria = new QCaja(1);
+        Mesh geometria = new QCaja(1);
         QMaterialUtil.aplicarMaterial(geometria, material);
 
         for (int i = 0; i < 3000; i++) {
-            QEntidad cubo = new QEntidad("Cubo [" + i + "]");
-            cubo.mover(rnd.nextFloat() * tamUniverso * 2 - tamUniverso, rnd.nextFloat() * tamUniverso * 2 - tamUniverso, rnd.nextFloat() * tamUniverso * 2 - tamUniverso);
-            cubo.agregarComponente(geometria);
-            mundo.agregarEntidad(cubo);
+            Entity cubo = new Entity("Cubo [" + i + "]");
+            cubo.move(rnd.nextFloat() * tamUniverso * 2 - tamUniverso, rnd.nextFloat() * tamUniverso * 2 - tamUniverso,
+                    rnd.nextFloat() * tamUniverso * 2 - tamUniverso);
+            cubo.addComponent(geometria);
+            mundo.addEntity(cubo);
         }
 
     }
 
     @Override
-    public void accion(int numAccion, QMotorRender render) {
+    public void accion(int numAccion, RenderEngine render) {
     }
 
 }

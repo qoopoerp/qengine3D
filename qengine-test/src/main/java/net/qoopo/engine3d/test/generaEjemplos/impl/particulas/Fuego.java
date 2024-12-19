@@ -5,12 +5,11 @@
  */
 package net.qoopo.engine3d.test.generaEjemplos.impl.particulas;
 
-import net.qoopo.engine3d.componentes.QEntidad;
-import net.qoopo.engine3d.core.escena.QEscena;
-import net.qoopo.engine3d.test.generaEjemplos.GeneraEjemplo;
-import net.qoopo.engine3d.componentes.geometria.primitivas.formas.QPlano;
-import net.qoopo.engine3d.componentes.geometria.primitivas.formas.QPlanoBillboard;
-import net.qoopo.engine3d.engines.render.QMotorRender;
+import net.qoopo.engine.core.entity.Entity;
+import net.qoopo.engine.core.entity.component.mesh.primitive.shape.QPlano;
+import net.qoopo.engine.core.renderer.RenderEngine;
+import net.qoopo.engine.core.scene.Scene;
+import net.qoopo.engine3d.test.generaEjemplos.MakeTestScene;
 import net.qoopo.engine3d.test.juegotest.generadores.GenFuego;
 
 /**
@@ -18,26 +17,26 @@ import net.qoopo.engine3d.test.juegotest.generadores.GenFuego;
  *
  * @author alberto
  */
-public class Fuego extends GeneraEjemplo {
+public class Fuego extends MakeTestScene {
 
-    public void iniciar(QEscena mundo) {
-        this.mundo = mundo;
+    public void make(Scene mundo) {
+        this.scene = mundo;
 
-//        QEntidad fogata = GenFuego.crearFogataConLuces();
-        QEntidad fogata = GenFuego.crearFogata1();
-        mundo.agregarEntidad(fogata);
+//        Entity fogata = GenFuego.crearFogataConLuces();
+        Entity fogata = GenFuego.crearFogata1();
+        mundo.addEntity(fogata);
 
-        QEntidad plano = new QEntidad("plano");
-        plano.agregarComponente(new QPlano(10, 10));
-        mundo.agregarEntidad(plano);
-//        QEntidad plano2 = new QEntidad("plano2");
+        Entity plano = new Entity("plano");
+        plano.addComponent(new QPlano(10, 10));
+        mundo.addEntity(plano);
+//        Entity plano2 = new Entity("plano2");
 //        plano2.agregarComponente(new QPlanoBillboard(10, 10));
-//        mundo.agregarEntidad(plano2);
+//        mundo.addEntity(plano2);
 
     }
 
     @Override
-    public void accion(int numAccion, QMotorRender render) {
+    public void accion(int numAccion, RenderEngine render) {
     }
 
 }

@@ -1,9 +1,13 @@
 package net.qoopo.engine3d.editor;
 
+import static net.qoopo.engine.core.renderer.RenderEngine.GIZMO_ESCALA;
+import static net.qoopo.engine.core.renderer.RenderEngine.GIZMO_NINGUNO;
+import static net.qoopo.engine.core.renderer.RenderEngine.GIZMO_ROTACION;
+import static net.qoopo.engine.core.renderer.RenderEngine.GIZMO_TRASLACION;
+
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.GridLayout;
-import java.awt.Point;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
@@ -17,6 +21,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import javax.imageio.ImageIO;
 import javax.swing.DropMode;
 import javax.swing.ImageIcon;
@@ -27,7 +32,6 @@ import javax.swing.JOptionPane;
 import javax.swing.JTree;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingUtilities;
-import javax.swing.UIManager;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -35,99 +39,92 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeCellRenderer;
+
+import net.qoopo.engine.core.assets.AssetManager;
+import net.qoopo.engine.core.assets.model.ModelLoader;
+import net.qoopo.engine.core.entity.Entity;
+import net.qoopo.engine.core.entity.component.EntityComponent;
+import net.qoopo.engine.core.entity.component.camera.QCamaraControl;
+import net.qoopo.engine.core.entity.component.camera.QCamaraOrbitar;
+import net.qoopo.engine.core.entity.component.gui.QMouseReceptor;
+import net.qoopo.engine.core.entity.component.gui.QTecladoReceptor;
+import net.qoopo.engine.core.entity.component.ligth.QDirectionalLigth;
+import net.qoopo.engine.core.entity.component.ligth.QPointLigth;
+import net.qoopo.engine.core.entity.component.ligth.QSpotLigth;
+import net.qoopo.engine.core.entity.component.mesh.Mesh;
+import net.qoopo.engine.core.entity.component.mesh.primitive.shape.IcoSphere;
+import net.qoopo.engine.core.entity.component.mesh.primitive.shape.QCaja;
+import net.qoopo.engine.core.entity.component.mesh.primitive.shape.QCilindro;
+import net.qoopo.engine.core.entity.component.mesh.primitive.shape.QCilindroX;
+import net.qoopo.engine.core.entity.component.mesh.primitive.shape.QCilindroZ;
+import net.qoopo.engine.core.entity.component.mesh.primitive.shape.QCono;
+import net.qoopo.engine.core.entity.component.mesh.primitive.shape.QCuboEsfera;
+import net.qoopo.engine.core.entity.component.mesh.primitive.shape.QEsfera;
+import net.qoopo.engine.core.entity.component.mesh.primitive.shape.QGeoesfera;
+import net.qoopo.engine.core.entity.component.mesh.primitive.shape.PlanarMesh;
+import net.qoopo.engine.core.entity.component.mesh.primitive.shape.QPlano;
+import net.qoopo.engine.core.entity.component.mesh.primitive.shape.QPrisma;
+import net.qoopo.engine.core.entity.component.mesh.primitive.shape.QSuzane;
+import net.qoopo.engine.core.entity.component.mesh.primitive.shape.QTeapot;
+import net.qoopo.engine.core.entity.component.mesh.primitive.shape.QToro;
+import net.qoopo.engine.core.entity.component.mesh.primitive.shape.QTriangulo;
+import net.qoopo.engine.core.entity.component.mesh.primitive.shape.wire.QEspiral;
+import net.qoopo.engine.core.entity.component.physics.collision.detector.shape.mallas.QColisionMallaConvexa;
+import net.qoopo.engine.core.entity.component.physics.collision.detector.shape.primitivas.QColisionCaja;
+import net.qoopo.engine.core.entity.component.physics.collision.detector.shape.primitivas.QColisionCilindro;
+import net.qoopo.engine.core.entity.component.physics.collision.detector.shape.primitivas.QColisionCilindroX;
+import net.qoopo.engine.core.entity.component.physics.collision.detector.shape.primitivas.QColisionCono;
+import net.qoopo.engine.core.entity.component.physics.collision.detector.shape.primitivas.QColisionEsfera;
+import net.qoopo.engine.core.entity.component.physics.collision.detector.shape.primitivas.QColisionTriangulo;
+import net.qoopo.engine.core.entity.component.terrain.HeightMapTerrain;
+import net.qoopo.engine.core.input.QInputManager;
+import net.qoopo.engine.core.lwjgl.renderer.OpenGlRenderer;
+import net.qoopo.engine.core.math.QColor;
+import net.qoopo.engine.core.math.QVector2;
+import net.qoopo.engine.core.math.QVector3;
+import net.qoopo.engine.core.renderer.QOpcionesRenderer;
+import net.qoopo.engine.core.renderer.RenderEngine;
+import net.qoopo.engine.core.renderer.post.flujos.antialiasing.QAntialiasing;
+import net.qoopo.engine.core.renderer.post.flujos.basicos.QEfectoBlur;
+import net.qoopo.engine.core.renderer.post.flujos.basicos.QEfectoCel;
+import net.qoopo.engine.core.renderer.post.flujos.basicos.QEfectoContraste;
+import net.qoopo.engine.core.renderer.post.flujos.basicos.QEfectoDepthOfField;
+import net.qoopo.engine.core.renderer.post.flujos.complejos.QEfectoBloom;
+import net.qoopo.engine.core.renderer.post.procesos.blur.QProcesadorDepthOfField;
+import net.qoopo.engine.core.renderer.superficie.QJPanel;
+import net.qoopo.engine.core.renderer.superficie.Superficie;
+import net.qoopo.engine.core.scene.Camera;
+import net.qoopo.engine.core.scene.Scene;
+import net.qoopo.engine.core.texture.util.QMaterialUtil;
+import net.qoopo.engine.core.util.QGlobal;
+import net.qoopo.engine.core.util.QUtilComponentes;
+import net.qoopo.engine.core.util.mesh.QUtilNormales;
+import net.qoopo.engine.java3d.renderer.QRenderJava3D;
+import net.qoopo.engine.renderer.SoftwareRenderer;
 import net.qoopo.engine3d.QEngine3D;
-import net.qoopo.engine3d.componentes.QComponente;
-import net.qoopo.engine3d.componentes.QEntidad;
-import net.qoopo.engine3d.componentes.QUtilComponentes;
-import net.qoopo.engine3d.componentes.camara.QCamaraControl;
-import net.qoopo.engine3d.componentes.camara.QCamaraOrbitar;
-import net.qoopo.engine3d.componentes.fisica.colisiones.detectores.contenedores.mallas.QColisionMallaConvexa;
-import net.qoopo.engine3d.componentes.fisica.colisiones.detectores.contenedores.primitivas.QColisionCaja;
-import net.qoopo.engine3d.componentes.fisica.colisiones.detectores.contenedores.primitivas.QColisionCilindro;
-import net.qoopo.engine3d.componentes.fisica.colisiones.detectores.contenedores.primitivas.QColisionCilindroX;
-import net.qoopo.engine3d.componentes.fisica.colisiones.detectores.contenedores.primitivas.QColisionCono;
-import net.qoopo.engine3d.componentes.fisica.colisiones.detectores.contenedores.primitivas.QColisionEsfera;
-import net.qoopo.engine3d.componentes.fisica.colisiones.detectores.contenedores.primitivas.QColisionTriangulo;
-import net.qoopo.engine3d.componentes.geometria.QGeometria;
-import net.qoopo.engine3d.componentes.geometria.primitivas.formas.QCaja;
-import net.qoopo.engine3d.componentes.geometria.primitivas.formas.QCilindro;
-import net.qoopo.engine3d.componentes.geometria.primitivas.formas.QCilindroX;
-import net.qoopo.engine3d.componentes.geometria.primitivas.formas.QCilindroZ;
-import net.qoopo.engine3d.componentes.geometria.primitivas.formas.QCono;
-import net.qoopo.engine3d.componentes.geometria.primitivas.formas.QCuboEsfera;
-import net.qoopo.engine3d.componentes.geometria.primitivas.formas.QEsfera;
-import net.qoopo.engine3d.componentes.geometria.primitivas.formas.QGeoesfera;
-import net.qoopo.engine3d.componentes.geometria.primitivas.formas.QMalla;
-import net.qoopo.engine3d.componentes.geometria.primitivas.formas.QNicoEsfera;
-import net.qoopo.engine3d.componentes.geometria.primitivas.formas.QPlano;
-import net.qoopo.engine3d.componentes.geometria.primitivas.formas.QPrisma;
-import net.qoopo.engine3d.componentes.geometria.primitivas.formas.QSuzane;
-import net.qoopo.engine3d.componentes.geometria.primitivas.formas.QTeapot;
-import net.qoopo.engine3d.componentes.geometria.primitivas.formas.QToro;
-import net.qoopo.engine3d.componentes.geometria.primitivas.formas.QTriangulo;
-import net.qoopo.engine3d.componentes.geometria.primitivas.formas.alambre.QEspiral;
-import net.qoopo.engine3d.componentes.iluminacion.QLuzDireccional;
-import net.qoopo.engine3d.componentes.iluminacion.QLuzPuntual;
-import net.qoopo.engine3d.componentes.iluminacion.QLuzSpot;
-import net.qoopo.engine3d.componentes.interaccion.QMouseReceptor;
-import net.qoopo.engine3d.componentes.interaccion.QTecladoReceptor;
-import net.qoopo.engine3d.componentes.terreno.QTerreno;
-import net.qoopo.engine3d.core.carga.CargaObjeto;
-import net.qoopo.engine3d.core.carga.impl.CargaASCII;
-import net.qoopo.engine3d.core.carga.impl.CargaWaveObject;
-import net.qoopo.engine3d.core.carga.impl.assimp.CargaAssimp;
-import net.qoopo.engine3d.core.carga.impl.qengine.CargaQENGINE;
-import net.qoopo.engine3d.core.carga.impl.qengine.CargaQENGINE2;
-import net.qoopo.engine3d.core.escena.QCamara;
-import net.qoopo.engine3d.core.escena.QEscena;
-import net.qoopo.engine3d.core.input.QInputManager;
+import net.qoopo.engine3d.core.asset.model.DefaultModelLoader;
 import net.qoopo.engine3d.core.input.control.gizmo.QGizmo;
-import net.qoopo.engine3d.core.math.QColor;
-import net.qoopo.engine3d.core.math.QVector3;
-import net.qoopo.engine3d.core.textura.mapeo.QMaterialUtil;
 import net.qoopo.engine3d.core.util.Accion;
 import net.qoopo.engine3d.core.util.QDefinirCentro;
-import net.qoopo.engine3d.core.util.QGlobal;
-import net.qoopo.engine3d.core.util.QUtilNormales;
 import net.qoopo.engine3d.core.util.SerializarUtil;
 import net.qoopo.engine3d.editor.assets.PnlGestorRecursos;
-import net.qoopo.engine3d.editor.entidad.EditorEntidad;
+import net.qoopo.engine3d.editor.entity.EditorEntidad;
 import net.qoopo.engine3d.editor.util.ImagePreviewPanel;
 import net.qoopo.engine3d.editor.util.QArbolWrapper;
 import net.qoopo.engine3d.editor.util.Util;
-import net.qoopo.engine3d.engines.render.QMotorRender;
-import static net.qoopo.engine3d.engines.render.QMotorRender.GIZMO_ESCALA;
-import static net.qoopo.engine3d.engines.render.QMotorRender.GIZMO_NINGUNO;
-import static net.qoopo.engine3d.engines.render.QMotorRender.GIZMO_ROTACION;
-import static net.qoopo.engine3d.engines.render.QMotorRender.GIZMO_TRASLACION;
-import net.qoopo.engine3d.engines.render.QOpcionesRenderer;
-import net.qoopo.engine3d.engines.render.interno.QRender;
-import net.qoopo.engine3d.engines.render.interno.postproceso.flujos.antialiasing.QAntialiasing;
-import net.qoopo.engine3d.engines.render.interno.postproceso.flujos.basicos.QEfectoBlur;
-import net.qoopo.engine3d.engines.render.interno.postproceso.flujos.basicos.QEfectoCel;
-import net.qoopo.engine3d.engines.render.interno.postproceso.flujos.basicos.QEfectoContraste;
-import net.qoopo.engine3d.engines.render.interno.postproceso.flujos.basicos.QEfectoDepthOfField;
-import net.qoopo.engine3d.engines.render.interno.postproceso.flujos.complejos.QEfectoBloom;
-import net.qoopo.engine3d.engines.render.interno.postproceso.procesos.blur.QProcesadorDepthOfField;
-import net.qoopo.engine3d.engines.render.java3d.QRenderJava3D;
-import net.qoopo.engine3d.engines.render.lwjgl.QOpenGL;
-import net.qoopo.engine3d.engines.render.superficie.QJPanel;
-import net.qoopo.engine3d.engines.render.superficie.Superficie;
-import net.qoopo.engine3d.test.generaEjemplos.GeneraEjemplo;
-import net.qoopo.engine3d.test.generaEjemplos.impl.pbr.EjemploPBR;
-import net.qoopo.engine3d.test.generaEjemplos.impl.simple.EjemploLuces;
+import net.qoopo.engine3d.test.generaEjemplos.InitialScene;
 
 public class Principal extends javax.swing.JFrame {
 
     public static Principal instancia;
-    //el motor que va a renderizar en el modo de dise;o
+    // el motor que va a renderizar en el modo de dise;o
     private QEngine3D motor;
-    private List<GeneraEjemplo> ejemplo;
-    private List<QMotorRender> listaRenderer = new ArrayList<>();
-    private QMotorRender renderer; //renderer seleccionado
+
+    private List<RenderEngine> listaRenderer = new ArrayList<>();
+    private RenderEngine renderer; // renderer seleccionado
     boolean objectLock = true;
     boolean objectListLock = false;
-    private LinkedList<QEntidad> clipboard = new LinkedList<>();
+    private LinkedList<Entity> clipboard = new LinkedList<>();
     private JFileChooser chooser = new JFileChooser();
     private ImagePreviewPanel preview = new ImagePreviewPanel();
     private EditorEntidad pnlEditorEntidad = new EditorEntidad();
@@ -138,64 +135,15 @@ public class Principal extends javax.swing.JFrame {
     private boolean cambiandoLineaTiempo = false;
     protected static final DecimalFormat df = new DecimalFormat("0.00");
 
-    private QEscena escena;
-
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-        * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html
-         */
-//        try {
-//            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-//                if ("Nimbus".equals(info.getName())) {
-//                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-//                    break;
-//                }
-//            }
-//        } catch (ClassNotFoundException ex) {
-//            java.util.logging.Logger.getLogger(Principal.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-//        } catch (InstantiationException ex) {
-//            java.util.logging.Logger.getLogger(Principal.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-//        } catch (IllegalAccessException ex) {
-//            java.util.logging.Logger.getLogger(Principal.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-//        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-//            java.util.logging.Logger.getLogger(Principal.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-//        }
-
-        //
-        try {
-//            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());//la del sistema operativo
-//            UIManager.setLookAndFeel("javax.swing.plaf.metal.MetalLookAndFeel");
-//            UIManager.setLookAndFeel("com.sun.java.swing.plaf.motif.MotifLookAndFeel");
-//            UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
-            UIManager.setLookAndFeel("javax.swing.plaf.nimbus.NimbusLookAndFeel");
-//            UIManager.setLookAndFeel("com.sun.java.swing.plaf.gtk.GTKLookAndFeel");
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-
-        //</editor-fold>
-        //</editor-fold>
-
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new Principal().setVisible(true);
-            }
-        });
-    }
+    private Scene escena;
 
     public Principal() {
-        //configura las acciones para interactuar desde el renderar hacia afuera
+        // configura las acciones para interactuar desde el renderar hacia afuera
         accionSeleccionar = new Accion() {
             @Override
             public void ejecutar(Object... parametros) {
                 try {
-                    seleccionarEntidad((QEntidad) parametros[0]);
+                    seleccionarEntidad((Entity) parametros[0]);
                 } catch (Exception e) {
 
                 }
@@ -205,9 +153,9 @@ public class Principal extends javax.swing.JFrame {
             @Override
             public void ejecutar(Object... parametros) {
                 try {
-                    if (motor.getMotorAnimacion() != null && motor.getMotorAnimacion().isEjecutando()) {
+                    if (motor.getAnimationEngine() != null && motor.getAnimationEngine().isEjecutando()) {
                         cambiandoLineaTiempo = true;
-                        sldLineaTiempo.setValue((int) (motor.getMotorAnimacion().getTiempo() * 10));
+                        sldLineaTiempo.setValue((int) (motor.getAnimationEngine().getTiempo() * 10));
                         cambiandoLineaTiempo = false;
                     }
                 } catch (Exception e) {
@@ -218,26 +166,30 @@ public class Principal extends javax.swing.JFrame {
 
         instancia = this;
         initComponents();
-        chooser.setCurrentDirectory(new File(QGlobal.RECURSOS));
+        chooser.setCurrentDirectory(new File("assets/"));
         motor = new QEngine3D();
         this.escena = motor.getEscena();
         motor.getAccionesEjecucion().add(accionActualizarLineaTiempo);
-        motor.getEscena().setColorAmbiente(new QColor(50.0f / 255.0f, 50.0f / 255.0f, 50.0f / 255.0f));
-        pnlColorFondo.setBackground(motor.getEscena().getColorAmbiente().getColor());
-        cargarEjemplo();
+        motor.getEscena().setAmbientColor(new QColor(50.0f / 255.0f, 50.0f / 255.0f, 50.0f / 255.0f));
+        pnlColorFondo.setBackground(motor.getEscena().getAmbientColor().getColor());
+
         motor.setIniciarAudio(false);
         motor.setIniciarDiaNoche(false);
         motor.setIniciarFisica(false);
         motor.setIniciarInteligencia(false);
         motor.setIniciarAnimaciones(false);
-        agregarRenderer("QRender", new QVector3(0, 10, 10), new QVector3(0, 0, 0), QMotorRender.RENDER_INTERNO);
+        agregarRenderer("Main", QVector3.of(0, 10, 10), QVector3.of(0, 0, 0), RenderEngine.RENDER_INTERNO);
         renderer.opciones.setDibujarLuces(true);
-        motor.setRenderer(renderer);
-//        renderer.setPanelClip(new QClipPane(QVector3.unitario_y.clone(), 0));//la normal es hacia arriba
-//        renderer.setPanelClip(new QClipPane(new QVector3(0, -1, 0), 0));//la normal es hacia abajo
-//        renderer.setPanelClip(new QClipPane(QVector3.unitario_y.clone(), 2f));//la normal es hacia arriba
-//        renderer.setPanelClip(new QClipPane(new QVector3(0, -1, 0), 2));//la normal es hacia abajo
-        motor.iniciar();
+        motor.setRenderEngine(renderer);
+        // renderer.setPanelClip(new QClipPane(QVector3.unitario_y.clone(), 0));//la
+        // normal es hacia arriba
+        // renderer.setPanelClip(new QClipPane(QVector3.of(0, -1, 0), 0));//la normal es
+        // hacia abajo
+        // renderer.setPanelClip(new QClipPane(QVector3.unitario_y.clone(), 2f));//la
+        // normal es hacia arriba
+        // renderer.setPanelClip(new QClipPane(QVector3.of(0, -1, 0), 2));//la normal es
+        // hacia abajo
+        motor.start();
         scrollOpciones.getVerticalScrollBar().setUnitIncrement(20);
         this.setExtendedState(MAXIMIZED_BOTH);
         actualizarArbolEscena();
@@ -260,9 +212,9 @@ public class Principal extends javax.swing.JFrame {
                     if (!QInputManager.isShitf()) {
                         renderer.entidadesSeleccionadas.clear();
                     }
-                    if (nodo.getObjeto() instanceof QEntidad) {
-                        for (QMotorRender rend : listaRenderer) {
-                            rend.entidadActiva = (QEntidad) nodo.getObjeto();
+                    if (nodo.getObjeto() instanceof Entity) {
+                        for (RenderEngine rend : listaRenderer) {
+                            rend.entidadActiva = (Entity) nodo.getObjeto();
                             renderer.entidadesSeleccionadas.add(rend.entidadActiva);
                         }
                     }
@@ -277,47 +229,21 @@ public class Principal extends javax.swing.JFrame {
         treeEntidades.setDragEnabled(true);
         treeEntidades.setDropMode(DropMode.ON);
         treeEntidades.setCellRenderer(new ArbolEntidadRenderer());
-        escenaInicial();
+        loadInitialScene();
     }
 
-    public void escenaInicial() {
-        if (ejemplo == null || ejemplo.isEmpty()) {
-//// Agrega un objeto inicial
-//            QEntidad objeto = new QEntidad("Cubo");
-//            objeto.agregarComponente(new QCaja(1));
-//            objeto.agregarComponente(new QColisionCaja(1, 1, 1));
-//            motor.getEscena().agregarEntidad(objeto);
-//            QEntidad objeto = new QEntidad("Esfera");
-//            objeto.agregarComponente(new QEsfera(1));
-//            objeto.agregarComponente(new QColisionEsfera(1));
-//            motor.getEscena().agregarEntidad(objeto);
-
-            QEntidad objeto = new QEntidad("teapot");
-            QGeometria teapot = new QTeapot();
-            objeto.agregarComponente(teapot);
-            objeto.agregarComponente(new QColisionMallaConvexa(teapot));
-            motor.getEscena().agregarEntidad(objeto);
-
-            // agrega una luz
-            QEntidad luz = new QEntidad("Luz");
-            luz.mover(4, 5, 1);
-            luz.agregarComponente(new QLuzPuntual());
-            motor.getEscena().agregarEntidad(luz);
-            //segunda luz
-            QEntidad luz2 = new QEntidad("Luz");
-            luz2.mover(-4, -5, -1);
-            luz2.agregarComponente(new QLuzPuntual());
-            motor.getEscena().agregarEntidad(luz2);
-        }
+    public void loadInitialScene() {
+        InitialScene initialScene = new InitialScene();
+        initialScene.make(motor.getEscena());
         actualizarArbolEscena();
     }
 
     public void agregarRenderer(String nombre, int tipoRenderer) {
-        agregarRenderer(nombre, new QCamara(nombre), tipoRenderer);
+        agregarRenderer(nombre, new Camera(nombre), tipoRenderer);
     }
 
     public void agregarRenderer(String nombre, QVector3 posicionCam, QVector3 posicionObjetivo, int tipoRenderer) {
-        QCamara nuevaCamara = new QCamara("Cam. " + nombre);
+        Camera nuevaCamara = new Camera("Cam. " + nombre);
         nuevaCamara.lookAtTarget(posicionCam, posicionObjetivo, QVector3.unitario_y.clone());
         agregarRenderer(nombre, nuevaCamara, tipoRenderer);
     }
@@ -329,8 +255,8 @@ public class Principal extends javax.swing.JFrame {
      * @param camara
      * @param tipoRenderer
      */
-    public void agregarRenderer(String nombre, QCamara camara, int tipoRenderer) {
-        //agregamos un nuevo panel para el renderer principal
+    public void agregarRenderer(String nombre, Camera camara, int tipoRenderer) {
+        // agregamos un nuevo panel para el renderer principal
         motor.setModificando(true);
 
         try {
@@ -354,23 +280,23 @@ public class Principal extends javax.swing.JFrame {
                 break;
         }
 
-        for (QMotorRender render : listaRenderer) {
+        for (RenderEngine render : listaRenderer) {
             panelRenderes.add(render.getSuperficie().getComponente());
         }
 
         panelRenderes.add(panelDibujo);
 
-        QMotorRender nuevoRenderer;
+        RenderEngine nuevoRenderer;
         switch (tipoRenderer) {
-            case QMotorRender.RENDER_JAVA3D:
+            case RenderEngine.RENDER_JAVA3D:
                 nuevoRenderer = new QRenderJava3D(motor.getEscena(), nombre, new Superficie(panelDibujo), 800, 600);
                 break;
-            case QMotorRender.RENDER_OPENGL:
-                nuevoRenderer = new QOpenGL(motor.getEscena(), nombre, new Superficie(panelDibujo), 800, 600);
+            case RenderEngine.RENDER_OPENGL:
+                nuevoRenderer = new OpenGlRenderer(motor.getEscena(), nombre, new Superficie(panelDibujo), 800, 600);
                 break;
-            case QMotorRender.RENDER_INTERNO:
+            case RenderEngine.RENDER_INTERNO:
             default:
-                nuevoRenderer = new QRender(motor.getEscena(), nombre, new Superficie(panelDibujo), 800, 600);
+                nuevoRenderer = new SoftwareRenderer(motor.getEscena(), nombre, new Superficie(panelDibujo), 800, 600);
                 break;
         }
         nuevoRenderer.opciones.setRenderArtefactos(true);
@@ -378,114 +304,50 @@ public class Principal extends javax.swing.JFrame {
             public void mousePressed(java.awt.event.MouseEvent evt) {
                 setRenderer(nuevoRenderer);
                 actualizarBordeSeleccionado();
-//                nuevoRenderer.getSuperficie().getComponente().setBorder(new LineBorder(Color.RED, 10));
+                // nuevoRenderer.getSuperficie().getComponente().setBorder(new
+                // LineBorder(Color.RED, 10));
             }
-//            public void mouseReleased(java.awt.event.MouseEvent evt) {
-////                rendererMouseReleased(evt);
-//            }
+            // public void mouseReleased(java.awt.event.MouseEvent evt) {
+            //// rendererMouseReleased(evt);
+            // }
         });
 
-        motor.getEscena().agregarEntidad(camara);
-        nuevoRenderer.setCamara(camara);//setea la camara inicial creada        
-//        nuevoRenderer.setAccionSeleccionar(accionSeleccionar);
+        motor.getEscena().addEntity(camara);
+        nuevoRenderer.setCamara(camara);// setea la camara inicial creada
+        // nuevoRenderer.setAccionSeleccionar(accionSeleccionar);
 
-        for (QMotorRender render : listaRenderer) {
+        for (RenderEngine render : listaRenderer) {
             render.resize();
         }
 
         listaRenderer.add(nuevoRenderer);
         motor.setRendererList(listaRenderer);
         setRenderer(nuevoRenderer);
-        camara.agregarComponente(new QCamaraControl(camara));
-//        camara.agregarComponente(new QCamaraOrbitar(camara));
-//        camara.agregarComponente(new QCamaraPrimeraPersona(camara));       
+        camara.addComponent(new QCamaraControl(camara));
+        // camara.agregarComponente(new QCamaraOrbitar(camara));
+        // camara.agregarComponente(new QCamaraPrimeraPersona(camara));
         prepararInputListenerRenderer(nuevoRenderer);
         motor.setModificando(false);
         this.pack();
     }
 
     public void actualizarBordeSeleccionado() {
-//        for (QMotorRender render : listaRenderer) {
-//            if (render.equals(renderer)) {
-//                render.getSuperficie().getComponente().setBorder(new LineBorder(Color.RED, 5));
-//            } else {
-//                render.getSuperficie().getComponente().setBorder(null);
-//            }
-//        }
+        // for (QMotorRender render : listaRenderer) {
+        // if (render.equals(renderer)) {
+        // render.getSuperficie().getComponente().setBorder(new LineBorder(Color.RED,
+        // 5));
+        // } else {
+        // render.getSuperficie().getComponente().setBorder(null);
+        // }
+        // }
     }
 
-    public QMotorRender getRenderer() {
+    public RenderEngine getRenderer() {
         return renderer;
     }
 
-    public void setRenderer(QMotorRender renderer) {
+    public void setRenderer(RenderEngine renderer) {
         this.renderer = renderer;
-    }
-
-    public void cargarEjemplo() {
-        ejemplo = new ArrayList<>();
-//        ejemplo.add(new UniversoCubos());
-//        ejemplo.add(new UniversoEsferas());
-//        ejemplo.add(new Ejemplo2());
-//        ejemplo.add(new EjemplRotarItems());
-//        ejemplo.add(new EjemploFisica1());
-//        ejemplo.add(new EjemploFisica2());
-//        ejemplo.add(new EjemploSponza());
-//        ejemplo.add(new FisicaDisparar());
-//        ejemplo.add(new EjmDivision());
-//        ejemplo.add(new EjmTexturaTransparente());
-//        ejemplo.add(new EjmTexturaCubo());
-//        ejemplo.add(new EjmTexturaEsfera());        
-//        ejemplo.add(new EjmTexturaSistemaSolar());
-//        ejemplo.add(new EsferaAnimada());
-//        ejemplo.add(new Nieve());
-//        ejemplo.add(new Fuego());
-//        ejemplo.add(new Humo());
-//        ejemplo.add(new Espejos());
-//        ejemplo.add(new EjmTerreno());
-//        ejemplo.add(new Agua());
-//        ejemplo.add(new Laguna());
-//        ejemplo.add(new Rios());
-//        ejemplo.add(new SombrasDireccional());
-//        ejemplo.add(new SombrasOmniDireccional());
-//        ejemplo.add(new SombrasOmniDireccional2());
-//        ejemplo.add(new EjemCargaMD5());
-//        ejemplo.add(new EjemCargaColladaDAE());
-//        ejemplo.add(new EjemCargaAssimp());
-//        ejemplo.add(new Entorno());//Entorno
-//        ejemplo.add(new EjemploVehiculo());
-//        ejemplo.add(new EjemploVehiculoModelo());
-//        ejemplo.add(new EjmTexturaEsferaShaders());
-//        -------------------------------
-//        ejemplo.add(new EjmRefraccion());
-//        ejemplo.add(new EjmReflexion());
-// materiales Nodos
-//        ejemplo.add(new NodosSimple());
-//        ejemplo.add(new NodosSimple2());// texturas
-//        ejemplo.add(new NodosSimple3());//reflejos
-//        ejemplo.add(new NodosSimple4());//refraccion
-//        ejemplo.add(new NodosSimple5());//vidrio (reflexion y refraccion) y mix de reflexion y refraccion
-//        ejemplo.add(new NodosUniversoCubos());//Universo cubos
-//        ejemplo.add(new NodosVarios());//Entorno, difuso, emisivo, reflexion
-// materiales PBR
-        ejemplo.add(new EjemploPBR());   // esferas con diferentes valores de rugosidad y metalico     
-//        ejemplo.add(new EjemploPBR2()); // esferas con diferentes valores de rugosidad y metalico , y un mapa de reflexiones       
-//        ejemplo.add(new EjemploPBRTextura());
-//        ejemplo.add(new PBREsfera());
-//        ejemplo.add(new PBRCubo());
-//        ejemplo.add(new PBRTetera());
-//        ejemplo.add(new EjemploPBR_CerberusGun());
-
-//-----------------------------------------
-//        ejemplo.add(new EjemplRotarItems());
-//        ejemplo.add(new Entorno());
-//        ejemplo.add(new Piso());
-//        ejemplo.add(new EjemploSol());
-        ejemplo.add(new EjemploLuces());
-        for (GeneraEjemplo ejem : ejemplo) {
-            ejem.iniciar(motor.getEscena());
-        }
-
     }
 
     /**
@@ -493,8 +355,8 @@ public class Principal extends javax.swing.JFrame {
      *
      * @param entidad
      */
-    private void seleccionarEntidad(QEntidad entidad) {
-        for (QMotorRender rend : listaRenderer) {
+    private void seleccionarEntidad(Entity entidad) {
+        for (RenderEngine rend : listaRenderer) {
             if (!QInputManager.isShitf()) {
                 rend.entidadesSeleccionadas.clear();
             }
@@ -507,7 +369,8 @@ public class Principal extends javax.swing.JFrame {
     }
 
     @SuppressWarnings("unchecked")
-    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
+    // <editor-fold defaultstate="collapsed" desc="Generated
+    // Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
         buttonGroup1 = new javax.swing.ButtonGroup();
@@ -598,10 +461,10 @@ public class Principal extends javax.swing.JFrame {
         jButton18 = new javax.swing.JButton();
         jButton19 = new javax.swing.JButton();
         pnlMotores = new javax.swing.JPanel();
-        jButton1 = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
-        jButton3 = new javax.swing.JButton();
-        jButton4 = new javax.swing.JButton();
+        btnStartPhysics = new javax.swing.JButton();
+        btnStopPhysics = new javax.swing.JButton();
+        btnAccion1 = new javax.swing.JButton();
+        btnAccion2 = new javax.swing.JButton();
         jButton5 = new javax.swing.JButton();
         jButton6 = new javax.swing.JButton();
         jButton7 = new javax.swing.JButton();
@@ -632,12 +495,12 @@ public class Principal extends javax.swing.JFrame {
         btnAnimInvertir = new javax.swing.JButton();
         panelRenderes = new javax.swing.JPanel();
         barraMenu = new javax.swing.JMenuBar();
-        jMenu7 = new javax.swing.JMenu();
+        mnuFile = new javax.swing.JMenu();
         jMenuItem19 = new javax.swing.JMenuItem();
-        jMenuItem20 = new javax.swing.JMenuItem();
-        jMenuItem25 = new javax.swing.JMenuItem();
-        jMenuItem22 = new javax.swing.JMenuItem();
-        jMenuItem23 = new javax.swing.JMenuItem();
+        itmMenuOpen = new javax.swing.JMenuItem();
+        itmMenuSave = new javax.swing.JMenuItem();
+        itmMenuExportentity = new javax.swing.JMenuItem();
+        itmMenuImport = new javax.swing.JMenuItem();
         jMenuItem24 = new javax.swing.JMenuItem();
         jMenu3 = new javax.swing.JMenu();
         jMenu5 = new javax.swing.JMenu();
@@ -693,7 +556,9 @@ public class Principal extends javax.swing.JFrame {
 
         splitIzquierda.setOrientation(javax.swing.JSplitPane.VERTICAL_SPLIT);
 
-        pnlEscenario1.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Escenario", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 0, 9))); // NOI18N
+        pnlEscenario1.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Escenario",
+                javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION,
+                new java.awt.Font("Dialog", 0, 9))); // NOI18N
 
         treeEntidades.setFont(new java.awt.Font("Dialog", 0, 9)); // NOI18N
         jScrollPane4.setViewportView(treeEntidades);
@@ -701,13 +566,11 @@ public class Principal extends javax.swing.JFrame {
         javax.swing.GroupLayout pnlEscenario1Layout = new javax.swing.GroupLayout(pnlEscenario1);
         pnlEscenario1.setLayout(pnlEscenario1Layout);
         pnlEscenario1Layout.setHorizontalGroup(
-            pnlEscenario1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 364, Short.MAX_VALUE)
-        );
+                pnlEscenario1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 364, Short.MAX_VALUE));
         pnlEscenario1Layout.setVerticalGroup(
-            pnlEscenario1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 207, Short.MAX_VALUE)
-        );
+                pnlEscenario1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 207, Short.MAX_VALUE));
 
         splitIzquierda.setLeftComponent(pnlEscenario1);
 
@@ -807,60 +670,71 @@ public class Principal extends javax.swing.JFrame {
         javax.swing.GroupLayout jPanel5Layout = new javax.swing.GroupLayout(jPanel5);
         jPanel5.setLayout(jPanel5Layout);
         jPanel5Layout.setHorizontalGroup(
-            jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel5Layout.createSequentialGroup()
-                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel5Layout.createSequentialGroup()
-                        .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(cbxForceSmooth)
-                            .addComponent(cbxForceRes))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(spnWidth, javax.swing.GroupLayout.PREFERRED_SIZE, 64, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(4, 4, 4)
-                        .addComponent(jLabel7)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(spnHeight, javax.swing.GroupLayout.PREFERRED_SIZE, 64, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(jPanel5Layout.createSequentialGroup()
-                        .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(jPanel5Layout.createSequentialGroup()
+                jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(jPanel5Layout.createSequentialGroup()
                                 .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(cbxShowLight)
-                                    .addComponent(chkVerGrid))
-                                .addGap(59, 59, 59)
-                                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(cbxNormalMapping)
-                                    .addComponent(cbxZSort)))
-                            .addGroup(jPanel5Layout.createSequentialGroup()
-                                .addComponent(cbxInterpolar)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(cbxShowBackFaces)))
-                        .addGap(0, 0, Short.MAX_VALUE)))
-                .addContainerGap())
-        );
+                                        .addGroup(jPanel5Layout.createSequentialGroup()
+                                                .addGroup(jPanel5Layout
+                                                        .createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                                        .addComponent(cbxForceSmooth)
+                                                        .addComponent(cbxForceRes))
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED,
+                                                        javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                                .addComponent(spnWidth, javax.swing.GroupLayout.PREFERRED_SIZE, 64,
+                                                        javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                .addGap(4, 4, 4)
+                                                .addComponent(jLabel7)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                .addComponent(spnHeight, javax.swing.GroupLayout.PREFERRED_SIZE, 64,
+                                                        javax.swing.GroupLayout.PREFERRED_SIZE))
+                                        .addGroup(jPanel5Layout.createSequentialGroup()
+                                                .addGroup(jPanel5Layout
+                                                        .createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                                        .addGroup(jPanel5Layout.createSequentialGroup()
+                                                                .addGroup(jPanel5Layout.createParallelGroup(
+                                                                        javax.swing.GroupLayout.Alignment.LEADING)
+                                                                        .addComponent(cbxShowLight)
+                                                                        .addComponent(chkVerGrid))
+                                                                .addGap(59, 59, 59)
+                                                                .addGroup(jPanel5Layout.createParallelGroup(
+                                                                        javax.swing.GroupLayout.Alignment.LEADING)
+                                                                        .addComponent(cbxNormalMapping)
+                                                                        .addComponent(cbxZSort)))
+                                                        .addGroup(jPanel5Layout.createSequentialGroup()
+                                                                .addComponent(cbxInterpolar)
+                                                                .addPreferredGap(
+                                                                        javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                                                .addComponent(cbxShowBackFaces)))
+                                                .addGap(0, 0, Short.MAX_VALUE)))
+                                .addContainerGap()));
         jPanel5Layout.setVerticalGroup(
-            jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel5Layout.createSequentialGroup()
-                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(cbxShowLight)
-                    .addComponent(cbxNormalMapping))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(chkVerGrid)
-                    .addComponent(cbxZSort))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(cbxInterpolar)
-                    .addComponent(cbxShowBackFaces))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(cbxForceSmooth)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(cbxForceRes)
-                    .addComponent(spnHeight, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel7, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(spnWidth, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(15, Short.MAX_VALUE))
-        );
+                jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(jPanel5Layout.createSequentialGroup()
+                                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                        .addComponent(cbxShowLight)
+                                        .addComponent(cbxNormalMapping))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                        .addComponent(chkVerGrid)
+                                        .addComponent(cbxZSort))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                        .addComponent(cbxInterpolar)
+                                        .addComponent(cbxShowBackFaces))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(cbxForceSmooth)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                        .addComponent(cbxForceRes)
+                                        .addComponent(spnHeight, javax.swing.GroupLayout.PREFERRED_SIZE,
+                                                javax.swing.GroupLayout.DEFAULT_SIZE,
+                                                javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addComponent(jLabel7, javax.swing.GroupLayout.PREFERRED_SIZE, 28,
+                                                javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addComponent(spnWidth, javax.swing.GroupLayout.PREFERRED_SIZE,
+                                                javax.swing.GroupLayout.DEFAULT_SIZE,
+                                                javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addContainerGap(15, Short.MAX_VALUE)));
 
         jLabel8.setFont(new java.awt.Font("Dialog", 1, 11)); // NOI18N
         jLabel8.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
@@ -881,7 +755,9 @@ public class Principal extends javax.swing.JFrame {
             }
         });
 
-        jPanel11.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Luz Ambiente", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 0, 9))); // NOI18N
+        jPanel11.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Luz Ambiente",
+                javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION,
+                new java.awt.Font("Dialog", 0, 9))); // NOI18N
 
         jLabel1.setFont(new java.awt.Font("Dialog", 0, 9)); // NOI18N
         jLabel1.setText("Luz Ambiente");
@@ -891,6 +767,7 @@ public class Principal extends javax.swing.JFrame {
             public void mousePressed(java.awt.event.MouseEvent evt) {
                 pnlColorFondoMousePressed(evt);
             }
+
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 pnlColorFondoMouseClicked(evt);
             }
@@ -899,36 +776,37 @@ public class Principal extends javax.swing.JFrame {
         javax.swing.GroupLayout pnlColorFondoLayout = new javax.swing.GroupLayout(pnlColorFondo);
         pnlColorFondo.setLayout(pnlColorFondoLayout);
         pnlColorFondoLayout.setHorizontalGroup(
-            pnlColorFondoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 24, Short.MAX_VALUE)
-        );
+                pnlColorFondoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGap(0, 24, Short.MAX_VALUE));
         pnlColorFondoLayout.setVerticalGroup(
-            pnlColorFondoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 0, Short.MAX_VALUE)
-        );
+                pnlColorFondoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGap(0, 0, Short.MAX_VALUE));
 
         javax.swing.GroupLayout jPanel11Layout = new javax.swing.GroupLayout(jPanel11);
         jPanel11.setLayout(jPanel11Layout);
         jPanel11Layout.setHorizontalGroup(
-            jPanel11Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel11Layout.createSequentialGroup()
-                .addComponent(jLabel1)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(pnlColorFondo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(223, Short.MAX_VALUE))
-        );
+                jPanel11Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(jPanel11Layout.createSequentialGroup()
+                                .addComponent(jLabel1)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(pnlColorFondo, javax.swing.GroupLayout.PREFERRED_SIZE,
+                                        javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addContainerGap(223, Short.MAX_VALUE)));
         jPanel11Layout.setVerticalGroup(
-            jPanel11Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel11Layout.createSequentialGroup()
-                .addGroup(jPanel11Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(pnlColorFondo, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel11Layout.createSequentialGroup()
-                        .addComponent(jLabel1)
-                        .addGap(4, 4, 4)))
-                .addGap(0, 0, Short.MAX_VALUE))
-        );
+                jPanel11Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(jPanel11Layout.createSequentialGroup()
+                                .addGroup(jPanel11Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addComponent(pnlColorFondo, javax.swing.GroupLayout.DEFAULT_SIZE,
+                                                javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING,
+                                                jPanel11Layout.createSequentialGroup()
+                                                        .addComponent(jLabel1)
+                                                        .addGap(4, 4, 4)))
+                                .addGap(0, 0, Short.MAX_VALUE)));
 
-        jPanel13.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Neblina", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 0, 9))); // NOI18N
+        jPanel13.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Neblina",
+                javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION,
+                new java.awt.Font("Dialog", 0, 9))); // NOI18N
 
         chkNeblina.setFont(new java.awt.Font("Dialog", 0, 9)); // NOI18N
         chkNeblina.setText("Activar");
@@ -961,44 +839,50 @@ public class Principal extends javax.swing.JFrame {
         javax.swing.GroupLayout pnlNeblinaColorLayout = new javax.swing.GroupLayout(pnlNeblinaColor);
         pnlNeblinaColor.setLayout(pnlNeblinaColorLayout);
         pnlNeblinaColorLayout.setHorizontalGroup(
-            pnlNeblinaColorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 32, Short.MAX_VALUE)
-        );
+                pnlNeblinaColorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGap(0, 32, Short.MAX_VALUE));
         pnlNeblinaColorLayout.setVerticalGroup(
-            pnlNeblinaColorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 0, Short.MAX_VALUE)
-        );
+                pnlNeblinaColorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGap(0, 0, Short.MAX_VALUE));
 
         javax.swing.GroupLayout jPanel13Layout = new javax.swing.GroupLayout(jPanel13);
         jPanel13.setLayout(jPanel13Layout);
         jPanel13Layout.setHorizontalGroup(
-            jPanel13Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel13Layout.createSequentialGroup()
-                .addGroup(jPanel13Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel9)
-                    .addComponent(chkNeblina))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel13Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(spnNeblinaDensidad, javax.swing.GroupLayout.PREFERRED_SIZE, 113, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(jPanel13Layout.createSequentialGroup()
-                        .addComponent(jLabel10)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(pnlNeblinaColor, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addGap(0, 0, Short.MAX_VALUE))
-        );
+                jPanel13Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(jPanel13Layout.createSequentialGroup()
+                                .addGroup(jPanel13Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addComponent(jLabel9)
+                                        .addComponent(chkNeblina))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(jPanel13Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addComponent(spnNeblinaDensidad, javax.swing.GroupLayout.PREFERRED_SIZE, 113,
+                                                javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addGroup(jPanel13Layout.createSequentialGroup()
+                                                .addComponent(jLabel10)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                .addComponent(pnlNeblinaColor, javax.swing.GroupLayout.PREFERRED_SIZE,
+                                                        javax.swing.GroupLayout.DEFAULT_SIZE,
+                                                        javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                .addGap(0, 0, Short.MAX_VALUE)));
         jPanel13Layout.setVerticalGroup(
-            jPanel13Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel13Layout.createSequentialGroup()
-                .addGroup(jPanel13Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(pnlNeblinaColor, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jLabel10, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(chkNeblina, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel13Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(spnNeblinaDensidad, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel9))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
+                jPanel13Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(jPanel13Layout.createSequentialGroup()
+                                .addGroup(jPanel13Layout
+                                        .createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                        .addComponent(pnlNeblinaColor, javax.swing.GroupLayout.DEFAULT_SIZE,
+                                                javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                        .addComponent(jLabel10, javax.swing.GroupLayout.DEFAULT_SIZE,
+                                                javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                        .addComponent(chkNeblina, javax.swing.GroupLayout.PREFERRED_SIZE, 0,
+                                                Short.MAX_VALUE))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(jPanel13Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addComponent(spnNeblinaDensidad, javax.swing.GroupLayout.Alignment.TRAILING,
+                                                javax.swing.GroupLayout.PREFERRED_SIZE,
+                                                javax.swing.GroupLayout.DEFAULT_SIZE,
+                                                javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addComponent(jLabel9))
+                                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)));
 
         jLabel17.setText("Rasterizador");
 
@@ -1063,79 +947,117 @@ public class Principal extends javax.swing.JFrame {
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel2Layout.createSequentialGroup()
-                .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 89, Short.MAX_VALUE))
-            .addGroup(jPanel2Layout.createSequentialGroup()
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jPanel11, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jPanel13, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addGroup(jPanel2Layout.createSequentialGroup()
+                jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(jPanel2Layout.createSequentialGroup()
+                                .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE,
+                                        javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(0, 89, Short.MAX_VALUE))
+                        .addGroup(jPanel2Layout.createSequentialGroup()
                                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jLabel17)
-                                    .addComponent(jLabel20)
-                                    .addGroup(jPanel2Layout.createSequentialGroup()
-                                        .addComponent(btnRaster1)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                        .addComponent(btnRaster2))
-                                    .addGroup(jPanel2Layout.createSequentialGroup()
-                                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                                            .addComponent(btnFlatShader, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel2Layout.createSequentialGroup()
-                                                .addGap(1, 1, 1)
-                                                .addComponent(btnShadowShader, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                                            .addComponent(btnFullShader, javax.swing.GroupLayout.DEFAULT_SIZE, 98, Short.MAX_VALUE)
-                                            .addComponent(btnTexturaShader, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                            .addComponent(btnPhongShader, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                            .addComponent(btnIlumShader)
-                                            .addComponent(btnPBRShader, javax.swing.GroupLayout.PREFERRED_SIZE, 98, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                            .addComponent(btnSimpleShader, javax.swing.GroupLayout.DEFAULT_SIZE, 102, Short.MAX_VALUE))))
-                                .addGap(0, 0, Short.MAX_VALUE))))
-                    .addComponent(jLabel8, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addContainerGap())
-        );
+                                        .addGroup(jPanel2Layout.createSequentialGroup()
+                                                .addContainerGap()
+                                                .addGroup(jPanel2Layout
+                                                        .createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                                        .addComponent(jPanel11, javax.swing.GroupLayout.DEFAULT_SIZE,
+                                                                javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                                        .addComponent(jPanel13, javax.swing.GroupLayout.DEFAULT_SIZE,
+                                                                javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                                        .addGroup(jPanel2Layout.createSequentialGroup()
+                                                                .addGroup(jPanel2Layout.createParallelGroup(
+                                                                        javax.swing.GroupLayout.Alignment.LEADING)
+                                                                        .addComponent(jLabel17)
+                                                                        .addComponent(jLabel20)
+                                                                        .addGroup(jPanel2Layout.createSequentialGroup()
+                                                                                .addComponent(btnRaster1)
+                                                                                .addPreferredGap(
+                                                                                        javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                                                                .addComponent(btnRaster2))
+                                                                        .addGroup(jPanel2Layout.createSequentialGroup()
+                                                                                .addGroup(jPanel2Layout
+                                                                                        .createParallelGroup(
+                                                                                                javax.swing.GroupLayout.Alignment.TRAILING,
+                                                                                                false)
+                                                                                        .addComponent(btnFlatShader,
+                                                                                                javax.swing.GroupLayout.DEFAULT_SIZE,
+                                                                                                javax.swing.GroupLayout.DEFAULT_SIZE,
+                                                                                                Short.MAX_VALUE)
+                                                                                        .addGroup(
+                                                                                                javax.swing.GroupLayout.Alignment.LEADING,
+                                                                                                jPanel2Layout
+                                                                                                        .createSequentialGroup()
+                                                                                                        .addGap(1, 1, 1)
+                                                                                                        .addComponent(
+                                                                                                                btnShadowShader,
+                                                                                                                javax.swing.GroupLayout.DEFAULT_SIZE,
+                                                                                                                javax.swing.GroupLayout.DEFAULT_SIZE,
+                                                                                                                Short.MAX_VALUE))
+                                                                                        .addComponent(btnFullShader,
+                                                                                                javax.swing.GroupLayout.DEFAULT_SIZE,
+                                                                                                98, Short.MAX_VALUE)
+                                                                                        .addComponent(btnTexturaShader,
+                                                                                                javax.swing.GroupLayout.DEFAULT_SIZE,
+                                                                                                javax.swing.GroupLayout.DEFAULT_SIZE,
+                                                                                                Short.MAX_VALUE))
+                                                                                .addPreferredGap(
+                                                                                        javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                                                .addGroup(jPanel2Layout
+                                                                                        .createParallelGroup(
+                                                                                                javax.swing.GroupLayout.Alignment.LEADING,
+                                                                                                false)
+                                                                                        .addComponent(btnPhongShader,
+                                                                                                javax.swing.GroupLayout.DEFAULT_SIZE,
+                                                                                                javax.swing.GroupLayout.DEFAULT_SIZE,
+                                                                                                Short.MAX_VALUE)
+                                                                                        .addComponent(btnIlumShader)
+                                                                                        .addComponent(btnPBRShader,
+                                                                                                javax.swing.GroupLayout.PREFERRED_SIZE,
+                                                                                                98,
+                                                                                                javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                                                        .addComponent(btnSimpleShader,
+                                                                                                javax.swing.GroupLayout.DEFAULT_SIZE,
+                                                                                                102, Short.MAX_VALUE))))
+                                                                .addGap(0, 0, Short.MAX_VALUE))))
+                                        .addComponent(jLabel8, javax.swing.GroupLayout.DEFAULT_SIZE,
+                                                javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                .addContainerGap()));
         jPanel2Layout.setVerticalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel2Layout.createSequentialGroup()
-                .addComponent(jLabel8)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jPanel11, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jPanel13, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jLabel17)
-                .addGap(5, 5, 5)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(btnRaster1)
-                    .addComponent(btnRaster2))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jLabel20)
-                .addGap(18, 18, 18)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(btnFullShader)
-                    .addComponent(btnPBRShader))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(btnIlumShader)
-                    .addComponent(btnShadowShader))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(btnPhongShader)
-                    .addComponent(btnTexturaShader))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(btnSimpleShader)
-                    .addComponent(btnFlatShader))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
+                jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(jPanel2Layout.createSequentialGroup()
+                                .addComponent(jLabel8)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE,
+                                        javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jPanel11, javax.swing.GroupLayout.PREFERRED_SIZE,
+                                        javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jPanel13, javax.swing.GroupLayout.PREFERRED_SIZE,
+                                        javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jLabel17)
+                                .addGap(5, 5, 5)
+                                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                        .addComponent(btnRaster1)
+                                        .addComponent(btnRaster2))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(jLabel20)
+                                .addGap(18, 18, 18)
+                                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                        .addComponent(btnFullShader)
+                                        .addComponent(btnPBRShader))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                        .addComponent(btnIlumShader)
+                                        .addComponent(btnShadowShader))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                        .addComponent(btnPhongShader)
+                                        .addComponent(btnTexturaShader))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                        .addComponent(btnSimpleShader)
+                                        .addComponent(btnFlatShader))
+                                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)));
 
         scrollOpciones.setViewportView(jPanel2);
 
@@ -1289,102 +1211,154 @@ public class Principal extends javax.swing.JFrame {
         javax.swing.GroupLayout pnlHerramientasLayout = new javax.swing.GroupLayout(pnlHerramientas);
         pnlHerramientas.setLayout(pnlHerramientasLayout);
         pnlHerramientasLayout.setHorizontalGroup(
-            pnlHerramientasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jLabel2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addComponent(btnCentroGeometria, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addComponent(jLabel12, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addComponent(btnActualizarReflejos, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addComponent(btnActualizarSombras, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addComponent(jLabel13, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addComponent(btnGuadarScreenShot, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addGroup(pnlHerramientasLayout.createSequentialGroup()
-                .addGroup(pnlHerramientasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(pnlHerramientasLayout.createSequentialGroup()
-                        .addGroup(pnlHerramientasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel18)
-                            .addComponent(jLabel6)
-                            .addComponent(jLabel11))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(pnlHerramientasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(btnTipoSolido, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(btnCalcularNormales, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(btnSuavizar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(pnlHerramientasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(btnTipoAlambre, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(btnInvertirNormales, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(btnNoSuavizar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
-                    .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 261, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(pnlHerramientasLayout.createSequentialGroup()
-                        .addGroup(pnlHerramientasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel14)
-                            .addComponent(jLabel4))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addGroup(pnlHerramientasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addGroup(pnlHerramientasLayout.createSequentialGroup()
-                                .addGroup(pnlHerramientasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                    .addComponent(txtInflarRadio)
-                                    .addComponent(btnDividir, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                                .addGap(18, 18, 18)
-                                .addGroup(pnlHerramientasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jButton9, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .addComponent(btnEliminarVerticesDuplicados, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
-                            .addComponent(btnDividirCatmull, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
-                .addGap(67, 67, 67))
-        );
+                pnlHerramientasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addComponent(jLabel2, javax.swing.GroupLayout.Alignment.TRAILING,
+                                javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE,
+                                Short.MAX_VALUE)
+                        .addComponent(btnCentroGeometria, javax.swing.GroupLayout.DEFAULT_SIZE,
+                                javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jLabel12, javax.swing.GroupLayout.DEFAULT_SIZE,
+                                javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(btnActualizarReflejos, javax.swing.GroupLayout.DEFAULT_SIZE,
+                                javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(btnActualizarSombras, javax.swing.GroupLayout.DEFAULT_SIZE,
+                                javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jLabel13, javax.swing.GroupLayout.DEFAULT_SIZE,
+                                javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(btnGuadarScreenShot, javax.swing.GroupLayout.DEFAULT_SIZE,
+                                javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGroup(pnlHerramientasLayout.createSequentialGroup()
+                                .addGroup(pnlHerramientasLayout
+                                        .createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addGroup(pnlHerramientasLayout.createSequentialGroup()
+                                                .addGroup(pnlHerramientasLayout
+                                                        .createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                                        .addComponent(jLabel18)
+                                                        .addComponent(jLabel6)
+                                                        .addComponent(jLabel11))
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                .addGroup(pnlHerramientasLayout
+                                                        .createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING,
+                                                                false)
+                                                        .addComponent(btnTipoSolido,
+                                                                javax.swing.GroupLayout.DEFAULT_SIZE,
+                                                                javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                                        .addComponent(btnCalcularNormales,
+                                                                javax.swing.GroupLayout.DEFAULT_SIZE,
+                                                                javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                                        .addComponent(btnSuavizar, javax.swing.GroupLayout.DEFAULT_SIZE,
+                                                                javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                .addGroup(pnlHerramientasLayout
+                                                        .createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                                        .addComponent(btnTipoAlambre,
+                                                                javax.swing.GroupLayout.DEFAULT_SIZE,
+                                                                javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                                        .addComponent(btnInvertirNormales,
+                                                                javax.swing.GroupLayout.DEFAULT_SIZE,
+                                                                javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                                        .addComponent(btnNoSuavizar,
+                                                                javax.swing.GroupLayout.DEFAULT_SIZE,
+                                                                javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                                        .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 261,
+                                                javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addGroup(pnlHerramientasLayout.createSequentialGroup()
+                                                .addGroup(pnlHerramientasLayout
+                                                        .createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                                        .addComponent(jLabel14)
+                                                        .addComponent(jLabel4))
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                                .addGroup(pnlHerramientasLayout
+                                                        .createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING,
+                                                                false)
+                                                        .addGroup(pnlHerramientasLayout.createSequentialGroup()
+                                                                .addGroup(pnlHerramientasLayout.createParallelGroup(
+                                                                        javax.swing.GroupLayout.Alignment.LEADING,
+                                                                        false)
+                                                                        .addComponent(txtInflarRadio)
+                                                                        .addComponent(btnDividir,
+                                                                                javax.swing.GroupLayout.DEFAULT_SIZE,
+                                                                                javax.swing.GroupLayout.DEFAULT_SIZE,
+                                                                                Short.MAX_VALUE))
+                                                                .addGap(18, 18, 18)
+                                                                .addGroup(pnlHerramientasLayout.createParallelGroup(
+                                                                        javax.swing.GroupLayout.Alignment.LEADING)
+                                                                        .addComponent(jButton9,
+                                                                                javax.swing.GroupLayout.DEFAULT_SIZE,
+                                                                                javax.swing.GroupLayout.DEFAULT_SIZE,
+                                                                                Short.MAX_VALUE)
+                                                                        .addComponent(btnEliminarVerticesDuplicados,
+                                                                                javax.swing.GroupLayout.DEFAULT_SIZE,
+                                                                                javax.swing.GroupLayout.DEFAULT_SIZE,
+                                                                                Short.MAX_VALUE)))
+                                                        .addComponent(btnDividirCatmull,
+                                                                javax.swing.GroupLayout.DEFAULT_SIZE,
+                                                                javax.swing.GroupLayout.DEFAULT_SIZE,
+                                                                Short.MAX_VALUE))))
+                                .addGap(67, 67, 67)));
         pnlHerramientasLayout.setVerticalGroup(
-            pnlHerramientasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(pnlHerramientasLayout.createSequentialGroup()
-                .addComponent(jLabel2)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(pnlHerramientasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel18)
-                    .addGroup(pnlHerramientasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(btnSuavizar)
-                        .addComponent(btnNoSuavizar)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(pnlHerramientasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel6)
-                    .addComponent(btnInvertirNormales)
-                    .addComponent(btnCalcularNormales))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(pnlHerramientasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel11)
-                    .addGroup(pnlHerramientasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(btnTipoSolido)
-                        .addComponent(btnTipoAlambre)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jLabel5)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(btnCentroGeometria)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(pnlHerramientasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel14)
-                    .addComponent(btnDividir)
-                    .addComponent(btnEliminarVerticesDuplicados))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(btnDividirCatmull)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(pnlHerramientasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(pnlHerramientasLayout.createSequentialGroup()
-                        .addGroup(pnlHerramientasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(pnlHerramientasLayout.createSequentialGroup()
-                                .addGap(3, 3, 3)
-                                .addComponent(jLabel4))
-                            .addComponent(txtInflarRadio, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jLabel12))
-                    .addComponent(jButton9))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(btnActualizarReflejos)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(btnActualizarSombras)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jLabel13)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(btnGuadarScreenShot)
-                .addGap(0, 91, Short.MAX_VALUE))
-        );
+                pnlHerramientasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(pnlHerramientasLayout.createSequentialGroup()
+                                .addComponent(jLabel2)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addGroup(pnlHerramientasLayout
+                                        .createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addComponent(jLabel18)
+                                        .addGroup(pnlHerramientasLayout
+                                                .createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                                .addComponent(btnSuavizar)
+                                                .addComponent(btnNoSuavizar)))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(pnlHerramientasLayout
+                                        .createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                        .addComponent(jLabel6)
+                                        .addComponent(btnInvertirNormales)
+                                        .addComponent(btnCalcularNormales))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(pnlHerramientasLayout
+                                        .createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addComponent(jLabel11)
+                                        .addGroup(pnlHerramientasLayout
+                                                .createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                                .addComponent(btnTipoSolido)
+                                                .addComponent(btnTipoAlambre)))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jLabel5)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(btnCentroGeometria)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addGroup(pnlHerramientasLayout
+                                        .createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                        .addComponent(jLabel14)
+                                        .addComponent(btnDividir)
+                                        .addComponent(btnEliminarVerticesDuplicados))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(btnDividirCatmull)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(pnlHerramientasLayout
+                                        .createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addGroup(pnlHerramientasLayout.createSequentialGroup()
+                                                .addGroup(pnlHerramientasLayout
+                                                        .createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                                        .addGroup(pnlHerramientasLayout.createSequentialGroup()
+                                                                .addGap(3, 3, 3)
+                                                                .addComponent(jLabel4))
+                                                        .addComponent(txtInflarRadio,
+                                                                javax.swing.GroupLayout.PREFERRED_SIZE,
+                                                                javax.swing.GroupLayout.DEFAULT_SIZE,
+                                                                javax.swing.GroupLayout.PREFERRED_SIZE))
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                .addComponent(jLabel12))
+                                        .addComponent(jButton9))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(btnActualizarReflejos)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(btnActualizarSombras)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(jLabel13)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(btnGuadarScreenShot)
+                                .addGap(0, 91, Short.MAX_VALUE)));
 
         scrollHeramientas.setViewportView(pnlHerramientas);
 
@@ -1468,88 +1442,110 @@ public class Principal extends javax.swing.JFrame {
         javax.swing.GroupLayout pnlProcesadoresLayout = new javax.swing.GroupLayout(pnlProcesadores);
         pnlProcesadores.setLayout(pnlProcesadoresLayout);
         pnlProcesadoresLayout.setHorizontalGroup(
-            pnlProcesadoresLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(pnlProcesadoresLayout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(pnlProcesadoresLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jSeparator5)
-                    .addGroup(pnlProcesadoresLayout.createSequentialGroup()
-                        .addGroup(pnlProcesadoresLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                            .addComponent(jButton12, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jButton15, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jButton11, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jButton19, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(pnlProcesadoresLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                            .addComponent(jButton18, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jButton16, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jButton13, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(pnlProcesadoresLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(jButton14, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jButton17, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                        .addGap(0, 0, Short.MAX_VALUE)))
-                .addContainerGap())
-        );
+                pnlProcesadoresLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(pnlProcesadoresLayout.createSequentialGroup()
+                                .addContainerGap()
+                                .addGroup(pnlProcesadoresLayout
+                                        .createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addComponent(jLabel3, javax.swing.GroupLayout.DEFAULT_SIZE,
+                                                javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                        .addComponent(jSeparator5)
+                                        .addGroup(pnlProcesadoresLayout.createSequentialGroup()
+                                                .addGroup(pnlProcesadoresLayout
+                                                        .createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING,
+                                                                false)
+                                                        .addComponent(jButton12, javax.swing.GroupLayout.DEFAULT_SIZE,
+                                                                javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                                        .addComponent(jButton15, javax.swing.GroupLayout.DEFAULT_SIZE,
+                                                                javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                                        .addComponent(jButton11, javax.swing.GroupLayout.DEFAULT_SIZE,
+                                                                javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                                        .addComponent(jButton19, javax.swing.GroupLayout.DEFAULT_SIZE,
+                                                                javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                .addGroup(pnlProcesadoresLayout
+                                                        .createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING,
+                                                                false)
+                                                        .addComponent(jButton18, javax.swing.GroupLayout.DEFAULT_SIZE,
+                                                                javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                                        .addComponent(jButton16,
+                                                                javax.swing.GroupLayout.Alignment.LEADING,
+                                                                javax.swing.GroupLayout.DEFAULT_SIZE,
+                                                                javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                                        .addComponent(jButton13, javax.swing.GroupLayout.DEFAULT_SIZE,
+                                                                javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                .addGroup(pnlProcesadoresLayout
+                                                        .createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING,
+                                                                false)
+                                                        .addComponent(jButton14, javax.swing.GroupLayout.DEFAULT_SIZE,
+                                                                javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                                        .addComponent(jButton17, javax.swing.GroupLayout.DEFAULT_SIZE,
+                                                                javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                                .addGap(0, 0, Short.MAX_VALUE)))
+                                .addContainerGap()));
         pnlProcesadoresLayout.setVerticalGroup(
-            pnlProcesadoresLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(pnlProcesadoresLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jLabel3)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(pnlProcesadoresLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButton11)
-                    .addComponent(jButton18))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(pnlProcesadoresLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(pnlProcesadoresLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(jButton13)
-                        .addComponent(jButton14))
-                    .addComponent(jButton12))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(pnlProcesadoresLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButton15)
-                    .addComponent(jButton16)
-                    .addComponent(jButton17))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jButton19)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jSeparator5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
+                pnlProcesadoresLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(pnlProcesadoresLayout.createSequentialGroup()
+                                .addContainerGap()
+                                .addComponent(jLabel3)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addGroup(pnlProcesadoresLayout
+                                        .createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                        .addComponent(jButton11)
+                                        .addComponent(jButton18))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(pnlProcesadoresLayout
+                                        .createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addGroup(pnlProcesadoresLayout
+                                                .createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                                .addComponent(jButton13)
+                                                .addComponent(jButton14))
+                                        .addComponent(jButton12))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(pnlProcesadoresLayout
+                                        .createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                        .addComponent(jButton15)
+                                        .addComponent(jButton16)
+                                        .addComponent(jButton17))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jButton19)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jSeparator5, javax.swing.GroupLayout.PREFERRED_SIZE,
+                                        javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)));
 
         panelHerramientas.addTab("Procesadores", pnlProcesadores);
 
-        jButton1.setFont(new java.awt.Font("Dialog", 0, 9)); // NOI18N
-        jButton1.setText("Iniciar");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
+        btnStartPhysics.setFont(new java.awt.Font("Dialog", 0, 9)); // NOI18N
+        btnStartPhysics.setText("Iniciar");
+        btnStartPhysics.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
+                btnStartPhysicsAP(evt);
             }
         });
 
-        jButton2.setFont(new java.awt.Font("Dialog", 0, 9)); // NOI18N
-        jButton2.setText("Detener");
-        jButton2.addActionListener(new java.awt.event.ActionListener() {
+        btnStopPhysics.setFont(new java.awt.Font("Dialog", 0, 9)); // NOI18N
+        btnStopPhysics.setText("Detener");
+        btnStopPhysics.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton2ActionPerformed(evt);
+                btnStopPhysicsAP(evt);
             }
         });
 
-        jButton3.setFont(new java.awt.Font("Dialog", 0, 9)); // NOI18N
-        jButton3.setText("Accion1");
-        jButton3.addActionListener(new java.awt.event.ActionListener() {
+        btnAccion1.setFont(new java.awt.Font("Dialog", 0, 9)); // NOI18N
+        btnAccion1.setText("Accion1");
+        btnAccion1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton3ActionPerformed(evt);
+                btnAccion1AP(evt);
             }
         });
 
-        jButton4.setFont(new java.awt.Font("Dialog", 0, 9)); // NOI18N
-        jButton4.setText("Accion 2");
-        jButton4.addActionListener(new java.awt.event.ActionListener() {
+        btnAccion2.setFont(new java.awt.Font("Dialog", 0, 9)); // NOI18N
+        btnAccion2.setText("Accion 2");
+        btnAccion2.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton4ActionPerformed(evt);
+                btnAccion2AP(evt);
             }
         });
 
@@ -1587,73 +1583,111 @@ public class Principal extends javax.swing.JFrame {
         javax.swing.GroupLayout pnlMotoresLayout = new javax.swing.GroupLayout(pnlMotores);
         pnlMotores.setLayout(pnlMotoresLayout);
         pnlMotoresLayout.setHorizontalGroup(
-            pnlMotoresLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(pnlMotoresLayout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(pnlMotoresLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel21, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addGroup(pnlMotoresLayout.createSequentialGroup()
-                        .addGroup(pnlMotoresLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(jButton3, javax.swing.GroupLayout.DEFAULT_SIZE, 81, Short.MAX_VALUE)
-                            .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(pnlMotoresLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(jButton4, javax.swing.GroupLayout.DEFAULT_SIZE, 88, Short.MAX_VALUE)
-                            .addComponent(jButton2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                        .addGap(0, 0, Short.MAX_VALUE))))
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnlMotoresLayout.createSequentialGroup()
-                .addGroup(pnlMotoresLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jSeparator1, javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jSeparator2, javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jSeparator3, javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(pnlMotoresLayout.createSequentialGroup()
-                        .addContainerGap()
-                        .addGroup(pnlMotoresLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(jLabel19, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, pnlMotoresLayout.createSequentialGroup()
-                                .addGroup(pnlMotoresLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                    .addGroup(pnlMotoresLayout.createSequentialGroup()
-                                        .addComponent(jButton5)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(jButton6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                                    .addGroup(pnlMotoresLayout.createSequentialGroup()
-                                        .addComponent(jButton7)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(jButton8)))
-                                .addGap(0, 121, Short.MAX_VALUE)))))
-                .addContainerGap())
-        );
+                pnlMotoresLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(pnlMotoresLayout.createSequentialGroup()
+                                .addContainerGap()
+                                .addGroup(pnlMotoresLayout
+                                        .createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addComponent(jLabel21, javax.swing.GroupLayout.DEFAULT_SIZE,
+                                                javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                        .addGroup(pnlMotoresLayout.createSequentialGroup()
+                                                .addGroup(pnlMotoresLayout
+                                                        .createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING,
+                                                                false)
+                                                        .addComponent(btnAccion1, javax.swing.GroupLayout.DEFAULT_SIZE,
+                                                                81, Short.MAX_VALUE)
+                                                        .addComponent(btnStartPhysics,
+                                                                javax.swing.GroupLayout.DEFAULT_SIZE,
+                                                                javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                .addGroup(pnlMotoresLayout
+                                                        .createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING,
+                                                                false)
+                                                        .addComponent(btnAccion2, javax.swing.GroupLayout.DEFAULT_SIZE,
+                                                                88, Short.MAX_VALUE)
+                                                        .addComponent(btnStopPhysics,
+                                                                javax.swing.GroupLayout.DEFAULT_SIZE,
+                                                                javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                                .addGap(0, 0, Short.MAX_VALUE))))
+                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnlMotoresLayout.createSequentialGroup()
+                                .addGroup(pnlMotoresLayout
+                                        .createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                        .addComponent(jSeparator1, javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addComponent(jSeparator2, javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addComponent(jSeparator3, javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addGroup(pnlMotoresLayout.createSequentialGroup()
+                                                .addContainerGap()
+                                                .addGroup(pnlMotoresLayout
+                                                        .createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                                        .addComponent(jLabel19, javax.swing.GroupLayout.DEFAULT_SIZE,
+                                                                javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                                        .addGroup(javax.swing.GroupLayout.Alignment.LEADING,
+                                                                pnlMotoresLayout.createSequentialGroup()
+                                                                        .addGroup(pnlMotoresLayout.createParallelGroup(
+                                                                                javax.swing.GroupLayout.Alignment.LEADING,
+                                                                                false)
+                                                                                .addGroup(pnlMotoresLayout
+                                                                                        .createSequentialGroup()
+                                                                                        .addComponent(jButton5)
+                                                                                        .addPreferredGap(
+                                                                                                javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                                                        .addComponent(jButton6,
+                                                                                                javax.swing.GroupLayout.DEFAULT_SIZE,
+                                                                                                javax.swing.GroupLayout.DEFAULT_SIZE,
+                                                                                                Short.MAX_VALUE))
+                                                                                .addGroup(pnlMotoresLayout
+                                                                                        .createSequentialGroup()
+                                                                                        .addComponent(jButton7)
+                                                                                        .addPreferredGap(
+                                                                                                javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                                                        .addComponent(jButton8)))
+                                                                        .addGap(0, 121, Short.MAX_VALUE)))))
+                                .addContainerGap()));
         pnlMotoresLayout.setVerticalGroup(
-            pnlMotoresLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(pnlMotoresLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jLabel19)
-                .addGap(2, 2, 2)
-                .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 4, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(pnlMotoresLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 18, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(pnlMotoresLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 15, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jButton4, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jSeparator2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jLabel21)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jSeparator3, javax.swing.GroupLayout.PREFERRED_SIZE, 6, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(pnlMotoresLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jButton5, javax.swing.GroupLayout.PREFERRED_SIZE, 16, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jButton6, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(pnlMotoresLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButton7, javax.swing.GroupLayout.PREFERRED_SIZE, 14, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jButton8, javax.swing.GroupLayout.PREFERRED_SIZE, 14, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(198, Short.MAX_VALUE))
-        );
+                pnlMotoresLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(pnlMotoresLayout.createSequentialGroup()
+                                .addContainerGap()
+                                .addComponent(jLabel19)
+                                .addGap(2, 2, 2)
+                                .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 4,
+                                        javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(pnlMotoresLayout
+                                        .createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                        .addComponent(btnStartPhysics, javax.swing.GroupLayout.PREFERRED_SIZE, 18,
+                                                javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addComponent(btnStopPhysics, javax.swing.GroupLayout.PREFERRED_SIZE, 0,
+                                                Short.MAX_VALUE))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(pnlMotoresLayout
+                                        .createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                        .addComponent(btnAccion1, javax.swing.GroupLayout.PREFERRED_SIZE, 15,
+                                                javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addComponent(btnAccion2, javax.swing.GroupLayout.PREFERRED_SIZE, 0,
+                                                Short.MAX_VALUE))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(jSeparator2, javax.swing.GroupLayout.PREFERRED_SIZE,
+                                        javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jLabel21)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jSeparator3, javax.swing.GroupLayout.PREFERRED_SIZE, 6,
+                                        javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(pnlMotoresLayout
+                                        .createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                        .addComponent(jButton5, javax.swing.GroupLayout.PREFERRED_SIZE, 16,
+                                                javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addComponent(jButton6, javax.swing.GroupLayout.PREFERRED_SIZE, 0,
+                                                Short.MAX_VALUE))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(
+                                        pnlMotoresLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                                .addComponent(jButton7, javax.swing.GroupLayout.PREFERRED_SIZE, 14,
+                                                        javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                .addComponent(jButton8, javax.swing.GroupLayout.PREFERRED_SIZE, 14,
+                                                        javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addContainerGap(198, Short.MAX_VALUE)));
 
         panelHerramientas.addTab("Motores", pnlMotores);
 
@@ -1782,130 +1816,140 @@ public class Principal extends javax.swing.JFrame {
         javax.swing.GroupLayout pnlLineaTiempoLayout = new javax.swing.GroupLayout(pnlLineaTiempo);
         pnlLineaTiempo.setLayout(pnlLineaTiempoLayout);
         pnlLineaTiempoLayout.setHorizontalGroup(
-            pnlLineaTiempoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(pnlLineaTiempoLayout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(pnlLineaTiempoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(sldLineaTiempo, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addGroup(pnlLineaTiempoLayout.createSequentialGroup()
-                        .addComponent(btnAnimIniciar)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btnAnimDetener, javax.swing.GroupLayout.PREFERRED_SIZE, 89, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btnAnimInvertir)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jLabel15)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(txtAnimTiempoInicio, javax.swing.GroupLayout.PREFERRED_SIZE, 67, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jLabel16)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(txtAnimTiempoFin, javax.swing.GroupLayout.PREFERRED_SIZE, 69, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
-                        .addComponent(txtAnimTiempo)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(lblVelocidad)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(btnAnimVelocidad025X)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btnANimVelocidad05X)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btnAnimVelocidad075X)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btnAnimVelocidad1X)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btnAnimVelocidad15X)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btnAnimVelocidad2X)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btnAnimVelocidad4X)
-                        .addGap(0, 0, Short.MAX_VALUE)))
-                .addContainerGap())
-        );
+                pnlLineaTiempoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(pnlLineaTiempoLayout.createSequentialGroup()
+                                .addContainerGap()
+                                .addGroup(pnlLineaTiempoLayout
+                                        .createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addComponent(sldLineaTiempo, javax.swing.GroupLayout.DEFAULT_SIZE,
+                                                javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                        .addGroup(pnlLineaTiempoLayout.createSequentialGroup()
+                                                .addComponent(btnAnimIniciar)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                .addComponent(btnAnimDetener, javax.swing.GroupLayout.PREFERRED_SIZE,
+                                                        89, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                .addComponent(btnAnimInvertir)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                .addComponent(jLabel15)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                .addComponent(txtAnimTiempoInicio,
+                                                        javax.swing.GroupLayout.PREFERRED_SIZE, 67,
+                                                        javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                                .addComponent(jLabel16)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                .addComponent(txtAnimTiempoFin, javax.swing.GroupLayout.PREFERRED_SIZE,
+                                                        69, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                .addGap(18, 18, 18)
+                                                .addComponent(txtAnimTiempo)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                                .addComponent(lblVelocidad)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                                .addComponent(btnAnimVelocidad025X)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                .addComponent(btnANimVelocidad05X)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                .addComponent(btnAnimVelocidad075X)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                .addComponent(btnAnimVelocidad1X)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                .addComponent(btnAnimVelocidad15X)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                .addComponent(btnAnimVelocidad2X)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                .addComponent(btnAnimVelocidad4X)
+                                                .addGap(0, 0, Short.MAX_VALUE)))
+                                .addContainerGap()));
         pnlLineaTiempoLayout.setVerticalGroup(
-            pnlLineaTiempoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnlLineaTiempoLayout.createSequentialGroup()
-                .addGroup(pnlLineaTiempoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(btnAnimIniciar)
-                    .addComponent(btnAnimDetener)
-                    .addComponent(jLabel15)
-                    .addComponent(txtAnimTiempoInicio, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel16)
-                    .addComponent(txtAnimTiempoFin, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(txtAnimTiempo)
-                    .addComponent(lblVelocidad)
-                    .addComponent(btnAnimVelocidad1X)
-                    .addComponent(btnAnimVelocidad15X)
-                    .addComponent(btnAnimVelocidad2X)
-                    .addComponent(btnAnimVelocidad4X)
-                    .addComponent(btnAnimVelocidad025X)
-                    .addComponent(btnANimVelocidad05X)
-                    .addComponent(btnAnimVelocidad075X)
-                    .addComponent(btnAnimInvertir))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(sldLineaTiempo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap())
-        );
+                pnlLineaTiempoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnlLineaTiempoLayout
+                                .createSequentialGroup()
+                                .addGroup(pnlLineaTiempoLayout
+                                        .createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                        .addComponent(btnAnimIniciar)
+                                        .addComponent(btnAnimDetener)
+                                        .addComponent(jLabel15)
+                                        .addComponent(txtAnimTiempoInicio, javax.swing.GroupLayout.PREFERRED_SIZE,
+                                                javax.swing.GroupLayout.DEFAULT_SIZE,
+                                                javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addComponent(jLabel16)
+                                        .addComponent(txtAnimTiempoFin, javax.swing.GroupLayout.PREFERRED_SIZE,
+                                                javax.swing.GroupLayout.DEFAULT_SIZE,
+                                                javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addComponent(txtAnimTiempo)
+                                        .addComponent(lblVelocidad)
+                                        .addComponent(btnAnimVelocidad1X)
+                                        .addComponent(btnAnimVelocidad15X)
+                                        .addComponent(btnAnimVelocidad2X)
+                                        .addComponent(btnAnimVelocidad4X)
+                                        .addComponent(btnAnimVelocidad025X)
+                                        .addComponent(btnANimVelocidad05X)
+                                        .addComponent(btnAnimVelocidad075X)
+                                        .addComponent(btnAnimInvertir))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED,
+                                        javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(sldLineaTiempo, javax.swing.GroupLayout.PREFERRED_SIZE,
+                                        javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addContainerGap()));
 
         spliDerecha.setLeftComponent(pnlLineaTiempo);
 
         javax.swing.GroupLayout panelRenderesLayout = new javax.swing.GroupLayout(panelRenderes);
         panelRenderes.setLayout(panelRenderesLayout);
         panelRenderesLayout.setHorizontalGroup(
-            panelRenderesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 1498, Short.MAX_VALUE)
-        );
+                panelRenderesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGap(0, 1498, Short.MAX_VALUE));
         panelRenderesLayout.setVerticalGroup(
-            panelRenderesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 631, Short.MAX_VALUE)
-        );
+                panelRenderesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGap(0, 631, Short.MAX_VALUE));
 
         spliDerecha.setRightComponent(panelRenderes);
 
         splitPanel.setRightComponent(spliDerecha);
 
-        jMenu7.setText("Archivo");
+        mnuFile.setText("Archivo");
 
         jMenuItem19.setText("Nuevo");
-        jMenu7.add(jMenuItem19);
+        mnuFile.add(jMenuItem19);
 
-        jMenuItem20.setText("Abrir");
-        jMenuItem20.addActionListener(new java.awt.event.ActionListener() {
+        itmMenuOpen.setText("Abrir");
+        itmMenuOpen.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItem20ActionPerformed(evt);
+                openFileAP(evt);
             }
         });
-        jMenu7.add(jMenuItem20);
+        mnuFile.add(itmMenuOpen);
 
-        jMenuItem25.setText("Guardar");
-        jMenuItem25.addActionListener(new java.awt.event.ActionListener() {
+        itmMenuSave.setText("Guardar");
+        itmMenuSave.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItem25ActionPerformed(evt);
+                saveFileAP(evt);
             }
         });
-        jMenu7.add(jMenuItem25);
+        mnuFile.add(itmMenuSave);
 
-        jMenuItem22.setText("Exportar entidad");
-        jMenuItem22.addActionListener(new java.awt.event.ActionListener() {
+        itmMenuExportentity.setText("Exportar entidad");
+        itmMenuExportentity.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItem22ActionPerformed(evt);
+                exportEntityAP(evt);
             }
         });
-        jMenu7.add(jMenuItem22);
+        mnuFile.add(itmMenuExportentity);
 
-        jMenuItem23.setText("Importar objeto");
-        jMenuItem23.addActionListener(new java.awt.event.ActionListener() {
+        itmMenuImport.setText("Importar objeto");
+        itmMenuImport.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItem23ActionPerformed(evt);
+                importEntityAP(evt);
             }
         });
-        jMenu7.add(jMenuItem23);
+        mnuFile.add(itmMenuImport);
 
         jMenuItem24.setText("Exportar objeto");
         jMenuItem24.setEnabled(false);
-        jMenu7.add(jMenuItem24);
+        mnuFile.add(jMenuItem24);
 
-        barraMenu.add(jMenu7);
+        barraMenu.add(mnuFile);
 
         jMenu3.setText("Renderizadores");
 
@@ -2181,7 +2225,8 @@ public class Principal extends javax.swing.JFrame {
 
         jMenu2.setText("Edicion");
 
-        itmSeleccionarTodo.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_A, java.awt.event.InputEvent.CTRL_DOWN_MASK));
+        itmSeleccionarTodo.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_A,
+                java.awt.event.InputEvent.CTRL_DOWN_MASK));
         itmSeleccionarTodo.setText("Seleccionar Todo");
         itmSeleccionarTodo.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -2207,7 +2252,8 @@ public class Principal extends javax.swing.JFrame {
         });
         jMenu2.add(itmMenuEliminarRecursivo);
 
-        itmCopiar.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_C, java.awt.event.InputEvent.CTRL_DOWN_MASK));
+        itmCopiar.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_C,
+                java.awt.event.InputEvent.CTRL_DOWN_MASK));
         itmCopiar.setText("Copiar");
         itmCopiar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -2216,7 +2262,8 @@ public class Principal extends javax.swing.JFrame {
         });
         jMenu2.add(itmCopiar);
 
-        itmPegar.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_V, java.awt.event.InputEvent.CTRL_DOWN_MASK));
+        itmPegar.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_V,
+                java.awt.event.InputEvent.CTRL_DOWN_MASK));
         itmPegar.setText("Pegar");
         itmPegar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -2232,335 +2279,307 @@ public class Principal extends javax.swing.JFrame {
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(0, 0, Short.MAX_VALUE)
-                        .addComponent(lblEstad))
-                    .addComponent(barraProgreso, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(splitPanel))
-                .addContainerGap())
-        );
+                layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(layout.createSequentialGroup()
+                                .addContainerGap()
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addGroup(layout.createSequentialGroup()
+                                                .addGap(0, 0, Short.MAX_VALUE)
+                                                .addComponent(lblEstad))
+                                        .addComponent(barraProgreso, javax.swing.GroupLayout.DEFAULT_SIZE,
+                                                javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                        .addComponent(splitPanel))
+                                .addContainerGap()));
         layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(lblEstad)
-                .addGap(4, 4, 4)
-                .addComponent(splitPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 439, Short.MAX_VALUE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(barraProgreso, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap())
-        );
+                layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(layout.createSequentialGroup()
+                                .addContainerGap()
+                                .addComponent(lblEstad)
+                                .addGap(4, 4, 4)
+                                .addComponent(splitPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 439, Short.MAX_VALUE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(barraProgreso, javax.swing.GroupLayout.PREFERRED_SIZE,
+                                        javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addContainerGap()));
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void rendererMouseDragged(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_rendererMouseDragged
+    private void rendererMouseDragged(java.awt.event.MouseEvent evt) {// GEN-FIRST:event_rendererMouseDragged
 
-    }//GEN-LAST:event_rendererMouseDragged
+    }// GEN-LAST:event_rendererMouseDragged
 
-    private void rendererMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_rendererMouseReleased
+    private void rendererMouseReleased(java.awt.event.MouseEvent evt) {// GEN-FIRST:event_rendererMouseReleased
 
-    }//GEN-LAST:event_rendererMouseReleased
+    }// GEN-LAST:event_rendererMouseReleased
 
-    private void rendererMouseWheelMoved(java.awt.event.MouseWheelEvent evt) {//GEN-FIRST:event_rendererMouseWheelMoved
+    private void rendererMouseWheelMoved(java.awt.event.MouseWheelEvent evt) {// GEN-FIRST:event_rendererMouseWheelMoved
 
-    }//GEN-LAST:event_rendererMouseWheelMoved
+    }// GEN-LAST:event_rendererMouseWheelMoved
 
-    private void itmEliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_itmEliminarActionPerformed
-        LinkedList<QEntidad> toRemove = new LinkedList<>();
-        for (QEntidad object : renderer.entidadesSeleccionadas) {
+    private void itmEliminarActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_itmEliminarActionPerformed
+        LinkedList<Entity> toRemove = new LinkedList<>();
+        for (Entity object : renderer.entidadesSeleccionadas) {
             toRemove.add(object);
         }
-        for (QEntidad object : toRemove) {
-//            renderer.eliminarObjeto(object);
-            motor.getEscena().eliminarEntidad(object);
+        for (Entity object : toRemove) {
+            // renderer.eliminarObjeto(object);
+            motor.getEscena().removeEntity(object);
         }
 
         actualizarArbolEscena();
-    }//GEN-LAST:event_itmEliminarActionPerformed
+    }// GEN-LAST:event_itmEliminarActionPerformed
 
-    private void rendererMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_rendererMouseEntered
+    private void rendererMouseEntered(java.awt.event.MouseEvent evt) {// GEN-FIRST:event_rendererMouseEntered
 
-    }//GEN-LAST:event_rendererMouseEntered
+    }// GEN-LAST:event_rendererMouseEntered
 
-    private void rendererKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_rendererKeyPressed
+    private void rendererKeyPressed(java.awt.event.KeyEvent evt) {// GEN-FIRST:event_rendererKeyPressed
 
-    }//GEN-LAST:event_rendererKeyPressed
+    }// GEN-LAST:event_rendererKeyPressed
 
-    private void rendererKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_rendererKeyReleased
+    private void rendererKeyReleased(java.awt.event.KeyEvent evt) {// GEN-FIRST:event_rendererKeyReleased
 
-    }//GEN-LAST:event_rendererKeyReleased
+    }// GEN-LAST:event_rendererKeyReleased
 
-    private void rendererFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_rendererFocusLost
+    private void rendererFocusLost(java.awt.event.FocusEvent evt) {// GEN-FIRST:event_rendererFocusLost
 
-    }//GEN-LAST:event_rendererFocusLost
+    }// GEN-LAST:event_rendererFocusLost
 
-    private void rendererMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_rendererMousePressed
+    private void rendererMousePressed(java.awt.event.MouseEvent evt) {// GEN-FIRST:event_rendererMousePressed
 
-    }//GEN-LAST:event_rendererMousePressed
+    }// GEN-LAST:event_rendererMousePressed
 
-    private void itmCopiarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_itmCopiarActionPerformed
+    private void itmCopiarActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_itmCopiarActionPerformed
         clipboard.clear();
-        for (QEntidad object : renderer.entidadesSeleccionadas) {
+        for (Entity object : renderer.entidadesSeleccionadas) {
             clipboard.add(object);
         }
-    }//GEN-LAST:event_itmCopiarActionPerformed
+    }// GEN-LAST:event_itmCopiarActionPerformed
 
-    private void itmPegarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_itmPegarActionPerformed
+    private void itmPegarActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_itmPegarActionPerformed
         if (clipboard.size() > 0) {
             renderer.entidadesSeleccionadas.clear();
-            for (QEntidad object : clipboard) {
-                QEntidad newObject = object.clone();
-                newObject.setNombre(object.getNombre() + " Copy");
-                motor.getEscena().agregarEntidad(newObject);
+            for (Entity object : clipboard) {
+                Entity newObject = object.clone();
+                newObject.setName(object.getName() + " Copy");
+                motor.getEscena().addEntity(newObject);
                 renderer.entidadesSeleccionadas.add(newObject);
                 renderer.entidadActiva = newObject;
             }
 
-            for (QEntidad object : renderer.entidadesSeleccionadas) {
-                System.out.println(object.getNombre());
+            for (Entity object : renderer.entidadesSeleccionadas) {
+                System.out.println(object.getName());
             }
             objectListLock = true;
-//            lstObjects.clearSelection();
+            // lstObjects.clearSelection();
             actualizarArbolEscena();
             populateControls();
             objectListLock = false;
         }
-    }//GEN-LAST:event_itmPegarActionPerformed
+    }// GEN-LAST:event_itmPegarActionPerformed
 
-    private void itmSeleccionarTodoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_itmSeleccionarTodoActionPerformed
-//        lstObjects.setSelectionInterval(0, lstObjects.getModel().getSize());
-    }//GEN-LAST:event_itmSeleccionarTodoActionPerformed
+    private void itmSeleccionarTodoActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_itmSeleccionarTodoActionPerformed
+        // lstObjects.setSelectionInterval(0, lstObjects.getModel().getSize());
+    }// GEN-LAST:event_itmSeleccionarTodoActionPerformed
 
-    private void itmAgregarVistaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_itmAgregarVistaActionPerformed
+    private void itmAgregarVistaActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_itmAgregarVistaActionPerformed
         String nombre = JOptionPane.showInputDialog("Nombre del renderizador");
-        agregarRenderer(nombre, QMotorRender.RENDER_INTERNO);
-    }//GEN-LAST:event_itmAgregarVistaActionPerformed
+        agregarRenderer(nombre, RenderEngine.RENDER_INTERNO);
+    }// GEN-LAST:event_itmAgregarVistaActionPerformed
 
-    private void jMenuItem8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem8ActionPerformed
-        QEntidad esfera = new QEntidad("Esfera");
-        esfera.agregarComponente(new QEsfera(1.0f));
-        esfera.agregarComponente(new QColisionEsfera(1.0f));
+    private void jMenuItem8ActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jMenuItem8ActionPerformed
+        Entity esfera = new Entity("Esfera");
+        esfera.addComponent(new QEsfera(1.0f));
+        esfera.addComponent(new QColisionEsfera(1.0f));
 
-        motor.getEscena().agregarEntidad(esfera);
+        motor.getEscena().addEntity(esfera);
         actualizarArbolEscena();
         seleccionarEntidad(esfera);
-    }//GEN-LAST:event_jMenuItem8ActionPerformed
+    }// GEN-LAST:event_jMenuItem8ActionPerformed
 
-    private void itmCrearCajaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_itmCrearCajaActionPerformed
-        QEntidad cubo = new QEntidad("Cubo");
-        cubo.agregarComponente(new QCaja(1));
-        cubo.agregarComponente(new QColisionCaja(1, 1, 1));
-        motor.getEscena().agregarEntidad(cubo);
+    private void itmCrearCajaActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_itmCrearCajaActionPerformed
+        Entity cubo = new Entity("Cubo");
+        cubo.addComponent(new QCaja(1));
+        cubo.addComponent(new QColisionCaja(1, 1, 1));
+        motor.getEscena().addEntity(cubo);
         actualizarArbolEscena();
         seleccionarEntidad(cubo);
-//        actualizarFigurasRenderers();
-    }//GEN-LAST:event_itmCrearCajaActionPerformed
+        // actualizarFigurasRenderers();
+    }// GEN-LAST:event_itmCrearCajaActionPerformed
 
-    private void jMenuItem10ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem10ActionPerformed
-        QEntidad objeto = new QEntidad("Toro");
+    private void jMenuItem10ActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jMenuItem10ActionPerformed
+        Entity objeto = new Entity("Toro");
         QToro toro = new QToro(3, 1, 30, 20);
-        objeto.agregarComponente(toro);
-//        objeto.agregarComponente(new QColisionCapsula(1, 2));
-//        objeto.agregarComponente(new QColisionCaja(2, 1, 2));
-        objeto.agregarComponente(new QColisionMallaConvexa(toro));
-        motor.getEscena().agregarEntidad(objeto);
+        objeto.addComponent(toro);
+        // objeto.agregarComponente(new QColisionCapsula(1, 2));
+        // objeto.agregarComponente(new QColisionCaja(2, 1, 2));
+        objeto.addComponent(new QColisionMallaConvexa(toro));
+        motor.getEscena().addEntity(objeto);
         actualizarArbolEscena();
         seleccionarEntidad(objeto);
-    }//GEN-LAST:event_jMenuItem10ActionPerformed
+    }// GEN-LAST:event_jMenuItem10ActionPerformed
 
-    private void jMenuItem11ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem11ActionPerformed
-        QEntidad objeto = new QEntidad("Cilindro");
-        objeto.agregarComponente(new QCilindro(1, 1.0f));
-        objeto.agregarComponente(new QColisionCilindro(1, 1.0f));
-        motor.getEscena().agregarEntidad(objeto);
+    private void jMenuItem11ActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jMenuItem11ActionPerformed
+        Entity objeto = new Entity("Cilindro");
+        objeto.addComponent(new QCilindro(1, 1.0f));
+        objeto.addComponent(new QColisionCilindro(1, 1.0f));
+        motor.getEscena().addEntity(objeto);
         actualizarArbolEscena();
         seleccionarEntidad(objeto);
-    }//GEN-LAST:event_jMenuItem11ActionPerformed
+    }// GEN-LAST:event_jMenuItem11ActionPerformed
 
-    private void jMenuItem12ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem12ActionPerformed
-        QEntidad objeto = new QEntidad("Cono");
-        objeto.agregarComponente(new QCono(1, 1.0f));
-        objeto.agregarComponente(new QColisionCono(1, 1.0f));
-        motor.getEscena().agregarEntidad(objeto);
+    private void jMenuItem12ActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jMenuItem12ActionPerformed
+        Entity objeto = new Entity("Cono");
+        objeto.addComponent(new QCono(1, 1.0f));
+        objeto.addComponent(new QColisionCono(1, 1.0f));
+        motor.getEscena().addEntity(objeto);
         actualizarArbolEscena();
         seleccionarEntidad(objeto);
-    }//GEN-LAST:event_jMenuItem12ActionPerformed
+    }// GEN-LAST:event_jMenuItem12ActionPerformed
 
-    private void jMenuItem13ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem13ActionPerformed
+    private void jMenuItem13ActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jMenuItem13ActionPerformed
         renderer.opciones.setTipoVista(QOpcionesRenderer.VISTA_WIRE);
-    }//GEN-LAST:event_jMenuItem13ActionPerformed
+    }// GEN-LAST:event_jMenuItem13ActionPerformed
 
-    private void jMenuItem14ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem14ActionPerformed
+    private void jMenuItem14ActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jMenuItem14ActionPerformed
         renderer.opciones.setTipoVista(QOpcionesRenderer.VISTA_FLAT);
-    }//GEN-LAST:event_jMenuItem14ActionPerformed
+    }// GEN-LAST:event_jMenuItem14ActionPerformed
 
-    private void jMenuItem15ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem15ActionPerformed
+    private void jMenuItem15ActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jMenuItem15ActionPerformed
         renderer.opciones.setTipoVista(QOpcionesRenderer.VISTA_PHONG);
-    }//GEN-LAST:event_jMenuItem15ActionPerformed
+    }// GEN-LAST:event_jMenuItem15ActionPerformed
 
-    private void jMenuItem16ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem16ActionPerformed
+    private void jMenuItem16ActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jMenuItem16ActionPerformed
         renderer.opciones.setMaterial(!renderer.opciones.isMaterial());
-    }//GEN-LAST:event_jMenuItem16ActionPerformed
+    }// GEN-LAST:event_jMenuItem16ActionPerformed
 
-    private void jMenuItem17ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem17ActionPerformed
+    private void jMenuItem17ActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jMenuItem17ActionPerformed
         renderer.opciones.setSombras(!renderer.opciones.isSombras());
-    }//GEN-LAST:event_jMenuItem17ActionPerformed
+    }// GEN-LAST:event_jMenuItem17ActionPerformed
 
-    private void mnuLuzPuntualActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnuLuzPuntualActionPerformed
-        QEntidad nuevaLuz = new QEntidad("Luz Puntual");
-        nuevaLuz.agregarComponente(new QLuzPuntual(0.75f, new QColor(Color.white), Float.POSITIVE_INFINITY, false, false));
-        motor.getEscena().agregarEntidad(nuevaLuz);
+    private void mnuLuzPuntualActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_mnuLuzPuntualActionPerformed
+        Entity nuevaLuz = new Entity("Luz Puntual");
+        nuevaLuz.addComponent(
+                new QPointLigth(0.75f, new QColor(Color.white), Float.POSITIVE_INFINITY, false, false));
+        motor.getEscena().addEntity(nuevaLuz);
         actualizarArbolEscena();
         seleccionarEntidad(nuevaLuz);
-    }//GEN-LAST:event_mnuLuzPuntualActionPerformed
+    }// GEN-LAST:event_mnuLuzPuntualActionPerformed
 
-    private void mnuLuzDireccionalActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnuLuzDireccionalActionPerformed
-        QEntidad nuevaLuz = new QEntidad("Luz Direccional");
-        nuevaLuz.agregarComponente(new QLuzDireccional(1f, new QColor(Color.white), Float.POSITIVE_INFINITY, false, false));
-        motor.getEscena().agregarEntidad(nuevaLuz);
+    private void mnuLuzDireccionalActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_mnuLuzDireccionalActionPerformed
+        Entity nuevaLuz = new Entity("Luz Direccional");
+        nuevaLuz.addComponent(
+                new QDirectionalLigth(1f, new QColor(Color.white), Float.POSITIVE_INFINITY, false, false));
+        motor.getEscena().addEntity(nuevaLuz);
         actualizarArbolEscena();
         seleccionarEntidad(nuevaLuz);
-    }//GEN-LAST:event_mnuLuzDireccionalActionPerformed
+    }// GEN-LAST:event_mnuLuzDireccionalActionPerformed
 
-    private void mnuLuzConicaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnuLuzConicaActionPerformed
-        QEntidad nuevaLuz = new QEntidad("Luz Cónica");
-        nuevaLuz.agregarComponente(new QLuzSpot(0.75f, new QColor(Color.white), Float.POSITIVE_INFINITY, new QVector3(0, -1, 0), (float) Math.toRadians(45), (float) Math.toRadians(40), false, false));
-        motor.getEscena().agregarEntidad(nuevaLuz);
+    private void mnuLuzConicaActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_mnuLuzConicaActionPerformed
+        Entity nuevaLuz = new Entity("Luz Cónica");
+        nuevaLuz.addComponent(new QSpotLigth(0.75f, new QColor(Color.white), Float.POSITIVE_INFINITY,
+                QVector3.of(0, -1, 0), (float) Math.toRadians(45), (float) Math.toRadians(40), false, false));
+        motor.getEscena().addEntity(nuevaLuz);
         actualizarArbolEscena();
         seleccionarEntidad(nuevaLuz);
-    }//GEN-LAST:event_mnuLuzConicaActionPerformed
+    }// GEN-LAST:event_mnuLuzConicaActionPerformed
 
-    private void cbxZSortActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbxZSortActionPerformed
+    private void cbxZSortActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_cbxZSortActionPerformed
         renderer.opciones.setzSort(cbxZSort.isSelected());
-    }//GEN-LAST:event_cbxZSortActionPerformed
+    }// GEN-LAST:event_cbxZSortActionPerformed
 
-    private void cbxForceSmoothActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbxForceSmoothActionPerformed
+    private void cbxForceSmoothActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_cbxForceSmoothActionPerformed
         renderer.opciones.setForzarSuavizado(cbxForceSmooth.isSelected());
-    }//GEN-LAST:event_cbxForceSmoothActionPerformed
+    }// GEN-LAST:event_cbxForceSmoothActionPerformed
 
-    private void spnHeightStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_spnHeightStateChanged
+    private void spnHeightStateChanged(javax.swing.event.ChangeEvent evt) {// GEN-FIRST:event_spnHeightStateChanged
         applyResolution();
-    }//GEN-LAST:event_spnHeightStateChanged
+    }// GEN-LAST:event_spnHeightStateChanged
 
-    private void spnWidthStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_spnWidthStateChanged
+    private void spnWidthStateChanged(javax.swing.event.ChangeEvent evt) {// GEN-FIRST:event_spnWidthStateChanged
         applyResolution();
-    }//GEN-LAST:event_spnWidthStateChanged
+    }// GEN-LAST:event_spnWidthStateChanged
 
-    private void cbxForceResActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbxForceResActionPerformed
+    private void cbxForceResActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_cbxForceResActionPerformed
         applyResolution();
-    }//GEN-LAST:event_cbxForceResActionPerformed
+    }// GEN-LAST:event_cbxForceResActionPerformed
 
-    private void cbxShowBackFacesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbxShowBackFacesActionPerformed
+    private void cbxShowBackFacesActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_cbxShowBackFacesActionPerformed
         renderer.opciones.setDibujarCarasTraseras(cbxShowBackFaces.isSelected());
-    }//GEN-LAST:event_cbxShowBackFacesActionPerformed
+    }// GEN-LAST:event_cbxShowBackFacesActionPerformed
 
-    private void cbxNormalMappingActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbxNormalMappingActionPerformed
+    private void cbxNormalMappingActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_cbxNormalMappingActionPerformed
         renderer.opciones.setNormalMapping(cbxNormalMapping.isSelected());
-    }//GEN-LAST:event_cbxNormalMappingActionPerformed
+    }// GEN-LAST:event_cbxNormalMappingActionPerformed
 
-    private void cbxShowLightActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbxShowLightActionPerformed
+    private void cbxShowLightActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_cbxShowLightActionPerformed
         renderer.opciones.setDibujarLuces(cbxShowLight.isSelected());
-    }//GEN-LAST:event_cbxShowLightActionPerformed
+    }// GEN-LAST:event_cbxShowLightActionPerformed
 
     private void importarObjeto() {
 
-//        chooser.setCurrentDirectory(new File(QGlobal.RECURSOS));
+        // chooser.setCurrentDirectory(new File("assets/"));
         chooser.setFileFilter(new FileNameExtensionFilter("Archivos Motor3D", "qengine"));
         chooser.setFileFilter(new FileNameExtensionFilter("Wavefront OBJ", "obj"));
         chooser.setFileFilter(new FileNameExtensionFilter("Archivos ASCII", "txt"));
         chooser.setFileFilter(new FileNameExtensionFilter("Archivos 3DS", "3ds"));
         chooser.setFileFilter(new FileNameExtensionFilter("Archivos Blender", "blend"));
-//        chooser.setFileFilter(new FileNameExtensionFilter("Archivos MD5", "md5mesh", "md5anim"));
+        // chooser.setFileFilter(new FileNameExtensionFilter("Archivos MD5", "md5mesh",
+        // "md5anim"));
         chooser.setFileFilter(new FileNameExtensionFilter("Archivos MD5", "md5mesh"));
         chooser.setFileFilter(new FileNameExtensionFilter("Archivos MD2", "md2"));
         chooser.setFileFilter(new FileNameExtensionFilter("Archivos FBX", "fbx"));
         chooser.setFileFilter(new FileNameExtensionFilter("Archivos Collada", "dae"));
-        chooser.setFileFilter(new FileNameExtensionFilter("Archivos soportados", "txt", "obj", "3ds", "md2", "md5mesh", "qengine", "dae", "blend", "fbx"));
+        chooser.setFileFilter(new FileNameExtensionFilter("Archivos soportados", "txt", "obj", "3ds", "md2", "md5mesh",
+                "qengine", "dae", "blend", "fbx"));
         if (chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
+            try {
+                ModelLoader loader = new DefaultModelLoader();
+                Entity entity = loader.loadModel(chooser.getSelectedFile());
+                motor.getEscena().addEntity(entity);
+                seleccionarEntidad(entity);
+                actualizarArbolEscena();
+            } catch (Exception e) {
 
-            CargaObjeto carga;
-
-            if (chooser.getSelectedFile().getName().toLowerCase().endsWith("txt")) {
-                carga = new CargaASCII();
-//            } else if (chooser.getSelectedFile().getName().toLowerCase().endsWith("3ds")) {
-//                carga = new Carga3DMax();
-//            } else if (chooser.getSelectedFile().getName().toLowerCase().endsWith("md5mesh")) {
-//                carga = new CargaMD5();
-            } else if (chooser.getSelectedFile().getName().toLowerCase().endsWith("qengine")) {
-                carga = new CargaQENGINE();
-//            } else if (chooser.getSelectedFile().getName().toLowerCase().endsWith("dae")) {
-//                carga = new CargaColladaThinkMatrix();
-//                carga = new CargaAssimp();
-//            } else if (chooser.getSelectedFile().getName().toLowerCase().endsWith("fbx")) {
-//                carga = new CargaAssimp();
-            } else if (chooser.getSelectedFile().getName().toLowerCase().endsWith("obj")) {
-                carga = new CargaWaveObject();
-            } else {
-                carga = new CargaAssimp();
             }
-//            if (carga != null) {
-            //            carga = new CargaASCII();
-            Accion accionFinal = new Accion() {
-                @Override
-                public void ejecutar(Object... parametros) {
-                    //agregar los objetos al renderer
-                    for (QEntidad objeto : carga.getLista()) {
-                        motor.getEscena().agregarEntidad(objeto);
-                    }
-                    try {
-                        seleccionarEntidad(carga.getLista().get(carga.getLista().size() - 1));
-                    } catch (Exception e) {
-                    }
-                    actualizarArbolEscena();
-                }
-            };
-
-            carga.setAccionFinal(accionFinal);
-            carga.setProgreso(barraProgreso);
-            carga.cargar(chooser.getSelectedFile());
-//            } else {
-////                JOptionPane.showm
-//            }
         }
     }
 
-    private void btnGuadarScreenShotActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGuadarScreenShotActionPerformed
+    private void btnGuadarScreenShotActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btnGuadarScreenShotActionPerformed
         try {
-            ImageIO.write(renderer.getFrameBuffer().getRendered(), "png", new File(QGlobal.RECURSOS + "capturas/captura_" + sdf.format(new Date()) + ".png"));
+            ImageIO.write(renderer.getFrameBuffer().getRendered(), "png",
+                    new File("assets/capturas/captura_" + sdf.format(new Date()) + ".png"));
         } catch (IOException ex) {
             Logger.getLogger(Principal.class.getName()).log(Level.SEVERE, null, ex);
         }
 
-    }//GEN-LAST:event_btnGuadarScreenShotActionPerformed
+    }// GEN-LAST:event_btnGuadarScreenShotActionPerformed
 
-    private void jMenuItem18ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem18ActionPerformed
-        QEntidad entidad = new QEntidad("Plano");
-        QGeometria plano = new QPlano(2, 2);
-        entidad.agregarComponente(plano);
-        entidad.agregarComponente(new QColisionMallaConvexa(plano));
-        motor.getEscena().agregarEntidad(entidad);
+    private void jMenuItem18ActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jMenuItem18ActionPerformed
+        Entity entidad = new Entity("Plano");
+        Mesh plano = new QPlano(2, 2);
+        entidad.addComponent(plano);
+        entidad.addComponent(new QColisionMallaConvexa(plano));
+        motor.getEscena().addEntity(entidad);
         actualizarArbolEscena();
         seleccionarEntidad(entidad);
-    }//GEN-LAST:event_jMenuItem18ActionPerformed
+    }// GEN-LAST:event_jMenuItem18ActionPerformed
 
-    private void jMenuItem23ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem23ActionPerformed
+    private void importEntityAP(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jMenuItem23ActionPerformed
         importarObjeto();
-    }//GEN-LAST:event_jMenuItem23ActionPerformed
+    }// GEN-LAST:event_jMenuItem23ActionPerformed
 
-    private void jMenuItem22ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem22ActionPerformed
+    private void exportEntityAP(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jMenuItem22ActionPerformed
         chooser.setFileFilter(new FileNameExtensionFilter("Archivo Entidad Motor3D", "qengine"));
         if (chooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
-            SerializarUtil.agregarObjeto(chooser.getSelectedFile().getAbsolutePath(), renderer.entidadActiva, false, true);
+            SerializarUtil.agregarObjeto(chooser.getSelectedFile().getAbsolutePath(), renderer.entidadActiva, false,
+                    true);
         }
-    }//GEN-LAST:event_jMenuItem22ActionPerformed
+    }// GEN-LAST:event_jMenuItem22ActionPerformed
 
-    private void jMenuItem25ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem25ActionPerformed
-//        chooser.setCurrentDirectory(new File(QGlobal.RECURSOS));
+    private void saveFileAP(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jMenuItem25ActionPerformed
+        // chooser.setCurrentDirectory(new File("assets/"));
         chooser.setFileFilter(new FileNameExtensionFilter("Archivo Escenario Motor3D", "qengineuni"));
         if (chooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
             if (chooser.getSelectedFile().exists()) {
@@ -2572,8 +2591,8 @@ public class Principal extends javax.swing.JFrame {
                 archivo = archivo + ".qengineuni";
             }
             int i = 0;
-            int tam = motor.getEscena().getListaEntidades().size();
-            for (QEntidad entidad : motor.getEscena().getListaEntidades()) {
+            int tam = motor.getEscena().getEntities().size();
+            for (Entity entidad : motor.getEscena().getEntities()) {
                 SerializarUtil.agregarObjeto(archivo, entidad, true, true);
                 i++;
                 barraProgreso.setValue((int) (100 * (float) i / (float) tam));
@@ -2581,32 +2600,19 @@ public class Principal extends javax.swing.JFrame {
             barraProgreso.setValue(100);
         }
 
-    }//GEN-LAST:event_jMenuItem25ActionPerformed
+    }// GEN-LAST:event_jMenuItem25ActionPerformed
 
-    private void jMenuItem20ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem20ActionPerformed
+    private void openFileAP(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jMenuItem20ActionPerformed
         try {
-//            chooser.setCurrentDirectory(new File(QGlobal.RECURSOS));
+            // chooser.setCurrentDirectory(new File("assets/"));
             chooser.setFileFilter(new FileNameExtensionFilter("Archivo Escenario Motor3D", "qengineuni"));
             if (chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
-                CargaObjeto carga;
-                carga = new CargaQENGINE2();
-                //            carga = new CargaASCII();
-                Accion accionFinal = new Accion() {
-                    @Override
-                    public void ejecutar(Object... parametros) {
-                        //agregar los objetos al renderer
-                        for (QEntidad objeto : carga.getLista()) {
-                            motor.getEscena().agregarEntidad(objeto);
-                            if (objeto instanceof QCamara) {
-                                renderer.setCamara((QCamara) objeto);
-                            }
-                        }
-                        actualizarArbolEscena();
-                    }
-                };
-                carga.setAccionFinal(accionFinal);
-                carga.setProgreso(barraProgreso);
-                carga.cargar(chooser.getSelectedFile());
+                Entity entity = AssetManager.get().loadModel(chooser.getSelectedFile());
+                motor.getEscena().addEntity(entity);
+                if (entity instanceof Camera) {
+                    renderer.setCamara((Camera) entity);
+                    actualizarArbolEscena();
+                }
             }
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this, "Error al abrir archivo " + e.getMessage());
@@ -2614,506 +2620,509 @@ public class Principal extends javax.swing.JFrame {
         }
 
         actualizarArbolEscena();
-    }//GEN-LAST:event_jMenuItem20ActionPerformed
+    }// GEN-LAST:event_jMenuItem20ActionPerformed
 
-    private void jButton11ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton11ActionPerformed
+    private void jButton11ActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jButton11ActionPerformed
         renderer.setEfectosPostProceso(null);
-    }//GEN-LAST:event_jButton11ActionPerformed
+    }// GEN-LAST:event_jButton11ActionPerformed
 
-    private void jButton12ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton12ActionPerformed
+    private void jButton12ActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jButton12ActionPerformed
         renderer.setEfectosPostProceso(new QEfectoBloom());
-    }//GEN-LAST:event_jButton12ActionPerformed
+    }// GEN-LAST:event_jButton12ActionPerformed
 
-    private void jButton13ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton13ActionPerformed
+    private void jButton13ActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jButton13ActionPerformed
         renderer.setEfectosPostProceso(new QEfectoContraste());
-    }//GEN-LAST:event_jButton13ActionPerformed
+    }// GEN-LAST:event_jButton13ActionPerformed
 
-    private void jButton14ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton14ActionPerformed
-        renderer.setEfectosPostProceso(new QEfectoBlur(renderer.getFrameBuffer().getAncho(), renderer.getFrameBuffer().getAlto()));
-    }//GEN-LAST:event_jButton14ActionPerformed
+    private void jButton14ActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jButton14ActionPerformed
+        renderer.setEfectosPostProceso(
+                new QEfectoBlur(renderer.getFrameBuffer().getAncho(), renderer.getFrameBuffer().getAlto()));
+    }// GEN-LAST:event_jButton14ActionPerformed
 
-    private void btnActualizarReflejosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnActualizarReflejosActionPerformed
-        motor.setForzarActualizacionMapaReflejos(true);
-    }//GEN-LAST:event_btnActualizarReflejosActionPerformed
+    private void btnActualizarReflejosActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btnActualizarReflejosActionPerformed
+        // motor.setForzarActualizacionMapaReflejos(true);
+    }// GEN-LAST:event_btnActualizarReflejosActionPerformed
 
-    private void jButton15ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton15ActionPerformed
+    private void jButton15ActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jButton15ActionPerformed
         renderer.setEfectosPostProceso(new QEfectoDepthOfField(QProcesadorDepthOfField.DESENFOQUE_CERCA, 0.5f));
-    }//GEN-LAST:event_jButton15ActionPerformed
+    }// GEN-LAST:event_jButton15ActionPerformed
 
-    private void jButton16ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton16ActionPerformed
+    private void jButton16ActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jButton16ActionPerformed
         renderer.setEfectosPostProceso(new QEfectoDepthOfField(QProcesadorDepthOfField.DESENFOQUE_LEJOS, 0.5f));
-    }//GEN-LAST:event_jButton16ActionPerformed
+    }// GEN-LAST:event_jButton16ActionPerformed
 
-    private void jButton17ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton17ActionPerformed
+    private void jButton17ActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jButton17ActionPerformed
         renderer.setEfectosPostProceso(new QEfectoDepthOfField(QProcesadorDepthOfField.DESENFOQUE_EXCLUYENTE, 0.5f));
-    }//GEN-LAST:event_jButton17ActionPerformed
+    }// GEN-LAST:event_jButton17ActionPerformed
 
-    private void jButton18ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton18ActionPerformed
+    private void jButton18ActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jButton18ActionPerformed
         renderer.setEfectosPostProceso(new QEfectoCel());
-    }//GEN-LAST:event_jButton18ActionPerformed
+    }// GEN-LAST:event_jButton18ActionPerformed
 
-    private void pnlColorFondoMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_pnlColorFondoMouseClicked
+    private void pnlColorFondoMouseClicked(java.awt.event.MouseEvent evt) {// GEN-FIRST:event_pnlColorFondoMouseClicked
 
-    }//GEN-LAST:event_pnlColorFondoMouseClicked
+    }// GEN-LAST:event_pnlColorFondoMouseClicked
 
-    private void pnlColorFondoMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_pnlColorFondoMousePressed
+    private void pnlColorFondoMousePressed(java.awt.event.MouseEvent evt) {// GEN-FIRST:event_pnlColorFondoMousePressed
         JColorChooser colorChooser = new JColorChooser();
         Color newColor = colorChooser.showDialog(this, "Seleccione un color", pnlColorFondo.getBackground());
         if (newColor != null) {
             pnlColorFondo.setBackground(newColor);
-            motor.getEscena().setColorAmbiente(new QColor(newColor));
-//            renderer.setColorFondo(new QColor(newColor));
+            motor.getEscena().setAmbientColor(new QColor(newColor));
+            // renderer.setColorFondo(new QColor(newColor));
         }
-    }//GEN-LAST:event_pnlColorFondoMousePressed
+    }// GEN-LAST:event_pnlColorFondoMousePressed
 
-    private void btnActualizarSombrasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnActualizarSombrasActionPerformed
+    private void btnActualizarSombrasActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btnActualizarSombrasActionPerformed
         renderer.setForzarActualizacionMapaSombras(true);
-    }//GEN-LAST:event_btnActualizarSombrasActionPerformed
+    }// GEN-LAST:event_btnActualizarSombrasActionPerformed
 
-    private void pnlNeblinaColorMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_pnlNeblinaColorMousePressed
+    private void pnlNeblinaColorMousePressed(java.awt.event.MouseEvent evt) {// GEN-FIRST:event_pnlNeblinaColorMousePressed
         JColorChooser colorChooser = new JColorChooser();
         Color newColor = colorChooser.showDialog(this, "Seleccione un color", pnlColorFondo.getBackground());
         if (newColor != null) {
             pnlColorFondo.setBackground(newColor);
-            renderer.getEscena().neblina.setColour(new QColor(newColor));
+            renderer.getEscena().fog.setColour(new QColor(newColor));
         }
-    }//GEN-LAST:event_pnlNeblinaColorMousePressed
+    }// GEN-LAST:event_pnlNeblinaColorMousePressed
 
-    private void chkNeblinaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_chkNeblinaActionPerformed
-        renderer.getEscena().neblina.setActive(chkNeblina.isSelected());
-    }//GEN-LAST:event_chkNeblinaActionPerformed
+    private void chkNeblinaActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_chkNeblinaActionPerformed
+        renderer.getEscena().fog.setActive(chkNeblina.isSelected());
+    }// GEN-LAST:event_chkNeblinaActionPerformed
 
-    private void spnNeblinaDensidadStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_spnNeblinaDensidadStateChanged
-        renderer.getEscena().neblina.setDensity(((Double) spnNeblinaDensidad.getValue()).floatValue());
-    }//GEN-LAST:event_spnNeblinaDensidadStateChanged
+    private void spnNeblinaDensidadStateChanged(javax.swing.event.ChangeEvent evt) {// GEN-FIRST:event_spnNeblinaDensidadStateChanged
+        renderer.getEscena().fog.setDensity(((Double) spnNeblinaDensidad.getValue()).floatValue());
+    }// GEN-LAST:event_spnNeblinaDensidadStateChanged
 
-    private void jMenuItem2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem2ActionPerformed
-        QEntidad entidad = new QEntidad("Malla");
-        QMalla malla = new QMalla(true, 20, 20, 20, 20);
-        entidad.agregarComponente(malla);
-        entidad.agregarComponente(new QColisionMallaConvexa(malla));
-        motor.getEscena().agregarEntidad(entidad);
+    private void jMenuItem2ActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jMenuItem2ActionPerformed
+        Entity entidad = new Entity("Malla");
+        PlanarMesh malla = new PlanarMesh(true, 20, 20, 20, 20);
+        entidad.addComponent(malla);
+        entidad.addComponent(new QColisionMallaConvexa(malla));
+        motor.getEscena().addEntity(entidad);
         actualizarArbolEscena();
         seleccionarEntidad(entidad);
-    }//GEN-LAST:event_jMenuItem2ActionPerformed
+    }// GEN-LAST:event_jMenuItem2ActionPerformed
 
-    private void itmMapaAlturaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_itmMapaAlturaActionPerformed
+    private void itmMapaAlturaActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_itmMapaAlturaActionPerformed
         chooser.setFileFilter(new FileNameExtensionFilter("Archivos soportados", "png", "jpg", "jpeg", "bmp", "gif"));
         if (chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
-            QEntidad entidad = new QEntidad("terreno");
-            QTerreno terreno = new QTerreno();
-            entidad.agregarComponente(terreno);
-            terreno.generar(chooser.getSelectedFile(), 1, 0f, 50f, null, 5);
-            motor.getEscena().agregarEntidad(entidad);
+            Entity entidad = new Entity("terreno");
+            HeightMapTerrain terreno = new HeightMapTerrain(chooser.getSelectedFile(), 1, 0f, 50f, 5, null, true);
+            entidad.addComponent(terreno);
+            terreno.build();
+            motor.getEscena().addEntity(entidad);
             actualizarArbolEscena();
             seleccionarEntidad(entidad);
         }
-    }//GEN-LAST:event_itmMapaAlturaActionPerformed
+    }// GEN-LAST:event_itmMapaAlturaActionPerformed
 
-    private void jMenuItem3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem3ActionPerformed
-        QEntidad entidad = new QEntidad("Entidad");
-        motor.getEscena().agregarEntidad(entidad);
+    private void jMenuItem3ActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jMenuItem3ActionPerformed
+        Entity entidad = new Entity("Entidad");
+        motor.getEscena().addEntity(entidad);
         actualizarArbolEscena();
         seleccionarEntidad(entidad);
-    }//GEN-LAST:event_jMenuItem3ActionPerformed
+    }// GEN-LAST:event_jMenuItem3ActionPerformed
 
-    private void jMenuItem26ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem26ActionPerformed
-        QEntidad objeto = new QEntidad("Cilindro");
-        objeto.agregarComponente(new QCilindroX(1, 1.0f));
-        objeto.agregarComponente(new QColisionCilindroX(1, 1.0f));
-        motor.getEscena().agregarEntidad(objeto);
+    private void jMenuItem26ActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jMenuItem26ActionPerformed
+        Entity objeto = new Entity("Cilindro");
+        objeto.addComponent(new QCilindroX(1, 1.0f));
+        objeto.addComponent(new QColisionCilindroX(1, 1.0f));
+        motor.getEscena().addEntity(objeto);
         actualizarArbolEscena();
         seleccionarEntidad(objeto);
-    }//GEN-LAST:event_jMenuItem26ActionPerformed
+    }// GEN-LAST:event_jMenuItem26ActionPerformed
 
-    private void btnInvertirNormalesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnInvertirNormalesActionPerformed
-        for (QEntidad seleccionado : renderer.entidadesSeleccionadas) {
-            for (QComponente compo : seleccionado.getComponentes()) {
-                if (compo instanceof QGeometria) {
-                    QUtilNormales.invertirNormales((QGeometria) compo);
+    private void btnInvertirNormalesActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btnInvertirNormalesActionPerformed
+        for (Entity seleccionado : renderer.entidadesSeleccionadas) {
+            for (EntityComponent compo : seleccionado.getComponents()) {
+                if (compo instanceof Mesh) {
+                    QUtilNormales.invertirNormales((Mesh) compo);
                 }
             }
         }
-    }//GEN-LAST:event_btnInvertirNormalesActionPerformed
+    }// GEN-LAST:event_btnInvertirNormalesActionPerformed
 
-    private void btnCentroGeometriaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCentroGeometriaActionPerformed
-        for (QEntidad seleccionado : renderer.entidadesSeleccionadas) {
+    private void btnCentroGeometriaActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btnCentroGeometriaActionPerformed
+        for (Entity seleccionado : renderer.entidadesSeleccionadas) {
             QDefinirCentro.definirCentroOrigenAGeometria(seleccionado);
             seleccionarEntidad(seleccionado);
         }
-    }//GEN-LAST:event_btnCentroGeometriaActionPerformed
+    }// GEN-LAST:event_btnCentroGeometriaActionPerformed
 
-    private void btnSuavizarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSuavizarActionPerformed
-        for (QEntidad seleccionado : renderer.entidadesSeleccionadas) {
-            for (QComponente compo : seleccionado.getComponentes()) {
-                if (compo instanceof QGeometria) {
-                    QMaterialUtil.suavizar((QGeometria) compo, true);
+    private void btnSuavizarActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btnSuavizarActionPerformed
+        for (Entity seleccionado : renderer.entidadesSeleccionadas) {
+            for (EntityComponent compo : seleccionado.getComponents()) {
+                if (compo instanceof Mesh) {
+                    QMaterialUtil.suavizar((Mesh) compo, true);
                 }
             }
         }
-    }//GEN-LAST:event_btnSuavizarActionPerformed
+    }// GEN-LAST:event_btnSuavizarActionPerformed
 
-    private void btnNoSuavizarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnNoSuavizarActionPerformed
-        for (QEntidad seleccionado : renderer.entidadesSeleccionadas) {
-            for (QComponente compo : seleccionado.getComponentes()) {
-                if (compo instanceof QGeometria) {
-                    QMaterialUtil.suavizar((QGeometria) compo, false);
+    private void btnNoSuavizarActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btnNoSuavizarActionPerformed
+        for (Entity seleccionado : renderer.entidadesSeleccionadas) {
+            for (EntityComponent compo : seleccionado.getComponents()) {
+                if (compo instanceof Mesh) {
+                    QMaterialUtil.suavizar((Mesh) compo, false);
                 }
             }
         }
-    }//GEN-LAST:event_btnNoSuavizarActionPerformed
+    }// GEN-LAST:event_btnNoSuavizarActionPerformed
 
-    private void btnTipoSolidoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnTipoSolidoActionPerformed
-        for (QEntidad seleccionado : renderer.entidadesSeleccionadas) {
-            for (QComponente compo : seleccionado.getComponentes()) {
-                if (compo instanceof QGeometria) {
-                    ((QGeometria) compo).tipo = QGeometria.GEOMETRY_TYPE_MESH;
+    private void btnTipoSolidoActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btnTipoSolidoActionPerformed
+        for (Entity seleccionado : renderer.entidadesSeleccionadas) {
+            for (EntityComponent compo : seleccionado.getComponents()) {
+                if (compo instanceof Mesh) {
+                    ((Mesh) compo).tipo = Mesh.GEOMETRY_TYPE_MESH;
                 }
             }
         }
-    }//GEN-LAST:event_btnTipoSolidoActionPerformed
+    }// GEN-LAST:event_btnTipoSolidoActionPerformed
 
-    private void btnTipoAlambreActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnTipoAlambreActionPerformed
-        for (QEntidad seleccionado : renderer.entidadesSeleccionadas) {
-            for (QComponente compo : seleccionado.getComponentes()) {
-                if (compo instanceof QGeometria) {
-                    ((QGeometria) compo).tipo = QGeometria.GEOMETRY_TYPE_WIRE;
+    private void btnTipoAlambreActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btnTipoAlambreActionPerformed
+        for (Entity seleccionado : renderer.entidadesSeleccionadas) {
+            for (EntityComponent compo : seleccionado.getComponents()) {
+                if (compo instanceof Mesh) {
+                    ((Mesh) compo).tipo = Mesh.GEOMETRY_TYPE_WIRE;
                 }
             }
         }
-    }//GEN-LAST:event_btnTipoAlambreActionPerformed
+    }// GEN-LAST:event_btnTipoAlambreActionPerformed
 
-    private void itmAgregarRenderActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_itmAgregarRenderActionPerformed
+    private void itmAgregarRenderActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_itmAgregarRenderActionPerformed
         String nombre = JOptionPane.showInputDialog("Nombre del renderizador");
-        agregarRenderer(nombre, QMotorRender.RENDER_JAVA3D);
-    }//GEN-LAST:event_itmAgregarRenderActionPerformed
+        agregarRenderer(nombre, RenderEngine.RENDER_JAVA3D);
+    }// GEN-LAST:event_itmAgregarRenderActionPerformed
 
-    private void itmAddCamaraActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_itmAddCamaraActionPerformed
-        QCamara entidad = new QCamara();
-        motor.getEscena().agregarEntidad(entidad);
+    private void itmAddCamaraActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_itmAddCamaraActionPerformed
+        Camera entidad = new Camera();
+        motor.getEscena().addEntity(entidad);
         actualizarArbolEscena();
         seleccionarEntidad(entidad);
-    }//GEN-LAST:event_itmAddCamaraActionPerformed
+    }// GEN-LAST:event_itmAddCamaraActionPerformed
 
-    private void btnDividirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDividirActionPerformed
-        for (QEntidad seleccionado : renderer.entidadesSeleccionadas) {
-            for (QComponente compo : seleccionado.getComponentes()) {
-                if (compo instanceof QGeometria) {
-//                    QMallaUtil.subdividir((QGeometria) compo, 1);
-                    ((QGeometria) compo).dividir();
+    private void btnDividirActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btnDividirActionPerformed
+        for (Entity seleccionado : renderer.entidadesSeleccionadas) {
+            for (EntityComponent compo : seleccionado.getComponents()) {
+                if (compo instanceof Mesh) {
+                    // QMallaUtil.subdividir((QGeometria) compo, 1);
+                    ((Mesh) compo).dividir();
                 }
             }
         }
-    }//GEN-LAST:event_btnDividirActionPerformed
+    }// GEN-LAST:event_btnDividirActionPerformed
 
-    private void jMenuItem5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem5ActionPerformed
-        QEntidad entidad = new QEntidad("Triángulo");
+    private void jMenuItem5ActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jMenuItem5ActionPerformed
+        Entity entidad = new Entity("Triángulo");
         QTriangulo triangulo = new QTriangulo(1);
-        entidad.agregarComponente(triangulo);
-        entidad.agregarComponente(new QColisionTriangulo(triangulo));
-        motor.getEscena().agregarEntidad(entidad);
+        entidad.addComponent(triangulo);
+        entidad.addComponent(new QColisionTriangulo(triangulo));
+        motor.getEscena().addEntity(entidad);
         actualizarArbolEscena();
         seleccionarEntidad(entidad);
-    }//GEN-LAST:event_jMenuItem5ActionPerformed
+    }// GEN-LAST:event_jMenuItem5ActionPerformed
 
-    private void jButton19ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton19ActionPerformed
+    private void jButton19ActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jButton19ActionPerformed
         renderer.setEfectosPostProceso(new QAntialiasing());
-    }//GEN-LAST:event_jButton19ActionPerformed
+    }// GEN-LAST:event_jButton19ActionPerformed
 
-    private void mnuEspiralActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnuEspiralActionPerformed
-        QEntidad objeto = new QEntidad("Espiral");
-        objeto.agregarComponente(new QEspiral(1, 10, 20));
-//        objeto.agregarComponente(new QColisionCilindro(1, 1.0f));
-        motor.getEscena().agregarEntidad(objeto);
+    private void mnuEspiralActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_mnuEspiralActionPerformed
+        Entity objeto = new Entity("Espiral");
+        objeto.addComponent(new QEspiral(1, 10, 20));
+        // objeto.agregarComponente(new QColisionCilindro(1, 1.0f));
+        motor.getEscena().addEntity(objeto);
         actualizarArbolEscena();
         seleccionarEntidad(objeto);
-    }//GEN-LAST:event_mnuEspiralActionPerformed
+    }// GEN-LAST:event_mnuEspiralActionPerformed
 
-    private void btnRaster1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRaster1ActionPerformed
+    private void btnRaster1ActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btnRaster1ActionPerformed
         renderer.cambiarRaster(1);
-    }//GEN-LAST:event_btnRaster1ActionPerformed
+    }// GEN-LAST:event_btnRaster1ActionPerformed
 
-    private void btnRaster2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRaster2ActionPerformed
+    private void btnRaster2ActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btnRaster2ActionPerformed
         renderer.cambiarRaster(2);
-    }//GEN-LAST:event_btnRaster2ActionPerformed
+    }// GEN-LAST:event_btnRaster2ActionPerformed
 
-    private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem1ActionPerformed
-        QEntidad objeto = new QEntidad("Cilindro");
-        objeto.agregarComponente(new QCilindroZ(1, 1.0f));
-        objeto.agregarComponente(new QColisionCilindroX(1, 1.0f));
-        motor.getEscena().agregarEntidad(objeto);
+    private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jMenuItem1ActionPerformed
+        Entity objeto = new Entity("Cilindro");
+        objeto.addComponent(new QCilindroZ(1, 1.0f));
+        objeto.addComponent(new QColisionCilindroX(1, 1.0f));
+        motor.getEscena().addEntity(objeto);
         actualizarArbolEscena();
         seleccionarEntidad(objeto);
-    }//GEN-LAST:event_jMenuItem1ActionPerformed
+    }// GEN-LAST:event_jMenuItem1ActionPerformed
 
-    private void mnuItemPrismaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnuItemPrismaActionPerformed
-        QEntidad objeto = new QEntidad("Prisma");
-//        objeto.agregarComponente(new QPrisma(3, 1.0f, 1.0f, 20, 3));
-        objeto.agregarComponente(new QPrisma(3, 1.0f, 1.0f, 5, 3));
-//        objeto.agregarComponente(new QColisionCilindro(1, 1.0f));
-        motor.getEscena().agregarEntidad(objeto);
+    private void mnuItemPrismaActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_mnuItemPrismaActionPerformed
+        Entity objeto = new Entity("Prisma");
+        // objeto.agregarComponente(new QPrisma(3, 1.0f, 1.0f, 20, 3));
+        objeto.addComponent(new QPrisma(3, 1.0f, 1.0f, 5, 3));
+        // objeto.agregarComponente(new QColisionCilindro(1, 1.0f));
+        motor.getEscena().addEntity(objeto);
         actualizarArbolEscena();
         seleccionarEntidad(objeto);
-    }//GEN-LAST:event_mnuItemPrismaActionPerformed
+    }// GEN-LAST:event_mnuItemPrismaActionPerformed
 
-    private void mnuItemGeosferaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnuItemGeosferaActionPerformed
-        QEntidad esfera = new QEntidad("Geoesfera");
-        esfera.agregarComponente(new QGeoesfera(1.0f, 3));
-        esfera.agregarComponente(new QColisionEsfera(1.0f));
-        motor.getEscena().agregarEntidad(esfera);
+    private void mnuItemGeosferaActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_mnuItemGeosferaActionPerformed
+        Entity esfera = new Entity("Geoesfera");
+        esfera.addComponent(new QGeoesfera(1.0f, 3));
+        esfera.addComponent(new QColisionEsfera(1.0f));
+        motor.getEscena().addEntity(esfera);
         actualizarArbolEscena();
         seleccionarEntidad(esfera);
-    }//GEN-LAST:event_mnuItemGeosferaActionPerformed
+    }// GEN-LAST:event_mnuItemGeosferaActionPerformed
 
-    private void cbxInterpolarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbxInterpolarActionPerformed
+    private void cbxInterpolarActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_cbxInterpolarActionPerformed
         QGlobal.ANIMACION_INTERPOLAR = cbxInterpolar.isSelected();
-    }//GEN-LAST:event_cbxInterpolarActionPerformed
+    }// GEN-LAST:event_cbxInterpolarActionPerformed
 
-    private void btnAnimIniciarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAnimIniciarActionPerformed
-        motor.iniciarAnimaciones();
-    }//GEN-LAST:event_btnAnimIniciarActionPerformed
+    private void btnAnimIniciarActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btnAnimIniciarActionPerformed
+        motor.startAnimation();
+    }// GEN-LAST:event_btnAnimIniciarActionPerformed
 
-    private void btnAnimDetenerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAnimDetenerActionPerformed
-        motor.detenerAnimaciones();
-    }//GEN-LAST:event_btnAnimDetenerActionPerformed
+    private void btnAnimDetenerActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btnAnimDetenerActionPerformed
+        motor.stopAnimation();
+    }// GEN-LAST:event_btnAnimDetenerActionPerformed
 
-    private void jButton7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton7ActionPerformed
+    private void jButton7ActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jButton7ActionPerformed
         if (renderer.entidadActiva != null) {
-            renderer.entidadActiva.moverDerechaIzquierda(0.51f);
+            renderer.entidadActiva.moveLeft(0.51f);
         }
-    }//GEN-LAST:event_jButton7ActionPerformed
+    }// GEN-LAST:event_jButton7ActionPerformed
 
-    private void jButton6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton6ActionPerformed
+    private void jButton6ActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jButton6ActionPerformed
         if (renderer.entidadActiva != null) {
-            renderer.entidadActiva.moverAdelanteAtras(-0.2f);
+            renderer.entidadActiva.moveForward(-0.2f);
         }
-    }//GEN-LAST:event_jButton6ActionPerformed
+    }// GEN-LAST:event_jButton6ActionPerformed
 
-    private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
+    private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jButton5ActionPerformed
         if (renderer.entidadActiva != null) {
-            renderer.entidadActiva.moverAdelanteAtras(0.2f);
+            renderer.entidadActiva.moveForward(0.2f);
         }
-    }//GEN-LAST:event_jButton5ActionPerformed
+    }// GEN-LAST:event_jButton5ActionPerformed
 
-    private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
-        if (ejemplo != null && !ejemplo.isEmpty()) {
+    private void btnAccion2AP(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jButton4ActionPerformed
+        // if (ejemplo != null && !ejemplo.isEmpty()) {
 
-            for (GeneraEjemplo ejem : ejemplo) {
-                ejem.accion(2, renderer);
-            }
-        }
-    }//GEN-LAST:event_jButton4ActionPerformed
+        // for (GeneraEjemplo ejem : ejemplo) {
+        // ejem.accion(2, renderer);
+        // }
+        // }
+    }// GEN-LAST:event_jButton4ActionPerformed
 
-    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
-        if (ejemplo != null && !ejemplo.isEmpty()) {
-            for (GeneraEjemplo ejem : ejemplo) {
-                ejem.accion(1, renderer);
-            }
-        }
-    }//GEN-LAST:event_jButton3ActionPerformed
+    private void btnAccion1AP(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jButton3ActionPerformed
+        // if (ejemplo != null && !ejemplo.isEmpty()) {
+        // for (GeneraEjemplo ejem : ejemplo) {
+        // ejem.accion(1, renderer);
+        // }
+        // }
+    }// GEN-LAST:event_jButton3ActionPerformed
 
-    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+    private void btnStopPhysicsAP(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jButton2ActionPerformed
         motor.detenerFisica();
-    }//GEN-LAST:event_jButton2ActionPerformed
+    }// GEN-LAST:event_jButton2ActionPerformed
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+    private void btnStartPhysicsAP(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jButton1ActionPerformed
         motor.iniciarFisica();
-        //        motor.iniciarFisica(2);
-    }//GEN-LAST:event_jButton1ActionPerformed
+        // motor.iniciarFisica(2);
+    }// GEN-LAST:event_jButton1ActionPerformed
 
-    private void txtAnimTiempoInicioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtAnimTiempoInicioActionPerformed
-        motor.getMotorAnimacion().setTiempoInicio(Float.valueOf(txtAnimTiempoInicio.getText()));
+    private void txtAnimTiempoInicioActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_txtAnimTiempoInicioActionPerformed
+        motor.getAnimationEngine().setTiempoInicio(Float.valueOf(txtAnimTiempoInicio.getText()));
         sldLineaTiempo.setMinimum(Integer.parseInt(txtAnimTiempoInicio.getText()) * 10);
-    }//GEN-LAST:event_txtAnimTiempoInicioActionPerformed
+    }// GEN-LAST:event_txtAnimTiempoInicioActionPerformed
 
-    private void txtAnimTiempoInicioKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtAnimTiempoInicioKeyReleased
-        motor.getMotorAnimacion().setTiempoInicio(Float.valueOf(txtAnimTiempoInicio.getText()));
+    private void txtAnimTiempoInicioKeyReleased(java.awt.event.KeyEvent evt) {// GEN-FIRST:event_txtAnimTiempoInicioKeyReleased
+        motor.getAnimationEngine().setTiempoInicio(Float.valueOf(txtAnimTiempoInicio.getText()));
         sldLineaTiempo.setMinimum(Integer.parseInt(txtAnimTiempoInicio.getText()) * 10);
-    }//GEN-LAST:event_txtAnimTiempoInicioKeyReleased
+    }// GEN-LAST:event_txtAnimTiempoInicioKeyReleased
 
-    private void txtAnimTiempoFinActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtAnimTiempoFinActionPerformed
-        motor.getMotorAnimacion().setTiempoFin(Float.valueOf(txtAnimTiempoFin.getText()));
+    private void txtAnimTiempoFinActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_txtAnimTiempoFinActionPerformed
+        motor.getAnimationEngine().setTiempoFin(Float.valueOf(txtAnimTiempoFin.getText()));
         sldLineaTiempo.setMaximum(Integer.parseInt(txtAnimTiempoFin.getText()) * 10);
-    }//GEN-LAST:event_txtAnimTiempoFinActionPerformed
+    }// GEN-LAST:event_txtAnimTiempoFinActionPerformed
 
-    private void txtAnimTiempoFinKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtAnimTiempoFinKeyReleased
-        motor.getMotorAnimacion().setTiempoFin(Float.valueOf(txtAnimTiempoFin.getText()));
+    private void txtAnimTiempoFinKeyReleased(java.awt.event.KeyEvent evt) {// GEN-FIRST:event_txtAnimTiempoFinKeyReleased
+        motor.getAnimationEngine().setTiempoFin(Float.valueOf(txtAnimTiempoFin.getText()));
         sldLineaTiempo.setMaximum(Integer.parseInt(txtAnimTiempoFin.getText()) * 10);
-    }//GEN-LAST:event_txtAnimTiempoFinKeyReleased
+    }// GEN-LAST:event_txtAnimTiempoFinKeyReleased
 
-    private void sldLineaTiempoStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_sldLineaTiempoStateChanged
+    private void sldLineaTiempoStateChanged(javax.swing.event.ChangeEvent evt) {// GEN-FIRST:event_sldLineaTiempoStateChanged
 
         if (!cambiandoLineaTiempo) {
-            motor.getMotorAnimacion().setTiempo(((float) sldLineaTiempo.getValue() / (float) sldLineaTiempo.getMaximum()) * ((float) sldLineaTiempo.getMaximum() / 10.f));
-            motor.getMotorAnimacion().actualizarPoses(motor.getMotorAnimacion().getTiempo());
+            motor.getAnimationEngine()
+                    .setTiempo(((float) sldLineaTiempo.getValue() / (float) sldLineaTiempo.getMaximum())
+                            * ((float) sldLineaTiempo.getMaximum() / 10.f));
+            motor.getAnimationEngine().actualizarPoses(motor.getAnimationEngine().getTiempo());
         }
-        txtAnimTiempo.setText("Tiempo:" + df.format(motor.getMotorAnimacion().getTiempo()));
-    }//GEN-LAST:event_sldLineaTiempoStateChanged
+        txtAnimTiempo.setText("Tiempo:" + df.format(motor.getAnimationEngine().getTiempo()));
+    }// GEN-LAST:event_sldLineaTiempoStateChanged
 
-    private void btnAnimVelocidad1XActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAnimVelocidad1XActionPerformed
-        motor.getMotorAnimacion().setVelocidad(1.0f);
-    }//GEN-LAST:event_btnAnimVelocidad1XActionPerformed
+    private void btnAnimVelocidad1XActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btnAnimVelocidad1XActionPerformed
+        motor.getAnimationEngine().setVelocidad(1.0f);
+    }// GEN-LAST:event_btnAnimVelocidad1XActionPerformed
 
-    private void btnAnimVelocidad075XActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAnimVelocidad075XActionPerformed
-        motor.getMotorAnimacion().setVelocidad(0.75f);
-    }//GEN-LAST:event_btnAnimVelocidad075XActionPerformed
+    private void btnAnimVelocidad075XActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btnAnimVelocidad075XActionPerformed
+        motor.getAnimationEngine().setVelocidad(0.75f);
+    }// GEN-LAST:event_btnAnimVelocidad075XActionPerformed
 
-    private void btnANimVelocidad05XActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnANimVelocidad05XActionPerformed
-        motor.getMotorAnimacion().setVelocidad(0.5f);
-    }//GEN-LAST:event_btnANimVelocidad05XActionPerformed
+    private void btnANimVelocidad05XActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btnANimVelocidad05XActionPerformed
+        motor.getAnimationEngine().setVelocidad(0.5f);
+    }// GEN-LAST:event_btnANimVelocidad05XActionPerformed
 
-    private void btnAnimVelocidad025XActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAnimVelocidad025XActionPerformed
-        motor.getMotorAnimacion().setVelocidad(0.25f);
-    }//GEN-LAST:event_btnAnimVelocidad025XActionPerformed
+    private void btnAnimVelocidad025XActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btnAnimVelocidad025XActionPerformed
+        motor.getAnimationEngine().setVelocidad(0.25f);
+    }// GEN-LAST:event_btnAnimVelocidad025XActionPerformed
 
-    private void btnAnimVelocidad15XActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAnimVelocidad15XActionPerformed
-        motor.getMotorAnimacion().setVelocidad(1.5f);
-    }//GEN-LAST:event_btnAnimVelocidad15XActionPerformed
+    private void btnAnimVelocidad15XActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btnAnimVelocidad15XActionPerformed
+        motor.getAnimationEngine().setVelocidad(1.5f);
+    }// GEN-LAST:event_btnAnimVelocidad15XActionPerformed
 
-    private void btnAnimVelocidad2XActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAnimVelocidad2XActionPerformed
-        motor.getMotorAnimacion().setVelocidad(2.0f);
-    }//GEN-LAST:event_btnAnimVelocidad2XActionPerformed
+    private void btnAnimVelocidad2XActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btnAnimVelocidad2XActionPerformed
+        motor.getAnimationEngine().setVelocidad(2.0f);
+    }// GEN-LAST:event_btnAnimVelocidad2XActionPerformed
 
-    private void btnAnimVelocidad4XActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAnimVelocidad4XActionPerformed
-        motor.getMotorAnimacion().setVelocidad(4.0f);
-    }//GEN-LAST:event_btnAnimVelocidad4XActionPerformed
+    private void btnAnimVelocidad4XActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btnAnimVelocidad4XActionPerformed
+        motor.getAnimationEngine().setVelocidad(4.0f);
+    }// GEN-LAST:event_btnAnimVelocidad4XActionPerformed
 
-    private void btnAnimInvertirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAnimInvertirActionPerformed
-        motor.getMotorAnimacion().invertir();
-    }//GEN-LAST:event_btnAnimInvertirActionPerformed
+    private void btnAnimInvertirActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btnAnimInvertirActionPerformed
+        motor.getAnimationEngine().invertir();
+    }// GEN-LAST:event_btnAnimInvertirActionPerformed
 
-    private void btnFullShaderActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnFullShaderActionPerformed
+    private void btnFullShaderActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btnFullShaderActionPerformed
         renderer.cambiarShader(6);
-    }//GEN-LAST:event_btnFullShaderActionPerformed
+    }// GEN-LAST:event_btnFullShaderActionPerformed
 
-    private void btnShadowShaderActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnShadowShaderActionPerformed
+    private void btnShadowShaderActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btnShadowShaderActionPerformed
         renderer.cambiarShader(5);
-    }//GEN-LAST:event_btnShadowShaderActionPerformed
+    }// GEN-LAST:event_btnShadowShaderActionPerformed
 
-    private void btnIlumShaderActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnIlumShaderActionPerformed
+    private void btnIlumShaderActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btnIlumShaderActionPerformed
         renderer.cambiarShader(4);
-    }//GEN-LAST:event_btnIlumShaderActionPerformed
+    }// GEN-LAST:event_btnIlumShaderActionPerformed
 
-    private void btnTexturaShaderActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnTexturaShaderActionPerformed
+    private void btnTexturaShaderActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btnTexturaShaderActionPerformed
         renderer.cambiarShader(3);
-    }//GEN-LAST:event_btnTexturaShaderActionPerformed
+    }// GEN-LAST:event_btnTexturaShaderActionPerformed
 
-    private void btnPhongShaderActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPhongShaderActionPerformed
+    private void btnPhongShaderActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btnPhongShaderActionPerformed
         renderer.cambiarShader(2);
-    }//GEN-LAST:event_btnPhongShaderActionPerformed
+    }// GEN-LAST:event_btnPhongShaderActionPerformed
 
-    private void btnFlatShaderActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnFlatShaderActionPerformed
+    private void btnFlatShaderActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btnFlatShaderActionPerformed
         renderer.cambiarShader(1);
-    }//GEN-LAST:event_btnFlatShaderActionPerformed
+    }// GEN-LAST:event_btnFlatShaderActionPerformed
 
-    private void btnSimpleShaderActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSimpleShaderActionPerformed
+    private void btnSimpleShaderActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btnSimpleShaderActionPerformed
         renderer.cambiarShader(0);
-    }//GEN-LAST:event_btnSimpleShaderActionPerformed
+    }// GEN-LAST:event_btnSimpleShaderActionPerformed
 
-    private void btnPBRShaderActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPBRShaderActionPerformed
+    private void btnPBRShaderActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btnPBRShaderActionPerformed
         renderer.cambiarShader(7);
-    }//GEN-LAST:event_btnPBRShaderActionPerformed
+    }// GEN-LAST:event_btnPBRShaderActionPerformed
 
-    private void chkVerGridActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_chkVerGridActionPerformed
+    private void chkVerGridActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_chkVerGridActionPerformed
         renderer.opciones.setDibujarGrid(chkVerGrid.isSelected());
-    }//GEN-LAST:event_chkVerGridActionPerformed
+    }// GEN-LAST:event_chkVerGridActionPerformed
 
-    private void mnuItemTeteraActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnuItemTeteraActionPerformed
-        QEntidad item = new QEntidad("Teapot");
-        QGeometria malla = new QTeapot();
-        item.agregarComponente(malla);
-        item.agregarComponente(new QColisionMallaConvexa(malla));
-        motor.getEscena().agregarEntidad(item);
+    private void mnuItemTeteraActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_mnuItemTeteraActionPerformed
+        Entity item = new Entity("Teapot");
+        Mesh malla = new QTeapot();
+        item.addComponent(malla);
+        item.addComponent(new QColisionMallaConvexa(malla));
+        motor.getEscena().addEntity(item);
         actualizarArbolEscena();
         seleccionarEntidad(item);
-    }//GEN-LAST:event_mnuItemTeteraActionPerformed
+    }// GEN-LAST:event_mnuItemTeteraActionPerformed
 
-    private void mnuItemSusaneActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnuItemSusaneActionPerformed
-        QEntidad item = new QEntidad("Teapot");
-        QGeometria malla = new QSuzane();
-        item.agregarComponente(malla);
-        item.agregarComponente(new QColisionMallaConvexa(malla));
-        motor.getEscena().agregarEntidad(item);
+    private void mnuItemSusaneActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_mnuItemSusaneActionPerformed
+        Entity item = new Entity("Teapot");
+        Mesh malla = new QSuzane();
+        item.addComponent(malla);
+        item.addComponent(new QColisionMallaConvexa(malla));
+        motor.getEscena().addEntity(item);
         actualizarArbolEscena();
         seleccionarEntidad(item);
-    }//GEN-LAST:event_mnuItemSusaneActionPerformed
+    }// GEN-LAST:event_mnuItemSusaneActionPerformed
 
-    private void btnCalcularNormalesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCalcularNormalesActionPerformed
-        for (QEntidad seleccionado : renderer.entidadesSeleccionadas) {
-            for (QComponente compo : seleccionado.getComponentes()) {
-                if (compo instanceof QGeometria) {
-                    QUtilNormales.calcularNormales((QGeometria) compo);
+    private void btnCalcularNormalesActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btnCalcularNormalesActionPerformed
+        for (Entity seleccionado : renderer.entidadesSeleccionadas) {
+            for (EntityComponent compo : seleccionado.getComponents()) {
+                if (compo instanceof Mesh) {
+                    QUtilNormales.calcularNormales((Mesh) compo);
                 }
             }
         }
-    }//GEN-LAST:event_btnCalcularNormalesActionPerformed
+    }// GEN-LAST:event_btnCalcularNormalesActionPerformed
 
-    private void itmMenuEliminarRecursivoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_itmMenuEliminarRecursivoActionPerformed
+    private void itmMenuEliminarRecursivoActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_itmMenuEliminarRecursivoActionPerformed
         // TODO add your handling code here:
-        LinkedList<QEntidad> toRemove = new LinkedList<>();
-        for (QEntidad object : renderer.entidadesSeleccionadas) {
+        LinkedList<Entity> toRemove = new LinkedList<>();
+        for (Entity object : renderer.entidadesSeleccionadas) {
             toRemove.add(object);
         }
-        for (QEntidad object : toRemove) {
-//            renderer.eliminarObjeto(object);
-            motor.getEscena().eliminarEntidadConHijos(object);
+        for (Entity object : toRemove) {
+            // renderer.eliminarObjeto(object);
+            motor.getEscena().removeEntityAndChilds(object);
         }
 
         actualizarArbolEscena();
-    }//GEN-LAST:event_itmMenuEliminarRecursivoActionPerformed
+    }// GEN-LAST:event_itmMenuEliminarRecursivoActionPerformed
 
-    private void itmCrearNcoesferaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_itmCrearNcoesferaActionPerformed
-        QEntidad esfera = new QEntidad("Nicoesfera");
-        esfera.agregarComponente(new QNicoEsfera(1.0f, 3));
-        esfera.agregarComponente(new QColisionEsfera(1.0f));
-        motor.getEscena().agregarEntidad(esfera);
+    private void itmCrearNcoesferaActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_itmCrearNcoesferaActionPerformed
+        Entity esfera = new Entity("Nicoesfera");
+        esfera.addComponent(new IcoSphere(1.0f, 3));
+        esfera.addComponent(new QColisionEsfera(1.0f));
+        motor.getEscena().addEntity(esfera);
         actualizarArbolEscena();
         seleccionarEntidad(esfera);
-    }//GEN-LAST:event_itmCrearNcoesferaActionPerformed
+    }// GEN-LAST:event_itmCrearNcoesferaActionPerformed
 
-    private void itmCrearcuboesferaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_itmCrearcuboesferaActionPerformed
-        QEntidad esfera = new QEntidad("Cuboesfera");
-        esfera.agregarComponente(new QCuboEsfera(1.0f, 3));
-        esfera.agregarComponente(new QColisionEsfera(1.0f));
-        motor.getEscena().agregarEntidad(esfera);
+    private void itmCrearcuboesferaActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_itmCrearcuboesferaActionPerformed
+        Entity esfera = new Entity("Cuboesfera");
+        esfera.addComponent(new QCuboEsfera(1.0f, 3));
+        esfera.addComponent(new QColisionEsfera(1.0f));
+        motor.getEscena().addEntity(esfera);
         actualizarArbolEscena();
         seleccionarEntidad(esfera);
-    }//GEN-LAST:event_itmCrearcuboesferaActionPerformed
+    }// GEN-LAST:event_itmCrearcuboesferaActionPerformed
 
-    private void btnDividirCatmullActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDividirCatmullActionPerformed
-        for (QEntidad seleccionado : renderer.entidadesSeleccionadas) {
-            for (QComponente compo : seleccionado.getComponentes()) {
-                if (compo instanceof QGeometria) {
-//                    QMallaUtil.subdividir((QGeometria) compo, 1);
-                    ((QGeometria) compo).dividirCatmullClark();
+    private void btnDividirCatmullActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btnDividirCatmullActionPerformed
+        for (Entity seleccionado : renderer.entidadesSeleccionadas) {
+            for (EntityComponent compo : seleccionado.getComponents()) {
+                if (compo instanceof Mesh) {
+                    // QMallaUtil.subdividir((QGeometria) compo, 1);
+                    ((Mesh) compo).dividirCatmullClark();
                 }
             }
         }
-    }//GEN-LAST:event_btnDividirCatmullActionPerformed
+    }// GEN-LAST:event_btnDividirCatmullActionPerformed
 
-    private void jButton9ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton9ActionPerformed
+    private void jButton9ActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jButton9ActionPerformed
 
         float radio = Float.parseFloat(txtInflarRadio.getText());
-        for (QEntidad seleccionado : renderer.entidadesSeleccionadas) {
-            for (QComponente compo : seleccionado.getComponentes()) {
-                if (compo instanceof QGeometria) {
-//                    QMallaUtil.subdividir((QGeometria) compo, 1);
-                    ((QGeometria) compo).inflar(radio);
+        for (Entity seleccionado : renderer.entidadesSeleccionadas) {
+            for (EntityComponent compo : seleccionado.getComponents()) {
+                if (compo instanceof Mesh) {
+                    // QMallaUtil.subdividir((QGeometria) compo, 1);
+                    ((Mesh) compo).inflar(radio);
                 }
             }
         }
-    }//GEN-LAST:event_jButton9ActionPerformed
+    }// GEN-LAST:event_jButton9ActionPerformed
 
-    private void btnEliminarVerticesDuplicadosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEliminarVerticesDuplicadosActionPerformed
-        for (QEntidad seleccionado : renderer.entidadesSeleccionadas) {
-            for (QComponente compo : seleccionado.getComponentes()) {
-                if (compo instanceof QGeometria) {
-//                    QMallaUtil.subdividir((QGeometria) compo, 1);
-                    ((QGeometria) compo).eliminarVerticesDuplicados();
+    private void btnEliminarVerticesDuplicadosActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btnEliminarVerticesDuplicadosActionPerformed
+        for (Entity seleccionado : renderer.entidadesSeleccionadas) {
+            for (EntityComponent compo : seleccionado.getComponents()) {
+                if (compo instanceof Mesh) {
+                    // QMallaUtil.subdividir((QGeometria) compo, 1);
+                    ((Mesh) compo).eliminarVerticesDuplicados();
                 }
             }
-        }        // TODO add your handling code here:
-    }//GEN-LAST:event_btnEliminarVerticesDuplicadosActionPerformed
+        } // TODO add your handling code here:
+    }// GEN-LAST:event_btnEliminarVerticesDuplicadosActionPerformed
 
     void applyResolution() {
         renderer.opciones.setForzarResolucion(cbxForceRes.isSelected());
@@ -3125,26 +3134,27 @@ public class Principal extends javax.swing.JFrame {
     private void refreshStats() {
         int vertexCount = 0;
         int faceCount = 0;
-        for (QEntidad objeto : motor.getEscena().getListaEntidades()) {
-            if (objeto != null && objeto.isRenderizar()) {
-                for (QComponente componente : objeto.getComponentes()) {
-                    if (componente instanceof QGeometria) {
-                        vertexCount += ((QGeometria) componente).vertices.length;
-                        faceCount += ((QGeometria) componente).primitivas.length;
+        for (Entity objeto : motor.getEscena().getEntities()) {
+            if (objeto != null && objeto.isToRender()) {
+                for (EntityComponent componente : objeto.getComponents()) {
+                    if (componente instanceof Mesh) {
+                        vertexCount += ((Mesh) componente).vertices.length;
+                        faceCount += ((Mesh) componente).primitivas.length;
                     }
                 }
 
             }
         }
-        lblEstad.setText(vertexCount + " vértices; " + faceCount + " polígonos; " + motor.getEscena().getListaEntidades().size() + " objetos");
+        lblEstad.setText(vertexCount + " vértices; " + faceCount + " polígonos; "
+                + motor.getEscena().getEntities().size() + " objetos");
     }
 
     public void actualizarArbolEscena() {
         // actualizo el arbol
         DefaultMutableTreeNode raiz = new DefaultMutableTreeNode(new QArbolWrapper("Escena", null));
-        for (QEntidad entidad : motor.getEscena().getListaEntidades()) {
-            //solo agrego los que no tienen un padre
-            if (entidad.getPadre() == null) {
+        for (Entity entidad : motor.getEscena().getEntities()) {
+            // solo agrego los que no tienen un padre
+            if (entidad.getParent() == null) {
                 raiz.add(generarArbolEntidad(entidad));
             }
         }
@@ -3155,34 +3165,34 @@ public class Principal extends javax.swing.JFrame {
         }
     }
 
-    private DefaultMutableTreeNode generarArbolEntidad(QEntidad entidad) {
-        DefaultMutableTreeNode nodo = new DefaultMutableTreeNode(new QArbolWrapper(entidad.getNombre(), entidad));
-//        if (renderer.entidadesSeleccionadas.contains(entidad)) {
-//            nodo.setSelected(true)
-//            treeEntidades.addSelectionInterval(model.getSize() - 1, model.getSize() - 1);
-//        }
-        if (entidad.getComponentes() != null) {
-            for (QComponente comp : entidad.getComponentes()) {
-//                if (comp instanceof QEsqueleto) {
-//                    QEsqueleto esqueleto = (QEsqueleto) comp;
-//                    for (QHueso hueso : esqueleto.getHuesos()) {
-//                        nodo.add(generarArbolEntidad(hueso));
-//                    }
-//                }
-//                nodo.add(generarArbolEntidad(hijo));
+    private DefaultMutableTreeNode generarArbolEntidad(Entity entidad) {
+        DefaultMutableTreeNode nodo = new DefaultMutableTreeNode(new QArbolWrapper(entidad.getName(), entidad));
+        // if (renderer.entidadesSeleccionadas.contains(entidad)) {
+        // nodo.setSelected(true)
+        // treeEntidades.addSelectionInterval(model.getSize() - 1, model.getSize() - 1);
+        // }
+        if (entidad.getComponents() != null) {
+            for (EntityComponent compo : entidad.getComponents()) {
+                // if (comp instanceof QEsqueleto) {
+                // QEsqueleto esqueleto = (QEsqueleto) comp;
+                // for (QHueso hueso : esqueleto.getHuesos()) {
+                // nodo.add(generarArbolEntidad(hueso));
+                // }
+                // }
+                // nodo.add(generarArbolEntidad(hijo));
             }
         }
 
-        if (entidad.getHijos() != null) {
-            for (QEntidad hijo : entidad.getHijos()) {
+        if (entidad.getChilds() != null) {
+            for (Entity hijo : entidad.getChilds()) {
                 nodo.add(generarArbolEntidad(hijo));
             }
         }
 
         // ahora agrego los componentes
-//        for (QComponente comp : entidad.componentes) {
-//
-//        }
+        // for (QComponente comp : entidad.componentes) {
+        //
+        // }
         return nodo;
     }
 
@@ -3211,34 +3221,35 @@ public class Principal extends javax.swing.JFrame {
         }
 
         @Override
-        public Component getTreeCellRendererComponent(JTree tree, Object value, boolean selected, boolean expanded, boolean leaf, int row, boolean hasFocus) {
+        public Component getTreeCellRendererComponent(JTree tree, Object value, boolean selected, boolean expanded,
+                boolean leaf, int row, boolean hasFocus) {
             try {
-//                int selectedIndex = ((Integer) value).intValue();
+                // int selectedIndex = ((Integer) value).intValue();
                 if (selected) {
                     setBackground(backgroundSelectionColor);
-//                    setBackground(tree.getSelectionBackground());
-//                    setForeground(tree.getSelectionForeground());
+                    // setBackground(tree.getSelectionBackground());
+                    // setForeground(tree.getSelectionForeground());
                 } else {
                     setBackground(backgroundNonSelectionColor);
-//                    setBackground(tree.getBackground());
-//                    setForeground(tree.getForeground());
+                    // setBackground(tree.getBackground());
+                    // setForeground(tree.getForeground());
                 }
 
-//                setBackground(tree.getBackground());
-//                setForeground(tree.getForeground());
+                // setBackground(tree.getBackground());
+                // setForeground(tree.getForeground());
                 ImageIcon icon = Util.cargarIcono16("/cube_16.png");
                 String texto = "";
                 Object valor = ((DefaultMutableTreeNode) value).getUserObject();
                 if (valor instanceof QArbolWrapper) {
 
                     QArbolWrapper wraper = (QArbolWrapper) valor;
-                    //Set the icon and text.  If icon was null, say so.
+                    // Set the icon and text. If icon was null, say so.
 
                     if (wraper.getObjeto() == null) {
                         icon = Util.cargarIcono16("/cube.png");
-                    } else if (wraper.getObjeto() instanceof QCamara) {
+                    } else if (wraper.getObjeto() instanceof Camera) {
                         icon = Util.cargarIcono16("/camera.png");
-                    } else if (wraper.getObjeto() instanceof QEntidad) {
+                    } else if (wraper.getObjeto() instanceof Entity) {
                         icon = Util.cargarIcono16("/cube_16.png");
                     } else {
                         icon = Util.cargarIcono16("/teapot_16.png");
@@ -3253,7 +3264,7 @@ public class Principal extends javax.swing.JFrame {
                 setIcon(icon);
 
                 setText(texto);
-//                setFont(list.getFont());
+                // setFont(list.getFont());
 
             } catch (Exception e) {
                 e.printStackTrace();
@@ -3262,12 +3273,11 @@ public class Principal extends javax.swing.JFrame {
         }
     }
 
-    private void prepararInputListenerRenderer(QMotorRender renderer) {
+    private void prepararInputListenerRenderer(RenderEngine renderer) {
+        // creo los receptores para agregar al inputManager
+        QInputManager.addMouseListener(new QMouseReceptor() {
 
-        //creo los receptores  para agregar al inputManager
-        QInputManager.agregarListenerMouse(new QMouseReceptor() {
-
-            private QEntidad selectedObject;
+            private Entity selectedObject;
 
             @Override
             public void mouseEntered(MouseEvent evt) {
@@ -3276,16 +3286,15 @@ public class Principal extends javax.swing.JFrame {
                     renderer.getSuperficie().getComponente().requestFocus();
                 } catch (Exception e) {
                 }
-
             }
 
             @Override
             public void mousePressed(MouseEvent evt) {
 
                 if (SwingUtilities.isLeftMouseButton(evt)) {
-                    selectedObject = renderer.seleccionarEnPantalla(new Point(evt.getX(), evt.getY()));
-                    if (selectedObject instanceof QGizmo //|| selectedObject instanceof QGizmoParte
-                            ) {
+                    selectedObject = renderer.selectEntity(new QVector2(evt.getX(), evt.getY()));
+                    if (selectedObject instanceof QGizmo // || selectedObject instanceof QGizmoParte
+                    ) {
                         return;
                     }
                     renderer.entidadActiva = selectedObject;
@@ -3305,7 +3314,6 @@ public class Principal extends javax.swing.JFrame {
 
             @Override
             public void mouseReleased(MouseEvent evt) {
-
                 selectedObject = null;
             }
 
@@ -3317,43 +3325,48 @@ public class Principal extends javax.swing.JFrame {
                     if (selectedObject != null) {
                         if (selectedObject instanceof QGizmo) {
                             ((QGizmo) selectedObject).mouseMove(QInputManager.getDeltaX(), -QInputManager.getDeltaY());
-//                        } else if (selectedObject instanceof QGizmoParte) {
-//                            ((QGizmoParte) selectedObject).mouseMove(deltaX, -deltaY);
+                            // } else if (selectedObject instanceof QGizmoParte) {
+                            // ((QGizmoParte) selectedObject).mouseMove(deltaX, -deltaY);
                         }
                     }
                 }
 
-//                if (SwingUtilities.isMiddleMouseButton(evt)) {
-//                    
-//                    if (QInputManager.isShitf() && QInputManager.isCtrl() && !QInputManager.isAlt()) {                        
-//                        //rota camara en su propio eje
-//                        renderer.getCamara().aumentarRotY((float) Math.toRadians(-QInputManager.getDeltaX() / 2));
-//                        renderer.getCamara().aumentarRotX((float) Math.toRadians(-QInputManager.getDeltaY() / 2));
-//                    } else if (QInputManager.isShitf() && !QInputManager.isCtrl() && !QInputManager.isAlt()) {                        
-//                        //mueve la camara 
-//                        renderer.getCamara().moverDerechaIzquierda(-QInputManager.getDeltaX() / 100.0f);
-//                        renderer.getCamara().moverArribaAbajo(QInputManager.getDeltaY() / 100.0f);
-//                    }
-//                }
+                // if (SwingUtilities.isMiddleMouseButton(evt)) {
+                //
+                // if (QInputManager.isShitf() && QInputManager.isCtrl() &&
+                // !QInputManager.isAlt()) {
+                // //rota camara en su propio eje
+                // renderer.getCamara().aumentarRotY((float)
+                // Math.toRadians(-QInputManager.getDeltaX() / 2));
+                // renderer.getCamara().aumentarRotX((float)
+                // Math.toRadians(-QInputManager.getDeltaY() / 2));
+                // } else if (QInputManager.isShitf() && !QInputManager.isCtrl() &&
+                // !QInputManager.isAlt()) {
+                // //mueve la camara
+                // renderer.getCamara().moverDerechaIzquierda(-QInputManager.getDeltaX() /
+                // 100.0f);
+                // renderer.getCamara().moverArribaAbajo(QInputManager.getDeltaY() / 100.0f);
+                // }
+                // }
                 QInputManager.warpMouse(evt.getXOnScreen(), evt.getYOnScreen());
             }
 
             @Override
             public void mouseWheelMoved(MouseWheelEvent evt) {
 
-//                if (evt.getWheelRotation() < 0) {
-//                    if (!QInputManager.isShitf()) {
-//                        renderer.getCamara().moverAdelanteAtras(0.2f);
-//                    } else {
-//                        renderer.getCamara().moverAdelanteAtras(1f);
-//                    }
-//                } else {
-//                    if (!QInputManager.isShitf()) {
-//                        renderer.getCamara().moverAdelanteAtras(-0.2f);
-//                    } else {
-//                        renderer.getCamara().moverAdelanteAtras(-1f);
-//                    }
-//                }
+                // if (evt.getWheelRotation() < 0) {
+                // if (!QInputManager.isShitf()) {
+                // renderer.getCamara().moverAdelanteAtras(0.2f);
+                // } else {
+                // renderer.getCamara().moverAdelanteAtras(1f);
+                // }
+                // } else {
+                // if (!QInputManager.isShitf()) {
+                // renderer.getCamara().moverAdelanteAtras(-0.2f);
+                // } else {
+                // renderer.getCamara().moverAdelanteAtras(-1f);
+                // }
+                // }
             }
 
             @Override
@@ -3367,7 +3380,7 @@ public class Principal extends javax.swing.JFrame {
             }
         });
 
-        QInputManager.agregarListenerTeclado(new QTecladoReceptor() {
+        QInputManager.addKeyboardListener(new QTecladoReceptor() {
             @Override
             public void keyPressed(KeyEvent evt) {
 
@@ -3382,7 +3395,8 @@ public class Principal extends javax.swing.JFrame {
                             } else {
                                 QCamaraOrbitar control2 = QUtilComponentes.getCamaraOrbitar(renderer.getCamara());
                                 if (control2 != null) {
-                                    control2.getTarget().set(renderer.entidadActiva.getTransformacion().getTraslacion());
+                                    control2.getTarget()
+                                            .set(renderer.entidadActiva.getTransformacion().getTraslacion());
                                     control2.updateCamera();
                                 }
                             }
@@ -3402,14 +3416,14 @@ public class Principal extends javax.swing.JFrame {
                         renderer.opciones.setTipoVista(QOpcionesRenderer.VISTA_PHONG);
                         break;
                     case KeyEvent.VK_T:
-                        renderer.setMostrarEstadisticas(!renderer.isMostrarEstadisticas());
+                        renderer.setShowStats(!renderer.isShowStats());
                         break;
                     case KeyEvent.VK_O:
                         renderer.opciones.setMaterial(!renderer.opciones.isMaterial());
                         break;
-//                    case KeyEvent.VK_M:
-//                        opciones.setShowNormal(!opciones.isShowNormal());
-//                        break;
+                    // case KeyEvent.VK_M:
+                    // opciones.setShowNormal(!opciones.isShowNormal());
+                    // break;
                     case KeyEvent.VK_B:
                         renderer.opciones.setDibujarCarasTraseras(!renderer.opciones.isDibujarCarasTraseras());
                         break;
@@ -3445,14 +3459,13 @@ public class Principal extends javax.swing.JFrame {
         });
     }
 
-    public QEscena getEscena() {
+    public Scene getEscena() {
         return escena;
     }
 
-    public void setEscena(QEscena escena) {
+    public void setEscena(Scene escena) {
         this.escena = escena;
     }
-
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JMenuBar barraMenu;
@@ -3516,7 +3529,7 @@ public class Principal extends javax.swing.JFrame {
     private javax.swing.JMenuItem itmMenuEliminarRecursivo;
     private javax.swing.JMenuItem itmPegar;
     private javax.swing.JMenuItem itmSeleccionarTodo;
-    private javax.swing.JButton jButton1;
+    private javax.swing.JButton btnStartPhysics;
     private javax.swing.JButton jButton11;
     private javax.swing.JButton jButton12;
     private javax.swing.JButton jButton13;
@@ -3526,9 +3539,9 @@ public class Principal extends javax.swing.JFrame {
     private javax.swing.JButton jButton17;
     private javax.swing.JButton jButton18;
     private javax.swing.JButton jButton19;
-    private javax.swing.JButton jButton2;
-    private javax.swing.JButton jButton3;
-    private javax.swing.JButton jButton4;
+    private javax.swing.JButton btnStopPhysics;
+    private javax.swing.JButton btnAccion1;
+    private javax.swing.JButton btnAccion2;
     private javax.swing.JButton jButton5;
     private javax.swing.JButton jButton6;
     private javax.swing.JButton jButton7;
@@ -3561,7 +3574,7 @@ public class Principal extends javax.swing.JFrame {
     private javax.swing.JMenu jMenu4;
     private javax.swing.JMenu jMenu5;
     private javax.swing.JMenu jMenu6;
-    private javax.swing.JMenu jMenu7;
+    private javax.swing.JMenu mnuFile;
     private javax.swing.JMenu jMenu8;
     private javax.swing.JMenu jMenu9;
     private javax.swing.JMenuItem jMenuItem1;
@@ -3576,11 +3589,11 @@ public class Principal extends javax.swing.JFrame {
     private javax.swing.JMenuItem jMenuItem18;
     private javax.swing.JMenuItem jMenuItem19;
     private javax.swing.JMenuItem jMenuItem2;
-    private javax.swing.JMenuItem jMenuItem20;
-    private javax.swing.JMenuItem jMenuItem22;
-    private javax.swing.JMenuItem jMenuItem23;
+    private javax.swing.JMenuItem itmMenuOpen;
+    private javax.swing.JMenuItem itmMenuExportentity;
+    private javax.swing.JMenuItem itmMenuImport;
     private javax.swing.JMenuItem jMenuItem24;
-    private javax.swing.JMenuItem jMenuItem25;
+    private javax.swing.JMenuItem itmMenuSave;
     private javax.swing.JMenuItem jMenuItem26;
     private javax.swing.JMenuItem jMenuItem3;
     private javax.swing.JMenuItem jMenuItem5;

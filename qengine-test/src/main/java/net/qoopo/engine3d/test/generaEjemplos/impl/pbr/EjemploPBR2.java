@@ -5,44 +5,42 @@
  */
 package net.qoopo.engine3d.test.generaEjemplos.impl.pbr;
 
-import net.qoopo.engine3d.componentes.QEntidad;
-import net.qoopo.engine3d.componentes.geometria.primitivas.formas.QEsfera;
-import net.qoopo.engine3d.componentes.geometria.primitivas.formas.QTeapot;
-import net.qoopo.engine3d.componentes.reflexiones.QMapaCubo;
-import net.qoopo.engine3d.core.escena.QEscena;
-import net.qoopo.engine3d.test.generaEjemplos.GeneraEjemplo;
-import net.qoopo.engine3d.core.material.basico.QMaterialBas;
-import net.qoopo.engine3d.core.math.QColor;
-import net.qoopo.engine3d.core.math.QMath;
-import net.qoopo.engine3d.core.textura.mapeo.QMaterialUtil;
-import net.qoopo.engine3d.core.util.QGlobal;
-import net.qoopo.engine3d.engines.render.QMotorRender;
+import net.qoopo.engine.core.entity.Entity;
+import net.qoopo.engine.core.entity.component.cubemap.QCubeMap;
+import net.qoopo.engine.core.entity.component.mesh.primitive.shape.QEsfera;
+import net.qoopo.engine.core.material.basico.QMaterialBas;
+import net.qoopo.engine.core.math.QColor;
+import net.qoopo.engine.core.math.QMath;
+import net.qoopo.engine.core.renderer.RenderEngine;
+import net.qoopo.engine.core.scene.Scene;
+import net.qoopo.engine.core.texture.util.QMaterialUtil;
+import net.qoopo.engine.core.util.QGlobal;
+import net.qoopo.engine3d.test.generaEjemplos.MakeTestScene;
 
 /**
  *
  * @author alberto
  */
-public class EjemploPBR2 extends GeneraEjemplo {
+public class EjemploPBR2 extends MakeTestScene {
 
     public EjemploPBR2() {
 
     }
 
-    public void iniciar(QEscena escena) {
-        this.mundo = escena;
+    public void make(Scene escena) {
+        this.scene = escena;
 
         int nrRows = 7;
         int nrColumns = 7;
         float spacing = 2.5f;
 
-        //la entidad reflexion se encargara de renderizar el mapa de reflejos
-        QEntidad reflexion = new QEntidad();
-        QMapaCubo mapa = new QMapaCubo(QGlobal.MAPA_CUPO_RESOLUCION);
+        // la entidad reflexion se encargara de renderizar el mapa de reflejos
+        Entity reflexion = new Entity();
+        QCubeMap mapa = new QCubeMap(QGlobal.MAPA_CUPO_RESOLUCION);
         mapa.setGenerarIrradiacion(true);
-        reflexion.agregarComponente(mapa);
-        mapa.aplicar(QMapaCubo.FORMATO_MAPA_CUBO, 1.0f, 0);
-        escena.agregarEntidad(reflexion);
-
+        reflexion.addComponent(mapa);
+        mapa.aplicar(QCubeMap.FORMATO_MAPA_CUBO, 1.0f, 0);
+        escena.addEntity(reflexion);
 
         for (int row = 0; row <= nrRows; ++row) {
             for (int col = 0; col <= nrColumns; ++col) {
@@ -52,21 +50,22 @@ public class EjemploPBR2 extends GeneraEjemplo {
                 material.setMetalico((float) row / (float) nrRows);
                 material.setMapaEntorno(mapa.getProcEntorno());
                 material.setMapaIrradiacion(mapa.getProcIrradiacion());
-                material.setTipoMapaEntorno(QMapaCubo.FORMATO_MAPA_CUBO);
-                QEntidad objeto = new QEntidad("PBR");
-                objeto.mover((col - (nrColumns / 2)) * spacing, (row - (nrRows / 2)) * spacing, 0);
-                objeto.agregarComponente(QMaterialUtil.aplicarMaterial(new QEsfera(1.0f), material));
-//                objeto.agregarComponente(QMaterialUtil.aplicarMaterial(new QTeapot(), material));
-//                objeto.escalar(0.8f);
+                material.setTipoMapaEntorno(QCubeMap.FORMATO_MAPA_CUBO);
+                Entity objeto = new Entity("PBR");
+                objeto.move((col - (nrColumns / 2)) * spacing, (row - (nrRows / 2)) * spacing, 0);
+                objeto.addComponent(QMaterialUtil.aplicarMaterial(new QEsfera(1.0f), material));
+                // objeto.agregarComponente(QMaterialUtil.aplicarMaterial(new QTeapot(),
+                // material));
+                // objeto.escalar(0.8f);
 
-                escena.agregarEntidad(objeto);
+                escena.addEntity(objeto);
             }
         }
 
     }
 
     @Override
-    public void accion(int numAccion, QMotorRender render) {
+    public void accion(int numAccion, RenderEngine render) {
     }
 
 }

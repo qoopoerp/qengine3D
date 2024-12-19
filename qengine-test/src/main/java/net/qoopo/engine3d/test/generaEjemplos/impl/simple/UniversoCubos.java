@@ -7,82 +7,63 @@ package net.qoopo.engine3d.test.generaEjemplos.impl.simple;
 
 import java.io.File;
 import java.util.Random;
-import net.qoopo.engine3d.componentes.QEntidad;
-import net.qoopo.engine3d.componentes.geometria.QGeometria;
-import net.qoopo.engine3d.core.escena.QEscena;
-import net.qoopo.engine3d.core.material.basico.QMaterialBas;
-import net.qoopo.engine3d.core.textura.mapeo.QMaterialUtil;
-import net.qoopo.engine3d.test.generaEjemplos.GeneraEjemplo;
-import net.qoopo.engine3d.componentes.geometria.primitivas.formas.QCaja;
-import net.qoopo.engine3d.core.util.QGlobal;
-import net.qoopo.engine3d.core.recursos.QGestorRecursos;
-import net.qoopo.engine3d.core.textura.procesador.QProcesadorSimple;
-import net.qoopo.engine3d.engines.render.QMotorRender;
+
+import net.qoopo.engine.core.assets.AssetManager;
+import net.qoopo.engine.core.entity.Entity;
+import net.qoopo.engine.core.entity.component.mesh.Mesh;
+import net.qoopo.engine.core.entity.component.mesh.primitive.shape.QCaja;
+import net.qoopo.engine.core.material.basico.QMaterialBas;
+import net.qoopo.engine.core.renderer.RenderEngine;
+import net.qoopo.engine.core.scene.Scene;
+import net.qoopo.engine.core.texture.procesador.QProcesadorSimple;
+import net.qoopo.engine.core.texture.util.QMaterialUtil;
+import net.qoopo.engine.core.util.QGlobal;
+import net.qoopo.engine3d.test.generaEjemplos.MakeTestScene;
 
 /**
  *
  *
  * @author alberto
  */
-public class UniversoCubos extends GeneraEjemplo {
+public class UniversoCubos extends MakeTestScene {
 
     private QMaterialBas material = null;
 
     private void cargarMaterial() {
         material = null;
         try {
-//            int colorTransparencia = -1;
-//            material = new QMaterialBas(new QTextura(ImageIO.read(new File(QGlobal.RECURSOS + "texturas/caja.jpg"))), 64);
             material = new QMaterialBas();
-            material.setMapaColor(new QProcesadorSimple(QGestorRecursos.cargarTextura("difusa", new File(QGlobal.RECURSOS + "texturas/Skybox_example.png"))));
-//            material.texturaColorTransparente = colorTransparencia;
-//            if (colorTransparencia != -1) {
-//                material.transAlfa = 0.99f;// el objeto tiene una transparencia 
-//            }
+            material.setMapaColor(new QProcesadorSimple(
+                    AssetManager.get().loadTexture("difusa", new File("assets/textures/rock.png"))));
+            material.setMapaNormal(new QProcesadorSimple(
+                    AssetManager.get().loadTexture("normal", new File("assets/textures/rock_normals.png"))));
         } catch (Exception e) {
             e.printStackTrace();
         }
 
     }
 
-    public void iniciar(QEscena mundo) {
-        this.mundo = mundo;
+    public void make(Scene mundo) {
+        this.scene = mundo;
         cargarMaterial();
         Random rnd = new Random();
         float tamUniverso = 100;
 
-//        Color colores[] = {
-//            Color.YELLOW,
-//            Color.RED,
-//            Color.GREEN,
-//            Color.PINK,
-//            Color.MAGENTA,
-//            Color.ORANGE,
-//            Color.BLUE,
-//            Color.CYAN,
-//            Color.LIGHT_GRAY,
-//            //            Color.BLACK,
-//            Color.WHITE,
-//            Color.GRAY,
-//            Color.DARK_GRAY
-//        };
-//        Color actual;
-        QGeometria geometria = new QCaja(1);
+        Mesh geometria = new QCaja(1);
         QMaterialUtil.aplicarMaterial(geometria, material);
 
         for (int i = 0; i < 500; i++) {
-            QEntidad cubo = new QEntidad("Cubo [" + i + "]");
-            cubo.mover(rnd.nextFloat() * tamUniverso * 2 - tamUniverso, rnd.nextFloat() * tamUniverso * 2 - tamUniverso, rnd.nextFloat() * tamUniverso * 2 - tamUniverso);
-//            actual = colores[rnd.nextInt(colores.length)];
-//            ((QMaterialBas) geometria.listaPrimitivas[0].material).setColorDifusa(new QColor(actual));
-            cubo.agregarComponente(geometria);
-            mundo.agregarEntidad(cubo);
+            Entity cubo = new Entity("Cubo [" + i + "]");
+            cubo.move(rnd.nextFloat() * tamUniverso * 2 - tamUniverso, rnd.nextFloat() * tamUniverso * 2 - tamUniverso,
+                    rnd.nextFloat() * tamUniverso * 2 - tamUniverso);
+            cubo.addComponent(geometria);
+            mundo.addEntity(cubo);
         }
 
     }
 
     @Override
-    public void accion(int numAccion, QMotorRender render) {
+    public void accion(int numAccion, RenderEngine render) {
     }
 
 }
