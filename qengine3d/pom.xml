@@ -79,6 +79,19 @@
             <version>1.0.0</version>
         </dependency>
 
+
+        <dependency>
+            <groupId>net.qoopo.qengine</groupId>
+            <artifactId>qengine-physics</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+        
+        <dependency>
+            <groupId>net.qoopo.qengine</groupId>
+            <artifactId>qengine-water</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+
         <dependency>
             <groupId>org.lwjgl</groupId>
             <artifactId>lwjgl</artifactId>

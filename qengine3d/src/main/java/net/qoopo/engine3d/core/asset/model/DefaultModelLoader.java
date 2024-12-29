@@ -42,7 +42,7 @@ public class DefaultModelLoader implements ModelLoader {
             loader = new AssimpModelLoader();
         }
 
-        return loadModel(file);
+        return loader.loadModel(file);
 
     }
 

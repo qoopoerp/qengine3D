@@ -7,25 +7,25 @@ package net.qoopo.engine3d.core.sky;
 
 import net.qoopo.engine.core.entity.Entity;
 import net.qoopo.engine.core.entity.component.mesh.Mesh;
-import net.qoopo.engine.core.entity.component.mesh.primitive.shape.QEsfera;
+import net.qoopo.engine.core.entity.component.mesh.primitive.shape.Sphere;
 import net.qoopo.engine.core.material.basico.QMaterialBas;
 import net.qoopo.engine.core.texture.QTextura;
 import net.qoopo.engine.core.texture.procesador.QProcesadorMix;
-import net.qoopo.engine.core.texture.util.QMaterialUtil;
-import net.qoopo.engine.core.util.mesh.QUtilNormales;
+import net.qoopo.engine.core.texture.util.MaterialUtil;
+import net.qoopo.engine.core.util.mesh.NormalUtil;
 
 /**
  *
  * @author alberto
  */
-public class QEsferaCielo extends QCielo {
+public class SphereCielo extends QCielo {
 
     private QTextura texturaDia;
     private QTextura texturaNoche;
     private float radio;
     private QProcesadorMix procesadorTextura;
 
-    public QEsferaCielo(QTextura texturaDia, QTextura texturaNoche, float radio) {
+    public SphereCielo(QTextura texturaDia, QTextura texturaNoche, float radio) {
         this.texturaDia = texturaDia;
         this.texturaNoche = texturaNoche;
         this.radio = radio;
@@ -34,16 +34,16 @@ public class QEsferaCielo extends QCielo {
 
     private void construir() {
         entity = new Entity("Cielo");
-        Mesh cieloG = new QEsfera(radio, 32);
-//        QGeometria cieloG = new QEsfera(radio, 8);
-//        QGeometria cieloG = new QEsfera(radio, 4);
+        Mesh cieloG = new Sphere(radio, 32);
+//        QGeometria cieloG = new Sphere(radio, 8);
+//        QGeometria cieloG = new Sphere(radio, 4);
         QMaterialBas material = new QMaterialBas();
         material.setFactorEmision(1);//finge emision de luz para no ser afectado por las luces
         procesadorTextura = new QProcesadorMix(texturaDia, texturaNoche);
         procesadorTextura.setRazon(0);
         material.setMapaColor(procesadorTextura);
-        QMaterialUtil.aplicarMaterial(cieloG, material);
-        QUtilNormales.invertirNormales(cieloG);
+        MaterialUtil.applyMaterial(cieloG, material);
+        NormalUtil.invertirNormales(cieloG);
         entity.addComponent(cieloG);
         System.out.println("entity del cielo construida");
     }

@@ -11,6 +11,6 @@ package net.qoopo.engine3d.core.util;
  */
 public abstract class Accion {
 
-    public abstract void ejecutar(Object... parametros);
+    public abstract void run(Object... parametros);
 
 }

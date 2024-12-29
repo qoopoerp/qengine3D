@@ -9,7 +9,7 @@ package net.qoopo.engine3d.core.sky;
  *
  * @author alberto
  */
-public class QCajaCielo extends QCielo {
+public class BoxCielo extends QCielo {
 
     @Override
     public void setRazon(float razon) {

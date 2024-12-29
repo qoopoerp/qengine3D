@@ -109,7 +109,7 @@ public class QEngine3D extends Engine implements Runnable {
 
     private final Thread hiloPrincipal;
 
-    private List<Accion> accionesEjecucion = new ArrayList<>();
+    private List<Accion> customActions = new ArrayList<>();
     private float horaDelDia = 0;
 
     {
@@ -223,6 +223,10 @@ public class QEngine3D extends Engine implements Runnable {
     @Override
     public long update() {
         try {
+
+            // el tiempo usado para manejar la cache de las transformaciones
+            QGlobal.tiempo = System.currentTimeMillis();
+
             // ejecuta los componentes que realizan modificadiones
             ejecutarComponentes();
             // ejecuta los motores
@@ -236,13 +240,6 @@ public class QEngine3D extends Engine implements Runnable {
                 physicsEngine.update();
             }
 
-            // ejecuta acciones de usuario
-            if (accionesEjecucion != null && !accionesEjecucion.isEmpty()) {
-                for (Accion accion : accionesEjecucion) {
-                    accion.ejecutar();
-                }
-            }
-
             if (rendererList != null && !rendererList.isEmpty()) {
                 rendererList.forEach(renderer -> {
                     renderer.update();
@@ -250,6 +247,26 @@ public class QEngine3D extends Engine implements Runnable {
             } else {
                 if (renderEngine != null) {
                     renderEngine.update();
+                }
+            }
+
+            // ejecuta acciones de usuario
+            if (customActions != null && !customActions.isEmpty()) {
+                for (Accion customAction : customActions) {
+                    customAction.run();
+                }
+            }
+
+            // termina el render
+            if (rendererList != null && !rendererList.isEmpty()) {
+                rendererList.forEach(renderer -> {
+                    renderer.shadeFragments();
+                    renderer.postRender();
+                });
+            } else {
+                if (renderEngine != null) {
+                    renderEngine.shadeFragments();
+                    renderEngine.postRender();
                 }
             }
 
@@ -662,12 +679,12 @@ public class QEngine3D extends Engine implements Runnable {
         this.rendererList = rendererList;
     }
 
-    public List<Accion> getAccionesEjecucion() {
-        return accionesEjecucion;
+    public List<Accion> getCustomActions() {
+        return customActions;
     }
 
-    public void setAccionesEjecucion(List<Accion> accionesEjecucion) {
-        this.accionesEjecucion = accionesEjecucion;
+    public void setCustomActions(List<Accion> accionesEjecucion) {
+        this.customActions = accionesEjecucion;
     }
 
     public boolean isModificando() {

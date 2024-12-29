@@ -13,9 +13,9 @@ import java.util.List;
 
 import net.qoopo.engine.core.entity.Entity;
 import net.qoopo.engine.core.entity.component.mesh.Mesh;
-import net.qoopo.engine.core.entity.component.mesh.primitive.QPoligono;
+import net.qoopo.engine.core.entity.component.mesh.primitive.Poly;
 import net.qoopo.engine.core.material.basico.QMaterialBas;
-import net.qoopo.engine.core.util.mesh.QUtilNormales;
+import net.qoopo.engine.core.util.mesh.NormalUtil;
 import net.qoopo.engine3d.core.asset.model.studiomax.util.Model3DS;
 import net.qoopo.engine3d.core.asset.model.studiomax.util.ModelLoader;
 import net.qoopo.engine3d.core.asset.model.studiomax.util.ModelObject;
@@ -71,7 +71,7 @@ public class LoadModel3DSMax implements net.qoopo.engine.core.assets.model.Model
                             && modeloOb.polygons[i + 2] < vertices) {
                         // objetoActual.addPoly(material, objeto.polygons[i], objeto.polygons[i
                         // + 1], objeto.polygons[i + 2]);
-                        QPoligono face = objetoActual.addPoly(material, modeloOb.polygons[i],
+                        Poly face = objetoActual.addPoly(material, modeloOb.polygons[i],
                                 modeloOb.polygons[i + 2], modeloOb.polygons[i + 1]);
 
                     } else {
@@ -85,7 +85,7 @@ public class LoadModel3DSMax implements net.qoopo.engine.core.assets.model.Model
                 // System.out.println("objeto actual ");
                 // System.out.println(" vertices=" + objetoActual.vertices.length);
                 // System.out.println(" caras = " + objetoActual.primitivas.length);
-                objetoActual = QUtilNormales.calcularNormales(objetoActual);
+                objetoActual = NormalUtil.calcularNormales(objetoActual);
 
                 Entity ent = new Entity(objetoActual.nombre);
                 ent.addComponent(objetoActual);

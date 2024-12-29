@@ -12,7 +12,7 @@ import net.qoopo.engine.core.entity.component.mesh.Mesh;
 import net.qoopo.engine.core.entity.component.mesh.primitive.shape.QPlanoBilateral;
 import net.qoopo.engine.core.material.basico.QMaterialBas;
 import net.qoopo.engine.core.math.QColor;
-import net.qoopo.engine.core.texture.util.QMaterialUtil;
+import net.qoopo.engine.core.texture.util.MaterialUtil;
 import net.qoopo.engine.core.util.QGlobal;
 import net.qoopo.engine.core.util.QUtilComponentes;
 import net.qoopo.engine3d.core.input.control.gizmo.QGizmo;
@@ -47,19 +47,19 @@ public class QGizmoTraslacion extends QGizmo {
         matX.setFactorEmision(0.85f);
         // matX.setTransparencia(true);
         // matX.setTransAlfa(0.9f);
-        QMaterialUtil.aplicarMaterial(formaX, matX);
+        MaterialUtil.applyMaterial(formaX, matX);
         matY = new QMaterialBas("y");
         matY.setColorBase(QColor.GREEN);
         matY.setFactorEmision(0.85f);
         // matY.setTransparencia(true);
         // matY.setTransAlfa(0.9f);
-        QMaterialUtil.aplicarMaterial(formaY, matY);
+        MaterialUtil.applyMaterial(formaY, matY);
         matZ = new QMaterialBas("z");
         matZ.setColorBase(QColor.BLUE);
         matZ.setFactorEmision(0.85f);
         // matZ.setTransparencia(true);
         // matZ.setTransAlfa(0.9f);
-        QMaterialUtil.aplicarMaterial(formaZ, matZ);
+        MaterialUtil.applyMaterial(formaZ, matZ);
     }
 
     public QGizmoTraslacion() {
@@ -120,7 +120,7 @@ public class QGizmoTraslacion extends QGizmo {
         };
         conXZ.move(0.85f, 0, 0.85f);
 
-        conXZ.addComponent(QMaterialUtil.aplicarMaterial(new QPlanoBilateral(0.85f, 0.85f), matY));
+        conXZ.addComponent(MaterialUtil.applyMaterial(new QPlanoBilateral(0.85f, 0.85f), matY));
 
         return conXZ;
     }
@@ -136,7 +136,7 @@ public class QGizmoTraslacion extends QGizmo {
         };
         conXY.move(0.85f, 0.85f, 0);
         conXY.rotate(Math.toRadians(90), 0, 0);
-        conXY.addComponent(QMaterialUtil.aplicarMaterial(new QPlanoBilateral(0.85f, 0.85f), matZ));
+        conXY.addComponent(MaterialUtil.applyMaterial(new QPlanoBilateral(0.85f, 0.85f), matZ));
         return conXY;
     }
 
@@ -151,7 +151,7 @@ public class QGizmoTraslacion extends QGizmo {
         };
         conZY.move(0, 0.85f, 0.85f);
         conZY.rotate(0, 0, Math.toRadians(90));
-        conZY.addComponent(QMaterialUtil.aplicarMaterial(new QPlanoBilateral(0.85f, 0.85f), matX));
+        conZY.addComponent(MaterialUtil.applyMaterial(new QPlanoBilateral(0.85f, 0.85f), matX));
         return conZY;
     }
 
