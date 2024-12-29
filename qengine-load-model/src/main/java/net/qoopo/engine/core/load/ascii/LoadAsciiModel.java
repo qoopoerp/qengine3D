@@ -15,7 +15,7 @@ import java.util.List;
 import net.qoopo.engine.core.assets.model.ModelLoader;
 import net.qoopo.engine.core.entity.Entity;
 import net.qoopo.engine.core.entity.component.mesh.Mesh;
-import net.qoopo.engine.core.entity.component.mesh.primitive.QPoligono;
+import net.qoopo.engine.core.entity.component.mesh.primitive.Poly;
 import net.qoopo.engine.core.entity.component.mesh.primitive.QPrimitiva;
 import net.qoopo.engine.core.material.basico.QMaterialBas;
 
@@ -92,7 +92,7 @@ public class LoadAsciiModel implements ModelLoader {
                             for (int i = 0; i < attr.length; i++) {
                                 vertices_cara[i] = Integer.valueOf(attr[i]);
                             }
-                            QPoligono face = readingObject.addPoly(vertices_cara);
+                            Poly face = readingObject.addPoly(vertices_cara);
                             face.material = defaultMaterial;
                         }
                     }
@@ -112,10 +112,10 @@ public class LoadAsciiModel implements ModelLoader {
             for (QPrimitiva face : readingObject.primitivas) {
                 if (face.listaVertices.length >= 3) {
 
-                    ((QPoligono) face).calculaNormalYCentro();
+                    ((Poly) face).calculaNormalYCentro();
                     if (!vertexNormalSpecified || true) {
                         for (int i : face.listaVertices) {
-                            face.geometria.vertices[i].normal.add(((QPoligono) face).getNormal());
+                            face.geometria.vertices[i].normal.add(((Poly) face).getNormal());
                         }
                     }
                 }

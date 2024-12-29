@@ -32,6 +32,9 @@ import java.nio.FloatBuffer;
 import org.lwjgl.system.MemoryUtil;
 
 import net.qoopo.engine.core.entity.Entity;
+import net.qoopo.engine.core.entity.component.mesh.primitive.QPrimitiva;
+import net.qoopo.engine.core.entity.component.mesh.primitive.Vertex;
+import net.qoopo.engine.core.entity.component.transform.QVertexBuffer;
 import net.qoopo.engine.core.lwjgl.renderer.core.QGlVentana;
 import net.qoopo.engine.core.lwjgl.renderer.core.shader.QGLShader;
 import net.qoopo.engine.core.math.QVector2;
@@ -67,21 +70,24 @@ public class OpenGlRenderer extends RenderEngine {
             ventana.init();
             ventana.setClearColor(colorFondo.r, colorFondo.g, colorFondo.b, 0.0f);
 
-//            superficie.getComponente().getParent().add(canvas3D);
-//            superficie.getComponente().getParent().remove(superficie.getComponente());
+            // superficie.getComponente().getParent().add(canvas3D);
+            // superficie.getComponente().getParent().remove(superficie.getComponente());
             shaderProgram = new QGLShader();
-            shaderProgram.createVertexShader(Utils.loadResource("/net/qoopo/engine3d/engines/render/lwjgl/core/shader/vertice/vertex.vs"));
-            shaderProgram.createFragmentShader(Utils.loadResource("/net/qoopo/engine3d/engines/render/lwjgl/core/shader/fragmento/fragmento.fs"));
+            shaderProgram.createVertexShader(
+                    Utils.loadResource("/net/qoopo/engine3d/engines/render/lwjgl/core/shader/vertice/vertex.vs"));
+            shaderProgram.createFragmentShader(
+                    Utils.loadResource("/net/qoopo/engine3d/engines/render/lwjgl/core/shader/fragmento/fragmento.fs"));
             shaderProgram.link();
 
-            //datos del triángulo a dibujar
-            float[] vertices = new float[]{
-                0.0f, 0.5f, 0.0f,
-                -0.5f, -0.5f, 0.0f,
-                0.5f, -0.5f, 0.0f
+            // datos del triángulo a dibujar
+            float[] vertices = new float[] {
+                    0.0f, 0.5f, 0.0f,
+                    -0.5f, -0.5f, 0.0f,
+                    0.5f, -0.5f, 0.0f
             };
 
-            // los convierte en un buffer de vértices para que pueda ser interpretado por OpenGL
+            // los convierte en un buffer de vértices para que pueda ser interpretado por
+            // OpenGL
             FloatBuffer verticesBuffer = null;
             try {
                 verticesBuffer = MemoryUtil.memAllocFloat(vertices.length);
@@ -139,7 +145,7 @@ public class OpenGlRenderer extends RenderEngine {
         long ti;
         tiempoPrevio = System.currentTimeMillis();
 
-//        ventana.setClearColor(colorFondo.r, colorFondo.g, colorFondo.b, 0.0f);
+        // ventana.setClearColor(colorFondo.r, colorFondo.g, colorFondo.b, 0.0f);
         clear();
 
         if (ventana.isResized()) {
@@ -149,7 +155,8 @@ public class OpenGlRenderer extends RenderEngine {
 
         shaderProgram.bind();
 
-        // Bind to the VAO (dice que se va a dibujar el triangulo que se definio al inicio)
+        // Bind to the VAO (dice que se va a dibujar el triangulo que se definio al
+        // inicio)
         glBindVertexArray(vaoId);
         glEnableVertexAttribArray(0);
 
@@ -163,7 +170,7 @@ public class OpenGlRenderer extends RenderEngine {
         shaderProgram.unbind();
 
         ventana.update();
-//        System.out.println("render: " + nombre + " renderizado t=" + tiempoPrevio);
+        // System.out.println("render: " + nombre + " renderizado t=" + tiempoPrevio);
         return tiempoPrevio;
     }
 
@@ -172,8 +179,38 @@ public class OpenGlRenderer extends RenderEngine {
         return null;
     }
 
-//    @Override
-//    public void dibujarPixel(int x, int y) {
-//    }
+    @Override
+    public void renderLine(QPrimitiva primitiva, Vertex... vertex) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'rasterLine'");
+    }
+
+    @Override
+    public void render(QVertexBuffer bufferVertices, QPrimitiva primitiva, boolean wire) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'raster'");
+    }
+
+    @Override
+    public void render() throws Exception {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'render'");
+    }
+
+    @Override
+    public void shadeFragments() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'shadeFragments'");
+    }
+
+    @Override
+    public void postRender() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'postRender'");
+    }
+
+    // @Override
+    // public void dibujarPixel(int x, int y) {
+    // }
 
 }

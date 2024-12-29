@@ -21,7 +21,7 @@ import net.qoopo.engine.core.entity.component.animation.Bone;
 import net.qoopo.engine.core.entity.component.animation.QCompAlmacenAnimaciones;
 import net.qoopo.engine.core.entity.component.animation.Skeleton;
 import net.qoopo.engine.core.entity.component.mesh.Mesh;
-import net.qoopo.engine.core.entity.component.mesh.primitive.QVertex;
+import net.qoopo.engine.core.entity.component.mesh.primitive.Vertex;
 import net.qoopo.engine.core.entity.component.transform.QTransformacion;
 import net.qoopo.engine.core.load.collada.thinmatrix.data.AnimatedModelData;
 import net.qoopo.engine.core.load.collada.thinmatrix.data.AnimationData;
@@ -34,7 +34,7 @@ import net.qoopo.engine.core.load.collada.thinmatrix.loader.ColladaLoader;
 import net.qoopo.engine.core.material.basico.QMaterialBas;
 import net.qoopo.engine.core.math.QMatriz4;
 import net.qoopo.engine.core.util.QJOMLUtil;
-import net.qoopo.engine.core.util.mesh.QUtilNormales;
+import net.qoopo.engine.core.util.mesh.NormalUtil;
 
 /**
  * Carga un modelo según el algoritmo de ThinMatrix para archivos Collada en
@@ -176,7 +176,7 @@ public class LoadModelDae implements ModelLoader {
             Bone[] huesos = new Bone[huesosXVertice];
             float[] pesos = new float[huesosXVertice];
             int[] huesosIds = new int[huesosXVertice];
-            QVertex vertice = geometria.addVertex(data.getVertices()[indiceVertice],
+            Vertex vertice = geometria.addVertex(data.getVertices()[indiceVertice],
                     data.getVertices()[indiceVertice + 1], data.getVertices()[indiceVertice + 2],
                     data.getTextureCoords()[indiceTextura * 2], data.getTextureCoords()[indiceTextura * 2 + 1]);
             if (esqueleto != null) {
@@ -208,7 +208,7 @@ public class LoadModelDae implements ModelLoader {
             }
         }
 
-        QUtilNormales.calcularNormales(geometria);
+        NormalUtil.calcularNormales(geometria);
         // QUtilNormales.invertirNormales(objeto);
         // QMaterialUtil.suavizar(geometria, true);
         return geometria;

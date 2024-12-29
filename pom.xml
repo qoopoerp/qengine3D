@@ -20,12 +20,12 @@
         <module>qengine-core</module>
         <module>qengine-load-model</module>
         <module>qengine-renderer</module>
-        <module>qengine-lwjgl</module>
-        
+        <module>qengine-water</module>
+        <module>qengine-lwjgl</module>        
         <module>qengine-java3d</module>
         <module>qengine-jbullet</module>
-
-        <module>qengine-terrain</module>
+        <module>qengine-terrain</module>        
+        <module>qengine-physics</module>
         <module>qengine3d</module>
         <module>qengine-test</module>
         <module>qengine-editor</module>

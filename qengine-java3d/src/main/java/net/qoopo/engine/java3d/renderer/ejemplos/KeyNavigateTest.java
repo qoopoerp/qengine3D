@@ -1847,7 +1847,7 @@ class Utils {
         // - tension (-1 >= t <= 1)
         // - continuity (-1 >= c <= 1)
         // - bias (-1 >= b <= 1)
-        // - linear (int - 0 or 1)
+        // - interpolateLinear (int - 0 or 1)
         while (true) {
             try {
                 float knot = Float.parseFloat(tokenizer.nextToken());
@@ -1868,9 +1868,9 @@ class Utils {
                 float continuity = Float.parseFloat(tokenizer.nextToken());
                 float bias = Float.parseFloat(tokenizer.nextToken());
 
-                int linear = Integer.parseInt(tokenizer.nextToken());
+                int interpolateLinear = Integer.parseInt(tokenizer.nextToken());
 
-                TCBKeyFrame keyframe = new TCBKeyFrame(knot, linear,
+                TCBKeyFrame keyframe = new TCBKeyFrame(knot, interpolateLinear,
                         new Point3f(posX, posY, posZ),
                         createQuaternionFromEuler(rotX, rotY, rotZ),
                         new Point3f(scaleX, scaleY, scaleZ), tension,

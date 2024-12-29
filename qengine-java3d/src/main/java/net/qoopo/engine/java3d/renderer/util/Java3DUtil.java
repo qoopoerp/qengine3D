@@ -44,9 +44,9 @@ import net.qoopo.engine.core.entity.component.ligth.QLigth;
 import net.qoopo.engine.core.entity.component.ligth.QPointLigth;
 import net.qoopo.engine.core.entity.component.ligth.QSpotLigth;
 import net.qoopo.engine.core.entity.component.mesh.Mesh;
-import net.qoopo.engine.core.entity.component.mesh.primitive.QPoligono;
+import net.qoopo.engine.core.entity.component.mesh.primitive.Poly;
 import net.qoopo.engine.core.entity.component.mesh.primitive.QPrimitiva;
-import net.qoopo.engine.core.entity.component.mesh.primitive.QVertex;
+import net.qoopo.engine.core.entity.component.mesh.primitive.Vertex;
 import net.qoopo.engine.core.material.basico.QMaterialBas;
 import net.qoopo.engine.core.math.QRotacion;
 import net.qoopo.engine.core.util.QVectMathUtil;
@@ -256,7 +256,7 @@ public class Java3DUtil {
             List<TexCoord2f> listaUV = new ArrayList<>();
             List<Vector3f> listaNormales = new ArrayList<>();// mapeo las normales que ya calcule antes, en caso de
                                                              // tener las normales invertidas
-            for (QVertex vertice : objeto.vertices) {
+            for (Vertex vertice : objeto.vertices) {
                 listaPuntos.add(new Point3f(vertice.location.x, vertice.location.y, vertice.location.z));
                 listaUV.add(new TexCoord2f(vertice.u, vertice.v));
                 listaNormales.add(QVectMathUtil.convertirVector3f(vertice.normal));
@@ -292,8 +292,8 @@ public class Java3DUtil {
             }
             int contVertices = 0;
             for (QPrimitiva primitiva : objeto.primitivas) {
-                if (primitiva instanceof QPoligono) {
-                    QPoligono poligono = (QPoligono) primitiva;
+                if (primitiva instanceof Poly) {
+                    Poly poligono = (Poly) primitiva;
                     for (int indiceVertice : poligono.listaVertices) {
                         if (contVertices < listaGeometria.getVertexCount()) {
                             listaGeometria.setCoordinate(contVertices, listaPuntos.get(indiceVertice));

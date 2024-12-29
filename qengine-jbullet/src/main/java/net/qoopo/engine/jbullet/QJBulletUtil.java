@@ -38,7 +38,7 @@ import com.bulletphysics.util.ObjectArrayList;
 
 import net.qoopo.engine.core.entity.Entity;
 import net.qoopo.engine.core.entity.component.mesh.Mesh;
-import net.qoopo.engine.core.entity.component.mesh.primitive.QVertex;
+import net.qoopo.engine.core.entity.component.mesh.primitive.Vertex;
 import net.qoopo.engine.core.entity.component.physics.collision.detector.shape.compuesta.QColisionCompuesta;
 import net.qoopo.engine.core.entity.component.physics.collision.detector.shape.compuesta.QColisionCompuestaHija;
 import net.qoopo.engine.core.entity.component.physics.collision.detector.shape.mallas.QColisionMallaConvexa;
@@ -56,7 +56,7 @@ import net.qoopo.engine.core.entity.component.physics.dinamica.QObjetoDinamico;
 import net.qoopo.engine.core.entity.component.physics.dinamica.QObjetoRigido;
 import net.qoopo.engine.core.entity.component.physics.vehiculo.QRueda;
 import net.qoopo.engine.core.entity.component.physics.vehiculo.QVehiculo;
-import net.qoopo.engine.core.entity.component.terrain.HeightMapTerrain;
+import net.qoopo.engine.core.entity.component.terrain.Terrain;
 import net.qoopo.engine.core.util.QGlobal;
 import net.qoopo.engine.core.util.QVectMathUtil;
 
@@ -71,7 +71,8 @@ public class QJBulletUtil {
         Transform transInicial = new Transform();
         transInicial.setIdentity();
         transInicial.origin.set(QVectMathUtil.convertirVector3f(entity.getTransformacion().getTraslacion()));
-        transInicial.setRotation(QVectMathUtil.convertirQuat4f(entity.getTransformacion().getRotacion().getCuaternion()));
+        transInicial
+                .setRotation(QVectMathUtil.convertirQuat4f(entity.getTransformacion().getRotacion().getCuaternion()));
         return transInicial;
     }
 
@@ -85,10 +86,11 @@ public class QJBulletUtil {
         try {
             CollisionShape colShape = QJBulletUtil.getFormaColision(rigido.formaColision);
             if (colShape == null) {
-                System.out.println("ERROR AL AGREGAR OBJETO RIGIDO, NO HAY FORMA DE COLISION " + rigido.entity.getName());
+                System.out
+                        .println("ERROR AL AGREGAR OBJETO RIGIDO, NO HAY FORMA DE COLISION " + rigido.entity.getName());
                 return null;
             }
-//                formasColision.add(colShape);
+            // formasColision.add(colShape);
 
             float mass = rigido.getMasa();
 
@@ -108,7 +110,8 @@ public class QJBulletUtil {
             // 'active' objects
             DefaultMotionState myMotionState = new DefaultMotionState(getTransformacion(rigido.entity));
 
-            RigidBodyConstructionInfo rbInfo = new RigidBodyConstructionInfo(mass, myMotionState, colShape, localInertia);
+            RigidBodyConstructionInfo rbInfo = new RigidBodyConstructionInfo(mass, myMotionState, colShape,
+                    localInertia);
 
             RigidBody body = new RigidBody(rbInfo);
 
@@ -116,10 +119,12 @@ public class QJBulletUtil {
             body.setRestitution(rigido.getRestitucion());
             body.setDamping(rigido.getAmortiguacion_traslacion(), rigido.getAmortiguacion_rotacion());
 
-            //agrego los fuerzas con las que llega el objeto
-//                body.applyCentralForce(new Vector3f(rigido.fuerzaTotal.x, rigido.fuerzaTotal.y, rigido.fuerzaTotal.z));
-//                body.applyCentralImpulse(new Vector3f(rigido.fuerzaTotal.x, rigido.fuerzaTotal.y, rigido.fuerzaTotal.z));
-//                body.applyCentralForce(QVectMathUtil.convertirVector3f(rigido.fuerzaTotal));
+            // agrego los fuerzas con las que llega el objeto
+            // body.applyCentralForce(new Vector3f(rigido.fuerzaTotal.x,
+            // rigido.fuerzaTotal.y, rigido.fuerzaTotal.z));
+            // body.applyCentralImpulse(new Vector3f(rigido.fuerzaTotal.x,
+            // rigido.fuerzaTotal.y, rigido.fuerzaTotal.z));
+            // body.applyCentralForce(QVectMathUtil.convertirVector3f(rigido.fuerzaTotal));
             body.applyCentralImpulse(QVectMathUtil.convertirVector3f(rigido.fuerzaTotal));
 
             body.setUserPointer(rigido.entity);
@@ -130,39 +135,46 @@ public class QJBulletUtil {
         return null;
     }
 
-    //------------------------------------------------------------------------------------------
-    //---------------------- FORMAS DE COLISIÓN ------------------------------------------------
-    //------------------------------------------------------------------------------------------
+    // ------------------------------------------------------------------------------------------
+    // ---------------------- FORMAS DE COLISIÓN
+    // ------------------------------------------------
+    // ------------------------------------------------------------------------------------------
     /**
      * Construye una forma de colisión para JBullet
      *
      * @param formaColision
      * @return
      */
-    public static CollisionShape getFormaColision(net.qoopo.engine.core.entity.component.physics.collision.detector.CollisionShape formaColision) {
+    public static CollisionShape getFormaColision(
+            net.qoopo.engine.core.entity.component.physics.collision.detector.CollisionShape formaColision) {
 
-//        com.bulletphysics.collision.shapes.BvhTriangleMeshShape
-//HeightfieldTerrainShape shape;
-//com.bulletphysics.collision.shapes.TriangleShape()
+        // com.bulletphysics.collision.shapes.BvhTriangleMeshShape
+        // HeightfieldTerrainShape shape;
+        // com.bulletphysics.collision.shapes.TriangleShape()
         CollisionShape colShape = null;
         if (formaColision instanceof QColisionEsfera) {
             QColisionEsfera contenedor = (QColisionEsfera) formaColision;
             colShape = new SphereShape(contenedor.getRadio());
         } else if (formaColision instanceof QColisionTriangulo) {
             QColisionTriangulo contenedor = (QColisionTriangulo) formaColision;
-            colShape = new TriangleShape(QVectMathUtil.convertirVector3f(contenedor.getP1()), QVectMathUtil.convertirVector3f(contenedor.getP2()), QVectMathUtil.convertirVector3f(contenedor.getP3()));
+            colShape = new TriangleShape(QVectMathUtil.convertirVector3f(contenedor.getP1()),
+                    QVectMathUtil.convertirVector3f(contenedor.getP2()),
+                    QVectMathUtil.convertirVector3f(contenedor.getP3()));
         } else if (formaColision instanceof QColisionCaja) {
             QColisionCaja contenedor = (QColisionCaja) formaColision;
-            colShape = new BoxShape(new Vector3f(contenedor.getAncho() / 2, contenedor.getAlto() / 2, contenedor.getLargo() / 2));
+            colShape = new BoxShape(
+                    new Vector3f(contenedor.getAncho() / 2, contenedor.getAlto() / 2, contenedor.getLargo() / 2));
         } else if (formaColision instanceof QColisionCapsula) {
             QColisionCapsula contenedor = (QColisionCapsula) formaColision;
             colShape = new CapsuleShape(contenedor.getRadio(), contenedor.getAltura());
         } else if (formaColision instanceof QColisionCilindro) {
             QColisionCilindro contenedor = (QColisionCilindro) formaColision;
-            colShape = new CylinderShape(new Vector3f(contenedor.getRadio(), contenedor.getAltura() / 2, contenedor.getRadio()));
+            colShape = new CylinderShape(
+                    new Vector3f(contenedor.getRadio(), contenedor.getAltura() / 2, contenedor.getRadio()));
         } else if (formaColision instanceof QColisionCilindroX) {
             QColisionCilindroX contenedor = (QColisionCilindroX) formaColision;
-            colShape = new CylinderShapeX(new Vector3f(contenedor.getRadio(), contenedor.getAltura() / 2, contenedor.getRadio()));
+            colShape = new CylinderShapeX(
+                    new Vector3f(contenedor.getRadio(), contenedor.getAltura() / 2, contenedor.getRadio()));
         } else if (formaColision instanceof QColisionCono) {
             QColisionCono contenedor = (QColisionCono) formaColision;
             colShape = new ConeShape(contenedor.getRadio(), contenedor.getAltura());
@@ -175,7 +187,7 @@ public class QJBulletUtil {
         } else if (formaColision instanceof QColisionMallaIndexada) {
             QColisionMallaIndexada contenedor = (QColisionMallaIndexada) formaColision;
             colShape = QJBulletUtil.getFormaColisionTriangleMesShape(contenedor.getMalla());
-//            colShape = QJBulletUtil.getIndexedMesh(formaColision.getMalla());
+            // colShape = QJBulletUtil.getIndexedMesh(formaColision.getMalla());
         } else if (formaColision instanceof QColisionCompuesta) {
             QColisionCompuesta contenedor = (QColisionCompuesta) formaColision;
 
@@ -190,25 +202,35 @@ public class QJBulletUtil {
             colShape = new BoxShape(new Vector3f(ancho / 2, alto / 2, largo / 2));
         }
 
-        //Escalo la forma de colisión de acuerdo a la escala de la entity
+        // Escalo la forma de colisión de acuerdo a la escala de la entity
         try {
-            colShape.setLocalScaling(QVectMathUtil.convertirVector3f(formaColision.entity.getTransformacion().getEscala()));
+            colShape.setLocalScaling(
+                    QVectMathUtil.convertirVector3f(formaColision.entity.getTransformacion().getEscala()));
         } catch (Exception e) {
         }
         return colShape;
     }
 
-    public static HeightfieldTerrainShape getFormaColisionTerreno(HeightMapTerrain terreno) {
+    public static HeightfieldTerrainShape getFormaColisionTerreno(Terrain terreno) {
         try {
             float[] data = new float[terreno.getWidthTiles() * terreno.getHeightTiles()];
             int c = 0;
+            float minHeight = Float.MAX_VALUE;
+            float maxHeight = Float.MIN_VALUE;
+
             for (int x = 0; x < terreno.getWidthTiles(); x++) {
                 for (int z = 0; z < terreno.getWidthTiles(); z++) {
-                    data[c] = terreno.getAltura()[x][z];
+                    // data[c] = terreno.getHeight()[x][z];
+                    data[c] = terreno.getHeights()[x][z];
+                    minHeight = Float.min(minHeight, data[c]);
+                    maxHeight = Float.max(maxHeight, data[c]);
                     c++;
                 }
             }
-            HeightfieldTerrainShape tt = new HeightfieldTerrainShape(terreno.getWidthTiles(), terreno.getHeightTiles(), data, 1.0f, terreno.getMinY(), terreno.getMaxY(), 1, false);
+            // HeightfieldTerrainShape tt = new HeightfieldTerrainShape(terreno.getWidthTiles(), terreno.getHeightTiles(),
+            //         data, 1.0f, terreno.getMinY(), terreno.getMaxY(), 1, false);
+            HeightfieldTerrainShape tt = new HeightfieldTerrainShape(terreno.getWidthTiles(), terreno.getHeightTiles(),
+                    data, 1.0f,minHeight, maxHeight, 1, false);
             return tt;
         } catch (Exception e) {
             e.printStackTrace();
@@ -219,7 +241,7 @@ public class QJBulletUtil {
     public static ConvexHullShape getFormaColisionMallaConvexa(Mesh malla) {
         try {
             ObjectArrayList<Vector3f> lst = new ObjectArrayList(malla.vertices.length);
-            for (QVertex vert : malla.vertices) {
+            for (Vertex vert : malla.vertices) {
                 lst.add(new Vector3f(vert.location.x, vert.location.y, vert.location.z));
             }
             return new ConvexHullShape(lst);
@@ -256,15 +278,16 @@ public class QJBulletUtil {
     public static synchronized IndexedMesh getIndexedMesh(Mesh mesh) {
         try {
             IndexedMesh jBulletIndexedMesh = new IndexedMesh();
-            jBulletIndexedMesh.triangleIndexBase = ByteBuffer.allocate(mesh.primitivas.length * 3 * 4);//3 verts * 4 bytes per.
-            jBulletIndexedMesh.vertexBase = ByteBuffer.allocate(mesh.vertices.length * 3 * 4);//3 coords * 4 bytes per.
+            jBulletIndexedMesh.triangleIndexBase = ByteBuffer.allocate(mesh.primitivas.length * 3 * 4);// 3 verts * 4
+                                                                                                       // bytes per.
+            jBulletIndexedMesh.vertexBase = ByteBuffer.allocate(mesh.vertices.length * 3 * 4);// 3 coords * 4 bytes per.
 
-//        IndexBuffer indices = mesh.getIndicesAsList();
-//        FloatBuffer vertices = mesh.getFloatBuffer(Type.Position);
-//        vertices.rewind();
+            // IndexBuffer indices = mesh.getIndicesAsList();
+            // FloatBuffer vertices = mesh.getFloatBuffer(Type.Position);
+            // vertices.rewind();
             int verticesLength = mesh.vertices.length;
             jBulletIndexedMesh.numVertices = mesh.vertices.length;
-            jBulletIndexedMesh.vertexStride = 12; //3 verts * 4 bytes per.
+            jBulletIndexedMesh.vertexStride = 12; // 3 verts * 4 bytes per.
             for (int i = 0; i < verticesLength; i++) {
                 jBulletIndexedMesh.vertexBase.putFloat(mesh.vertices[i].location.x);
                 jBulletIndexedMesh.vertexBase.putFloat(mesh.vertices[i].location.y);
@@ -273,7 +296,7 @@ public class QJBulletUtil {
 
             int indicesLength = mesh.primitivas.length;
             jBulletIndexedMesh.numTriangles = indicesLength;
-            jBulletIndexedMesh.triangleIndexStride = 12; //3 index entries * 4 bytes each.
+            jBulletIndexedMesh.triangleIndexStride = 12; // 3 index entries * 4 bytes each.
             for (int i = 0; i < indicesLength; i++) {
                 jBulletIndexedMesh.triangleIndexBase.putInt(mesh.primitivas[i].listaVertices[0]);
                 jBulletIndexedMesh.triangleIndexBase.putInt(mesh.primitivas[i].listaVertices[1]);
@@ -298,32 +321,34 @@ public class QJBulletUtil {
             }
             return salida;
 
-//            salida.
+            // salida.
         } catch (Exception e) {
 
         }
         return null;
     }
 
-    //------------------------------------------------------------------------------------------
-    //---------------------- VEHÍCULO ------------------------------------------------
-    //------------------------------------------------------------------------------------------
+    // ------------------------------------------------------------------------------------------
+    // ---------------------- VEHÍCULO
+    // ------------------------------------------------
+    // ------------------------------------------------------------------------------------------
     // By default, Bullet Vehicle uses Y as up axis.
-    // You can override the up axis, for example Z-axis up. Enable this define to see how to:
+    // You can override the up axis, for example Z-axis up. Enable this define to
+    // see how to:
     // //#define FORCE_ZAXIS_UP 1
-    //#ifdef FORCE_ZAXIS_UP
-    //int rightIndex = 0;
-    //int upIndex = 2;
-    //int forwardIndex = 1;
-    //btVector3 wheelDirectionCS0(0,0,-1);
-    //btVector3 wheelAxleCS(1,0,0);
-    //#else
+    // #ifdef FORCE_ZAXIS_UP
+    // int rightIndex = 0;
+    // int upIndex = 2;
+    // int forwardIndex = 1;
+    // btVector3 wheelDirectionCS0(0,0,-1);
+    // btVector3 wheelAxleCS(1,0,0);
+    // #else
     private static final int rightIndex = 0;
     private static final int upIndex = 1;
     private static final int forwardIndex = 2;
     private static final Vector3f wheelDirectionCS0 = new Vector3f(0, -1, 0);
     private static final Vector3f wheelAxleCS = new Vector3f(-1, 0, 0);
-    //#endif
+    // #endif
 
     public static RaycastVehicle crearVehiculo(QVehiculo qvehiculo, DynamicsWorld mundoDinamico) {
         RigidBody chasis = crearRigido(qvehiculo.getChasis());
@@ -350,9 +375,12 @@ public class QJBulletUtil {
         Vector3f connectionPointCS0 = new Vector3f();
         int CUBE_HALF_EXTENTS = 1;
         for (QRueda rueda : qvehiculo.getRuedas()) {
-//            connectionPointCS0.set(CUBE_HALF_EXTENTS - (0.3f * rueda.getAncho()), connectionHeight, 2f * CUBE_HALF_EXTENTS - rueda.getRadio());
-            connectionPointCS0.set(QVectMathUtil.convertirVector3f(rueda.getEntidadRueda().getMatrizTransformacion(QGlobal.tiempo).toTranslationVector()));
-            WheelInfo info = vehiculo.addWheel(connectionPointCS0, wheelDirectionCS0, wheelAxleCS, rueda.getSuspensionRestLength(), rueda.getRadio(), tuning, isFrontWheel);
+            // connectionPointCS0.set(CUBE_HALF_EXTENTS - (0.3f * rueda.getAncho()),
+            // connectionHeight, 2f * CUBE_HALF_EXTENTS - rueda.getRadio());
+            connectionPointCS0.set(QVectMathUtil.convertirVector3f(
+                    rueda.getEntidadRueda().getMatrizTransformacion(QGlobal.tiempo).toTranslationVector()));
+            WheelInfo info = vehiculo.addWheel(connectionPointCS0, wheelDirectionCS0, wheelAxleCS,
+                    rueda.getSuspensionRestLength(), rueda.getRadio(), tuning, isFrontWheel);
             info.suspensionStiffness = rueda.getSuspensionStiffness();
             info.wheelsDampingRelaxation = rueda.getDampingRelaxation();
             info.wheelsDampingCompression = rueda.getDampingCompression();
@@ -360,24 +388,32 @@ public class QJBulletUtil {
             info.rollInfluence = rueda.getInfluenciaRodamiento();
         }
 
-//        connectionPointCS0.set(CUBE_HALF_EXTENTS - (0.3f * wheelWidth), connectionHeight, 2f * CUBE_HALF_EXTENTS - wheelRadius);
-//        vehiculo.addWheel(connectionPointCS0, wheelDirectionCS0, wheelAxleCS, suspensionRestLength, wheelRadius, tuning, isFrontWheel);
-//        connectionPointCS0.set(-CUBE_HALF_EXTENTS + (0.3f * wheelWidth), connectionHeight, 2f * CUBE_HALF_EXTENTS - wheelRadius);
-//        vehiculo.addWheel(connectionPointCS0, wheelDirectionCS0, wheelAxleCS, suspensionRestLength, wheelRadius, tuning, isFrontWheel);
-//        
-//        isFrontWheel = false;
-//        connectionPointCS0.set(-CUBE_HALF_EXTENTS + (0.3f * wheelWidth), connectionHeight, -2f * CUBE_HALF_EXTENTS + wheelRadius);
-//        vehiculo.addWheel(connectionPointCS0, wheelDirectionCS0, wheelAxleCS, suspensionRestLength, wheelRadius, tuning, isFrontWheel);
-//        connectionPointCS0.set(CUBE_HALF_EXTENTS - (0.3f * wheelWidth), connectionHeight, -2f * CUBE_HALF_EXTENTS + wheelRadius);
-//        vehiculo.addWheel(connectionPointCS0, wheelDirectionCS0, wheelAxleCS, suspensionRestLength, wheelRadius, tuning, isFrontWheel);
-//        for (int i = 0; i < vehiculo.getNumWheels(); i++) {
-//            WheelInfo wheel = vehiculo.getWheelInfo(i);
-//            wheel.suspensionStiffness = suspensionStiffness;
-//            wheel.wheelsDampingRelaxation = suspensionDamping;
-//            wheel.wheelsDampingCompression = suspensionCompression;
-//            wheel.frictionSlip = wheelFriction;
-//            wheel.rollInfluence = rollInfluence;
-//        }
+        // connectionPointCS0.set(CUBE_HALF_EXTENTS - (0.3f * wheelWidth),
+        // connectionHeight, 2f * CUBE_HALF_EXTENTS - wheelRadius);
+        // vehiculo.addWheel(connectionPointCS0, wheelDirectionCS0, wheelAxleCS,
+        // suspensionRestLength, wheelRadius, tuning, isFrontWheel);
+        // connectionPointCS0.set(-CUBE_HALF_EXTENTS + (0.3f * wheelWidth),
+        // connectionHeight, 2f * CUBE_HALF_EXTENTS - wheelRadius);
+        // vehiculo.addWheel(connectionPointCS0, wheelDirectionCS0, wheelAxleCS,
+        // suspensionRestLength, wheelRadius, tuning, isFrontWheel);
+        //
+        // isFrontWheel = false;
+        // connectionPointCS0.set(-CUBE_HALF_EXTENTS + (0.3f * wheelWidth),
+        // connectionHeight, -2f * CUBE_HALF_EXTENTS + wheelRadius);
+        // vehiculo.addWheel(connectionPointCS0, wheelDirectionCS0, wheelAxleCS,
+        // suspensionRestLength, wheelRadius, tuning, isFrontWheel);
+        // connectionPointCS0.set(CUBE_HALF_EXTENTS - (0.3f * wheelWidth),
+        // connectionHeight, -2f * CUBE_HALF_EXTENTS + wheelRadius);
+        // vehiculo.addWheel(connectionPointCS0, wheelDirectionCS0, wheelAxleCS,
+        // suspensionRestLength, wheelRadius, tuning, isFrontWheel);
+        // for (int i = 0; i < vehiculo.getNumWheels(); i++) {
+        // WheelInfo wheel = vehiculo.getWheelInfo(i);
+        // wheel.suspensionStiffness = suspensionStiffness;
+        // wheel.wheelsDampingRelaxation = suspensionDamping;
+        // wheel.wheelsDampingCompression = suspensionCompression;
+        // wheel.frictionSlip = wheelFriction;
+        // wheel.rollInfluence = rollInfluence;
+        // }
         return vehiculo;
     }
 }

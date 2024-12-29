@@ -54,7 +54,7 @@ import net.qoopo.engine.core.entity.component.ligth.QLigth;
 import net.qoopo.engine.core.entity.component.ligth.QPointLigth;
 import net.qoopo.engine.core.entity.component.ligth.QSpotLigth;
 import net.qoopo.engine.core.entity.component.mesh.Mesh;
-import net.qoopo.engine.core.entity.component.mesh.primitive.QVertex;
+import net.qoopo.engine.core.entity.component.mesh.primitive.Vertex;
 import net.qoopo.engine.core.entity.component.physics.collision.detector.CollisionShape;
 import net.qoopo.engine.core.entity.component.physics.collision.detector.shape.mallas.QColisionMallaConvexa;
 import net.qoopo.engine.core.entity.component.physics.dinamica.QObjetoDinamico;
@@ -71,7 +71,7 @@ import net.qoopo.engine.core.scene.Camera;
 import net.qoopo.engine.core.texture.QTextura;
 import net.qoopo.engine.core.texture.procesador.QProcesadorInvierte;
 import net.qoopo.engine.core.texture.procesador.QProcesadorSimple;
-import net.qoopo.engine.core.util.mesh.QUtilNormales;
+import net.qoopo.engine.core.util.mesh.NormalUtil;
 
 /**
  * Permite la carga de vaiors formatos de modelos 3D usando la librer[ia ASSIMP.
@@ -434,7 +434,7 @@ public class AssimpModelLoader implements ModelLoader {
             for (EntityComponent componente : entity.getComponents()) {
                 if (componente instanceof Mesh) {
                     Mesh malla = (Mesh) componente;
-                    for (QVertex vertice : malla.vertices) {
+                    for (Vertex vertice : malla.vertices) {
                         Bone[] listaHuesos = new Bone[vertice.getListaHuesosIds().length];
                         for (int j = 0; j < vertice.getListaHuesosIds().length; j++) {
                             listaHuesos[j] = esqueleto.getBone(vertice.getListaHuesosIds()[j]);
@@ -703,7 +703,7 @@ public class AssimpModelLoader implements ModelLoader {
         procesarVertices(aiMesh, malla);
         procesarPoligonos(aiMesh, malla, material);
         procesarBones(aiMesh, malla, boneList);
-        QUtilNormales.calcularNormales(malla);
+        NormalUtil.calcularNormales(malla);
         return malla;
     }
 

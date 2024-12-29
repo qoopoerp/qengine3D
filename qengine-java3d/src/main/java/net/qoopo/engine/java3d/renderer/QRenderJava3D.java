@@ -28,11 +28,15 @@ import net.qoopo.engine.core.entity.Entity;
 import net.qoopo.engine.core.entity.component.EntityComponent;
 import net.qoopo.engine.core.entity.component.ligth.QLigth;
 import net.qoopo.engine.core.entity.component.mesh.Mesh;
+import net.qoopo.engine.core.entity.component.mesh.primitive.QPrimitiva;
+import net.qoopo.engine.core.entity.component.mesh.primitive.Vertex;
 import net.qoopo.engine.core.entity.component.particles.Particle;
 import net.qoopo.engine.core.entity.component.particles.ParticleEmissor;
+import net.qoopo.engine.core.entity.component.transform.QVertexBuffer;
 import net.qoopo.engine.core.math.QMatriz3;
 import net.qoopo.engine.core.math.QVector2;
 import net.qoopo.engine.core.math.QVector3;
+import net.qoopo.engine.core.math.QVector4;
 import net.qoopo.engine.core.renderer.RenderEngine;
 import net.qoopo.engine.core.renderer.superficie.Superficie;
 import net.qoopo.engine.core.scene.Scene;
@@ -545,6 +549,36 @@ public class QRenderJava3D extends RenderEngine {
     @Override
     public Entity selectEntity(QVector2 mouseLocation) {
         return null;
+    }
+
+    @Override
+    public void renderLine(QPrimitiva primitiva, Vertex... vertex) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'rasterLine'");
+    }
+
+    @Override
+    public void render(QVertexBuffer bufferVertices, QPrimitiva primitiva, boolean wire) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'raster'");
+    }
+
+    @Override
+    public void render() throws Exception {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'render'");
+    }
+
+    @Override
+    public void shadeFragments() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'shadeFragments'");
+    }
+
+    @Override
+    public void postRender() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'postRender'");
     }
 
     // private void modificadoresTexturas() {

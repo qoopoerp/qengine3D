@@ -18,7 +18,7 @@ import net.qoopo.engine.core.entity.component.animation.Bone;
 import net.qoopo.engine.core.entity.component.animation.QCompAlmacenAnimaciones;
 import net.qoopo.engine.core.entity.component.animation.Skeleton;
 import net.qoopo.engine.core.entity.component.mesh.Mesh;
-import net.qoopo.engine.core.entity.component.mesh.primitive.QVertex;
+import net.qoopo.engine.core.entity.component.mesh.primitive.Vertex;
 import net.qoopo.engine.core.entity.component.physics.collision.detector.CollisionShape;
 import net.qoopo.engine.core.entity.component.physics.collision.detector.shape.mallas.QColisionMallaConvexa;
 import net.qoopo.engine.core.entity.component.physics.dinamica.QObjetoDinamico;
@@ -38,10 +38,10 @@ import net.qoopo.engine.core.math.QColor;
 import net.qoopo.engine.core.math.QRotacion;
 import net.qoopo.engine.core.math.QVector3;
 import net.qoopo.engine.core.texture.QTextura;
-import net.qoopo.engine.core.texture.util.QMaterialUtil;
+import net.qoopo.engine.core.texture.util.MaterialUtil;
 import net.qoopo.engine.core.util.QJOMLUtil;
 import net.qoopo.engine.core.util.Utils;
-import net.qoopo.engine.core.util.mesh.QUtilNormales;
+import net.qoopo.engine.core.util.mesh.NormalUtil;
 
 public class LoadModelMd5 implements ModelLoader {
 
@@ -222,7 +222,7 @@ public class LoadModelMd5 implements ModelLoader {
                         .mult(QJOMLUtil.convertirQVector3(weight.getPosition())).multiply(weight.getBias()));
                 c++;
             }
-            QVertex vertice = geometria.addVertex(posicionVertice.x, posicionVertice.y, posicionVertice.z,
+            Vertex vertice = geometria.addVertex(posicionVertice.x, posicionVertice.y, posicionVertice.z,
                     vertex.getTextCoords().x, 1.0f - vertex.getTextCoords().y);
             vertice.setListaHuesos(huesos);
             vertice.setListaHuesosPesos(pesos);
@@ -234,8 +234,8 @@ public class LoadModelMd5 implements ModelLoader {
             geometria.addPoly(tri.getVertex0(), tri.getVertex2(), tri.getVertex1());
         }
 
-        geometria = QUtilNormales.calcularNormales(geometria);
-        geometria = QMaterialUtil.suavizar(geometria, true);
+        geometria = NormalUtil.calcularNormales(geometria);
+        geometria = MaterialUtil.smooth(geometria, true);
         // geometria = QUtilNormales.invertirNormales(geometria);
         return geometria;
     }
@@ -316,11 +316,11 @@ public class LoadModelMd5 implements ModelLoader {
                             material.setMapaEspecular(specularMap);
                         }
                     }
-                    QMaterialUtil.aplicarMaterial(mesh, material);
+                    MaterialUtil.applyMaterial(mesh, material);
 
                 } else {
                     // mesh.setMaterial(new Material(defaultColour, 1));
-                    QMaterialUtil.aplicarColor(mesh, 1, defaultColour, QColor.WHITE, 0, 64);
+                    MaterialUtil.applyColor(mesh, 1, defaultColour, QColor.WHITE, 0, 64);
                 }
             }
         } catch (Exception e) {
