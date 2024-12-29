@@ -17,10 +17,10 @@ import javax.imageio.ImageIO;
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
-import net.qoopo.engine.core.entity.component.terrain.HeightMapTerrain;
 import net.qoopo.engine.core.texture.QTextura;
 import net.qoopo.engine.core.util.QUtilComponentes;
 import net.qoopo.engine.core.util.image.ImgUtil;
+import net.qoopo.engine.terrain.HeightMapTerrain;
 import net.qoopo.engine3d.editor.Principal;
 import net.qoopo.engine3d.editor.util.ImagePreviewPanel;
 

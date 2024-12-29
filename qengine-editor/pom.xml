@@ -1,35 +1,44 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>net.qoopo.qengine</groupId>
     <artifactId>qengine-editor</artifactId>
     <version>1.0.0</version>
     <packaging>jar</packaging>
-        
-<!--    <parent>
+
+    <!--    <parent>
         <groupId>net.qoopo.qengine</groupId>
         <artifactId>qengine</artifactId>
         <version>1.0.0</version>
     </parent>    -->
-   
+
     <dependencies>
         <dependency>
             <groupId>net.qoopo.qengine</groupId>
             <artifactId>qengine3d</artifactId>
             <version>1.0.0</version>
-        </dependency>         
+        </dependency>
         <dependency>
             <groupId>net.qoopo.qengine</groupId>
             <artifactId>qengine-test</artifactId>
             <version>1.0.0</version>
-        </dependency>         
+        </dependency>
+
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>1.18.24</version>
+            <scope>provided</scope>
+        </dependency>
     </dependencies>
-    
+
     <build>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>                
+                <artifactId>maven-jar-plugin</artifactId>
                 <configuration>
                     <archive>
                         <manifest>
@@ -44,9 +53,8 @@
                 </configuration>
                 <version>3.2.0</version>
             </plugin>
-            
-         
-                        
+
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>
@@ -68,7 +76,7 @@
             </plugin>
         </plugins>
     </build>
-    
+
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>11</maven.compiler.source>

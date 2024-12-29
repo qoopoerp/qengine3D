@@ -5,7 +5,7 @@
  */
 package net.qoopo.engine3d.editor.entity.componentes.geometria;
 
-import net.qoopo.engine.core.entity.component.mesh.primitive.shape.QCilindro;
+import net.qoopo.engine.core.entity.component.mesh.primitive.shape.Cylinder;
 
 /**
  *
@@ -13,12 +13,12 @@ import net.qoopo.engine.core.entity.component.mesh.primitive.shape.QCilindro;
  */
 public class PnlCilindro extends javax.swing.JPanel {
 
-    private QCilindro forma;
+    private Cylinder forma;
 
     /**
      * Creates new form PnlCubo
      */
-    public PnlCilindro(QCilindro forma) {
+    public PnlCilindro(Cylinder forma) {
         initComponents();
         this.forma = forma;
         txtRadio.setText(String.valueOf(forma.getRadio()));

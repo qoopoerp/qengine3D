@@ -5,7 +5,7 @@
  */
 package net.qoopo.engine3d.editor.entity.componentes.geometria;
 
-import net.qoopo.engine.core.entity.component.mesh.primitive.shape.QPlano;
+import net.qoopo.engine.core.entity.component.mesh.primitive.shape.Plane;
 
 /**
  *
@@ -13,12 +13,12 @@ import net.qoopo.engine.core.entity.component.mesh.primitive.shape.QPlano;
  */
 public class PnlPlano extends javax.swing.JPanel {
 
-    private QPlano plano;
+    private Plane plano;
 
     /**
      * Creates new form PnlCubo
      */
-    public PnlPlano(QPlano plano) {
+    public PnlPlano(Plane plano) {
         initComponents();
         this.plano = plano;
         txtAncho.setText(String.valueOf(plano.getAncho()));

@@ -13,7 +13,7 @@ import javax.swing.DefaultComboBoxModel;
 import net.qoopo.engine.core.entity.Entity;
 import net.qoopo.engine.core.entity.component.EntityComponent;
 import net.qoopo.engine.core.entity.component.mesh.Mesh;
-import net.qoopo.engine.core.entity.component.mesh.primitive.QVertex;
+import net.qoopo.engine.core.entity.component.mesh.primitive.Vertex;
 import net.qoopo.engine.core.entity.component.physics.collision.detector.shape.primitivas.AABB;
 import net.qoopo.engine.core.entity.component.physics.vehiculo.QVehiculoControl;
 import net.qoopo.engine.core.util.QUtilComponentes;
@@ -134,7 +134,7 @@ public class PnlControlVehiculo extends javax.swing.JPanel {
             Mesh geometria = QUtilComponentes.getMesh(entidadRueda);
             AABB tmp = new AABB(geometria.vertices[0].clone(), geometria.vertices[0].clone());
 
-            for (QVertex vertice : geometria.vertices) {
+            for (Vertex vertice : geometria.vertices) {
                 if (vertice.location.x < tmp.aabMinimo.location.x) {
                     tmp.aabMinimo.location.x = vertice.location.x;
                 }

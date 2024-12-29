@@ -5,7 +5,7 @@
  */
 package net.qoopo.engine3d.editor.entity.componentes.geometria;
 
-import net.qoopo.engine.core.entity.component.mesh.primitive.shape.QPrisma;
+import net.qoopo.engine.core.entity.component.mesh.primitive.shape.Prism;
 
 /**
  *
@@ -13,12 +13,12 @@ import net.qoopo.engine.core.entity.component.mesh.primitive.shape.QPrisma;
  */
 public class PnlPrisma extends javax.swing.JPanel {
 
-    private QPrisma forma;
+    private Prism forma;
 
     /**
      * Creates new form PnlCubo
      */
-    public PnlPrisma(QPrisma forma) {
+    public PnlPrisma(Prism forma) {
         initComponents();
         this.forma = forma;
         txtRadio.setText(String.valueOf(forma.getRadioSuperior()));

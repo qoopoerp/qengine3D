@@ -1,10 +1,5 @@
 package net.qoopo.engine3d.editor;
 
-import static net.qoopo.engine.core.renderer.RenderEngine.GIZMO_ESCALA;
-import static net.qoopo.engine.core.renderer.RenderEngine.GIZMO_NINGUNO;
-import static net.qoopo.engine.core.renderer.RenderEngine.GIZMO_ROTACION;
-import static net.qoopo.engine.core.renderer.RenderEngine.GIZMO_TRASLACION;
-
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.GridLayout;
@@ -40,6 +35,8 @@ import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeCellRenderer;
 
+import lombok.Getter;
+import lombok.Setter;
 import net.qoopo.engine.core.assets.AssetManager;
 import net.qoopo.engine.core.assets.model.ModelLoader;
 import net.qoopo.engine.core.entity.Entity;
@@ -52,22 +49,22 @@ import net.qoopo.engine.core.entity.component.ligth.QDirectionalLigth;
 import net.qoopo.engine.core.entity.component.ligth.QPointLigth;
 import net.qoopo.engine.core.entity.component.ligth.QSpotLigth;
 import net.qoopo.engine.core.entity.component.mesh.Mesh;
+import net.qoopo.engine.core.entity.component.mesh.primitive.shape.Box;
+import net.qoopo.engine.core.entity.component.mesh.primitive.shape.Cone;
+import net.qoopo.engine.core.entity.component.mesh.primitive.shape.Cylinder;
+import net.qoopo.engine.core.entity.component.mesh.primitive.shape.CylinderX;
+import net.qoopo.engine.core.entity.component.mesh.primitive.shape.CylinderZ;
+import net.qoopo.engine.core.entity.component.mesh.primitive.shape.GeoSphere;
 import net.qoopo.engine.core.entity.component.mesh.primitive.shape.IcoSphere;
-import net.qoopo.engine.core.entity.component.mesh.primitive.shape.QCaja;
-import net.qoopo.engine.core.entity.component.mesh.primitive.shape.QCilindro;
-import net.qoopo.engine.core.entity.component.mesh.primitive.shape.QCilindroX;
-import net.qoopo.engine.core.entity.component.mesh.primitive.shape.QCilindroZ;
-import net.qoopo.engine.core.entity.component.mesh.primitive.shape.QCono;
-import net.qoopo.engine.core.entity.component.mesh.primitive.shape.QCuboEsfera;
-import net.qoopo.engine.core.entity.component.mesh.primitive.shape.QEsfera;
-import net.qoopo.engine.core.entity.component.mesh.primitive.shape.QGeoesfera;
 import net.qoopo.engine.core.entity.component.mesh.primitive.shape.PlanarMesh;
-import net.qoopo.engine.core.entity.component.mesh.primitive.shape.QPlano;
-import net.qoopo.engine.core.entity.component.mesh.primitive.shape.QPrisma;
-import net.qoopo.engine.core.entity.component.mesh.primitive.shape.QSuzane;
-import net.qoopo.engine.core.entity.component.mesh.primitive.shape.QTeapot;
-import net.qoopo.engine.core.entity.component.mesh.primitive.shape.QToro;
-import net.qoopo.engine.core.entity.component.mesh.primitive.shape.QTriangulo;
+import net.qoopo.engine.core.entity.component.mesh.primitive.shape.Plane;
+import net.qoopo.engine.core.entity.component.mesh.primitive.shape.Prism;
+import net.qoopo.engine.core.entity.component.mesh.primitive.shape.Sphere;
+import net.qoopo.engine.core.entity.component.mesh.primitive.shape.SphereBox;
+import net.qoopo.engine.core.entity.component.mesh.primitive.shape.Suzane;
+import net.qoopo.engine.core.entity.component.mesh.primitive.shape.Teapot;
+import net.qoopo.engine.core.entity.component.mesh.primitive.shape.Torus;
+import net.qoopo.engine.core.entity.component.mesh.primitive.shape.Triangle;
 import net.qoopo.engine.core.entity.component.mesh.primitive.shape.wire.QEspiral;
 import net.qoopo.engine.core.entity.component.physics.collision.detector.shape.mallas.QColisionMallaConvexa;
 import net.qoopo.engine.core.entity.component.physics.collision.detector.shape.primitivas.QColisionCaja;
@@ -76,7 +73,6 @@ import net.qoopo.engine.core.entity.component.physics.collision.detector.shape.p
 import net.qoopo.engine.core.entity.component.physics.collision.detector.shape.primitivas.QColisionCono;
 import net.qoopo.engine.core.entity.component.physics.collision.detector.shape.primitivas.QColisionEsfera;
 import net.qoopo.engine.core.entity.component.physics.collision.detector.shape.primitivas.QColisionTriangulo;
-import net.qoopo.engine.core.entity.component.terrain.HeightMapTerrain;
 import net.qoopo.engine.core.input.QInputManager;
 import net.qoopo.engine.core.lwjgl.renderer.OpenGlRenderer;
 import net.qoopo.engine.core.math.QColor;
@@ -95,12 +91,13 @@ import net.qoopo.engine.core.renderer.superficie.QJPanel;
 import net.qoopo.engine.core.renderer.superficie.Superficie;
 import net.qoopo.engine.core.scene.Camera;
 import net.qoopo.engine.core.scene.Scene;
-import net.qoopo.engine.core.texture.util.QMaterialUtil;
+import net.qoopo.engine.core.texture.util.MaterialUtil;
 import net.qoopo.engine.core.util.QGlobal;
 import net.qoopo.engine.core.util.QUtilComponentes;
-import net.qoopo.engine.core.util.mesh.QUtilNormales;
+import net.qoopo.engine.core.util.mesh.NormalUtil;
 import net.qoopo.engine.java3d.renderer.QRenderJava3D;
 import net.qoopo.engine.renderer.SoftwareRenderer;
+import net.qoopo.engine.terrain.HeightMapTerrain;
 import net.qoopo.engine3d.QEngine3D;
 import net.qoopo.engine3d.core.asset.model.DefaultModelLoader;
 import net.qoopo.engine3d.core.input.control.gizmo.QGizmo;
@@ -109,11 +106,14 @@ import net.qoopo.engine3d.core.util.QDefinirCentro;
 import net.qoopo.engine3d.core.util.SerializarUtil;
 import net.qoopo.engine3d.editor.assets.PnlGestorRecursos;
 import net.qoopo.engine3d.editor.entity.EditorEntidad;
+import net.qoopo.engine3d.editor.util.EditorRenderer;
 import net.qoopo.engine3d.editor.util.ImagePreviewPanel;
 import net.qoopo.engine3d.editor.util.QArbolWrapper;
 import net.qoopo.engine3d.editor.util.Util;
 import net.qoopo.engine3d.test.generaEjemplos.InitialScene;
 
+@Getter
+@Setter
 public class Principal extends javax.swing.JFrame {
 
     public static Principal instancia;
@@ -121,7 +121,10 @@ public class Principal extends javax.swing.JFrame {
     private QEngine3D motor;
 
     private List<RenderEngine> listaRenderer = new ArrayList<>();
+    private List<EditorRenderer> listaEditorRenderer = new ArrayList<>();
     private RenderEngine renderer; // renderer seleccionado
+    private EditorRenderer editorRenderer;
+
     boolean objectLock = true;
     boolean objectListLock = false;
     private LinkedList<Entity> clipboard = new LinkedList<>();
@@ -131,7 +134,7 @@ public class Principal extends javax.swing.JFrame {
     private PnlGestorRecursos pnlGestorRecursos = new PnlGestorRecursos();
     private SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd_HHmmss");
     private Accion accionSeleccionar;
-    private Accion accionActualizarLineaTiempo;
+    private Accion actionUpdateEditor;
     private boolean cambiandoLineaTiempo = false;
     protected static final DecimalFormat df = new DecimalFormat("0.00");
 
@@ -141,7 +144,7 @@ public class Principal extends javax.swing.JFrame {
         // configura las acciones para interactuar desde el renderar hacia afuera
         accionSeleccionar = new Accion() {
             @Override
-            public void ejecutar(Object... parametros) {
+            public void run(Object... parametros) {
                 try {
                     seleccionarEntidad((Entity) parametros[0]);
                 } catch (Exception e) {
@@ -149,17 +152,19 @@ public class Principal extends javax.swing.JFrame {
                 }
             }
         };
-        accionActualizarLineaTiempo = new Accion() {
+        actionUpdateEditor = new Accion() {
             @Override
-            public void ejecutar(Object... parametros) {
+            public void run(Object... parametros) {
                 try {
                     if (motor.getAnimationEngine() != null && motor.getAnimationEngine().isEjecutando()) {
                         cambiandoLineaTiempo = true;
                         sldLineaTiempo.setValue((int) (motor.getAnimationEngine().getTiempo() * 10));
                         cambiandoLineaTiempo = false;
                     }
+                    if (editorRenderer != null)
+                        editorRenderer.render();
                 } catch (Exception e) {
-
+                    e.printStackTrace();
                 }
             }
         };
@@ -169,7 +174,7 @@ public class Principal extends javax.swing.JFrame {
         chooser.setCurrentDirectory(new File("assets/"));
         motor = new QEngine3D();
         this.escena = motor.getEscena();
-        motor.getAccionesEjecucion().add(accionActualizarLineaTiempo);
+        motor.getCustomActions().add(actionUpdateEditor);
         motor.getEscena().setAmbientColor(new QColor(50.0f / 255.0f, 50.0f / 255.0f, 50.0f / 255.0f));
         pnlColorFondo.setBackground(motor.getEscena().getAmbientColor().getColor());
 
@@ -178,9 +183,10 @@ public class Principal extends javax.swing.JFrame {
         motor.setIniciarFisica(false);
         motor.setIniciarInteligencia(false);
         motor.setIniciarAnimaciones(false);
-        agregarRenderer("Main", QVector3.of(0, 10, 10), QVector3.of(0, 0, 0), RenderEngine.RENDER_INTERNO);
+        agregarRenderer("Main", QVector3.of(0, 20, 40), QVector3.of(0, 0, 0), RenderEngine.RENDER_INTERNO);
         renderer.opciones.setDibujarLuces(true);
         motor.setRenderEngine(renderer);
+
         // renderer.setPanelClip(new QClipPane(QVector3.unitario_y.clone(), 0));//la
         // normal es hacia arriba
         // renderer.setPanelClip(new QClipPane(QVector3.of(0, -1, 0), 0));//la normal es
@@ -210,12 +216,12 @@ public class Principal extends javax.swing.JFrame {
                 if (!objectListLock) {
 
                     if (!QInputManager.isShitf()) {
-                        renderer.entidadesSeleccionadas.clear();
+                        editorRenderer.entidadesSeleccionadas.clear();
                     }
                     if (nodo.getObjeto() instanceof Entity) {
-                        for (RenderEngine rend : listaRenderer) {
-                            rend.entidadActiva = (Entity) nodo.getObjeto();
-                            renderer.entidadesSeleccionadas.add(rend.entidadActiva);
+                        for (EditorRenderer _editorRenderer : listaEditorRenderer) {
+                            _editorRenderer.entidadActiva = (Entity) nodo.getObjeto();
+                            editorRenderer.entidadesSeleccionadas.add(_editorRenderer.entidadActiva);
                         }
                     }
 
@@ -299,10 +305,14 @@ public class Principal extends javax.swing.JFrame {
                 nuevoRenderer = new SoftwareRenderer(motor.getEscena(), nombre, new Superficie(panelDibujo), 800, 600);
                 break;
         }
-        nuevoRenderer.opciones.setRenderArtefactos(true);
+        // nuevoRenderer.opciones.setRenderArtefactos(true);
+
+        EditorRenderer nuevoEditorRenderer = new EditorRenderer(nuevoRenderer);
+
         panelDibujo.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mousePressed(java.awt.event.MouseEvent evt) {
                 setRenderer(nuevoRenderer);
+                setEditorRenderer(nuevoEditorRenderer);
                 actualizarBordeSeleccionado();
                 // nuevoRenderer.getSuperficie().getComponente().setBorder(new
                 // LineBorder(Color.RED, 10));
@@ -321,8 +331,12 @@ public class Principal extends javax.swing.JFrame {
         }
 
         listaRenderer.add(nuevoRenderer);
+        listaEditorRenderer.add(nuevoEditorRenderer);
+
         motor.setRendererList(listaRenderer);
         setRenderer(nuevoRenderer);
+        this.editorRenderer = nuevoEditorRenderer;
+
         camara.addComponent(new QCamaraControl(camara));
         // camara.agregarComponente(new QCamaraOrbitar(camara));
         // camara.agregarComponente(new QCamaraPrimeraPersona(camara));
@@ -356,12 +370,12 @@ public class Principal extends javax.swing.JFrame {
      * @param entidad
      */
     private void seleccionarEntidad(Entity entidad) {
-        for (RenderEngine rend : listaRenderer) {
+        for (EditorRenderer _editorRenderer : listaEditorRenderer) {
             if (!QInputManager.isShitf()) {
-                rend.entidadesSeleccionadas.clear();
+                _editorRenderer.entidadesSeleccionadas.clear();
             }
-            rend.entidadActiva = entidad;
-            rend.entidadesSeleccionadas.add(entidad);
+            _editorRenderer.entidadActiva = entidad;
+            _editorRenderer.entidadesSeleccionadas.add(entidad);
         }
         pnlEditorEntidad.liberar();
         populateControls();
@@ -403,6 +417,7 @@ public class Principal extends javax.swing.JFrame {
         jLabel8 = new javax.swing.JLabel();
         btnRaster1 = new javax.swing.JButton();
         btnRaster2 = new javax.swing.JButton();
+        btnRaster3 = new javax.swing.JButton();
         jPanel11 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         pnlColorFondo = new javax.swing.JPanel();
@@ -755,6 +770,13 @@ public class Principal extends javax.swing.JFrame {
             }
         });
 
+        btnRaster3.setText("Raster 3");
+        btnRaster3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnRaster3ActionPerformed(evt);
+            }
+        });
+
         jPanel11.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Luz Ambiente",
                 javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION,
                 new java.awt.Font("Dialog", 0, 9))); // NOI18N
@@ -971,7 +993,10 @@ public class Principal extends javax.swing.JFrame {
                                                                                 .addComponent(btnRaster1)
                                                                                 .addPreferredGap(
                                                                                         javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                                                                .addComponent(btnRaster2))
+                                                                                .addComponent(btnRaster2)
+                                                                                .addPreferredGap(
+                                                                                        javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                                                                .addComponent(btnRaster3))
                                                                         .addGroup(jPanel2Layout.createSequentialGroup()
                                                                                 .addGroup(jPanel2Layout
                                                                                         .createParallelGroup(
@@ -1038,7 +1063,8 @@ public class Principal extends javax.swing.JFrame {
                                 .addGap(5, 5, 5)
                                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                                         .addComponent(btnRaster1)
-                                        .addComponent(btnRaster2))
+                                        .addComponent(btnRaster2)
+                                        .addComponent(btnRaster3))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                 .addComponent(jLabel20)
                                 .addGap(18, 18, 18)
@@ -2319,7 +2345,7 @@ public class Principal extends javax.swing.JFrame {
 
     private void itmEliminarActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_itmEliminarActionPerformed
         LinkedList<Entity> toRemove = new LinkedList<>();
-        for (Entity object : renderer.entidadesSeleccionadas) {
+        for (Entity object : editorRenderer.entidadesSeleccionadas) {
             toRemove.add(object);
         }
         for (Entity object : toRemove) {
@@ -2352,23 +2378,23 @@ public class Principal extends javax.swing.JFrame {
 
     private void itmCopiarActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_itmCopiarActionPerformed
         clipboard.clear();
-        for (Entity object : renderer.entidadesSeleccionadas) {
+        for (Entity object : editorRenderer.entidadesSeleccionadas) {
             clipboard.add(object);
         }
     }// GEN-LAST:event_itmCopiarActionPerformed
 
     private void itmPegarActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_itmPegarActionPerformed
         if (clipboard.size() > 0) {
-            renderer.entidadesSeleccionadas.clear();
+            editorRenderer.entidadesSeleccionadas.clear();
             for (Entity object : clipboard) {
                 Entity newObject = object.clone();
                 newObject.setName(object.getName() + " Copy");
                 motor.getEscena().addEntity(newObject);
-                renderer.entidadesSeleccionadas.add(newObject);
-                renderer.entidadActiva = newObject;
+                editorRenderer.entidadesSeleccionadas.add(newObject);
+                editorRenderer.entidadActiva = newObject;
             }
 
-            for (Entity object : renderer.entidadesSeleccionadas) {
+            for (Entity object : editorRenderer.entidadesSeleccionadas) {
                 System.out.println(object.getName());
             }
             objectListLock = true;
@@ -2390,7 +2416,7 @@ public class Principal extends javax.swing.JFrame {
 
     private void jMenuItem8ActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jMenuItem8ActionPerformed
         Entity esfera = new Entity("Esfera");
-        esfera.addComponent(new QEsfera(1.0f));
+        esfera.addComponent(new Sphere(1.0f));
         esfera.addComponent(new QColisionEsfera(1.0f));
 
         motor.getEscena().addEntity(esfera);
@@ -2400,7 +2426,7 @@ public class Principal extends javax.swing.JFrame {
 
     private void itmCrearCajaActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_itmCrearCajaActionPerformed
         Entity cubo = new Entity("Cubo");
-        cubo.addComponent(new QCaja(1));
+        cubo.addComponent(new Box(1));
         cubo.addComponent(new QColisionCaja(1, 1, 1));
         motor.getEscena().addEntity(cubo);
         actualizarArbolEscena();
@@ -2410,7 +2436,7 @@ public class Principal extends javax.swing.JFrame {
 
     private void jMenuItem10ActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jMenuItem10ActionPerformed
         Entity objeto = new Entity("Toro");
-        QToro toro = new QToro(3, 1, 30, 20);
+        Torus toro = new Torus(3, 1, 30, 20);
         objeto.addComponent(toro);
         // objeto.agregarComponente(new QColisionCapsula(1, 2));
         // objeto.agregarComponente(new QColisionCaja(2, 1, 2));
@@ -2422,7 +2448,7 @@ public class Principal extends javax.swing.JFrame {
 
     private void jMenuItem11ActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jMenuItem11ActionPerformed
         Entity objeto = new Entity("Cilindro");
-        objeto.addComponent(new QCilindro(1, 1.0f));
+        objeto.addComponent(new Cylinder(1, 1.0f));
         objeto.addComponent(new QColisionCilindro(1, 1.0f));
         motor.getEscena().addEntity(objeto);
         actualizarArbolEscena();
@@ -2431,7 +2457,7 @@ public class Principal extends javax.swing.JFrame {
 
     private void jMenuItem12ActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jMenuItem12ActionPerformed
         Entity objeto = new Entity("Cono");
-        objeto.addComponent(new QCono(1, 1.0f));
+        objeto.addComponent(new Cone(1, 1.0f));
         objeto.addComponent(new QColisionCono(1, 1.0f));
         motor.getEscena().addEntity(objeto);
         actualizarArbolEscena();
@@ -2486,7 +2512,7 @@ public class Principal extends javax.swing.JFrame {
     }// GEN-LAST:event_mnuLuzConicaActionPerformed
 
     private void cbxZSortActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_cbxZSortActionPerformed
-        renderer.opciones.setzSort(cbxZSort.isSelected());
+        renderer.opciones.setZSort(cbxZSort.isSelected());
     }// GEN-LAST:event_cbxZSortActionPerformed
 
     private void cbxForceSmoothActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_cbxForceSmoothActionPerformed
@@ -2558,7 +2584,7 @@ public class Principal extends javax.swing.JFrame {
 
     private void jMenuItem18ActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jMenuItem18ActionPerformed
         Entity entidad = new Entity("Plano");
-        Mesh plano = new QPlano(2, 2);
+        Mesh plano = new Plane(2, 2);
         entidad.addComponent(plano);
         entidad.addComponent(new QColisionMallaConvexa(plano));
         motor.getEscena().addEntity(entidad);
@@ -2573,7 +2599,8 @@ public class Principal extends javax.swing.JFrame {
     private void exportEntityAP(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jMenuItem22ActionPerformed
         chooser.setFileFilter(new FileNameExtensionFilter("Archivo Entidad Motor3D", "qengine"));
         if (chooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
-            SerializarUtil.agregarObjeto(chooser.getSelectedFile().getAbsolutePath(), renderer.entidadActiva, false,
+            SerializarUtil.agregarObjeto(chooser.getSelectedFile().getAbsolutePath(), editorRenderer.entidadActiva,
+                    false,
                     true);
         }
     }// GEN-LAST:event_jMenuItem22ActionPerformed
@@ -2726,7 +2753,7 @@ public class Principal extends javax.swing.JFrame {
 
     private void jMenuItem26ActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jMenuItem26ActionPerformed
         Entity objeto = new Entity("Cilindro");
-        objeto.addComponent(new QCilindroX(1, 1.0f));
+        objeto.addComponent(new CylinderX(1, 1.0f));
         objeto.addComponent(new QColisionCilindroX(1, 1.0f));
         motor.getEscena().addEntity(objeto);
         actualizarArbolEscena();
@@ -2734,44 +2761,44 @@ public class Principal extends javax.swing.JFrame {
     }// GEN-LAST:event_jMenuItem26ActionPerformed
 
     private void btnInvertirNormalesActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btnInvertirNormalesActionPerformed
-        for (Entity seleccionado : renderer.entidadesSeleccionadas) {
+        for (Entity seleccionado : editorRenderer.entidadesSeleccionadas) {
             for (EntityComponent compo : seleccionado.getComponents()) {
                 if (compo instanceof Mesh) {
-                    QUtilNormales.invertirNormales((Mesh) compo);
+                    NormalUtil.invertirNormales((Mesh) compo);
                 }
             }
         }
     }// GEN-LAST:event_btnInvertirNormalesActionPerformed
 
     private void btnCentroGeometriaActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btnCentroGeometriaActionPerformed
-        for (Entity seleccionado : renderer.entidadesSeleccionadas) {
+        for (Entity seleccionado : editorRenderer.entidadesSeleccionadas) {
             QDefinirCentro.definirCentroOrigenAGeometria(seleccionado);
             seleccionarEntidad(seleccionado);
         }
     }// GEN-LAST:event_btnCentroGeometriaActionPerformed
 
     private void btnSuavizarActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btnSuavizarActionPerformed
-        for (Entity seleccionado : renderer.entidadesSeleccionadas) {
+        for (Entity seleccionado : editorRenderer.entidadesSeleccionadas) {
             for (EntityComponent compo : seleccionado.getComponents()) {
                 if (compo instanceof Mesh) {
-                    QMaterialUtil.suavizar((Mesh) compo, true);
+                    MaterialUtil.smooth((Mesh) compo, true);
                 }
             }
         }
     }// GEN-LAST:event_btnSuavizarActionPerformed
 
     private void btnNoSuavizarActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btnNoSuavizarActionPerformed
-        for (Entity seleccionado : renderer.entidadesSeleccionadas) {
+        for (Entity seleccionado : editorRenderer.entidadesSeleccionadas) {
             for (EntityComponent compo : seleccionado.getComponents()) {
                 if (compo instanceof Mesh) {
-                    QMaterialUtil.suavizar((Mesh) compo, false);
+                    MaterialUtil.smooth((Mesh) compo, false);
                 }
             }
         }
     }// GEN-LAST:event_btnNoSuavizarActionPerformed
 
     private void btnTipoSolidoActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btnTipoSolidoActionPerformed
-        for (Entity seleccionado : renderer.entidadesSeleccionadas) {
+        for (Entity seleccionado : editorRenderer.entidadesSeleccionadas) {
             for (EntityComponent compo : seleccionado.getComponents()) {
                 if (compo instanceof Mesh) {
                     ((Mesh) compo).tipo = Mesh.GEOMETRY_TYPE_MESH;
@@ -2781,7 +2808,7 @@ public class Principal extends javax.swing.JFrame {
     }// GEN-LAST:event_btnTipoSolidoActionPerformed
 
     private void btnTipoAlambreActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btnTipoAlambreActionPerformed
-        for (Entity seleccionado : renderer.entidadesSeleccionadas) {
+        for (Entity seleccionado : editorRenderer.entidadesSeleccionadas) {
             for (EntityComponent compo : seleccionado.getComponents()) {
                 if (compo instanceof Mesh) {
                     ((Mesh) compo).tipo = Mesh.GEOMETRY_TYPE_WIRE;
@@ -2803,7 +2830,7 @@ public class Principal extends javax.swing.JFrame {
     }// GEN-LAST:event_itmAddCamaraActionPerformed
 
     private void btnDividirActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btnDividirActionPerformed
-        for (Entity seleccionado : renderer.entidadesSeleccionadas) {
+        for (Entity seleccionado : editorRenderer.entidadesSeleccionadas) {
             for (EntityComponent compo : seleccionado.getComponents()) {
                 if (compo instanceof Mesh) {
                     // QMallaUtil.subdividir((QGeometria) compo, 1);
@@ -2815,7 +2842,7 @@ public class Principal extends javax.swing.JFrame {
 
     private void jMenuItem5ActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jMenuItem5ActionPerformed
         Entity entidad = new Entity("Triángulo");
-        QTriangulo triangulo = new QTriangulo(1);
+        Triangle triangulo = new Triangle(1);
         entidad.addComponent(triangulo);
         entidad.addComponent(new QColisionTriangulo(triangulo));
         motor.getEscena().addEntity(entidad);
@@ -2844,9 +2871,13 @@ public class Principal extends javax.swing.JFrame {
         renderer.cambiarRaster(2);
     }// GEN-LAST:event_btnRaster2ActionPerformed
 
+    private void btnRaster3ActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btnRaster2ActionPerformed
+        renderer.cambiarRaster(3);
+    }//
+
     private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jMenuItem1ActionPerformed
         Entity objeto = new Entity("Cilindro");
-        objeto.addComponent(new QCilindroZ(1, 1.0f));
+        objeto.addComponent(new CylinderZ(1, 1.0f));
         objeto.addComponent(new QColisionCilindroX(1, 1.0f));
         motor.getEscena().addEntity(objeto);
         actualizarArbolEscena();
@@ -2856,7 +2887,7 @@ public class Principal extends javax.swing.JFrame {
     private void mnuItemPrismaActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_mnuItemPrismaActionPerformed
         Entity objeto = new Entity("Prisma");
         // objeto.agregarComponente(new QPrisma(3, 1.0f, 1.0f, 20, 3));
-        objeto.addComponent(new QPrisma(3, 1.0f, 1.0f, 5, 3));
+        objeto.addComponent(new Prism(3, 1.0f, 1.0f, 5, 3));
         // objeto.agregarComponente(new QColisionCilindro(1, 1.0f));
         motor.getEscena().addEntity(objeto);
         actualizarArbolEscena();
@@ -2865,7 +2896,7 @@ public class Principal extends javax.swing.JFrame {
 
     private void mnuItemGeosferaActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_mnuItemGeosferaActionPerformed
         Entity esfera = new Entity("Geoesfera");
-        esfera.addComponent(new QGeoesfera(1.0f, 3));
+        esfera.addComponent(new GeoSphere(1.0f, 3));
         esfera.addComponent(new QColisionEsfera(1.0f));
         motor.getEscena().addEntity(esfera);
         actualizarArbolEscena();
@@ -2885,20 +2916,20 @@ public class Principal extends javax.swing.JFrame {
     }// GEN-LAST:event_btnAnimDetenerActionPerformed
 
     private void jButton7ActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jButton7ActionPerformed
-        if (renderer.entidadActiva != null) {
-            renderer.entidadActiva.moveLeft(0.51f);
+        if (editorRenderer.entidadActiva != null) {
+            editorRenderer.entidadActiva.moveLeft(0.51f);
         }
     }// GEN-LAST:event_jButton7ActionPerformed
 
     private void jButton6ActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jButton6ActionPerformed
-        if (renderer.entidadActiva != null) {
-            renderer.entidadActiva.moveForward(-0.2f);
+        if (editorRenderer.entidadActiva != null) {
+            editorRenderer.entidadActiva.moveForward(-0.2f);
         }
     }// GEN-LAST:event_jButton6ActionPerformed
 
     private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jButton5ActionPerformed
-        if (renderer.entidadActiva != null) {
-            renderer.entidadActiva.moveForward(0.2f);
+        if (editorRenderer.entidadActiva != null) {
+            editorRenderer.entidadActiva.moveForward(0.2f);
         }
     }// GEN-LAST:event_jButton5ActionPerformed
 
@@ -3029,7 +3060,7 @@ public class Principal extends javax.swing.JFrame {
 
     private void mnuItemTeteraActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_mnuItemTeteraActionPerformed
         Entity item = new Entity("Teapot");
-        Mesh malla = new QTeapot();
+        Mesh malla = new Teapot();
         item.addComponent(malla);
         item.addComponent(new QColisionMallaConvexa(malla));
         motor.getEscena().addEntity(item);
@@ -3039,7 +3070,7 @@ public class Principal extends javax.swing.JFrame {
 
     private void mnuItemSusaneActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_mnuItemSusaneActionPerformed
         Entity item = new Entity("Teapot");
-        Mesh malla = new QSuzane();
+        Mesh malla = new Suzane();
         item.addComponent(malla);
         item.addComponent(new QColisionMallaConvexa(malla));
         motor.getEscena().addEntity(item);
@@ -3048,10 +3079,10 @@ public class Principal extends javax.swing.JFrame {
     }// GEN-LAST:event_mnuItemSusaneActionPerformed
 
     private void btnCalcularNormalesActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btnCalcularNormalesActionPerformed
-        for (Entity seleccionado : renderer.entidadesSeleccionadas) {
+        for (Entity seleccionado : editorRenderer.entidadesSeleccionadas) {
             for (EntityComponent compo : seleccionado.getComponents()) {
                 if (compo instanceof Mesh) {
-                    QUtilNormales.calcularNormales((Mesh) compo);
+                    NormalUtil.calcularNormales((Mesh) compo);
                 }
             }
         }
@@ -3060,7 +3091,7 @@ public class Principal extends javax.swing.JFrame {
     private void itmMenuEliminarRecursivoActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_itmMenuEliminarRecursivoActionPerformed
         // TODO add your handling code here:
         LinkedList<Entity> toRemove = new LinkedList<>();
-        for (Entity object : renderer.entidadesSeleccionadas) {
+        for (Entity object : editorRenderer.entidadesSeleccionadas) {
             toRemove.add(object);
         }
         for (Entity object : toRemove) {
@@ -3082,7 +3113,7 @@ public class Principal extends javax.swing.JFrame {
 
     private void itmCrearcuboesferaActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_itmCrearcuboesferaActionPerformed
         Entity esfera = new Entity("Cuboesfera");
-        esfera.addComponent(new QCuboEsfera(1.0f, 3));
+        esfera.addComponent(new SphereBox(1.0f, 3));
         esfera.addComponent(new QColisionEsfera(1.0f));
         motor.getEscena().addEntity(esfera);
         actualizarArbolEscena();
@@ -3090,7 +3121,7 @@ public class Principal extends javax.swing.JFrame {
     }// GEN-LAST:event_itmCrearcuboesferaActionPerformed
 
     private void btnDividirCatmullActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btnDividirCatmullActionPerformed
-        for (Entity seleccionado : renderer.entidadesSeleccionadas) {
+        for (Entity seleccionado : editorRenderer.entidadesSeleccionadas) {
             for (EntityComponent compo : seleccionado.getComponents()) {
                 if (compo instanceof Mesh) {
                     // QMallaUtil.subdividir((QGeometria) compo, 1);
@@ -3103,22 +3134,22 @@ public class Principal extends javax.swing.JFrame {
     private void jButton9ActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jButton9ActionPerformed
 
         float radio = Float.parseFloat(txtInflarRadio.getText());
-        for (Entity seleccionado : renderer.entidadesSeleccionadas) {
+        for (Entity seleccionado : editorRenderer.entidadesSeleccionadas) {
             for (EntityComponent compo : seleccionado.getComponents()) {
                 if (compo instanceof Mesh) {
                     // QMallaUtil.subdividir((QGeometria) compo, 1);
-                    ((Mesh) compo).inflar(radio);
+                    ((Mesh) compo).inflate(radio);
                 }
             }
         }
     }// GEN-LAST:event_jButton9ActionPerformed
 
     private void btnEliminarVerticesDuplicadosActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btnEliminarVerticesDuplicadosActionPerformed
-        for (Entity seleccionado : renderer.entidadesSeleccionadas) {
+        for (Entity seleccionado : editorRenderer.entidadesSeleccionadas) {
             for (EntityComponent compo : seleccionado.getComponents()) {
                 if (compo instanceof Mesh) {
                     // QMallaUtil.subdividir((QGeometria) compo, 1);
-                    ((Mesh) compo).eliminarVerticesDuplicados();
+                    ((Mesh) compo).cleanDuplicateVertex();
                 }
             }
         } // TODO add your handling code here:
@@ -3167,7 +3198,7 @@ public class Principal extends javax.swing.JFrame {
 
     private DefaultMutableTreeNode generarArbolEntidad(Entity entidad) {
         DefaultMutableTreeNode nodo = new DefaultMutableTreeNode(new QArbolWrapper(entidad.getName(), entidad));
-        // if (renderer.entidadesSeleccionadas.contains(entidad)) {
+        // if (editorRenderer.entidadesSeleccionadas.contains(entidad)) {
         // nodo.setSelected(true)
         // treeEntidades.addSelectionInterval(model.getSize() - 1, model.getSize() - 1);
         // }
@@ -3200,7 +3231,7 @@ public class Principal extends javax.swing.JFrame {
      * Ejecutado al seleciconar una entidad
      */
     private void populateControls() {
-        pnlEditorEntidad.editarEntidad(renderer.entidadActiva);
+        pnlEditorEntidad.editarEntidad(editorRenderer.entidadActiva);
     }
 
     public class ArbolEntidadRenderer extends JLabel implements TreeCellRenderer {
@@ -3297,17 +3328,17 @@ public class Principal extends javax.swing.JFrame {
                     ) {
                         return;
                     }
-                    renderer.entidadActiva = selectedObject;
-                    if (renderer.entidadActiva == null) {
-                        renderer.entidadesSeleccionadas.clear();
+                    editorRenderer.entidadActiva = selectedObject;
+                    if (editorRenderer.entidadActiva == null) {
+                        editorRenderer.entidadesSeleccionadas.clear();
                         return;
                     }
                     if (!QInputManager.isShitf()) {
-                        renderer.entidadesSeleccionadas.clear();
+                        editorRenderer.entidadesSeleccionadas.clear();
                     }
-                    renderer.entidadesSeleccionadas.add(renderer.entidadActiva);
+                    editorRenderer.entidadesSeleccionadas.add(editorRenderer.entidadActiva);
                     if (accionSeleccionar != null) {
-                        accionSeleccionar.ejecutar(renderer.entidadActiva);
+                        accionSeleccionar.run(editorRenderer.entidadActiva);
                     }
                 }
             }
@@ -3390,13 +3421,14 @@ public class Principal extends javax.swing.JFrame {
                         try {
                             QCamaraControl control = QUtilComponentes.getCamaraControl(renderer.getCamara());
                             if (control != null) {
-                                control.getTarget().set(renderer.entidadActiva.getTransformacion().getTraslacion());
+                                control.getTarget()
+                                        .set(editorRenderer.entidadActiva.getTransformacion().getTraslacion());
                                 control.updateCamera();
                             } else {
                                 QCamaraOrbitar control2 = QUtilComponentes.getCamaraOrbitar(renderer.getCamara());
                                 if (control2 != null) {
                                     control2.getTarget()
-                                            .set(renderer.entidadActiva.getTransformacion().getTraslacion());
+                                            .set(editorRenderer.entidadActiva.getTransformacion().getTraslacion());
                                     control2.updateCamera();
                                 }
                             }
@@ -3437,18 +3469,17 @@ public class Principal extends javax.swing.JFrame {
                         renderer.opciones.setSombras(!renderer.opciones.isSombras());
                         break;
                     case KeyEvent.VK_1:
-                        renderer.setTipoGizmoActual(GIZMO_NINGUNO);
+                        editorRenderer.setTipoGizmoActual(EditorRenderer.GIZMO_NINGUNO);
                         break;
                     case KeyEvent.VK_2:
-                        renderer.setTipoGizmoActual(GIZMO_TRASLACION);
+                        editorRenderer.setTipoGizmoActual(EditorRenderer.GIZMO_TRASLACION);
                         break;
                     case KeyEvent.VK_3:
-                        renderer.setTipoGizmoActual(GIZMO_ROTACION);
+                        editorRenderer.setTipoGizmoActual(EditorRenderer.GIZMO_ROTACION);
                         break;
                     case KeyEvent.VK_4:
-                        renderer.setTipoGizmoActual(GIZMO_ESCALA);
+                        editorRenderer.setTipoGizmoActual(EditorRenderer.GIZMO_ESCALA);
                         break;
-
                 }
             }
 
@@ -3497,6 +3528,7 @@ public class Principal extends javax.swing.JFrame {
     private javax.swing.JButton btnPhongShader;
     private javax.swing.JButton btnRaster1;
     private javax.swing.JButton btnRaster2;
+    private javax.swing.JButton btnRaster3;
     private javax.swing.JButton btnShadowShader;
     private javax.swing.JButton btnSimpleShader;
     private javax.swing.JButton btnSuavizar;

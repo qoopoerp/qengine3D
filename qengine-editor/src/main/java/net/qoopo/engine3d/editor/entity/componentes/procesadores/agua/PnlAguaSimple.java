@@ -15,7 +15,7 @@ import net.qoopo.engine.core.entity.component.water.WaterDuDv;
 import net.qoopo.engine.core.material.basico.QMaterialBas;
 import net.qoopo.engine.core.math.QColor;
 import net.qoopo.engine.core.texture.procesador.QProcesadorSimple;
-import net.qoopo.engine.core.texture.util.QMaterialUtil;
+import net.qoopo.engine.core.texture.util.MaterialUtil;
 import net.qoopo.engine.core.util.QUtilComponentes;
 
 /**
@@ -155,7 +155,7 @@ public class PnlAguaSimple extends javax.swing.JPanel {
         // reflexion
         for (EntityComponent componente : agua.entity.getComponents()) {
             if (componente instanceof Mesh) {
-                QMaterialUtil.aplicarMaterial((Mesh) componente, material);
+                MaterialUtil.applyMaterial((Mesh) componente, material);
             }
         }
 

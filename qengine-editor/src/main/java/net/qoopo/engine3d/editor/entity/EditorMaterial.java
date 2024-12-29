@@ -28,10 +28,10 @@ import net.qoopo.engine.core.assets.AssetManager;
 import net.qoopo.engine.core.entity.Entity;
 import net.qoopo.engine.core.entity.component.cubemap.QCubeMap;
 import net.qoopo.engine.core.entity.component.ligth.QDirectionalLigth;
-import net.qoopo.engine.core.entity.component.mesh.primitive.shape.QCaja;
-import net.qoopo.engine.core.entity.component.mesh.primitive.shape.QEsfera;
-import net.qoopo.engine.core.entity.component.mesh.primitive.shape.QPlano;
-import net.qoopo.engine.core.entity.component.mesh.primitive.shape.QTeapot;
+import net.qoopo.engine.core.entity.component.mesh.primitive.shape.Box;
+import net.qoopo.engine.core.entity.component.mesh.primitive.shape.Sphere;
+import net.qoopo.engine.core.entity.component.mesh.primitive.shape.Plane;
+import net.qoopo.engine.core.entity.component.mesh.primitive.shape.Teapot;
 import net.qoopo.engine.core.material.basico.QMaterialBas;
 import net.qoopo.engine.core.math.QColor;
 import net.qoopo.engine.core.math.QVector3;
@@ -43,10 +43,10 @@ import net.qoopo.engine.core.scene.Scene;
 import net.qoopo.engine.core.texture.QTextura;
 import net.qoopo.engine.core.texture.procesador.QProcesadorMipMap;
 import net.qoopo.engine.core.texture.procesador.QProcesadorSimple;
-import net.qoopo.engine.core.texture.util.QMaterialUtil;
+import net.qoopo.engine.core.texture.util.MaterialUtil;
 import net.qoopo.engine.core.util.QGlobal;
 import net.qoopo.engine.core.util.QUtilComponentes;
-import net.qoopo.engine.core.util.mesh.QUtilNormales;
+import net.qoopo.engine.core.util.mesh.NormalUtil;
 import net.qoopo.engine3d.editor.Principal;
 import net.qoopo.engine3d.editor.util.ImagePreviewPanel;
 
@@ -271,7 +271,7 @@ public class EditorMaterial extends javax.swing.JPanel {
             QTextura text = new QTextura(ImageIO.read(Principal.class.getResourceAsStream("/fondo.jpg")));
             QMaterialBas matFondo = new QMaterialBas(text, 50);
             entidad.addComponent(
-                    QUtilNormales.invertirNormales(QMaterialUtil.aplicarMaterial(new QCaja(10f), matFondo)));
+                    NormalUtil.invertirNormales(MaterialUtil.applyMaterial(new Box(10f), matFondo)));
             entidad.move(3, 3, 3);
             return entidad;
         } catch (IOException ex) {
@@ -282,7 +282,7 @@ public class EditorMaterial extends javax.swing.JPanel {
 
     private Entity crearTestPlano(QMaterialBas material) {
         QUtilComponentes.eliminarComponenteGeometria(entidadVistaPrevia);
-        entidadVistaPrevia.addComponent(QMaterialUtil.aplicarMaterial(new QPlano(2.0f, 2.0f), material));
+        entidadVistaPrevia.addComponent(MaterialUtil.applyMaterial(new Plane(2.0f, 2.0f), material));
         entidadVistaPrevia.rotate(Math.toRadians(45), Math.toRadians(45), 0);
         // entidadVistaPrevia.transformacion.getRotacion().getCuaternion().lookAt(QVector3.unitario_xyz,
         // QVector3.unitario_y);
@@ -293,7 +293,7 @@ public class EditorMaterial extends javax.swing.JPanel {
 
     private Entity crearTestCubo(QMaterialBas material) {
         QUtilComponentes.eliminarComponenteGeometria(entidadVistaPrevia);
-        entidadVistaPrevia.addComponent(QMaterialUtil.aplicarMaterial(new QCaja(1.0f), material));
+        entidadVistaPrevia.addComponent(MaterialUtil.applyMaterial(new Box(1.0f), material));
         entidadVistaPrevia.getTransformacion().getRotacion().getCuaternion().set(0, 0, 0, 1);
         entidadVistaPrevia.getTransformacion().getRotacion().actualizarAngulos();
         entidadVistaPrevia.scale(1, 1, 1);
@@ -302,7 +302,7 @@ public class EditorMaterial extends javax.swing.JPanel {
 
     private Entity crearTestEsfera(QMaterialBas material) {
         QUtilComponentes.eliminarComponenteGeometria(entidadVistaPrevia);
-        entidadVistaPrevia.addComponent(QMaterialUtil.aplicarMaterial(new QEsfera(.5f), material));
+        entidadVistaPrevia.addComponent(MaterialUtil.applyMaterial(new Sphere(.5f), material));
         entidadVistaPrevia.getTransformacion().getRotacion().getCuaternion().set(0, 0, 0, 1);
         entidadVistaPrevia.getTransformacion().getRotacion().actualizarAngulos();
         entidadVistaPrevia.scale(1, 1, 1);
@@ -311,7 +311,7 @@ public class EditorMaterial extends javax.swing.JPanel {
 
     private Entity crearTetera(QMaterialBas material) {
         QUtilComponentes.eliminarComponenteGeometria(entidadVistaPrevia);
-        entidadVistaPrevia.addComponent(QMaterialUtil.aplicarMaterial(new QTeapot(), material));
+        entidadVistaPrevia.addComponent(MaterialUtil.applyMaterial(new Teapot(), material));
         entidadVistaPrevia.getTransformacion().getRotacion().getCuaternion().set(0, 0, 0, 1);
         entidadVistaPrevia.getTransformacion().getRotacion().actualizarAngulos();
         entidadVistaPrevia.scale(0.5f, 0.5f, 0.5f);

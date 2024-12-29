@@ -5,7 +5,7 @@
  */
 package net.qoopo.engine3d.editor.entity.componentes.geometria;
 
-import net.qoopo.engine.core.entity.component.mesh.primitive.shape.QCono;
+import net.qoopo.engine.core.entity.component.mesh.primitive.shape.Cone;
 
 /**
  *
@@ -13,12 +13,12 @@ import net.qoopo.engine.core.entity.component.mesh.primitive.shape.QCono;
  */
 public class PnlCono extends javax.swing.JPanel {
 
-    private QCono forma;
+    private Cone forma;
 
     /**
      * Creates new form PnlCubo
      */
-    public PnlCono(QCono forma) {
+    public PnlCono(Cone forma) {
         initComponents();
         this.forma = forma;
         txtRadio.setText(String.valueOf(forma.getRadio()));

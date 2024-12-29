@@ -14,8 +14,8 @@ import net.qoopo.engine3d.editor.Principal;
  * @author alberto
  */
 public class Util {
-    
-      public static ImageIcon cargarIcono12(String icono) {
+
+    public static ImageIcon cargarIcono12(String icono) {
         return cargarIcono(icono, 12, 12);
     }
 
@@ -41,7 +41,8 @@ public class Util {
 
     public static ImageIcon cargarIcono(String icono, int ancho, int alto) {
         try {
-            return new ImageIcon(new ImageIcon(Principal.class.getResource(icono)).getImage().getScaledInstance(ancho, alto, Image.SCALE_SMOOTH));
+            return new ImageIcon(new ImageIcon(Principal.class.getResource(icono)).getImage().getScaledInstance(ancho,
+                    alto, Image.SCALE_SMOOTH));
 
         } catch (Exception e) {
             e.printStackTrace();

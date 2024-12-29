@@ -5,7 +5,7 @@
  */
 package net.qoopo.engine3d.editor.entity.componentes.geometria;
 
-import net.qoopo.engine.core.entity.component.mesh.primitive.shape.QToro;
+import net.qoopo.engine.core.entity.component.mesh.primitive.shape.Torus;
 
 /**
  *
@@ -13,12 +13,12 @@ import net.qoopo.engine.core.entity.component.mesh.primitive.shape.QToro;
  */
 public class PnlToro extends javax.swing.JPanel {
 
-    private QToro toro;
+    private Torus toro;
 
     /**
      * Creates new form PnlCubo
      */
-    public PnlToro(QToro toro) {
+    public PnlToro(Torus toro) {
         initComponents();
         this.toro = toro;
         txtRadio1.setText(String.valueOf(toro.getRadio1()));

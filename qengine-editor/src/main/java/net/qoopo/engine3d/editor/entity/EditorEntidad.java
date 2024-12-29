@@ -37,21 +37,21 @@ import net.qoopo.engine.core.entity.component.ligth.QLigth;
 import net.qoopo.engine.core.entity.component.ligth.QPointLigth;
 import net.qoopo.engine.core.entity.component.ligth.QSpotLigth;
 import net.qoopo.engine.core.entity.component.mesh.Mesh;
-import net.qoopo.engine.core.entity.component.mesh.primitive.QPoligono;
+import net.qoopo.engine.core.entity.component.mesh.primitive.Poly;
 import net.qoopo.engine.core.entity.component.mesh.primitive.QPrimitiva;
-import net.qoopo.engine.core.entity.component.mesh.primitive.QVertex;
+import net.qoopo.engine.core.entity.component.mesh.primitive.Vertex;
 import net.qoopo.engine.core.entity.component.mesh.primitive.shape.IcoSphere;
 import net.qoopo.engine.core.entity.component.mesh.primitive.shape.PlanarMesh;
-import net.qoopo.engine.core.entity.component.mesh.primitive.shape.QCaja;
-import net.qoopo.engine.core.entity.component.mesh.primitive.shape.QCilindro;
-import net.qoopo.engine.core.entity.component.mesh.primitive.shape.QCilindroX;
-import net.qoopo.engine.core.entity.component.mesh.primitive.shape.QCono;
-import net.qoopo.engine.core.entity.component.mesh.primitive.shape.QCuboEsfera;
-import net.qoopo.engine.core.entity.component.mesh.primitive.shape.QEsfera;
-import net.qoopo.engine.core.entity.component.mesh.primitive.shape.QGeoesfera;
-import net.qoopo.engine.core.entity.component.mesh.primitive.shape.QPlano;
-import net.qoopo.engine.core.entity.component.mesh.primitive.shape.QPrisma;
-import net.qoopo.engine.core.entity.component.mesh.primitive.shape.QToro;
+import net.qoopo.engine.core.entity.component.mesh.primitive.shape.Box;
+import net.qoopo.engine.core.entity.component.mesh.primitive.shape.Cylinder;
+import net.qoopo.engine.core.entity.component.mesh.primitive.shape.CylinderX;
+import net.qoopo.engine.core.entity.component.mesh.primitive.shape.Cone;
+import net.qoopo.engine.core.entity.component.mesh.primitive.shape.SphereBox;
+import net.qoopo.engine.core.entity.component.mesh.primitive.shape.Sphere;
+import net.qoopo.engine.core.entity.component.mesh.primitive.shape.GeoSphere;
+import net.qoopo.engine.core.entity.component.mesh.primitive.shape.Plane;
+import net.qoopo.engine.core.entity.component.mesh.primitive.shape.Prism;
+import net.qoopo.engine.core.entity.component.mesh.primitive.shape.Torus;
 import net.qoopo.engine.core.entity.component.particles.ParticleEmissor;
 import net.qoopo.engine.core.entity.component.physics.collision.QComponenteColision;
 import net.qoopo.engine.core.entity.component.physics.collision.detector.CollisionShape;
@@ -75,9 +75,8 @@ import net.qoopo.engine.core.entity.component.physics.restricciones.QRestriccion
 import net.qoopo.engine.core.entity.component.physics.vehiculo.QVehiculo;
 import net.qoopo.engine.core.entity.component.physics.vehiculo.QVehiculoControl;
 import net.qoopo.engine.core.entity.component.reflections.PlanarReflection;
-import net.qoopo.engine.core.entity.component.terrain.HeightMapTerrain;
+import net.qoopo.engine.core.entity.component.terrain.Terrain;
 import net.qoopo.engine.core.entity.component.transform.QTransformacion;
-import net.qoopo.engine.core.entity.component.water.Water;
 import net.qoopo.engine.core.entity.component.water.WaterDuDv;
 import net.qoopo.engine.core.lwjgl.audio.component.SoundEmissorAL;
 import net.qoopo.engine.core.lwjgl.audio.component.SoundListenerAL;
@@ -92,10 +91,11 @@ import net.qoopo.engine.core.renderer.superficie.Superficie;
 import net.qoopo.engine.core.scene.Camera;
 import net.qoopo.engine.core.scene.Scene;
 import net.qoopo.engine.core.texture.QTextura;
-import net.qoopo.engine.core.texture.util.QMaterialUtil;
+import net.qoopo.engine.core.texture.util.MaterialUtil;
 import net.qoopo.engine.core.util.QGlobal;
 import net.qoopo.engine.core.util.QUtilComponentes;
-import net.qoopo.engine.core.util.mesh.QUtilNormales;
+import net.qoopo.engine.core.util.mesh.NormalUtil;
+import net.qoopo.engine.terrain.HeightMapTerrain;
 import net.qoopo.engine3d.editor.Principal;
 import net.qoopo.engine3d.editor.entity.componentes.animacion.PnlAlamacenAnimacion;
 import net.qoopo.engine3d.editor.entity.componentes.animacion.PnlEsqueleto;
@@ -163,8 +163,8 @@ public class EditorEntidad extends javax.swing.JPanel {
 
     // ---------------- EDICION GEOMETRIA
     private Mesh geomActual;
-    private QVertex verticeActual;
-    private QPoligono poligonoActual;
+    private Vertex verticeActual;
+    private Poly poligonoActual;
 
     private List<Entity> listaPadres = new ArrayList<>();
 
@@ -235,7 +235,7 @@ public class EditorEntidad extends javax.swing.JPanel {
         itmCaja.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                entity.addComponent(new QCaja(1));
+                entity.addComponent(new Box(1));
                 editarEntidad(entity);
             }
         });
@@ -244,7 +244,7 @@ public class EditorEntidad extends javax.swing.JPanel {
         itmEsfera.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                entity.addComponent(new QEsfera(0.5f));
+                entity.addComponent(new Sphere(0.5f));
                 editarEntidad(entity);
             }
         });
@@ -253,7 +253,7 @@ public class EditorEntidad extends javax.swing.JPanel {
         itmPlano.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                entity.addComponent(new QPlano(1, 1));
+                entity.addComponent(new Plane(1, 1));
                 editarEntidad(entity);
             }
         });
@@ -405,7 +405,7 @@ public class EditorEntidad extends javax.swing.JPanel {
         itmColisionTerreno.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                HeightMapTerrain terr = QUtilComponentes.getTerreno(entity);
+                Terrain terr = QUtilComponentes.getTerreno(entity);
                 if (terr != null) {
                     entity.addComponent(new QColisionTerreno(terr));
                     editarEntidad(entity);
@@ -617,8 +617,10 @@ public class EditorEntidad extends javax.swing.JPanel {
             pnlVistaPrevia.setLayout(new BorderLayout());
             QJPanel pnl = new QJPanel();
             pnlVistaPrevia.add(pnl, BorderLayout.CENTER);
-            // renderVistaPrevia = new QRender(escena, "Vista Previa", new Superficie(pnl), 0, 0);
-            renderVistaPrevia = AssetManager.get().getRendererFactory().createRenderEngine(escena, "Vista Previa",new Superficie(pnl), 0, 0);
+            // renderVistaPrevia = new QRender(escena, "Vista Previa", new Superficie(pnl),
+            // 0, 0);
+            renderVistaPrevia = AssetManager.get().getRendererFactory().createRenderEngine(escena, "Vista Previa",
+                    new Superficie(pnl), 0, 0);
             Camera camara = new Camera("Material");
             camara.lookAtTarget(QVector3.of(10, 10, 10), QVector3.of(0, 0, 0), QVector3.of(0, 1, 0));
             camara.frustrumLejos = 20.0f;
@@ -651,7 +653,7 @@ public class EditorEntidad extends javax.swing.JPanel {
             QTextura text = new QTextura(ImageIO.read(Principal.class.getResourceAsStream("/fondo.jpg")));
             AbstractMaterial matFondo = new QMaterialBas(text, 50);
             entFondo.addComponent(
-                    QUtilNormales.invertirNormales(QMaterialUtil.aplicarMaterial(new QCaja(10f), matFondo)));
+                    NormalUtil.invertirNormales(MaterialUtil.applyMaterial(new Box(10f), matFondo)));
             entFondo.move(3, 3, 3);
             return entFondo;
         } catch (IOException ex) {
@@ -727,28 +729,28 @@ public class EditorEntidad extends javax.swing.JPanel {
                 desplegarListaMateriales((Mesh) componente);
                 modelGeometrias.addElement(((Mesh) componente).nombre);
                 listaGeometrias.add((Mesh) componente);
-                if (componente instanceof QCuboEsfera) {
-                    pnlListaComponentes.add(new PnlCuboEsfera((QCuboEsfera) componente));
-                } else if (componente instanceof QCaja) {
-                    pnlListaComponentes.add(new PnlCaja((QCaja) componente));
-                } else if (componente instanceof QEsfera) {
-                    pnlListaComponentes.add(new PnlEsfera((QEsfera) componente));
-                } else if (componente instanceof QPlano) {
-                    pnlListaComponentes.add(new PnlPlano((QPlano) componente));
-                } else if (componente instanceof QToro) {
-                    pnlListaComponentes.add(new PnlToro((QToro) componente));
+                if (componente instanceof SphereBox) {
+                    pnlListaComponentes.add(new PnlCuboEsfera((SphereBox) componente));
+                } else if (componente instanceof Box) {
+                    pnlListaComponentes.add(new PnlCaja((Box) componente));
+                } else if (componente instanceof Sphere) {
+                    pnlListaComponentes.add(new PnlEsfera((Sphere) componente));
+                } else if (componente instanceof Plane) {
+                    pnlListaComponentes.add(new PnlPlano((Plane) componente));
+                } else if (componente instanceof Torus) {
+                    pnlListaComponentes.add(new PnlToro((Torus) componente));
                 } else if (componente instanceof PlanarMesh) {
                     pnlListaComponentes.add(new PnlMalla((PlanarMesh) componente));
-                } else if (componente instanceof QCilindro) {
-                    pnlListaComponentes.add(new PnlCilindro((QCilindro) componente));
-                } else if (componente instanceof QCilindroX) {
-                    pnlListaComponentes.add(new PnlCilindroX((QCilindroX) componente));
-                } else if (componente instanceof QPrisma) {
-                    pnlListaComponentes.add(new PnlPrisma((QPrisma) componente));
-                } else if (componente instanceof QCono) {
-                    pnlListaComponentes.add(new PnlCono((QCono) componente));
-                } else if (componente instanceof QGeoesfera) {
-                    pnlListaComponentes.add(new PnlGeoEsfera((QGeoesfera) componente));
+                } else if (componente instanceof Cylinder) {
+                    pnlListaComponentes.add(new PnlCilindro((Cylinder) componente));
+                } else if (componente instanceof CylinderX) {
+                    pnlListaComponentes.add(new PnlCilindroX((CylinderX) componente));
+                } else if (componente instanceof Prism) {
+                    pnlListaComponentes.add(new PnlPrisma((Prism) componente));
+                } else if (componente instanceof Cone) {
+                    pnlListaComponentes.add(new PnlCono((Cone) componente));
+                } else if (componente instanceof GeoSphere) {
+                    pnlListaComponentes.add(new PnlGeoEsfera((GeoSphere) componente));
                 } else if (componente instanceof IcoSphere) {
                     pnlListaComponentes.add(new PnlNicoEsfera((IcoSphere) componente));
                 } else {
@@ -1512,7 +1514,7 @@ public class EditorEntidad extends javax.swing.JPanel {
 
             if (geomActual != null) {
                 int c = 0;
-                for (QVertex vertice : geomActual.vertices) {
+                for (Vertex vertice : geomActual.vertices) {
                     // verticesModel.addElement(vertice);
                     verticesModel.addElement(c);
                     c++;
@@ -1563,14 +1565,14 @@ public class EditorEntidad extends javax.swing.JPanel {
 
     private void btnVerticeEliminarActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btnVerticeEliminarActionPerformed
         if (verticeActual != null) {
-            geomActual.eliminarVertice(lstVertices.getSelectedIndex());
+            geomActual.removeVertex(lstVertices.getSelectedIndex());
             lstGeometriasValueChanged(null);
         }
     }// GEN-LAST:event_btnVerticeEliminarActionPerformed
 
     private void btnCaraEliminarActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btnCaraEliminarActionPerformed
         if (poligonoActual != null) {
-            geomActual.eliminarPoligono(lstCaras.getSelectedIndex());
+            geomActual.removePoly(lstCaras.getSelectedIndex());
             lstGeometriasValueChanged(null);
         }
     }// GEN-LAST:event_btnCaraEliminarActionPerformed
@@ -1579,8 +1581,8 @@ public class EditorEntidad extends javax.swing.JPanel {
         try {
 
             QPrimitiva tmp = geomActual.primitivas[lstCaras.getSelectedIndex()];
-            if (tmp instanceof QPoligono) {
-                this.poligonoActual = (QPoligono) tmp;
+            if (tmp instanceof Poly) {
+                this.poligonoActual = (Poly) tmp;
             } else {
                 poligonoActual = null;
             }

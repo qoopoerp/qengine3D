@@ -33,7 +33,7 @@ public class PnlMapaCubo extends javax.swing.JPanel {
         initComponents();
         txtFactorReflexion.setText(String.valueOf(mapa.getFactorReflexion()));
         txtFactorRefraccion.setText(String.valueOf(mapa.getIndiceRefraccion()));
-        txtResolucion.setText(String.valueOf(mapa.getTamanio()));
+        txtResolucion.setText(String.valueOf(mapa.getSize()));
         chkIrradiacion.setSelected(mapa.isGenerarIrradiacion());
         this.mapa = mapa;
     }
@@ -211,7 +211,7 @@ public class PnlMapaCubo extends javax.swing.JPanel {
         } catch (Exception e) {
         }
 
-        mapa.construir(ancho);
+        mapa.build(ancho);
         mapa.setGenerarIrradiacion(chkIrradiacion.isSelected());
         if (optMapaCubo.isSelected()) {
             mapa.aplicar(QCubeMap.FORMATO_MAPA_CUBO, factor, indice);

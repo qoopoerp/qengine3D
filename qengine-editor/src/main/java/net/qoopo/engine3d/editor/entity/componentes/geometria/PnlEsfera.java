@@ -5,7 +5,7 @@
  */
 package net.qoopo.engine3d.editor.entity.componentes.geometria;
 
-import net.qoopo.engine.core.entity.component.mesh.primitive.shape.QEsfera;
+import net.qoopo.engine.core.entity.component.mesh.primitive.shape.Sphere;
 
 /**
  *
@@ -13,12 +13,12 @@ import net.qoopo.engine.core.entity.component.mesh.primitive.shape.QEsfera;
  */
 public class PnlEsfera extends javax.swing.JPanel {
 
-    private QEsfera esfera;
+    private Sphere esfera;
 
     /**
      * Creates new form PnlCubo
      */
-    public PnlEsfera(QEsfera esfera) {
+    public PnlEsfera(Sphere esfera) {
         initComponents();
         this.esfera = esfera;
         txtRadio.setText(String.valueOf(esfera.getRadio()));

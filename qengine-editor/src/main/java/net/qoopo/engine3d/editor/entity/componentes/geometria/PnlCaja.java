@@ -5,7 +5,7 @@
  */
 package net.qoopo.engine3d.editor.entity.componentes.geometria;
 
-import net.qoopo.engine.core.entity.component.mesh.primitive.shape.QCaja;
+import net.qoopo.engine.core.entity.component.mesh.primitive.shape.Box;
 
 /**
  *
@@ -13,12 +13,12 @@ import net.qoopo.engine.core.entity.component.mesh.primitive.shape.QCaja;
  */
 public class PnlCaja extends javax.swing.JPanel {
 
-    private QCaja caja;
+    private Box caja;
 
     /**
      * Creates new form PnlCubo
      */
-    public PnlCaja(QCaja caja) {
+    public PnlCaja(Box caja) {
         initComponents();
         this.caja = caja;
         txtAlto.setText(String.valueOf(caja.getAlto()));
