@@ -8,7 +8,6 @@ package net.qoopo.engine.renderer.shadow;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.image.BufferedImage;
-import java.util.Collections;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -18,24 +17,18 @@ import net.qoopo.engine.core.entity.component.ligth.QDirectionalLigth;
 import net.qoopo.engine.core.entity.component.ligth.QLigth;
 import net.qoopo.engine.core.entity.component.ligth.QPointLigth;
 import net.qoopo.engine.core.entity.component.ligth.QSpotLigth;
-import net.qoopo.engine.core.entity.component.mesh.Mesh;
-import net.qoopo.engine.core.entity.component.mesh.primitive.QPoligono;
-import net.qoopo.engine.core.entity.component.mesh.primitive.QPrimitiva;
-import net.qoopo.engine.core.material.basico.QMaterialBas;
 import net.qoopo.engine.core.math.QMath;
 import net.qoopo.engine.core.math.QMatriz4;
 import net.qoopo.engine.core.math.QVector2;
 import net.qoopo.engine.core.math.QVector3;
 import net.qoopo.engine.core.math.QVector4;
-import net.qoopo.engine.core.renderer.QOpcionesRenderer;
 import net.qoopo.engine.core.scene.Camera;
 import net.qoopo.engine.core.scene.Scene;
 import net.qoopo.engine.core.util.QGlobal;
-import net.qoopo.engine.core.util.TempVars;
 import net.qoopo.engine.renderer.SoftwareRenderer;
-import net.qoopo.engine.renderer.raster.QRaster2;
-import net.qoopo.engine.renderer.shader.pixelshader.basico.parciales.QSimpleShaderBAS;
-import net.qoopo.engine.renderer.transformacion.QTransformar;
+import net.qoopo.engine.renderer.raster.ParallelRaster;
+import net.qoopo.engine.renderer.shader.fragment.basico.parciales.QSimpleShaderBAS;
+import net.qoopo.engine.renderer.util.TransformationVectorUtil;
 
 /**
  * EL renderizador de sombras es una implementacion de un mapa de sombras
@@ -80,7 +73,8 @@ public class SoftwareShadowRender extends SoftwareRenderer {
         this.opciones.setForzarResolucion(true);
     }
 
-    public SoftwareShadowRender(int tipo, Scene escena, QDirectionalLigth luz, Camera camaraRender, int ancho, int alto) {
+    public SoftwareShadowRender(int tipo, Scene escena, QDirectionalLigth luz, Camera camaraRender, int ancho,
+            int alto) {
         this(tipo, escena, luz, ancho, alto);
         camara = new Camera("RenderSombraDireccional");
         camara.frustrumLejos = camaraRender.frustrumLejos;
@@ -90,7 +84,7 @@ public class SoftwareShadowRender extends SoftwareRenderer {
         camara.setToRender(false);
         this.camaraRender = camaraRender;
         setDireccion(luz.getDirection());
-        raster = new QRaster2(this);
+        raster = new ParallelRaster(this);
         shader = new QSimpleShaderBAS(this);
     }
 
@@ -104,7 +98,7 @@ public class SoftwareShadowRender extends SoftwareRenderer {
         camara.setToRender(false);
         this.camaraRender = camaraRender;
         setDireccion(luz.getDirection());
-        raster = new QRaster2(this);
+        raster = new ParallelRaster(this);
         shader = new QSimpleShaderBAS(this);
     }
 
@@ -122,7 +116,7 @@ public class SoftwareShadowRender extends SoftwareRenderer {
         this.camaraRender = camaraRender;
         setDireccion(direccion);
         vArriba = arriba;
-        raster = new QRaster2(this);
+        raster = new ParallelRaster(this);
         shader = new QSimpleShaderBAS(this);
     }
 
@@ -288,70 +282,26 @@ public class SoftwareShadowRender extends SoftwareRenderer {
     public void render() {
         listaCarasTransparente.clear();
         poligonosDibujadosTemp = 0;
-        TempVars t = TempVars.get();
         try {
             // La Matriz de vista es la inversa de la matriz de la camara.
             // Esto es porque la camara siempre estara en el centro y movemos el mundo
             // en direccion contraria a la camara.
             QMatriz4 matrizVista = camara.getMatrizTransformacion(QGlobal.tiempo).invert();
-            for (Entity entity : escena.getEntities()) {
-                QTransformar.transformar(entity, matrizVista, t.bufferVertices1);
-
-                // --------------------------------------------------------------------------------------
-                // CARAS SOLIDAS NO TRANSPARENTES
-                // --------------------------------------------------------------------------------------
-                for (QPrimitiva poligono : t.bufferVertices1.getPoligonosTransformados()) {
-                    // salta las camaras
-                    if (poligono.geometria.entity instanceof Camera) {
-                        continue;
-                    }
-
-                    if (poligono.material == null
-                            // q no tengra transparencia cuando tiene el tipo de material basico
-                            || (poligono.material instanceof QMaterialBas
-                                    && !((QMaterialBas) poligono.material).isTransparencia())) {
-                        tomar = false;
-                        // comprueba que todos los vertices estan en el campo de vision
-                        for (int i : poligono.listaVertices) {
-                            if (camara.isVisible(t.bufferVertices1.getVertice(i))) {
-                                tomar = true;
-                                break;
-                            }
-                        }
-                        if (!tomar) {
-                            continue;
-                        }
-                        poligonosDibujadosTemp++;
-                        raster.raster(t.bufferVertices1, poligono,
-                                opciones.getTipoVista() == QOpcionesRenderer.VISTA_WIRE
-                                        || poligono.geometria.tipo == Mesh.GEOMETRY_TYPE_WIRE);
-                    } else {
-                        if (poligono instanceof QPoligono) {
-                            listaCarasTransparente.add((QPoligono) poligono);
-                        }
-                    }
-                }
-
-                // --------------------------------------------------------------------------------------
-                // TRANSPARENTES
-                // --------------------------------------------------------------------------------------
-                // ordeno las caras transparentes
-                if (!listaCarasTransparente.isEmpty()) {
-                    if (opciones.iszSort()) {
-                        Collections.sort(listaCarasTransparente);
-                    }
-                    for (QPoligono poligono : listaCarasTransparente) {
-                        poligonosDibujadosTemp++;
-                        raster.raster(t.bufferVertices1, poligono,
-                                opciones.getTipoVista() == QOpcionesRenderer.VISTA_WIRE
-                                        || poligono.geometria.tipo == Mesh.GEOMETRY_TYPE_WIRE);
-                    }
-                }
-            }
+            QMatriz4 matrizVistaInvertidaBillboard = camara.getMatrizTransformacion(QGlobal.tiempo);
+            // caras solidas
+            escena.getEntities().stream()
+                    .filter(entity -> entity.isToRender())
+                    .parallel()
+                    .forEach(entity -> renderEntity(entity, matrizVista, matrizVistaInvertidaBillboard, false));
+            // // caras transperentes
+            // escena.getEntities().stream()
+            // .filter(entity -> entity.isToRender())
+            // .parallel()
+            // .forEach(entity -> renderEntity(entity, matrizVista,
+            // matrizVistaInvertidaBillboard, true));
         } catch (Exception e) {
+            System.out.println("Error render:" + nombre);
             e.printStackTrace();
-        } finally {
-            t.release();
         }
 
     }
@@ -393,7 +343,7 @@ public class SoftwareShadowRender extends SoftwareRenderer {
         QVector2 punto = new QVector2();
         try {
             if (frameBuffer != null) {
-                vector = QTransformar.transformarVector(vector, entity, camara);
+                vector = TransformationVectorUtil.transformarVector(vector, entity, camara);
                 camara.getCoordenadasPantalla(punto, new QVector4(vector, 1), getFrameBuffer().getAncho(),
                         getFrameBuffer().getAlto());
                 // si el punto no esta en mi campo de vision

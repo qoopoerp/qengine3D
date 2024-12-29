@@ -5,30 +5,30 @@
  */
 package net.qoopo.engine.renderer.shadow.raster;
 
-import net.qoopo.engine.core.entity.component.mesh.primitive.QPoligono;
+import net.qoopo.engine.core.entity.component.mesh.primitive.Poly;
 import net.qoopo.engine.core.entity.component.mesh.primitive.QPrimitiva;
 import net.qoopo.engine.core.material.basico.QMaterialBas;
 import net.qoopo.engine.core.math.QColor;
 import net.qoopo.engine.core.math.QMath;
 import net.qoopo.engine.core.renderer.QOpcionesRenderer;
 import net.qoopo.engine.renderer.SoftwareRenderer;
-import net.qoopo.engine.renderer.raster.QRaster1;
-import net.qoopo.engine.renderer.transformacion.QTransformar;
+import net.qoopo.engine.renderer.raster.Raster;
+import net.qoopo.engine.renderer.util.TransformationVectorUtil;
 
 /**
  * Realiza la rasterización de los polígonos para el mapeo de sombras.
- * Sobrecarga el medotod prepararpixel donde no se valida textures ni colores
+ * Sobrecarga el medotod prepareFragment donde no se valida textures ni colores
  *
  * @author alberto
  */
-public class ShadowRaster extends QRaster1 {
+public class ShadowRaster extends Raster {
 
     public ShadowRaster(SoftwareRenderer render) {
         super(render);
     }
 
     @Override
-    protected void prepararPixel(QPrimitiva face, int x, int y) {
+    protected void prepareFragment(QPrimitiva face, int x, int y) {
         if (x > 0 && x < render.getFrameBuffer().getAncho() && y > 0 && y < render.getFrameBuffer().getAlto()) {
             zActual = interpolateZbyX(xDesde, zDesde, xHasta, zHasta, x, (int) render.getFrameBuffer().getAncho(),
                     render.getCamara().camaraAncho);
@@ -50,14 +50,14 @@ public class ShadowRaster extends QRaster1 {
             // siempre y cuando sea menor que el depthbuffer se debe dibujar. quiere decir
             // qu esta delante
             if (-zActual > 0 && -zActual < render.getFrameBuffer().getZBuffer(x, y)) {
-                QMath.linear(verticeActual, alfa, verticeDesde, verticeHasta);
+                QMath.interpolateLinear(verticeActual, alfa, verticeDesde, verticeHasta);
                 // si no es suavizado se copia la normal de la cara para dibujar con Flat
                 // Shadded
-                if (face instanceof QPoligono) {
-                    if (!(((QPoligono) face).isSmooth()
+                if (face instanceof Poly) {
+                    if (!(((Poly) face).isSmooth()
                             && (render.opciones.getTipoVista() >= QOpcionesRenderer.VISTA_PHONG)
                             || render.opciones.isForzarSuavizado())) {
-                        verticeActual.normal.set(((QPoligono) face).getNormalCopy());
+                        verticeActual.normal.set(((Poly) face).getNormalCopy());
                     }
                 }
 
@@ -79,7 +79,7 @@ public class ShadowRaster extends QRaster1 {
                 // panelclip
                 try {
                     if (render.getPanelClip() != null) {
-                        if (!render.getPanelClip().esVisible(QTransformar.transformarVectorInversa(
+                        if (!render.getPanelClip().esVisible(TransformationVectorUtil.transformarVectorInversa(
                                 verticeActual.location.getVector3(), face.geometria.entity, render.getCamara()))) {
                             return;
                         }
