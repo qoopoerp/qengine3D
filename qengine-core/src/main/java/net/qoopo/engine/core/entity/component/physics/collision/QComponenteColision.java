@@ -9,7 +9,7 @@ import java.util.List;
 
 import net.qoopo.engine.core.entity.component.EntityComponent;
 import net.qoopo.engine.core.entity.component.mesh.Mesh;
-import net.qoopo.engine.core.entity.component.mesh.primitive.QVertex;
+import net.qoopo.engine.core.entity.component.mesh.primitive.Vertex;
 import net.qoopo.engine.core.entity.component.physics.collision.detector.CollisionShape;
 import net.qoopo.engine.core.entity.component.physics.collision.detector.shape.primitivas.AABB;
 import net.qoopo.engine.core.entity.component.physics.collision.detector.shape.primitivas.QColisionEsfera;
@@ -81,7 +81,7 @@ public class QComponenteColision extends EntityComponent {
         // el siguiente metodo funciona para todas las formas
         // pero seria mejro que existan clases que sobrecarguen este metodo de acuerdo a
         // una geometria predefinida
-        for (QVertex vertice : geometria.vertices) {
+        for (Vertex vertice : geometria.vertices) {
             if (vertice.location.x < tmp.aabMinimo.location.x) {
                 tmp.aabMinimo.location.x = vertice.location.x;
             }
@@ -117,7 +117,7 @@ public class QComponenteColision extends EntityComponent {
     }
 
     public void crearEsfera(Mesh geometria, QTransformacion transformacion) {
-        QVertex centro = null;
+        Vertex centro = null;
         float radio = 0;
         // primero calculamos el rectangulo AABB para obtener el centro y radio
         crearAABB(geometria, transformacion);
@@ -126,9 +126,9 @@ public class QComponenteColision extends EntityComponent {
         radio = tmp.length() * 0.5f;// el radio es igual a la mitad de la diagonal de cubo
 
         tmp.multiply(0.5f);
-        centro = new QVertex(tmp.x, tmp.y, tmp.z, 1);
+        centro = new Vertex(tmp.x, tmp.y, tmp.z, 1);
 
-        // this.formaColision = new QEsferaContenedor(centro, radio);
+        // this.formaColision = new SphereContenedor(centro, radio);
         this.formaColision = new QColisionEsfera(radio);
     }
 

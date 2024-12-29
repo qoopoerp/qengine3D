@@ -4,21 +4,23 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Font;
 import java.awt.Graphics;
-import java.awt.Point;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
 
+import lombok.Getter;
+import lombok.Setter;
 import net.qoopo.engine.core.engine.Engine;
 import net.qoopo.engine.core.engine.EngineTime;
 import net.qoopo.engine.core.entity.Entity;
 import net.qoopo.engine.core.entity.component.ligth.QLigth;
-import net.qoopo.engine.core.entity.component.mesh.Mesh;
-import net.qoopo.engine.core.entity.component.mesh.primitive.QPoligono;
+import net.qoopo.engine.core.entity.component.mesh.primitive.Poly;
+import net.qoopo.engine.core.entity.component.mesh.primitive.QPrimitiva;
+import net.qoopo.engine.core.entity.component.mesh.primitive.Vertex;
+import net.qoopo.engine.core.entity.component.transform.QVertexBuffer;
 import net.qoopo.engine.core.input.QDefaultListener;
-import net.qoopo.engine.core.material.basico.QMaterialBas;
 import net.qoopo.engine.core.math.QColor;
 import net.qoopo.engine.core.math.QVector2;
 import net.qoopo.engine.core.renderer.buffer.QFrameBuffer;
@@ -29,9 +31,10 @@ import net.qoopo.engine.core.scene.QClipPane;
 import net.qoopo.engine.core.scene.QOrigen;
 import net.qoopo.engine.core.scene.Scene;
 import net.qoopo.engine.core.texture.QTextura;
-import net.qoopo.engine.core.util.Utils;
 import net.qoopo.engine.core.util.image.ImgReader;
 
+@Getter
+@Setter
 public abstract class RenderEngine extends Engine {
 
     protected static BufferedImage imageSplash;
@@ -44,38 +47,6 @@ public abstract class RenderEngine extends Engine {
 
     private static final Color COLOR_FONDO_ESTADISTICAS = new Color(0, 0, 0.6f, 0.4f);
     protected static int lightOnScreenSize = 20;
-    public static final int GIZMO_NINGUNO = 0;
-    public static final int GIZMO_TRASLACION = 1;
-    public static final int GIZMO_ROTACION = 2;
-    public static final int GIZMO_ESCALA = 3;
-
-    private static final QMaterialBas matX;
-    private static final QMaterialBas matY;
-    private static final QMaterialBas matZ;
-    private static final QMaterialBas matGrid;
-    private static final QMaterialBas matSeleccion;
-
-    static {
-        matX = new QMaterialBas("x");
-        matX.setColorBase(QColor.RED);
-        matX.setFactorEmision(0.85f);
-
-        matY = new QMaterialBas("y");
-        matY.setColorBase(QColor.GREEN);
-        matY.setFactorEmision(0.85f);
-
-        matZ = new QMaterialBas("z");
-        matZ.setColorBase(QColor.BLUE);
-        matZ.setFactorEmision(0.85f);
-
-        matGrid = new QMaterialBas("grid");
-        matGrid.setColorBase(QColor.LIGHT_GRAY);
-        matGrid.setFactorEmision(0.85f);
-
-        matSeleccion = new QMaterialBas("matSeleccion");
-        matSeleccion.setColorBase(QColor.YELLOW);
-        matSeleccion.setFactorEmision(1.0f);
-    }
 
     static {
         try {
@@ -174,32 +145,15 @@ public abstract class RenderEngine extends Engine {
 
     protected List<QLigth> litgths = new ArrayList<>();
 
-    protected ArrayList<QPoligono> listaCarasTransparente = new ArrayList<>();
+    protected ArrayList<Poly> listaCarasTransparente = new ArrayList<>();
     protected boolean tomar;
-
-    public List<Entity> entidadesSeleccionadas = new ArrayList<>();
-    public Entity entidadActiva = null;
 
     protected QRenderEfectos efectosPostProceso;
 
     protected boolean forzarActualizacionMapaSombras = false;
 
-    // protected QGizmo gizTraslacion = new QGizmoTraslacion();
-    // protected QGizmo gizRotacion = new QGizmoRotacion();
-    // protected QGizmo gizEscala = new QGizmoEscala();
-    // protected QGizmo gizActual = null;
-
-    protected int tipoGizmoActual = GIZMO_TRASLACION;
-
     // protected Accion accionSeleccionar = null;//la accion que debe ejecutar
     // cuando selecciona un objeto
-
-    protected QPoligono polSeleccion = null;
-    protected QPoligono polGrid = null;
-    protected QPoligono polEjeX = null;
-    protected QPoligono polEjeY = null;
-    protected QPoligono polEjeZ = null;
-    protected QPoligono polHueso = null;
 
     protected QOrigen entidadOrigen;
 
@@ -226,24 +180,6 @@ public abstract class RenderEngine extends Engine {
         }
         prepararInputListener();
 
-        // creo una entity no existente en el escena con un material para poder tener
-        // un primitiva para el dibujo de la seleccion
-        // se deberia revisar el raster por esas limitaciones
-        polSeleccion = new QPoligono(new Mesh());
-        polSeleccion.material = matSeleccion;
-        polHueso = new QPoligono(new Mesh());
-        QMaterialBas matHueso = new QMaterialBas("matHueso");
-        matHueso.setColorBase(QColor.GRAY);
-        matHueso.setFactorEmision(0.15f);
-        polHueso.material = matHueso;
-        polGrid = new QPoligono(new Mesh());
-        polGrid.material = matGrid;
-        polEjeX = new QPoligono(new Mesh());
-        polEjeX.material = matX;
-        polEjeY = new QPoligono(new Mesh());
-        polEjeY.material = matY;
-        polEjeZ = new QPoligono(new Mesh());
-        polEjeZ.material = matZ;
         entidadOrigen = new QOrigen();
     }
 
@@ -327,9 +263,10 @@ public abstract class RenderEngine extends Engine {
     protected void prepararInputListener() {
         if (superficie != null && superficie.getComponente() != null) {
             agregarListeners(superficie.getComponente());
-        // } else {
-        //     System.out.println("[x]  No se agrego el listener porque no hay una superficie -> " + nombre);
-        //     Utils.printTrace();
+            // } else {
+            // System.out.println("[x] No se agrego el listener porque no hay una superficie
+            // -> " + nombre);
+            // Utils.printTrace();
         }
     }
 
@@ -380,7 +317,7 @@ public abstract class RenderEngine extends Engine {
      *
      * @param g
      */
-    protected void mostrarEstadisticas(Graphics g) {
+    protected void showStats(Graphics g) {
         if (showStats && renderReal) {
             int ancho = 0;
             int alto = 0;
@@ -400,18 +337,17 @@ public abstract class RenderEngine extends Engine {
             g.setColor(Color.white);
             g.setFont(new Font("Arial", Font.PLAIN, 10));
             g.drawString(ancho + "x" + alto, 10, 20);
-            g.drawString("FPS          :" + DF.format(getFPS()), 10, 30);
-            g.drawString("Delta (ms)   :" + DF.format(getDelta()), 10, 40);
-            g.drawString("FPS          :" + EngineTime.FPS, 10, 50);
-            g.drawString("Delta (ms)   :" + EngineTime.delta / 10000000, 10, 60);
-            g.drawString("Pol          :" + poligonosDibujados, 10, 70);
-            g.drawString(
-                    "T. Vista     : " + (opciones.getTipoVista() == QOpcionesRenderer.VISTA_FLAT ? "FLAT"
-                            : (opciones.getTipoVista() == QOpcionesRenderer.VISTA_PHONG ? "PHONG"
-                                    : (opciones.getTipoVista() == QOpcionesRenderer.VISTA_WIRE ? "WIRE" : "N/A"))),
+            g.drawString("FPS_______________: " + EngineTime.FPS, 10, 30);
+            g.drawString("Delta (ms)________: " + EngineTime.delta / 1000000, 10, 40);
+            g.drawString("FPS Raster________: " + DF.format(getFPS()), 10, 50);
+            g.drawString("Delta Raster (ms)_: " + DF.format(getDelta()), 10, 60);
+            g.drawString("Pol_______________: " + poligonosDibujados, 10, 70);
+            g.drawString("T. Vista     : " + (opciones.getTipoVista() == QOpcionesRenderer.VISTA_FLAT ? "FLAT"
+                    : (opciones.getTipoVista() == QOpcionesRenderer.VISTA_PHONG ? "PHONG"
+                            : (opciones.getTipoVista() == QOpcionesRenderer.VISTA_WIRE ? "WIRE" : "N/A"))),
                     10, 80);
-            g.drawString("Material     :" + (opciones.isMaterial() ? "ACTIVADO" : "DESACTIVADO"), 10, 90);
-            g.drawString("Sombras      :" + (opciones.isSombras() ? "ACTIVADO" : "DESACTIVADO"), 10, 100);
+            g.drawString("Material     : " + (opciones.isMaterial() ? "ON" : "OFF"), 10, 90);
+            g.drawString("Sombras      : " + (opciones.isSombras() ? "ON" : "OFF"), 10, 100);
             // g.drawString("Hora del día :" + QEngine3D.INSTANCIA.getHoraDelDia(), 10,
             // 110);
             g.drawString("Cam (X;Y;Z)  : (" + DF.format(camara.getTransformacion().getTraslacion().x) + ";"
@@ -551,12 +487,32 @@ public abstract class RenderEngine extends Engine {
 
     }
 
-    public int getTipoGizmoActual() {
-        return tipoGizmoActual;
-    }
+    // public abstract AbstractRaster(QMotorRender render);
+    /**
+     *
+     * @param primitiva
+     * @param p1
+     * @param p2
+     */
+    public abstract void renderLine(QPrimitiva primitiva, Vertex... vertex);
 
-    public void setTipoGizmoActual(int tipoGizmoActual) {
-        this.tipoGizmoActual = tipoGizmoActual;
+    /**
+     * Realiza la rasterización de un polígono
+     *
+     * @param bufferVertices
+     * @param primitiva
+     * @param wire
+     */
+    public abstract void render(QVertexBuffer bufferVertices, QPrimitiva primitiva, boolean wire);
+
+    public abstract void render() throws Exception;
+
+    public abstract void shadeFragments();
+
+    public abstract void postRender();
+
+    public void endUpdate() {
+
     }
 
 }

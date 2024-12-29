@@ -28,7 +28,7 @@ public class QObjetoRigido extends QObjetoDinamico {
     private float masa = 1.0f;
     private float friccion = 0.5f;
     private float restitucion = 0.f; // elasticidad
-    private float amortiguacion_traslacion = 0.04f; // linear
+    private float amortiguacion_traslacion = 0.04f; // interpolateLinear
     private float amortiguacion_rotacion = 0.1f; // angular
 
     private boolean usado;

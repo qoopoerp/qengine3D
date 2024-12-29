@@ -11,7 +11,7 @@ import net.qoopo.engine.core.assets.AssetManager;
 import net.qoopo.engine.core.entity.Entity;
 import net.qoopo.engine.core.entity.component.EntityComponent;
 import net.qoopo.engine.core.entity.component.mesh.Mesh;
-import net.qoopo.engine.core.entity.component.mesh.primitive.shape.QPlano;
+import net.qoopo.engine.core.entity.component.mesh.primitive.shape.Plane;
 import net.qoopo.engine.core.entity.component.particles.Particle;
 import net.qoopo.engine.core.entity.component.particles.ParticleEmissor;
 import net.qoopo.engine.core.entity.component.physics.collision.detector.shape.primitivas.AABB;
@@ -19,7 +19,7 @@ import net.qoopo.engine.core.entity.component.physics.dinamica.QObjetoDinamico;
 import net.qoopo.engine.core.entity.component.physics.dinamica.QObjetoRigido;
 import net.qoopo.engine.core.material.basico.QMaterialBas;
 import net.qoopo.engine.core.math.QVector3;
-import net.qoopo.engine.core.texture.util.QMaterialUtil;
+import net.qoopo.engine.core.texture.util.MaterialUtil;
 
 /**
  *
@@ -59,8 +59,8 @@ public class QEmisorVolcan extends ParticleEmissor {
 
                 Entity nuevaentity = new Entity("flama");
 
-                Mesh geometria = new QPlano(0.5f, 0.5f);
-                QMaterialUtil.aplicarMaterial(geometria, material);
+                Mesh geometria = new Plane(0.5f, 0.5f);
+                MaterialUtil.applyMaterial(geometria, material);
                 nuevaentity.addComponent(geometria);
 
                 QObjetoRigido rigido = new QObjetoRigido(QObjetoDinamico.DINAMICO);

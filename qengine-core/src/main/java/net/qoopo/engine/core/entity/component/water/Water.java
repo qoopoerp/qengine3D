@@ -8,9 +8,11 @@ package net.qoopo.engine.core.entity.component.water;
 import lombok.Getter;
 import lombok.Setter;
 import net.qoopo.engine.core.assets.AssetManager;
+import net.qoopo.engine.core.engine.EngineTime;
 import net.qoopo.engine.core.entity.component.EntityComponent;
 import net.qoopo.engine.core.entity.component.UpdatableComponent;
-import net.qoopo.engine.core.entity.component.mesh.Mesh;
+import net.qoopo.engine.core.entity.component.mesh.primitive.Shape;
+import net.qoopo.engine.core.entity.component.terrain.Terrain;
 import net.qoopo.engine.core.entity.component.water.texture.WaterTextureProcessor;
 import net.qoopo.engine.core.material.basico.QMaterialBas;
 import net.qoopo.engine.core.math.QMath;
@@ -33,7 +35,15 @@ import net.qoopo.engine.core.texture.QTextura;
 public abstract class Water extends EntityComponent implements UpdatableComponent {
 
     protected final static float VELOCIDAD_AGUA = 0.05f;
+
+    protected QVector3 velocity = QVector3.of(0.05f, 0.05f, 0.05f);
+
+    protected QVector3 distortion = QVector3.zero.clone();
+
     protected final static float FUERZA_OLA = 0.005f;
+
+    protected boolean enableReflection = true;
+    protected boolean enableRefraction = true;
 
     transient protected RenderEngine render;
     protected WaterTextureProcessor outputTexture = null;// la mezcla de la textura de reflexion y la textur de
@@ -45,19 +55,24 @@ public abstract class Water extends EntityComponent implements UpdatableComponen
 
     // sera usada para simular movimiento de agua con el tiempo agregando un offset
     // a las textures
-    protected long lastTime;
-    protected long deltaTime;
+
     protected float factorX;
     protected float factorY;
+    protected float factorZ;
+
     protected final QVector3 arriba = QVector3.unitario_y.clone();
     protected final QVector3 abajo = QVector3.unitario_y.clone().multiply(-1.0f);
 
     protected int width;
     protected int height;
-    protected Scene universo;
+    protected Scene scene;
 
-    protected Mesh mesh;
+    protected Shape mesh;
     protected QMaterialBas material;
+
+    // Si se adjunta un terreno al que el agua pertenece se puede realizar más
+    // efectos en función de la profundidad por ejemplo
+    protected Terrain terrain;
 
     public Water() {
 
@@ -71,32 +86,30 @@ public abstract class Water extends EntityComponent implements UpdatableComponen
             this.textReflexion.setSignoY(-1);
             this.textRefraccion = new QTextura();
 
-            frameReflexion = new QFrameBuffer(width, height, textReflexion);
-            frameRefraccion = new QFrameBuffer(width, height, textRefraccion);
-            // render = new QRender(universo, "Agua", null, ancho, ancho);
-            render = AssetManager.get().getRendererFactory().createRenderEngine(universo, "Water", null, width, width);
-            render.setEfectosPostProceso(null);
-            render.renderReal = false;
-            render.opciones.setForzarResolucion(true);
-            render.opciones.setNormalMapping(false);
-            render.opciones.setSombras(false);
-            render.opciones.setDibujarCarasTraseras(false);
-            render.setShowStats(false);
-            render.setCamara(new Camera("WaterCamera"));
-            render.resize();
-            render.setRenderReal(false);
-            render.opciones.setDibujarCarasTraseras(true);
-            lastTime = System.currentTimeMillis();
-            render.setPanelClip(new QClipPane(arriba, 0));
-            outputTexture = new WaterTextureProcessor(textReflexion, textRefraccion);
+            if (enableReflection || enableRefraction) {
+                frameReflexion = new QFrameBuffer(width/4, height/4, textReflexion);
+                frameRefraccion = new QFrameBuffer(width/4, height/4, textRefraccion);
+                render = AssetManager.get().getRendererFactory().createRenderEngine(scene, "Water", null, width/4,
+                        width/4);
+                render.setEfectosPostProceso(null);
+                render.opciones.setForzarResolucion(true);
+                render.opciones.setNormalMapping(false);
+                render.opciones.setSombras(false);
+                render.opciones.setDibujarCarasTraseras(false);
+                render.setShowStats(false);
+                render.setCamara(new Camera("WaterCamera"));
+                render.resize();
+                render.setRenderReal(false);
+                render.opciones.setDibujarCarasTraseras(true);
+                render.setPanelClip(new QClipPane(arriba, 0));
+                outputTexture = new WaterTextureProcessor(textReflexion, textRefraccion);
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    @Override
-    public void update(RenderEngine mainRender, Scene universo) {
-        // evita la ejecucion si no esta activo los materiales
+    private void updateReflections(RenderEngine mainRender, Scene scene) {
 
         if (!mainRender.opciones.isMaterial()) {
             return;
@@ -105,18 +118,17 @@ public abstract class Water extends EntityComponent implements UpdatableComponen
             return;
         }
 
-        entity.setToRender(false);// evita renderizar el agua
-        // actualizo la resolución de acuerdo a la cámara
         if (render.opciones.getAncho() != mainRender.getFrameBuffer().getAncho()
                 && render.opciones.getAlto() != mainRender.getFrameBuffer().getAlto()) {
             render.opciones.setAncho(mainRender.getFrameBuffer().getAncho());
             render.opciones.setAlto(mainRender.getFrameBuffer().getAlto());
             frameReflexion = new QFrameBuffer(render.opciones.getAncho(), render.opciones.getAlto(), textReflexion);
-            frameRefraccion = new QFrameBuffer(render.opciones.getAncho(), render.opciones.getAlto(), textRefraccion);
+            frameRefraccion = new QFrameBuffer(render.opciones.getAncho(), render.opciones.getAlto(),
+                    textRefraccion);
             render.resize();
         }
 
-        render.setEscena(universo);
+        render.setEscena(scene);
         render.setNombre(entity.getName());
         render.getCamara().setName(entity.getName());
         try {
@@ -124,8 +136,10 @@ public abstract class Water extends EntityComponent implements UpdatableComponen
             // REFRACCION
             // -------------------------------------------------------------------
             render.getCamara().setTransformacion(mainRender.getCamara().getTransformacion().clone());// la misma
-                                                                                                     // posicion de la
-                                                                                                     // cámara actual
+                                                                                                     // posicion de
+                                                                                                     // la
+                                                                                                     // cámara
+                                                                                                     // actual
             render.getCamara().getTransformacion().getRotacion().actualizarAngulos();
             render.setFrameBuffer(frameRefraccion);
             render.getPanelClip().setNormal(abajo);
@@ -148,46 +162,67 @@ public abstract class Water extends EntityComponent implements UpdatableComponen
             render.getCamara().setTransformacion(mainRender.getCamara().getTransformacion().clone());
             render.getCamara().getTransformacion().getRotacion().actualizarAngulos();
             render.getCamara().getTransformacion().getRotacion().getAngulos()
-                    .setAnguloX(render.getCamara().getTransformacion().getRotacion().getAngulos().getAnguloX() * -1);
+                    .setAnguloX(
+                            render.getCamara().getTransformacion().getRotacion().getAngulos().getAnguloX() * -1);
             render.getCamara().getTransformacion().getRotacion().actualizarCuaternion();
             render.getCamara().getTransformacion().trasladar(nuevaPos);
             render.update();
             render.getFrameBuffer().actualizarTextura();
+
+            // modifica la textura de refracción para simular el efecto de refracción
+            // textRefraccion.setOffsetX(factorX);
+            // textRefraccion.setOffsetY(factorY);
+
+            // actualiza la textura de la salida con la información de la reflexión
+
+            outputTexture.setFuerzaOla(FUERZA_OLA);
+            outputTexture.setFactorTiempo(factorX);
+
+            // textSalida.setRazon(0.5f); //por iguales
+            // textSalida.setRazon(0f); //todo reflexion
+            // textSalida.setRazon(1f);//todo refraccion
+            // textSalida.setRazon(0.9f);
+            // Efecto fresnel
+            // -> Este calculo se deberia hacer para cada pixel de la superficie, pues el
+            // angulo es diferente para cada punto de la superficie del agua
+            QVector3 vision = mainRender.getCamara().getTransformacion().getTraslacion().clone()
+                    .subtract(entity.getTransformacion().getTraslacion().clone());
+            // el factor fresnel representa que tanta refraccion se aplica
+            float factorFresnel = arriba.dot(vision.normalize());
+            factorFresnel = QMath.pow(factorFresnel, 0.5f);// para que sea menos reflectante (si se una un numero
+                                                           // positivo
+                                                           // en el exponente seria mas reflectivo)
+            outputTexture.setRazon(factorFresnel);
+
         } catch (Exception e) {
             e.printStackTrace();
         }
 
-        // MOVIMIENTO de las normales
-        deltaTime = System.currentTimeMillis() - lastTime;
-        factorX = deltaTime * VELOCIDAD_AGUA;
-        factorY = deltaTime * VELOCIDAD_AGUA;
+    }
+
+    @Override
+    public void update(RenderEngine mainRender, Scene scene) {
+        // evita la ejecucion si no esta activo los materiales
+
+        entity.setToRender(false);// evita renderizar el agua
+
+        // calcula el tiempo delta para la distorsión de la textura de salida
+
+        // DELTA para cada eje
+        // factorX = deltaTime * VELOCIDAD_AGUA;
+        factorX = EngineTime.delta * velocity.x;
+        factorY = EngineTime.delta * velocity.y;
+        factorZ = EngineTime.delta * velocity.z;
 
         factorX %= 1;
         factorY %= 1;
+        factorZ %= 1;
 
-        // modifica la textura de refracción para simular el efecto de refracción
-        // textRefraccion.setOffsetX(factorX);
-        // textRefraccion.setOffsetY(factorY);
-        lastTime = System.currentTimeMillis();
+        // actualizo la resolución de acuerdo a la cámara
+        if (enableReflection || enableRefraction) {
+            updateReflections(mainRender, scene);
+        }
 
-        // actualiza la textura de la salida con la información de la reflexión
-        outputTexture.setFuerzaOla(FUERZA_OLA);
-        outputTexture.setFactorTiempo(factorX);
-        // textSalida.setRazon(0.5f); //por iguales
-        // textSalida.setRazon(0f); //todo reflexion
-        // textSalida.setRazon(1f);//todo refraccion
-        // textSalida.setRazon(0.9f);
-        // efecto fresnel
-
-        // este calculo se deberia hacer para cada pixel de la superficie, pues el
-        // angulo es diferente para cada punto de la superficie del agua
-        QVector3 vision = mainRender.getCamara().getTransformacion().getTraslacion().clone()
-                .subtract(entity.getTransformacion().getTraslacion().clone());
-        // el factor fresnel representa que tanta refraccion se aplica
-        float factorFresnel = arriba.dot(vision.normalize());
-        factorFresnel = QMath.pow(factorFresnel, 0.5f);// para que sea menos reflectante (si se una un numero positivo
-                                                       // en el exponente seria mas reflectivo)
-        outputTexture.setRazon(factorFresnel);
         entity.setToRender(true);
     }
 
@@ -196,6 +231,11 @@ public abstract class Water extends EntityComponent implements UpdatableComponen
         if (textReflexion != null) {
             textReflexion.destruir();
             textReflexion = null;
+        }
+
+        if (textRefraccion != null) {
+            textRefraccion.destruir();
+            textRefraccion = null;
         }
     }
 

@@ -6,15 +6,15 @@
 package net.qoopo.engine.core.entity.component.mesh.primitive.shape.wire;
 
 import net.qoopo.engine.core.entity.component.mesh.Mesh;
-import net.qoopo.engine.core.entity.component.mesh.primitive.QShape;
-import net.qoopo.engine.core.entity.component.mesh.primitive.QVertex;
+import net.qoopo.engine.core.entity.component.mesh.primitive.Shape;
+import net.qoopo.engine.core.entity.component.mesh.primitive.Vertex;
 import net.qoopo.engine.core.material.basico.QMaterialBas;
 
 /**
  *
  * @author alberto
  */
-public class QEspiral extends QShape {
+public class QEspiral extends Shape {
 
     private float radio;// el radio de la espiral
     private float largo; // el largo de la espiral
@@ -53,7 +53,7 @@ public class QEspiral extends QShape {
         // }
     }
 
-    private void calculateSpirale(QVertex v, double r, double h) {
+    private void calculateSpirale(Vertex v, double r, double h) {
         double x;
         // save old x value
         x = v.location.x;

@@ -5,7 +5,7 @@
  */
 package net.qoopo.engine.core.material.node.core.perifericos;
 
-import net.qoopo.engine.core.entity.component.mesh.primitive.QPixel;
+import net.qoopo.engine.core.entity.component.mesh.primitive.Fragment;
 import net.qoopo.engine.core.material.node.core.QNodoEnlace;
 import net.qoopo.engine.core.material.node.core.QNodoPeriferico;
 import net.qoopo.engine.core.renderer.RenderEngine;
@@ -36,7 +36,7 @@ public class QPerProcesadorTextura extends QNodoPeriferico {
     }
 
     @Override
-    public void procesarEnlaces(RenderEngine render, QPixel pixel) {
+    public void procesarEnlaces(RenderEngine render, Fragment pixel) {
         super.procesarEnlaces(render, pixel);
         if (enlaces != null && !enlaces.isEmpty()) {
             for (QNodoEnlace enlace : enlaces) {

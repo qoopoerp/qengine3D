@@ -7,7 +7,7 @@ package net.qoopo.engine.core.material.node.core.output;
 
 import java.util.ArrayList;
 
-import net.qoopo.engine.core.entity.component.mesh.primitive.QPixel;
+import net.qoopo.engine.core.entity.component.mesh.primitive.Fragment;
 import net.qoopo.engine.core.material.node.core.ShaderNode;
 import net.qoopo.engine.core.material.node.core.perifericos.QPerColor;
 import net.qoopo.engine.core.math.QColor;
@@ -35,7 +35,7 @@ public class MaterialOutputNode extends ShaderNode {
     }
 
     @Override
-    public void procesar(RenderEngine render, QPixel pixel) {
+    public void procesar(RenderEngine render, Fragment pixel) {
         // esta activada la opción de material
         if (render.opciones.isMaterial()) {
             enColor.procesarEnlaces(render, pixel);

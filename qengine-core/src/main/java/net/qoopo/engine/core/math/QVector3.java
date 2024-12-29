@@ -2,7 +2,7 @@ package net.qoopo.engine.core.math;
 
 import java.io.Serializable;
 
-import net.qoopo.engine.core.entity.component.mesh.primitive.QVertex;
+import net.qoopo.engine.core.entity.component.mesh.primitive.Vertex;
 import net.qoopo.engine.core.util.QGlobal;
 
 public class QVector3 implements Serializable {
@@ -34,11 +34,11 @@ public class QVector3 implements Serializable {
         this.z = z;
     }
 
-    public QVector3(QVertex v1) {
+    public QVector3(Vertex v1) {
         this(v1.location.x, v1.location.y, v1.location.z);
     }
 
-    public QVector3(QVertex v1, QVertex v2) {
+    public QVector3(Vertex v1, Vertex v2) {
         this(v2.location.getVector3(), v1.location.getVector3());
     }
 
@@ -50,7 +50,7 @@ public class QVector3 implements Serializable {
         set(v2.x - v1.x, v2.y - v1.y, v2.z - v1.z);
     }
 
-    public void set(QVertex v1, QVertex v2) {
+    public void set(Vertex v1, Vertex v2) {
         set(v2.location.getVector3(), v1.location.getVector3());
     }
 
@@ -324,8 +324,8 @@ public class QVector3 implements Serializable {
         throw new IllegalArgumentException("index must be either 0, 1 or 2");
     }
 
-    public QVertex toVertice() {
-        return new QVertex(x, y, z, 1);
+    public Vertex toVertice() {
+        return new Vertex(x, y, z, 1);
     }
 
     public QVector2 xy() {
@@ -389,11 +389,11 @@ public class QVector3 implements Serializable {
         return new QVector3(x, y, z);
     }
 
-    public static QVector3 of(QVertex vertice) {
+    public static QVector3 of(Vertex vertice) {
         return new QVector3(vertice);
     }
 
-    public static QVector3 of(QVertex v1, QVertex v2) {
+    public static QVector3 of(Vertex v1, Vertex v2) {
         return new QVector3(v2.location.getVector3(), v1.location.getVector3());
     }
 

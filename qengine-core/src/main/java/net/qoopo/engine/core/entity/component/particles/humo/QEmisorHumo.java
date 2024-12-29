@@ -21,7 +21,7 @@ import net.qoopo.engine.core.math.QColor;
 import net.qoopo.engine.core.math.QVector3;
 import net.qoopo.engine.core.texture.QTextura;
 import net.qoopo.engine.core.texture.procesador.QProcesadorAtlasSecuencial;
-import net.qoopo.engine.core.texture.util.QMaterialUtil;
+import net.qoopo.engine.core.texture.util.MaterialUtil;
 import net.qoopo.engine.core.util.QGlobal;
 
 /**
@@ -86,7 +86,7 @@ public class QEmisorHumo extends ParticleEmissor {
                 Entity particula = new Entity("humo");
                 particula.setBillboard(true);
 
-                QMaterialUtil.aplicarMaterial(geometria, crearMaterial());
+                MaterialUtil.applyMaterial(geometria, crearMaterial());
                 particula.addComponent(geometria);
 
 //                QObjetoRigido rigido = new QObjetoRigido(QObjetoDinamico.DINAMICO);

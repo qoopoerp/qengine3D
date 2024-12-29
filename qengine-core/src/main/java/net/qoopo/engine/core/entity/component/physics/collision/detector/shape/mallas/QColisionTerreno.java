@@ -6,7 +6,7 @@
 package net.qoopo.engine.core.entity.component.physics.collision.detector.shape.mallas;
 
 import net.qoopo.engine.core.entity.component.physics.collision.detector.CollisionShape;
-import net.qoopo.engine.core.entity.component.terrain.HeightMapTerrain;
+import net.qoopo.engine.core.entity.component.terrain.Terrain;
 
 /**
  * Define una esfera contenedora del objeto
@@ -15,34 +15,31 @@ import net.qoopo.engine.core.entity.component.terrain.HeightMapTerrain;
  */
 public class QColisionTerreno extends CollisionShape {
 
-    private HeightMapTerrain terreno;
+    private Terrain terreno;
 
-    public QColisionTerreno(HeightMapTerrain terreno) {
+    public QColisionTerreno(Terrain terreno) {
         this.terreno = terreno;
     }
 
     @Override
     public boolean verificarColision(CollisionShape otro) {
-
         boolean b = false;
-
         // validar contra otro estera
         if (otro instanceof QColisionTerreno) {
         }
 
         return b;
-
     }
 
     @Override
     public void destruir() {
     }
 
-    public HeightMapTerrain getTerreno() {
+    public Terrain getTerreno() {
         return terreno;
     }
 
-    public void setTerreno(HeightMapTerrain terreno) {
+    public void setTerreno(Terrain terreno) {
         this.terreno = terreno;
     }
 

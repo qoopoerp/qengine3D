@@ -2,7 +2,7 @@ package net.qoopo.engine.core.math;
 
 import java.util.Random;
 
-import net.qoopo.engine.core.entity.component.mesh.primitive.QVertex;
+import net.qoopo.engine.core.entity.component.mesh.primitive.Vertex;
 import net.qoopo.engine.core.math.tablas.LUT;
 import net.qoopo.engine.core.util.TempVars;
 
@@ -107,20 +107,20 @@ final public class QMath {
      * @param endValue   ending value. 100% of f
      * @return The interpolated value between startValue and endValue.
      */
-    public static float interpolateLinear(float scale, float startValue, float endValue) {
-        if (startValue == endValue) {
-            return startValue;
-        }
-        if (scale <= 0f) {
-            return startValue;
-        }
-        if (scale >= 1f) {
-            return endValue;
-        }
-        return ((1f - scale) * startValue) + (scale * endValue);
-    }
+    // public static float interpolateLinear(float scale, float startValue, float endValue) {
+    //     if (startValue == endValue) {
+    //         return startValue;
+    //     }
+    //     if (scale <= 0f) {
+    //         return startValue;
+    //     }
+    //     if (scale >= 1f) {
+    //         return endValue;
+    //     }
+    //     return ((1f - scale) * startValue) + (scale * endValue);
+    // }
 
-    public static float linear(float alpha, float start, float end) {
+    public static float interpolateLinear(float alpha, float start, float end) {
         if (alpha < 0) {
             return start;
         }
@@ -130,57 +130,49 @@ final public class QMath {
         return start + (end - start) * alpha;
     }
 
-    // public static void linear(QIluminacion newIllumination, float alpha,
-    // QIluminacion start, QIluminacion end) {
-    // newIllumination.dR = linear(alpha, start.dR, end.dR);
-    // newIllumination.dG = linear(alpha, start.dG, end.dG);
-    // newIllumination.dB = linear(alpha, start.dB, end.dB);
-    // newIllumination.sR = linear(alpha, start.sR, end.sR);
-    // newIllumination.sG = linear(alpha, start.sG, end.sG);
-    // newIllumination.sB = linear(alpha, start.sB, end.sB);
-    // }
-    public static void linear(QVertex newVertex, float alpha, QVertex start, QVertex end) {
-        newVertex.location.x = linear(alpha, start.location.x, end.location.x);
-        newVertex.location.y = linear(alpha, start.location.y, end.location.y);
-        newVertex.location.z = linear(alpha, start.location.z, end.location.z);
-        newVertex.u = linear(alpha, start.u, end.u);
-        newVertex.v = linear(alpha, start.v, end.v);
-        newVertex.normal.x = linear(alpha, start.normal.x, end.normal.x);
-        newVertex.normal.y = linear(alpha, start.normal.y, end.normal.y);
-        newVertex.normal.z = linear(alpha, start.normal.z, end.normal.z);
+    public static void interpolateLinear(Vertex newVertex, float alpha, Vertex start, Vertex end) {
+        // interpolateLinear(newVertex.location, alpha, start.location, end.location);
+        newVertex.location.x = interpolateLinear(alpha, start.location.x, end.location.x);
+        newVertex.location.y = interpolateLinear(alpha, start.location.y, end.location.y);
+        newVertex.location.z = interpolateLinear(alpha, start.location.z, end.location.z);
+        newVertex.u = interpolateLinear(alpha, start.u, end.u);
+        newVertex.v = interpolateLinear(alpha, start.v, end.v);
+        newVertex.normal.x = interpolateLinear(alpha, start.normal.x, end.normal.x);
+        newVertex.normal.y = interpolateLinear(alpha, start.normal.y, end.normal.y);
+        newVertex.normal.z = interpolateLinear(alpha, start.normal.z, end.normal.z);
     }
 
-    public static void linear(QVector2 newVector, float alpha, QVector2 start, QVector2 end) {
-        newVector.x = linear(alpha, start.x, end.x);
-        newVector.y = linear(alpha, start.y, end.y);
+    public static void interpolateLinear(QVector2 newVector, float alpha, QVector2 start, QVector2 end) {
+        newVector.x = interpolateLinear(alpha, start.x, end.x);
+        newVector.y = interpolateLinear(alpha, start.y, end.y);
     }
 
-    public static void linear(QVector3 newVector, float alpha, QVector3 start, QVector3 end) {
-        newVector.x = linear(alpha, start.x, end.x);
-        newVector.y = linear(alpha, start.y, end.y);
-        newVector.z = linear(alpha, start.z, end.z);
+    public static void interpolateLinear(QVector3 newVector, float alpha, QVector3 start, QVector3 end) {
+        newVector.x = interpolateLinear(alpha, start.x, end.x);
+        newVector.y = interpolateLinear(alpha, start.y, end.y);
+        newVector.z = interpolateLinear(alpha, start.z, end.z);
     }
 
-    public static void linear(QVector4 newVector, float alpha, QVector4 start, QVector4 end) {
-        newVector.x = linear(alpha, start.x, end.x);
-        newVector.y = linear(alpha, start.y, end.y);
-        newVector.z = linear(alpha, start.z, end.z);
-        newVector.w = linear(alpha, start.w, end.w);
+    public static void interpolateLinear(QVector4 newVector, float alpha, QVector4 start, QVector4 end) {
+        newVector.x = interpolateLinear(alpha, start.x, end.x);
+        newVector.y = interpolateLinear(alpha, start.y, end.y);
+        newVector.z = interpolateLinear(alpha, start.z, end.z);
+        newVector.w = interpolateLinear(alpha, start.w, end.w);
     }
 
-    // public static void linear(QPoligono.UVCoordinate newUV, float alpha,
+    // public static void interpolateLinear(QPoligono.UVCoordinate newUV, float alpha,
     // QPoligono.UVCoordinate start, QPoligono.UVCoordinate end) {
-    // newUV.u = linear(alpha, start.u, end.u);
-    // newUV.v = linear(alpha, start.v, end.v);
+    // newUV.u = interpolateLinear(alpha, start.u, end.u);
+    // newUV.v = interpolateLinear(alpha, start.v, end.v);
     // }
-    public static float linear(int startProgress, int endProgress, int progress, int start, int end) {
+    public static float interpolateLinear(int startProgress, int endProgress, int progress, int start, int end) {
         return startProgress == endProgress
                 ? start
                 : start + (end - start) * (progress - startProgress)
                         / (endProgress - startProgress);
     }
 
-    public static float linear(float startProgress, float endProgress, float progress, float start, float end) {
+    public static float interpolateLinear(float startProgress, float endProgress, float progress, float start, float end) {
         return startProgress == endProgress
                 ? start
                 : start + (end - start) * (progress - startProgress)

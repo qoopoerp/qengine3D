@@ -8,17 +8,17 @@ package net.qoopo.engine.core.entity.component.mesh.primitive.shape;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import net.qoopo.engine.core.entity.component.mesh.primitive.QShape;
+import net.qoopo.engine.core.entity.component.mesh.primitive.Shape;
 import net.qoopo.engine.core.material.basico.QMaterialBas;
-import net.qoopo.engine.core.texture.util.QMaterialUtil;
-import net.qoopo.engine.core.util.mesh.QUtilNormales;
+import net.qoopo.engine.core.texture.util.MaterialUtil;
+import net.qoopo.engine.core.util.mesh.NormalUtil;
 
 /**
  * Crea un Plano
  *
  * @author alberto
  */
-public class QPlanoBilateral extends QShape {
+public class QPlanoBilateral extends Shape {
 
     private float alto;
     private float ancho;
@@ -45,8 +45,8 @@ public class QPlanoBilateral extends QShape {
             this.addPoly(material, 3, 2, 1, 0);// superior
             this.addPoly(material, 0, 1, 2, 3);// superior
 
-            QMaterialUtil.aplicarMaterial(this, material);
-            QUtilNormales.calcularNormales(this);
+            MaterialUtil.applyMaterial(this, material);
+            NormalUtil.calcularNormales(this);
         } catch (Exception ex) {
             Logger.getLogger(QPlanoBilateral.class.getName()).log(Level.SEVERE, null, ex);
         }

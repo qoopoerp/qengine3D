@@ -3,14 +3,14 @@ package net.qoopo.engine.core.entity.component.water;
 import lombok.Getter;
 import lombok.Setter;
 import net.qoopo.engine.core.assets.AssetManager;
-import net.qoopo.engine.core.entity.component.mesh.primitive.shape.QPlano;
+import net.qoopo.engine.core.entity.component.mesh.primitive.shape.Plane;
 import net.qoopo.engine.core.entity.component.water.texture.WaterTextureProcessor;
 import net.qoopo.engine.core.material.basico.QMaterialBas;
 import net.qoopo.engine.core.math.QColor;
 import net.qoopo.engine.core.renderer.RenderEngine;
 import net.qoopo.engine.core.scene.Scene;
 import net.qoopo.engine.core.texture.QTextura;
-import net.qoopo.engine.core.texture.util.QMaterialUtil;
+import net.qoopo.engine.core.texture.util.MaterialUtil;
 
 @Getter
 @Setter
@@ -23,7 +23,7 @@ public class WaterDuDv extends Water {
     public WaterDuDv(Scene scene, int width, int height) {
         this.width = width;
         this.height = height;
-        this.universo = scene;
+        this.scene = scene;
     }
 
     public void build() {
@@ -52,9 +52,9 @@ public class WaterDuDv extends Water {
         material.setMapaNormal(getTextNormal());
         material.setMapaColor(getOutputTexture());
 
-        mesh = new QPlano(width, height);
+        mesh = new Plane(width, height);
 
-        entity.addComponent(QMaterialUtil.aplicarMaterial(mesh, material));
+        entity.addComponent(MaterialUtil.applyMaterial(mesh, material));
     }
 
     @Override

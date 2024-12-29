@@ -8,18 +8,17 @@ package net.qoopo.engine.core.entity.component.mesh.primitive.shape;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import net.qoopo.engine.core.entity.component.mesh.primitive.QShape;
+import net.qoopo.engine.core.entity.component.mesh.primitive.Shape;
 import net.qoopo.engine.core.material.basico.QMaterialBas;
 import net.qoopo.engine.core.math.QColor;
-import net.qoopo.engine.core.texture.util.QMaterialUtil;
-import net.qoopo.engine.core.util.mesh.QUtilNormales;
+import net.qoopo.engine.core.texture.util.MaterialUtil;
 
 /**
  * Geoesfera o Icoesfera
  *
  * @author alberto
  */
-public class IcoSphere extends QShape {
+public class IcoSphere extends Shape {
 
     private float radio;
     private int divisiones = 3;
@@ -55,7 +54,7 @@ public class IcoSphere extends QShape {
         // paso 1.- generar el icosaedro origen
         crearOriginal();
         // ahora armamos las caras
-        QUtilNormales.calcularNormales(this);
+        calculateNormals();
 
         // paso 2
         // for (int i = 0; i < divisiones; i++) {
@@ -63,10 +62,11 @@ public class IcoSphere extends QShape {
         // inflar(radio);
         // }
         dividir(divisiones);
-        inflar(radio);
+        inflate(radio);
 
         // el objeto es suavizado
-        QMaterialUtil.suavizar(this, true);
+        MaterialUtil.smooth(this, true);
+        applyMaterial(material);
         // QMaterialUtil.aplicarMaterial(this, material);
     }
 

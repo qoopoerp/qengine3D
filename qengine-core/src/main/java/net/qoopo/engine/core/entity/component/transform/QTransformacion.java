@@ -114,8 +114,8 @@ public class QTransformacion extends EntityComponent {
      */
     public static QTransformacion interpolar(QTransformacion origen, QTransformacion destino, float progresion) {
         QTransformacion nueva = new QTransformacion(QRotacion.CUATERNION);
-        QMath.linear(nueva.traslacion, progresion, origen.traslacion, destino.traslacion);
-        QMath.linear(nueva.escala, progresion, origen.escala, destino.escala);
+        QMath.interpolateLinear(nueva.traslacion, progresion, origen.traslacion, destino.traslacion);
+        QMath.interpolateLinear(nueva.escala, progresion, origen.escala, destino.escala);
         //interpolacion espefira (SLERP)
 //        nueva.getRotacion().setCuaternion(new Cuaternion(origen.getRotacion().getCuaternion(), destino.getRotacion().getCuaternion(), progresion));
         //interpolacion normalizada (NLERP) , m[as rapida

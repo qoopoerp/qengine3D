@@ -23,7 +23,7 @@ import net.qoopo.engine.core.entity.component.physics.collision.detector.Collisi
 import net.qoopo.engine.core.entity.component.physics.collision.listeners.QListenerColision;
 import net.qoopo.engine.core.entity.component.physics.dinamica.QObjetoRigido;
 import net.qoopo.engine.core.entity.component.physics.vehiculo.QVehiculo;
-import net.qoopo.engine.core.entity.component.terrain.HeightMapTerrain;
+import net.qoopo.engine.core.entity.component.terrain.Terrain;
 import net.qoopo.engine.core.entity.component.water.Water;
 
 /**
@@ -42,15 +42,24 @@ public class QUtilComponentes {
     // }
     // entity.componentes.removeAll(tmp);
     // }
-    public static void eliminarComponenteAnimacion(Entity entity, String clase) {
-        List<EntityComponent> tmp = new ArrayList<>();
+
+    public static EntityComponent getComponent(Entity entity, Class<? extends EntityComponent> className) {
         for (EntityComponent componente : entity.getComponents()) {
-            if (componente.getClass().getName().equals(clase)) {
-                componente.destruir();
-                tmp.add(componente);
+            if(className.isAssignableFrom(componente.getClass())){
+            // if (componente.getClass().getName().equals(className.getClass().getName())) {
+                return componente;
             }
         }
-        entity.getComponents().removeAll(tmp);
+        return null;
+    }
+
+    public static EntityComponent getComponent(Entity entity, String clase) {
+        for (EntityComponent componente : entity.getComponents()) {
+            if (componente.getClass().getName().equals(clase)) {
+                return componente;
+            }
+        }
+        return null;
     }
 
     public static void eliminarComponenteTeclado(Entity entity) {
@@ -129,12 +138,12 @@ public class QUtilComponentes {
     }
 
     // public static QShaderComponente getShader(Entity entity) {
-    //     for (QComponent componente : entity.getComponents()) {
-    //         if (componente instanceof QShaderComponente) {
-    //             return (QShaderComponente) componente;
-    //         }
-    //     }
-    //     return null;
+    // for (QComponent componente : entity.getComponents()) {
+    // if (componente instanceof QShaderComponente) {
+    // return (QShaderComponente) componente;
+    // }
+    // }
+    // return null;
     // }
 
     public static Skeleton getEsqueleto(Entity entity) {
@@ -186,10 +195,10 @@ public class QUtilComponentes {
         return null;
     }
 
-    public static HeightMapTerrain getTerreno(Entity entity) {
+    public static Terrain getTerreno(Entity entity) {
         for (EntityComponent componente : entity.getComponents()) {
-            if (componente instanceof HeightMapTerrain) {
-                return (HeightMapTerrain) componente;
+            if (componente instanceof Terrain) {
+                return (Terrain) componente;
             }
         }
         return null;

@@ -6,7 +6,7 @@
 package net.qoopo.engine.core.entity.component.animation;
 
 import net.qoopo.engine.core.entity.Entity;
-import net.qoopo.engine.core.entity.component.mesh.primitive.shape.QCaja;
+import net.qoopo.engine.core.entity.component.mesh.primitive.shape.Box;
 import net.qoopo.engine.core.math.QMatriz4;
 
 /**
@@ -59,9 +59,9 @@ public class Bone extends Entity {
         // addComponent(QUtilComponentes.getMesh(child));
         // }
 
-        addComponent(new QCaja(1, 1, 1));
-        addComponent(new QCaja(0.1f, 0.1f, 0.1f));
-        addComponent(new QCaja(0.5f, 0.1f, 0.1f));
+        addComponent(new Box(1, 1, 1));
+        addComponent(new Box(0.1f, 0.1f, 0.1f));
+        addComponent(new Box(0.5f, 0.1f, 0.1f));
 
         // public static final Mesh GEOMETRIA_BONE_CUERPO = QUtilComponentes.getMesh(
         // CargaWaveObject.cargarWaveObject(QBone.class.getResourceAsStream("/modelos/bone/bone.obj")).get(0));

@@ -638,7 +638,7 @@ public final class Cuaternion implements Cloneable, java.io.Serializable {
 
         // Calculate the x, y, z and w values for the quaternion by using a
         // special
-        // form of linear interpolation for quaternions.
+        // form of interpolateLinear interpolation for quaternions.
         this.x = (scale0 * q1.x) + (scale1 * q2.x);
         this.y = (scale0 * q1.y) + (scale1 * q2.y);
         this.z = (scale0 * q1.z) + (scale1 * q2.z);
@@ -693,7 +693,7 @@ public final class Cuaternion implements Cloneable, java.io.Serializable {
 
         // Calculate the x, y, z and w values for the quaternion by using a
         // special
-        // form of linear interpolation for quaternions.
+        // form of interpolateLinear interpolation for quaternions.
         this.x = (scale0 * this.x) + (scale1 * q2.x);
         this.y = (scale0 * this.y) + (scale1 * q2.y);
         this.z = (scale0 * this.z) + (scale1 * q2.z);

@@ -9,13 +9,13 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import net.qoopo.engine.core.entity.component.mesh.Mesh;
-import net.qoopo.engine.core.entity.component.mesh.primitive.QPoligono;
+import net.qoopo.engine.core.entity.component.mesh.primitive.Poly;
 import net.qoopo.engine.core.entity.component.mesh.primitive.QPrimitiva;
-import net.qoopo.engine.core.entity.component.mesh.primitive.QVertex;
+import net.qoopo.engine.core.entity.component.mesh.primitive.Vertex;
 import net.qoopo.engine.core.material.basico.QMaterialBas;
 import net.qoopo.engine.core.math.QVector3;
-import net.qoopo.engine.core.texture.util.QMaterialUtil;
-import net.qoopo.engine.core.util.mesh.QUtilNormales;
+import net.qoopo.engine.core.texture.util.MaterialUtil;
+import net.qoopo.engine.core.util.mesh.NormalUtil;
 
 /**
  * Permite generar automaticamente gemotrias con fórmulas
@@ -165,8 +165,8 @@ public class MeshGenerator {
         objeto.addVertex(radio * 2, -alto / 2, 0);
         objeto.addVertex(0, -alto / 2, 0);
         objeto = generateRevolutionMesh(objeto, secciones);
-        objeto = QUtilNormales.calcularNormales(objeto);
-        objeto = QMaterialUtil.aplicarMaterial(objeto, material);
+        objeto = NormalUtil.calcularNormales(objeto);
+        objeto = MaterialUtil.applyMaterial(objeto, material);
         return objeto;
     }
 
@@ -176,8 +176,8 @@ public class MeshGenerator {
         // primer paso generar vertices
         objeto.addVertex(radio / 2, 0, 0);
         objeto = generateRevolutionMesh(objeto, secciones);
-        objeto = QUtilNormales.calcularNormales(objeto);
-        objeto = QMaterialUtil.aplicarMaterial(objeto, material);
+        objeto = NormalUtil.calcularNormales(objeto);
+        objeto = MaterialUtil.applyMaterial(objeto, material);
         return objeto;
     }
 
@@ -189,7 +189,7 @@ public class MeshGenerator {
     public static Mesh generarMediaEsfera(float radio, int secciones) {
         Mesh objeto = new Mesh();
         QMaterialBas material = new QMaterialBas("Esfera");
-        QVertex inicial = objeto.addVertex(0, radio, 0); // primer vertice
+        Vertex inicial = objeto.addVertex(0, radio, 0); // primer vertice
         QVector3 vector = QVector3.of(inicial.location.x, inicial.location.y, inicial.location.z);
         float angulo = 360 / secciones;
         // generamos los vertices el contorno para luego generar el objeto por medio de
@@ -200,12 +200,12 @@ public class MeshGenerator {
         }
 
         objeto = generateRevolutionMesh(objeto, secciones, false, false, false, false);
-        objeto = QUtilNormales.calcularNormales(objeto);
+        objeto = NormalUtil.calcularNormales(objeto);
         // el objeto es suavizado
         for (QPrimitiva face : objeto.primitivas) {
-            ((QPoligono) face).setSmooth(true);
+            ((Poly) face).setSmooth(true);
         }
-        objeto = QMaterialUtil.aplicarMaterial(objeto, material);
+        objeto = MaterialUtil.applyMaterial(objeto, material);
         return objeto;
     }
 

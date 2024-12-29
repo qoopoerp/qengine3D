@@ -23,7 +23,7 @@ public class QGlobal {
 
     // Permite usar la aproximacion de la inversa de la raiz cuadrada de un número
     // mejorando la velocidad de calculo, aunq no es 100% exacto
-    public static boolean OPT_USAR_FAST_INVSQRT = true;
+    public static boolean OPT_USAR_FAST_INVSQRT = false;
 
     // --------------------------------------------------------------------------------------------------------
     // ------ SOMBRAS

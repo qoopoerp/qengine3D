@@ -1,6 +1,6 @@
 package net.qoopo.engine.core.util;
 
-import net.qoopo.engine.core.entity.component.mesh.primitive.QVertex;
+import net.qoopo.engine.core.entity.component.mesh.primitive.Vertex;
 import net.qoopo.engine.core.entity.component.transform.QVertexBuffer;
 import net.qoopo.engine.core.math.Cuaternion;
 import net.qoopo.engine.core.math.QColor;
@@ -106,9 +106,9 @@ public class TempVars {
     /**
      * Vertices
      */
-    public final QVertex vertice1 = new QVertex();
-    public final QVertex vertice2 = new QVertex();
-    public final QVertex vertice3 = new QVertex();
+    public final Vertex vertex1 = new Vertex();
+    public final Vertex vertex2 = new Vertex();
+    public final Vertex vertex3 = new Vertex();
 
     /**
      * General matrices.

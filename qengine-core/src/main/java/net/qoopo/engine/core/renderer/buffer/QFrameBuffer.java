@@ -8,7 +8,7 @@ package net.qoopo.engine.core.renderer.buffer;
 import java.awt.image.BufferedImage;
 import java.util.Arrays;
 
-import net.qoopo.engine.core.entity.component.mesh.primitive.QPixel;
+import net.qoopo.engine.core.entity.component.mesh.primitive.Fragment;
 import net.qoopo.engine.core.math.QColor;
 import net.qoopo.engine.core.texture.QTextura;
 
@@ -17,18 +17,20 @@ import net.qoopo.engine.core.texture.QTextura;
  *
  * @author alberto
  */
+
 public class QFrameBuffer {
 
-    //este buffer adicional tiene información de material, entity (transformación y demas) por cada pixel
+    // este buffer adicional tiene información de material, entity (transformación y
+    // demas) por cada pixel
     // no tiene información de color
-    protected final QPixel[][] pixelBuffer;
+    protected final Fragment[][] pixelBuffer;
     // este buffer es el de color que se llena despues de procesar los pixeles
     private QTextura bufferColor;
-    //buffer de profundidad
+    // buffer de profundidad
     protected float[][] zBuffer;
     private float minimo = 0, maximo = 0;
     private int ancho, alto;
-    //esta textura si es diferente de nulo, dibujamos sobre ella tambien
+    // esta textura si es diferente de nulo, dibujamos sobre ella tambien
     protected QTextura textura;
 
     public QFrameBuffer(int ancho, int alto, QTextura texturaSalida) {
@@ -36,10 +38,10 @@ public class QFrameBuffer {
         this.alto = alto;
         zBuffer = new float[ancho][alto];
         bufferColor = new QTextura(ancho, alto);
-        pixelBuffer = new QPixel[ancho][alto];
-        for (QPixel[] row : pixelBuffer) {
+        pixelBuffer = new Fragment[ancho][alto];
+        for (Fragment[] row : pixelBuffer) {
             for (int i = 0; i < row.length; i++) {
-                row[i] = new QPixel();
+                row[i] = new Fragment();
             }
         }
         this.textura = texturaSalida;
@@ -54,7 +56,7 @@ public class QFrameBuffer {
         }
     }
 
-    public QPixel[][] getPixelBuffer() {
+    public Fragment[][] getPixelBuffer() {
         return pixelBuffer;
     }
 
@@ -75,7 +77,16 @@ public class QFrameBuffer {
      */
     public void limpiarZBuffer() {
         for (float[] row : zBuffer) {
-            Arrays.fill(row, Float.POSITIVE_INFINITY);
+            Arrays.fill(row, Float.NEGATIVE_INFINITY);
+        }
+    }
+
+    public void clean() {
+        limpiarZBuffer();
+        for (Fragment[] row : pixelBuffer) {
+            for (int i = 0; i < row.length; i++) {
+                row[i].setDibujar(false);
+            }
         }
     }
 
@@ -88,7 +99,7 @@ public class QFrameBuffer {
         bufferColor.llenarColor(color);
     }
 
-    public QPixel getPixel(int x, int y) {
+    public Fragment getPixel(int x, int y) {
         try {
             return pixelBuffer[x][y];
         } catch (Exception e) {
@@ -170,7 +181,7 @@ public class QFrameBuffer {
             float r = 0, g = 0, b = 0;
             for (int x = 0; x < zBuffer.length; x++) {
                 for (int y = 0; y < zBuffer[0].length; y++) {
-//                    b = g = r = ((zBuffer[y][x] - minimo) / maximo);
+                    // b = g = r = ((zBuffer[y][x] - minimo) / maximo);
                     b = g = r = (zBuffer[x][y] / farPlane);
                     setRGB(x, y, r, g, b);
                 }
@@ -213,11 +224,11 @@ public class QFrameBuffer {
      * @return
      */
     public static QFrameBuffer copiar(QFrameBuffer buffer, int ancho, int alto) {
-//        QFrameBuffer nuevo = new QFrameBuffer(ancho, alto, buffer.getTextura());
+        // QFrameBuffer nuevo = new QFrameBuffer(ancho, alto, buffer.getTextura());
         QFrameBuffer nuevo = new QFrameBuffer(ancho, alto, null);
         QColor color;
         try {
-            //si es expandir
+            // si es expandir
             if (buffer.getAncho() < ancho) {
                 for (int x = 0; x < nuevo.getAncho(); x++) {
                     for (int y = 0; y < nuevo.getAlto(); y++) {
@@ -226,7 +237,7 @@ public class QFrameBuffer {
                     }
                 }
             } else {
-                //si es encojer
+                // si es encojer
                 for (int x = 0; x < buffer.getAncho(); x++) {
                     for (int y = 0; y < buffer.getAlto(); y++) {
                         color = buffer.getColor(x, y);

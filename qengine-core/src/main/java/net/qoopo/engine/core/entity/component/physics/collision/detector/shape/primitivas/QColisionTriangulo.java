@@ -5,7 +5,7 @@
  */
 package net.qoopo.engine.core.entity.component.physics.collision.detector.shape.primitivas;
 
-import net.qoopo.engine.core.entity.component.mesh.primitive.shape.QTriangulo;
+import net.qoopo.engine.core.entity.component.mesh.primitive.shape.Triangle;
 import net.qoopo.engine.core.entity.component.physics.collision.detector.CollisionShape;
 import net.qoopo.engine.core.math.QVector3;
 
@@ -23,7 +23,7 @@ public class QColisionTriangulo extends CollisionShape {
     public QColisionTriangulo() {
     }
 
-    public QColisionTriangulo(QTriangulo triangulo) {
+    public QColisionTriangulo(Triangle triangulo) {
         p1 = QVector3.of(triangulo.vertices[0]);
         p2 = QVector3.of(triangulo.vertices[1]);
         p3 = QVector3.of(triangulo.vertices[2]);

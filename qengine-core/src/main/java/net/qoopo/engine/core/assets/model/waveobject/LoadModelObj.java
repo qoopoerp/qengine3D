@@ -20,7 +20,7 @@ import java.util.List;
 import net.qoopo.engine.core.assets.model.ModelLoader;
 import net.qoopo.engine.core.entity.Entity;
 import net.qoopo.engine.core.entity.component.mesh.Mesh;
-import net.qoopo.engine.core.entity.component.mesh.primitive.QPoligono;
+import net.qoopo.engine.core.entity.component.mesh.primitive.Poly;
 import net.qoopo.engine.core.entity.component.mesh.primitive.QPrimitiva;
 import net.qoopo.engine.core.entity.component.physics.collision.detector.CollisionShape;
 import net.qoopo.engine.core.entity.component.physics.collision.detector.shape.mallas.QColisionMallaConvexa;
@@ -211,10 +211,10 @@ public class LoadModelObj implements ModelLoader {
                             if (geometriaLeyendo != null) {
                                 for (QPrimitiva face : geometriaLeyendo.primitivas) {
                                     if (face.listaVertices.length >= 3) {
-                                        ((QPoligono) face).calculaNormalYCentro();
+                                        ((Poly) face).calculaNormalYCentro();
                                         if (!vertexNormalSpecified || true) {
                                             for (int i : face.listaVertices) {
-                                                face.geometria.vertices[i].normal.add(((QPoligono) face).getNormal());
+                                                face.geometria.vertices[i].normal.add(((Poly) face).getNormal());
                                             }
                                         }
                                     }
@@ -303,7 +303,7 @@ public class LoadModelObj implements ModelLoader {
                                     c++;
                                 }
                             }
-                            QPoligono nuevaCara = geometriaLeyendo.addPoly(verticesCara);
+                            Poly nuevaCara = geometriaLeyendo.addPoly(verticesCara);
                             nuevaCara.setSmooth(smoothMode);
                             if (currentMaterial != null) {
                                 nuevaCara.material = currentMaterial;
@@ -330,10 +330,10 @@ public class LoadModelObj implements ModelLoader {
             if (geometriaLeyendo != null) {
                 for (QPrimitiva face : geometriaLeyendo.primitivas) {
                     if (face.listaVertices.length >= 3) {
-                        ((QPoligono) face).calculaNormalYCentro();
+                        ((Poly) face).calculaNormalYCentro();
                         if (!vertexNormalSpecified || true) {
                             for (int i : face.listaVertices) {
-                                face.geometria.vertices[i].normal.add(((QPoligono) face).getNormal());
+                                face.geometria.vertices[i].normal.add(((Poly) face).getNormal());
                             }
                         }
                     }

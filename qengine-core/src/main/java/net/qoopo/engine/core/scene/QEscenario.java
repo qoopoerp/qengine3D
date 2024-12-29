@@ -5,23 +5,24 @@
  */
 package net.qoopo.engine.core.scene;
 
-import net.qoopo.engine.core.entity.component.terrain.HeightMapTerrain;
+import net.qoopo.engine.core.entity.component.terrain.Terrain;
 
 /**
  * Representa un nivel de videojuego
+ * 
  * @author alberto
  */
 public abstract class QEscenario {
 
-    protected HeightMapTerrain terreno;
+    protected Terrain terreno;
 
     public abstract void cargar(Scene universo);
 
-    public HeightMapTerrain getTerreno() {
+    public Terrain getTerreno() {
         return terreno;
     }
 
-    public void setTerreno(HeightMapTerrain terreno) {
+    public void setTerreno(Terrain terreno) {
         this.terreno = terreno;
     }
 

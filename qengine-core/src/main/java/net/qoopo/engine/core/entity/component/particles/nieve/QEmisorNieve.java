@@ -22,7 +22,7 @@ import net.qoopo.engine.core.material.basico.QMaterialBas;
 import net.qoopo.engine.core.math.QColor;
 import net.qoopo.engine.core.math.QVector3;
 import net.qoopo.engine.core.texture.QTextura;
-import net.qoopo.engine.core.texture.util.QMaterialUtil;
+import net.qoopo.engine.core.texture.util.MaterialUtil;
 import net.qoopo.engine.core.util.QGlobal;
 import net.qoopo.engine.core.util.QUtilComponentes;
 import net.qoopo.engine.core.util.image.ImgReader;
@@ -66,7 +66,7 @@ public class QEmisorNieve extends ParticleEmissor {
                 Entity entParticula = new Entity("copo");
                 entParticula.setBillboard(true);
                 Mesh geometria = new QPlanoBillboard(0.05f, 0.05f);
-                QMaterialUtil.aplicarMaterial(geometria, material);
+                MaterialUtil.applyMaterial(geometria, material);
                 entParticula.addComponent(geometria);
 
                 CollisionShape colision = new QColisionMallaConvexa(geometria);

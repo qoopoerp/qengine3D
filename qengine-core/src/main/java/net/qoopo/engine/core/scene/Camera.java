@@ -10,7 +10,7 @@ import net.qoopo.engine.core.assets.model.waveobject.LoadModelObj;
 import net.qoopo.engine.core.entity.Entity;
 import net.qoopo.engine.core.entity.component.mesh.Mesh;
 import net.qoopo.engine.core.entity.component.mesh.primitive.QPrimitiva;
-import net.qoopo.engine.core.entity.component.mesh.primitive.QVertex;
+import net.qoopo.engine.core.entity.component.mesh.primitive.Vertex;
 import net.qoopo.engine.core.material.basico.QMaterialBas;
 import net.qoopo.engine.core.math.QColor;
 import net.qoopo.engine.core.math.QMatriz4;
@@ -171,7 +171,7 @@ public class Camera extends Entity {
         return alfa;
     }
 
-    public boolean isVisible(QVertex vertice) {
+    public boolean isVisible(Vertex vertice) {
         try {
             return isVisible(vertice.location);
         } catch (Exception e) {
@@ -337,7 +337,7 @@ public class Camera extends Entity {
     private void construirGeometria(QVector3[] esquinas) {
         try {
             GEOMETRIA_FRUSTUM.destroy();
-            GEOMETRIA_FRUSTUM.vertices = new QVertex[0];
+            GEOMETRIA_FRUSTUM.vertices = new Vertex[0];
             GEOMETRIA_FRUSTUM.primitivas = new QPrimitiva[0];
             for (QVector3 vector : esquinas) {
                 GEOMETRIA_FRUSTUM.addVertex(vector);

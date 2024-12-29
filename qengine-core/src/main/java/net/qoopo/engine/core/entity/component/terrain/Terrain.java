@@ -17,7 +17,7 @@ public abstract class Terrain extends EntityComponent {
     protected QMaterialBas material = new QMaterialBas("terreno");
 
     // arreglo que tiene la altura, para averigurar la altura en tiempo de ejecucion
-    protected float[][] altura;
+    protected float[][] heights;
 
     protected float width = 0;
     protected float height = 0;
@@ -30,7 +30,7 @@ public abstract class Terrain extends EntityComponent {
 
     public abstract void build();
 
-    public float getAltura(float x, float z) {
+    public float getHeight(float x, float z) {
         try {
             float terrenoX = x - this.inicioX;
             float terrenoZ = z - this.inicioZ;
@@ -41,24 +41,24 @@ public abstract class Terrain extends EntityComponent {
             // return 0;
             // }
 
-            float gridSquareSize = width / ((float) altura.length - 1);
+            float gridSquareSize = width / ((float) heights.length - 1);
             int gridX = (int) Math.floor(terrenoX / gridSquareSize);
             int gridZ = (int) Math.floor(terrenoZ / gridSquareSize);
-            if (gridX < 0 || gridX > altura.length - 1) {
+            if (gridX < 0 || gridX > heights.length - 1) {
                 return 0;
             }
-            if (gridZ < 0 || gridZ > altura.length - 1) {
+            if (gridZ < 0 || gridZ > heights.length - 1) {
                 return 0;
             }
             float xCoord = (terrenoX % gridSquareSize) / gridSquareSize;
             float zCoord = (terrenoZ % gridSquareSize) / gridSquareSize;
             if (xCoord <= (1 - zCoord)) {
-                return barryCentric(QVector3.of(0, altura[gridX][gridZ], 0),
-                        QVector3.of(1, altura[gridX + 1][gridZ], 0), QVector3.of(0, altura[gridX][gridZ + 1], 1),
+                return barryCentric(QVector3.of(0, heights[gridX][gridZ], 0),
+                        QVector3.of(1, heights[gridX + 1][gridZ], 0), QVector3.of(0, heights[gridX][gridZ + 1], 1),
                         QVector3.of(xCoord, zCoord, 0));
             } else {
-                return barryCentric(QVector3.of(1, altura[gridX + 1][gridZ], 0),
-                        QVector3.of(1, altura[gridX + 1][gridZ + 1], 1), QVector3.of(0, altura[gridX][gridZ + 1], 1),
+                return barryCentric(QVector3.of(1, heights[gridX + 1][gridZ], 0),
+                        QVector3.of(1, heights[gridX + 1][gridZ + 1], 1), QVector3.of(0, heights[gridX][gridZ + 1], 1),
                         QVector3.of(xCoord, zCoord, 0));
             }
         } catch (Exception e) {

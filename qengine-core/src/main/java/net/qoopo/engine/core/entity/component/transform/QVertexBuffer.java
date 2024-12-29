@@ -6,7 +6,7 @@
 package net.qoopo.engine.core.entity.component.transform;
 
 import net.qoopo.engine.core.entity.component.mesh.primitive.QPrimitiva;
-import net.qoopo.engine.core.entity.component.mesh.primitive.QVertex;
+import net.qoopo.engine.core.entity.component.mesh.primitive.Vertex;
 
 /**
  * Contiene la información despues de realizar la transformación
@@ -15,7 +15,7 @@ import net.qoopo.engine.core.entity.component.mesh.primitive.QVertex;
  */
 public class QVertexBuffer {
 
-    private QVertex[] verticesTransformados = null;
+    private Vertex[] verticesTransformados = null;
     private QPrimitiva[] poligonosTransformados = null;
 
     public QVertexBuffer() {
@@ -24,14 +24,14 @@ public class QVertexBuffer {
 
     public void init(int vertices, int caras) {
         if (verticesTransformados == null) {
-            verticesTransformados = new QVertex[vertices];
+            verticesTransformados = new Vertex[vertices];
             poligonosTransformados = new QPrimitiva[caras];
             // System.out.println("se instancio vertices y poligonos (" + vertices + "," +
             // caras + ")");
         } else {
             // si ya tiene instancias compruebo las longitudes para no volver a isntanciar
             if (verticesTransformados.length != vertices) {
-                verticesTransformados = new QVertex[vertices];
+                verticesTransformados = new Vertex[vertices];
             }
 
             if (poligonosTransformados.length != caras) {
@@ -40,27 +40,27 @@ public class QVertexBuffer {
         }
     }
 
-    public QVertexBuffer(QVertex[] verticesTransformados) {
+    public QVertexBuffer(Vertex[] verticesTransformados) {
         this.verticesTransformados = verticesTransformados;
     }
 
-    public QVertex[] getVerticesTransformados() {
+    public Vertex[] getVerticesTransformados() {
         return verticesTransformados;
     }
 
-    public void setVerticesTransformados(QVertex[] verticesTransformados) {
+    public void setVerticesTransformados(Vertex[] verticesTransformados) {
         this.verticesTransformados = verticesTransformados;
     }
 
-    public QVertex getVertice(int i) {
+    public Vertex getVertice(int i) {
         if (verticesTransformados.length > i) {
             return verticesTransformados[i];
         } else {
-            return new QVertex();
+            return new Vertex();
         }
     }
 
-    public void setVertice(QVertex vertice, int i) {
+    public void setVertice(Vertex vertice, int i) {
         if (verticesTransformados.length > i) {
             verticesTransformados[i] = vertice;
         }

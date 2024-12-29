@@ -7,7 +7,7 @@ package net.qoopo.engine.core.material.node.core;
 
 import java.util.List;
 
-import net.qoopo.engine.core.entity.component.mesh.primitive.QPixel;
+import net.qoopo.engine.core.entity.component.mesh.primitive.Fragment;
 import net.qoopo.engine.core.renderer.RenderEngine;
 
 /**
@@ -19,7 +19,7 @@ public abstract class ShaderNode {
     protected List<QNodoPeriferico> entradas;
     protected List<QNodoPeriferico> salidas;
 
-    public abstract void procesar(RenderEngine render, QPixel pixel);
+    public abstract void procesar(RenderEngine render, Fragment pixel);
 
     public List<QNodoPeriferico> getEntradas() {
         return entradas;

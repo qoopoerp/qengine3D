@@ -10,10 +10,10 @@ import java.util.logging.Logger;
 
 import net.qoopo.engine.core.entity.component.mesh.Mesh;
 import net.qoopo.engine.core.entity.component.mesh.generator.height.HeightsGenerator;
-import net.qoopo.engine.core.entity.component.mesh.primitive.QShape;
+import net.qoopo.engine.core.entity.component.mesh.primitive.Shape;
 import net.qoopo.engine.core.material.basico.QMaterialBas;
-import net.qoopo.engine.core.texture.util.QMaterialUtil;
-import net.qoopo.engine.core.util.mesh.QUtilNormales;
+import net.qoopo.engine.core.texture.util.MaterialUtil;
+import net.qoopo.engine.core.util.mesh.NormalUtil;
 
 /**
  * Genera una malla en un plano que puede alterar sus vertices en función de un
@@ -22,7 +22,7 @@ import net.qoopo.engine.core.util.mesh.QUtilNormales;
  * @author alberto
  */
 
-public class PlanarMesh extends QShape {
+public class PlanarMesh extends Shape {
 
     public static final int EJE_Z = 1;
     public static final int EJE_Y = 2;
@@ -140,6 +140,36 @@ public class PlanarMesh extends QShape {
         build();
     }
 
+    public void reset() {
+        try {            
+            int i = 0;
+            switch (eje) {
+                case EJE_Z:
+                     i = 0;
+                    for (float z = -largo / 2; z < largo / 2; z += delta2) {
+                        for (float x = -ancho / 2; x < ancho / 2; x += delta) {
+                            vertices[i].location.set(x, 0, z, 1);
+                            i++;
+                        }
+                    }
+
+                    break;
+                case EJE_Y:
+                     i = 0;
+                    for (float z = -largo / 2; z < largo / 2; z += delta2) {
+                        for (float x = -ancho / 2; x < ancho / 2; x += delta) {
+                            vertices[i].location.set(x, z, 0, 1);
+                            
+                        }
+                    }
+                    break;
+            }
+        } finally {
+            NormalUtil.calcularNormales(this);
+            // QMaterialUtil.suavizar(this, true);
+        }
+    }
+
     @Override
     public void build() {
         deleteData();
@@ -202,8 +232,8 @@ public class PlanarMesh extends QShape {
                 }
             }
         } finally {
-            QUtilNormales.calcularNormales(this);
-            QMaterialUtil.suavizar(this, true);
+            NormalUtil.calcularNormales(this);
+            MaterialUtil.smooth(this, true);
         }
     }
 

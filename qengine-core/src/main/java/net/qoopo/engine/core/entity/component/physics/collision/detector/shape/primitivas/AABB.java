@@ -5,7 +5,7 @@
  */
 package net.qoopo.engine.core.entity.component.physics.collision.detector.shape.primitivas;
 
-import net.qoopo.engine.core.entity.component.mesh.primitive.QVertex;
+import net.qoopo.engine.core.entity.component.mesh.primitive.Vertex;
 import net.qoopo.engine.core.entity.component.physics.collision.detector.CollisionShape;
 
 /**
@@ -16,15 +16,15 @@ import net.qoopo.engine.core.entity.component.physics.collision.detector.Collisi
  */
 public class AABB extends CollisionShape {
 
-    public QVertex aabMinimo;
-    public QVertex aabMaximo;
+    public Vertex aabMinimo;
+    public Vertex aabMaximo;
 
     public AABB() {
         // aabMinimo= new QVertice();
         // aabMaximo= new QVertice();
     }
 
-    public AABB(QVertex aabMinimo, QVertex aabMaximo) {
+    public AABB(Vertex aabMinimo, Vertex aabMaximo) {
         this.aabMinimo = aabMinimo;
         this.aabMaximo = aabMaximo;
     }

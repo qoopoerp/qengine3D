@@ -8,10 +8,10 @@ package net.qoopo.engine.core.entity.component.mesh.primitive.shape;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import net.qoopo.engine.core.entity.component.mesh.primitive.QShape;
+import net.qoopo.engine.core.entity.component.mesh.primitive.Shape;
 import net.qoopo.engine.core.material.basico.QMaterialBas;
-import net.qoopo.engine.core.texture.util.QMaterialUtil;
-import net.qoopo.engine.core.util.mesh.QUtilNormales;
+import net.qoopo.engine.core.texture.util.MaterialUtil;
+import net.qoopo.engine.core.util.mesh.NormalUtil;
 
 /**
  * Crea un Plano Billboard, que está destinado a mirar siempre a la cámara, solo
@@ -19,7 +19,7 @@ import net.qoopo.engine.core.util.mesh.QUtilNormales;
  *
  * @author alberto
  */
-public class QPlanoBillboard extends QShape {
+public class QPlanoBillboard extends Shape {
 
     private float alto;
     private float ancho;
@@ -45,8 +45,8 @@ public class QPlanoBillboard extends QShape {
             // segundo paso generar caras
             this.addPoly(material, 3, 2, 1, 0);// superior
 
-            QMaterialUtil.aplicarMaterial(this, material);
-            QUtilNormales.calcularNormales(this);
+            MaterialUtil.applyMaterial(this, material);
+            NormalUtil.calcularNormales(this);
         } catch (Exception ex) {
             Logger.getLogger(QPlanoBillboard.class.getName()).log(Level.SEVERE, null, ex);
         }
