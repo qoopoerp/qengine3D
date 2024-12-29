@@ -6,16 +6,16 @@
 package net.qoopo.engine3d.test.generaEjemplos.impl.nodos;
 
 import net.qoopo.engine.core.entity.Entity;
-import net.qoopo.engine.core.entity.component.mesh.primitive.shape.QCaja;
-import net.qoopo.engine.core.entity.component.mesh.primitive.shape.QEsfera;
+import net.qoopo.engine.core.entity.component.mesh.primitive.shape.Box;
+import net.qoopo.engine.core.entity.component.mesh.primitive.shape.Sphere;
 import net.qoopo.engine.core.material.node.MaterialNode;
 import net.qoopo.engine.core.material.node.core.QNodoEnlace;
 import net.qoopo.engine.core.material.node.core.output.MaterialOutputNode;
 import net.qoopo.engine.core.math.QColor;
 import net.qoopo.engine.core.renderer.RenderEngine;
 import net.qoopo.engine.core.scene.Scene;
-import net.qoopo.engine.core.texture.util.QMaterialUtil;
-import net.qoopo.engine.renderer.shader.pixelshader.nodos.shader.QNodoColorIluminacion;
+import net.qoopo.engine.core.texture.util.MaterialUtil;
+import net.qoopo.engine.renderer.shader.fragment.nodos.shader.QNodoColorIluminacion;
 import net.qoopo.engine3d.test.generaEjemplos.MakeTestScene;
 
 /**
@@ -39,7 +39,7 @@ public class NodosSimple extends MakeTestScene {
         material.setNodo(nodosalida);
 
         Entity esfera = new Entity("esfera");
-        esfera.addComponent(QMaterialUtil.aplicarMaterial(new QEsfera(2), material));
+        esfera.addComponent(MaterialUtil.applyMaterial(new Sphere(2), material));
         esfera.move(-5, 5, 0);
         mundo.addEntity(esfera);
 //-----------------------
@@ -52,7 +52,7 @@ public class NodosSimple extends MakeTestScene {
         materialCubo.setNodo(nodosalida2);
 
         Entity cubo = new Entity("Cubo");
-        cubo.addComponent(QMaterialUtil.aplicarMaterial(new QCaja(2), materialCubo));
+        cubo.addComponent(MaterialUtil.applyMaterial(new Box(2), materialCubo));
         cubo.move(5, 5, 0);
         mundo.addEntity(cubo);
 

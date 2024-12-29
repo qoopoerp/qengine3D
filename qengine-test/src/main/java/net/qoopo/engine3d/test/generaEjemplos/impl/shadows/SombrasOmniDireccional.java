@@ -10,20 +10,20 @@ import java.io.File;
 import net.qoopo.engine.core.assets.AssetManager;
 import net.qoopo.engine.core.entity.Entity;
 import net.qoopo.engine.core.entity.component.ligth.QPointLigth;
-import net.qoopo.engine.core.entity.component.mesh.primitive.shape.QCaja;
-import net.qoopo.engine.core.entity.component.mesh.primitive.shape.QEsfera;
+import net.qoopo.engine.core.entity.component.mesh.primitive.shape.Box;
+import net.qoopo.engine.core.entity.component.mesh.primitive.shape.Sphere;
 import net.qoopo.engine.core.entity.component.mesh.primitive.shape.PlanarMesh;
-import net.qoopo.engine.core.entity.component.mesh.primitive.shape.QTeapot;
-import net.qoopo.engine.core.entity.component.mesh.primitive.shape.QToro;
+import net.qoopo.engine.core.entity.component.mesh.primitive.shape.Teapot;
+import net.qoopo.engine.core.entity.component.mesh.primitive.shape.Torus;
 import net.qoopo.engine.core.entity.component.mesh.util.QUnidadMedida;
 import net.qoopo.engine.core.material.basico.QMaterialBas;
 import net.qoopo.engine.core.math.QColor;
 import net.qoopo.engine.core.renderer.RenderEngine;
 import net.qoopo.engine.core.scene.Scene;
 import net.qoopo.engine.core.texture.procesador.QProcesadorSimple;
-import net.qoopo.engine.core.texture.util.QMaterialUtil;
+import net.qoopo.engine.core.texture.util.MaterialUtil;
 import net.qoopo.engine.core.util.QGlobal;
-import net.qoopo.engine.core.util.mesh.QUtilNormales;
+import net.qoopo.engine.core.util.mesh.NormalUtil;
 import net.qoopo.engine3d.test.generaEjemplos.MakeTestScene;
 
 /**
@@ -61,7 +61,7 @@ public class SombrasOmniDireccional extends MakeTestScene {
                 //
                 //
                 Entity toro = new Entity("toro");
-                toro.addComponent(new QToro(1, 0.4f));
+                toro.addComponent(new Torus(1, 0.4f));
                 toro.move(0, -2.5f, 0);
                 mundo.addEntity(toro);
 
@@ -73,7 +73,7 @@ public class SombrasOmniDireccional extends MakeTestScene {
                 mat1.setMapaNormal(new QProcesadorSimple(AssetManager.get().loadTexture("normal",
                                 new File("assets/textures/testNormal/cajaNormal.jpg"))));
 
-                cuboEntidad.addComponent(QMaterialUtil.aplicarMaterial(new QCaja(2), mat1));
+                cuboEntidad.addComponent(MaterialUtil.applyMaterial(new Box(2), mat1));
                 mundo.addEntity(cuboEntidad);
 
                 Entity cuboEntidad2 = new Entity("cubo 2");
@@ -81,28 +81,28 @@ public class SombrasOmniDireccional extends MakeTestScene {
                 QMaterialBas mat2 = new QMaterialBas();
                 mat2.setMapaColor(new QProcesadorSimple(AssetManager.get().loadTexture("difusa2",
                                 new File("assets/textures/fuego/fuego4.png"))));
-                cuboEntidad2.addComponent(QMaterialUtil.aplicarMaterial(new QCaja(2), mat2));
+                cuboEntidad2.addComponent(MaterialUtil.applyMaterial(new Box(2), mat2));
 
                 mundo.addEntity(cuboEntidad2);
 
                 Entity esfera = new Entity("esfera");
                 esfera.getTransformacion().trasladar(2f, 0, 0f);
-                esfera.addComponent(new QEsfera(mundo.UM.convertirPixel(25, QUnidadMedida.CENTIMETRO)));
+                esfera.addComponent(new Sphere(mundo.UM.convertirPixel(25, QUnidadMedida.CENTIMETRO)));
                 mundo.addEntity(esfera);
 
                 Entity tetera = new Entity("tetera");
-                tetera.addComponent(new QTeapot());
+                tetera.addComponent(new Teapot());
                 tetera.move(2f, -2f, -2f);
                 tetera.rotate(0, Math.toRadians(80), 0);
                 mundo.addEntity(tetera);
 
                 Entity cubo = new Entity("cubo");
-                cubo.addComponent(new QCaja(0.5f));
+                cubo.addComponent(new Box(0.5f));
                 cubo.move(0, 0, 1);
                 mundo.addEntity(cubo);
 
                 Entity cubo2 = new Entity("cubo2");
-                cubo2.addComponent(new QCaja(0.5f));
+                cubo2.addComponent(new Box(0.5f));
                 cubo2.move(-1.5f, 0.5f, 0);
                 mundo.addEntity(cubo2);
 
@@ -112,7 +112,7 @@ public class SombrasOmniDireccional extends MakeTestScene {
 
                 Entity pared1 = new Entity("Caja");
                 // pared1.mover(0, -1, 0);
-                pared1.addComponent(QUtilNormales.invertirNormales(new QCaja(30f, 30f, 30f)));
+                pared1.addComponent(NormalUtil.invertirNormales(new Box(30f, 30f, 30f)));
                 mundo.addEntity(pared1);
 
         }

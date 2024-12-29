@@ -8,8 +8,8 @@ package net.qoopo.engine3d.test.juegotest;
 import net.qoopo.engine.core.assets.AssetManager;
 import net.qoopo.engine.core.entity.Entity;
 import net.qoopo.engine.core.entity.component.ligth.QDirectionalLigth;
-import net.qoopo.engine.core.entity.component.mesh.primitive.shape.QCaja;
-import net.qoopo.engine.core.entity.component.mesh.primitive.shape.QCilindroX;
+import net.qoopo.engine.core.entity.component.mesh.primitive.shape.Box;
+import net.qoopo.engine.core.entity.component.mesh.primitive.shape.CylinderX;
 import net.qoopo.engine.core.entity.component.mesh.util.QUnidadMedida;
 import net.qoopo.engine.core.entity.component.physics.collision.detector.CollisionShape;
 import net.qoopo.engine.core.entity.component.physics.collision.detector.shape.mallas.QColisionMallaConvexa;
@@ -26,10 +26,10 @@ import net.qoopo.engine.core.scene.Camera;
 import net.qoopo.engine.core.scene.QEscenario;
 import net.qoopo.engine.core.scene.Scene;
 import net.qoopo.engine.core.texture.QTextura;
-import net.qoopo.engine.core.texture.util.QMaterialUtil;
+import net.qoopo.engine.core.texture.util.MaterialUtil;
 import net.qoopo.engine3d.QEngine3D;
 import net.qoopo.engine3d.core.sky.QCielo;
-import net.qoopo.engine3d.core.sky.QEsferaCielo;
+import net.qoopo.engine3d.core.sky.SphereCielo;
 import net.qoopo.engine3d.test.juegotest.mundo.niveles.NivelTest2;
 
 /**
@@ -82,8 +82,8 @@ public class JuegoEjemplo {
                 material.setColorBase(QColor.BLUE);
 
                 Entity carro = new Entity();
-                QCaja geom = new QCaja(0.5f, 1, 2);
-                QMaterialUtil.aplicarMaterial(geom, material);
+                Box geom = new Box(0.5f, 1, 2);
+                MaterialUtil.applyMaterial(geom, material);
                 carro.addComponent(geom);
 
                 CollisionShape colision = new QColisionMallaConvexa(geom);
@@ -105,8 +105,8 @@ public class JuegoEjemplo {
                 QMaterialBas materialRueda = new QMaterialBas("Rueda");
                 materialRueda.setColorBase(QColor.DARK_GRAY);
 
-                QCilindroX forma = new QCilindroX(0.1f, 0.25f);
-                QMaterialUtil.aplicarMaterial(forma, materialRueda);
+                CylinderX forma = new CylinderX(0.1f, 0.25f);
+                MaterialUtil.applyMaterial(forma, materialRueda);
                 // --
 
                 Entity rueda1E = new Entity("rueda1", false);// la entidad que se actualizara su transformacion con el
@@ -201,7 +201,7 @@ public class JuegoEjemplo {
                 // "res/textures/cielo/esfericos/cielo_noche.png");
                 QTextura cieloNoche = AssetManager.get().loadTexture("noche",
                                 "assets/textures/cielo/esfericos/cielo_noche_2.jpg");
-                QCielo cielo = new QEsferaCielo(cieloDia, cieloNoche,
+                QCielo cielo = new SphereCielo(cieloDia, cieloNoche,
                                 motor.getEscena().UM.convertirPixel(500, QUnidadMedida.METRO));
                 motor.getEscena().addEntity(cielo.getEntidad());
 

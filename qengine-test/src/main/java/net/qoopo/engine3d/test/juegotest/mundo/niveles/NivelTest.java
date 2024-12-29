@@ -14,14 +14,13 @@ import net.qoopo.engine.core.assets.audio.AudioBuffer;
 import net.qoopo.engine.core.entity.Entity;
 import net.qoopo.engine.core.entity.component.ligth.QDirectionalLigth;
 import net.qoopo.engine.core.entity.component.mesh.Mesh;
-import net.qoopo.engine.core.entity.component.mesh.primitive.shape.QPlano;
+import net.qoopo.engine.core.entity.component.mesh.primitive.shape.Plane;
 import net.qoopo.engine.core.entity.component.mesh.util.QUnidadMedida;
 import net.qoopo.engine.core.entity.component.physics.collision.detector.shape.mallas.QColisionMallaConvexa;
 import net.qoopo.engine.core.entity.component.physics.collision.detector.shape.mallas.QColisionMallaIndexada;
 import net.qoopo.engine.core.entity.component.physics.collision.detector.shape.primitivas.QColisionCaja;
 import net.qoopo.engine.core.entity.component.physics.dinamica.QObjetoDinamico;
 import net.qoopo.engine.core.entity.component.physics.dinamica.QObjetoRigido;
-import net.qoopo.engine.core.entity.component.terrain.HeightMapTerrain;
 import net.qoopo.engine.core.entity.component.terrain.Terrain;
 import net.qoopo.engine.core.entity.component.water.WaterDuDv;
 import net.qoopo.engine.core.lwjgl.audio.component.SoundEmissorAL;
@@ -32,10 +31,11 @@ import net.qoopo.engine.core.scene.QEscenario;
 import net.qoopo.engine.core.scene.Scene;
 import net.qoopo.engine.core.texture.QTextura;
 import net.qoopo.engine.core.texture.procesador.QProcesadorSimple;
-import net.qoopo.engine.core.texture.util.QMaterialUtil;
+import net.qoopo.engine.core.texture.util.MaterialUtil;
 import net.qoopo.engine.core.util.QUtilComponentes;
+import net.qoopo.engine.terrain.HeightMapTerrain;
 import net.qoopo.engine3d.core.sky.QCielo;
-import net.qoopo.engine3d.core.sky.QEsferaCielo;
+import net.qoopo.engine3d.core.sky.SphereCielo;
 import net.qoopo.engine3d.test.juegotest.generadores.GenFuego;
 import net.qoopo.engine3d.test.juegotest.generadores.GeneradorCasas;
 import net.qoopo.engine3d.test.juegotest.generadores.GeneradorLamparas;
@@ -110,7 +110,7 @@ public class NivelTest extends QEscenario {
                     if (i % 200 == 0) {
                         x = rnd.nextFloat() * terreno.getWidth() - terreno.getWidth() - terreno.getInicioX();
                         z = rnd.nextFloat() * terreno.getHeight() - terreno.getHeight() - terreno.getInicioZ();
-                        y = terreno.getAltura(x, z);
+                        y = terreno.getHeight(x, z);
                         Entity fogata = GenFuego.crearFogata1();
                         fogata.move(x, y, z);
                         try {
@@ -131,7 +131,7 @@ public class NivelTest extends QEscenario {
                     if (i % 20 == 0) {
                         x = rnd.nextFloat() * terreno.getWidth() - terreno.getWidth() - terreno.getInicioX();
                         z = rnd.nextFloat() * terreno.getHeight() - terreno.getHeight() - terreno.getInicioZ();
-                        y = terreno.getAltura(x, z);
+                        y = terreno.getHeight(x, z);
                         Entity casa = generador.casa1();
                         casa.move(x, y + 1.25f, z);
                         universo.addEntity(casa);
@@ -142,7 +142,7 @@ public class NivelTest extends QEscenario {
                     if (i % 30 == 0) {
                         x = rnd.nextFloat() * terreno.getWidth() - terreno.getWidth() - terreno.getInicioX();
                         z = rnd.nextFloat() * terreno.getHeight() - terreno.getHeight() - terreno.getInicioZ();
-                        y = terreno.getAltura(x, z);
+                        y = terreno.getHeight(x, z);
                         Entity casa = generador.casa2Pisos();
                         casa.move(x, y + 1.25f, z);
                         universo.addEntity(casa);
@@ -154,7 +154,7 @@ public class NivelTest extends QEscenario {
                     if (i % 20 == 0) {
                         x = rnd.nextFloat() * terreno.getWidth() - terreno.getWidth() - terreno.getInicioX();
                         z = rnd.nextFloat() * terreno.getHeight() - terreno.getHeight() - terreno.getInicioZ();
-                        y = terreno.getAltura(x, z);
+                        y = terreno.getHeight(x, z);
 
                         Entity pino = new Entity();
                         pino.addComponent(pinoG);
@@ -187,7 +187,7 @@ public class NivelTest extends QEscenario {
 
                         x = rnd.nextFloat() * terreno.getWidth() - terreno.getWidth() - terreno.getInicioX();
                         z = rnd.nextFloat() * terreno.getHeight() - terreno.getHeight() - terreno.getInicioZ();
-                        y = terreno.getAltura(x, z);
+                        y = terreno.getHeight(x, z);
 
                         Entity arbol1 = new Entity();
                         arbol1.addComponent(arbolG);
@@ -211,7 +211,7 @@ public class NivelTest extends QEscenario {
 
                         x = rnd.nextFloat() * terreno.getWidth() - terreno.getWidth() - terreno.getInicioX();
                         z = rnd.nextFloat() * terreno.getHeight() - terreno.getHeight() - terreno.getInicioZ();
-                        y = terreno.getAltura(x, z);
+                        y = terreno.getHeight(x, z);
 
                         Entity arbol1 = new Entity();
                         arbol1.addComponent(arbol2G);
@@ -227,7 +227,7 @@ public class NivelTest extends QEscenario {
 
                         x = rnd.nextFloat() * terreno.getWidth() - terreno.getWidth() - terreno.getInicioX();
                         z = rnd.nextFloat() * terreno.getHeight() - terreno.getHeight() - terreno.getInicioZ();
-                        y = terreno.getAltura(x, z);
+                        y = terreno.getHeight(x, z);
 
                         Entity arbol1 = new Entity("arbol_muerto");
                         arbol1.addComponent(arbolMuerto);
@@ -261,7 +261,7 @@ public class NivelTest extends QEscenario {
                     if (i % 10 == 0) {
                         x = rnd.nextFloat() * terreno.getWidth() - terreno.getWidth() - terreno.getInicioX();
                         z = rnd.nextFloat() * terreno.getHeight() - terreno.getHeight() - terreno.getInicioZ();
-                        y = terreno.getAltura(x, z);
+                        y = terreno.getHeight(x, z);
 
                         Entity roca = new Entity("roca");
                         roca.addComponent(roca1);
@@ -282,7 +282,7 @@ public class NivelTest extends QEscenario {
                     if (i % 10 == 0) {
                         x = rnd.nextFloat() * terreno.getWidth() - terreno.getWidth() - terreno.getInicioX();
                         z = rnd.nextFloat() * terreno.getHeight() - terreno.getHeight() - terreno.getInicioZ();
-                        y = terreno.getAltura(x, z);
+                        y = terreno.getHeight(x, z);
 
                         Entity lampara = GeneradorLamparas.crearLamparaPiso();
                         lampara.move(x, y, z);
@@ -362,7 +362,7 @@ public class NivelTest extends QEscenario {
 
         // puedo agregar la razon que sea necesaria no afectara a la textura de
         // reflexixon porq esta calcula las coordenadas UV en tiempo de renderizado
-        agua.addComponent(QMaterialUtil.aplicarMaterial(new QPlano(150, 150), material));
+        agua.addComponent(MaterialUtil.applyMaterial(new Plane(150, 150), material));
         WaterDuDv procesador = new WaterDuDv(universo, anchoReflejo, altoReflejo);
         agua.addComponent(procesador);
         material.setMapaNormal(new QProcesadorSimple(procesador.getTextNormal()));
@@ -393,7 +393,7 @@ public class NivelTest extends QEscenario {
 
         // puedo agregar la razon que sea necesaria no afectara a la textura de
         // reflexixon porq esta calcula las coordenadas UV en tiempo de renderizado
-        agua.addComponent(QMaterialUtil.aplicarMaterial(new QPlano(150, 150), material));
+        agua.addComponent(MaterialUtil.applyMaterial(new Plane(150, 150), material));
         WaterDuDv procesador = new WaterDuDv(universo, anchoReflejo, altoReflejo);
         agua.addComponent(procesador);
         material.setMapaNormal(new QProcesadorSimple(procesador.getTextNormal()));
@@ -416,7 +416,7 @@ public class NivelTest extends QEscenario {
     private void crearCielo(Scene universo) {
         // cielo
         // Entity cielo = new Entity("Cielo");
-        // QGeometria cieloG = new QEsfera(universo.UM.convertirPixel(500,
+        // QGeometria cieloG = new Sphere(universo.UM.convertirPixel(500,
         // QUnidadMedida.METRO));
         // QMaterialUtil.aplicarTexturaEsfera(cieloG, new
         // File("res/textures/cielo/esfericos/cielo3.jpg"));
@@ -448,16 +448,10 @@ public class NivelTest extends QEscenario {
         // "res/textures/cielo/esfericos/cielo_noche_2.jpg");
 
         universo.setAmbientColor(new QColor(0.5f, 0.5f, 0.5f));
-        QCielo cielo = new QEsferaCielo(cieloDia, cieloNoche, universo.UM.convertirPixel(500, QUnidadMedida.METRO));
+        QCielo cielo = new SphereCielo(cieloDia, cieloNoche, universo.UM.convertirPixel(500, QUnidadMedida.METRO));
         universo.addEntity(cielo.getEntidad());
     }
 
-    public HeightMapTerrain getTerreno() {
-        return terreno;
-    }
-
-    public void setTerreno(HeightMapTerrain terreno) {
-        this.terreno = terreno;
-    }
+   
 
 }

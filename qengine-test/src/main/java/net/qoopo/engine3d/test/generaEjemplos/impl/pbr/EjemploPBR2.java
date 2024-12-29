@@ -7,13 +7,13 @@ package net.qoopo.engine3d.test.generaEjemplos.impl.pbr;
 
 import net.qoopo.engine.core.entity.Entity;
 import net.qoopo.engine.core.entity.component.cubemap.QCubeMap;
-import net.qoopo.engine.core.entity.component.mesh.primitive.shape.QEsfera;
+import net.qoopo.engine.core.entity.component.mesh.primitive.shape.Sphere;
 import net.qoopo.engine.core.material.basico.QMaterialBas;
 import net.qoopo.engine.core.math.QColor;
 import net.qoopo.engine.core.math.QMath;
 import net.qoopo.engine.core.renderer.RenderEngine;
 import net.qoopo.engine.core.scene.Scene;
-import net.qoopo.engine.core.texture.util.QMaterialUtil;
+import net.qoopo.engine.core.texture.util.MaterialUtil;
 import net.qoopo.engine.core.util.QGlobal;
 import net.qoopo.engine3d.test.generaEjemplos.MakeTestScene;
 
@@ -35,7 +35,7 @@ public class EjemploPBR2 extends MakeTestScene {
         float spacing = 2.5f;
 
         // la entidad reflexion se encargara de renderizar el mapa de reflejos
-        Entity reflexion = new Entity();
+        Entity reflexion = new Entity("cubemap");
         QCubeMap mapa = new QCubeMap(QGlobal.MAPA_CUPO_RESOLUCION);
         mapa.setGenerarIrradiacion(true);
         reflexion.addComponent(mapa);
@@ -53,8 +53,8 @@ public class EjemploPBR2 extends MakeTestScene {
                 material.setTipoMapaEntorno(QCubeMap.FORMATO_MAPA_CUBO);
                 Entity objeto = new Entity("PBR");
                 objeto.move((col - (nrColumns / 2)) * spacing, (row - (nrRows / 2)) * spacing, 0);
-                objeto.addComponent(QMaterialUtil.aplicarMaterial(new QEsfera(1.0f), material));
-                // objeto.agregarComponente(QMaterialUtil.aplicarMaterial(new QTeapot(),
+                objeto.addComponent(MaterialUtil.applyMaterial(new Sphere(1.0f), material));
+                // objeto.addComponent(MaterialUtil.aplicarMaterial(new Teapot(),
                 // material));
                 // objeto.escalar(0.8f);
 

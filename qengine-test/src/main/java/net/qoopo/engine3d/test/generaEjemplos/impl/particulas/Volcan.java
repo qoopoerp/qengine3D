@@ -6,8 +6,8 @@
 package net.qoopo.engine3d.test.generaEjemplos.impl.particulas;
 
 import net.qoopo.engine.core.entity.Entity;
-import net.qoopo.engine.core.entity.component.mesh.primitive.QVertex;
-import net.qoopo.engine.core.entity.component.mesh.primitive.shape.QPlano;
+import net.qoopo.engine.core.entity.component.mesh.primitive.Vertex;
+import net.qoopo.engine.core.entity.component.mesh.primitive.shape.Plane;
 import net.qoopo.engine.core.entity.component.particles.fire.QEmisorVolcan;
 import net.qoopo.engine.core.entity.component.physics.collision.detector.shape.primitivas.AABB;
 import net.qoopo.engine.core.renderer.RenderEngine;
@@ -25,7 +25,7 @@ public class Volcan extends MakeTestScene {
         this.scene = mundo;
 
         Entity volcan = new Entity("fogata");
-        AABB ambitoVolcan = new AABB(new QVertex(-9, 0, -1), new QVertex(-8, 2, 1));//
+        AABB ambitoVolcan = new AABB(new Vertex(-9, 0, -1), new Vertex(-8, 2, 1));//
         QEmisorVolcan emisorVolcan = new QEmisorVolcan(ambitoVolcan, 300, 5000, 25, mundo.gravity.clone().multiply(-1));
         volcan.addComponent(emisorVolcan);
         volcan.getTransformacion().trasladar(0, 0.5f, 0);
@@ -36,7 +36,7 @@ public class Volcan extends MakeTestScene {
         mundo.addEntity(volcan);
 
         Entity plano = new Entity("plano");
-        plano.addComponent(new QPlano(10, 10));
+        plano.addComponent(new Plane(10, 10));
 
         plano.rotate((float) Math.toRadians(90), 0, 0);
         mundo.addEntity(plano);

@@ -7,7 +7,7 @@ package net.qoopo.engine3d.test.generaEjemplos.impl.nodos;
 
 import net.qoopo.engine.core.entity.Entity;
 import net.qoopo.engine.core.entity.component.cubemap.QCubeMap;
-import net.qoopo.engine.core.entity.component.mesh.primitive.shape.QTeapot;
+import net.qoopo.engine.core.entity.component.mesh.primitive.shape.Teapot;
 import net.qoopo.engine.core.material.basico.QMaterialBas;
 import net.qoopo.engine.core.material.node.MaterialNode;
 import net.qoopo.engine.core.material.node.core.QNodoEnlace;
@@ -16,13 +16,13 @@ import net.qoopo.engine.core.math.QColor;
 import net.qoopo.engine.core.renderer.RenderEngine;
 import net.qoopo.engine.core.scene.Scene;
 import net.qoopo.engine.core.texture.procesador.QProcesadorSimple;
-import net.qoopo.engine.core.texture.util.QMaterialUtil;
+import net.qoopo.engine.core.texture.util.MaterialUtil;
 import net.qoopo.engine.core.util.QGlobal;
-import net.qoopo.engine.renderer.shader.pixelshader.nodos.shader.QNodoColorIluminacion;
-import net.qoopo.engine.renderer.shader.pixelshader.nodos.shader.QNodoColorMix;
-import net.qoopo.engine.renderer.shader.pixelshader.nodos.shader.QNodoColorReflexion;
-import net.qoopo.engine.renderer.shader.pixelshader.nodos.shader.QNodoColorRefraccion;
-import net.qoopo.engine.renderer.shader.pixelshader.nodos.shader.QNodoColorVidrio;
+import net.qoopo.engine.renderer.shader.fragment.nodos.shader.QNodoColorIluminacion;
+import net.qoopo.engine.renderer.shader.fragment.nodos.shader.QNodoColorMix;
+import net.qoopo.engine.renderer.shader.fragment.nodos.shader.QNodoColorReflexion;
+import net.qoopo.engine.renderer.shader.fragment.nodos.shader.QNodoColorRefraccion;
+import net.qoopo.engine.renderer.shader.fragment.nodos.shader.QNodoColorVidrio;
 import net.qoopo.engine3d.test.generaEjemplos.MakeTestScene;
 
 /**
@@ -46,7 +46,7 @@ public class NodosSimple5 extends MakeTestScene {
                 // File("assets/"+
                 // "textures/entorno/hdri/exteriores/from_cubemap.jpg"))));
                 // entorno.agregarComponente(QMaterialUtil.aplicarMaterial(QUtilNormales.invertirNormales(new
-                // QEsfera(50)), matEntorno));
+                // Sphere(50)), matEntorno));
                 // mundo.addEntity(entorno);
                 // Reflexion estandar
                 // a cada entidad le agrego su generador de mapa de reflexion con un mapa cubico
@@ -58,7 +58,7 @@ public class NodosSimple5 extends MakeTestScene {
                 mat4.setIndiceRefraccion(1.45f);
                 mat4.setMapaEntorno(new QProcesadorSimple(mapa.getTexturaEntorno()));
                 mat4.setTipoMapaEntorno(QCubeMap.FORMATO_MAPA_CUBO);
-                cubo4.addComponent(QMaterialUtil.aplicarMaterial(new QTeapot(), mat4));
+                cubo4.addComponent(MaterialUtil.applyMaterial(new Teapot(), mat4));
                 cubo4.addComponent(mapa);
                 mapa.aplicar(QCubeMap.FORMATO_MAPA_CUBO, 1, 1.45f);
                 cubo4.move(-6, 0.5f, 0);
@@ -77,7 +77,7 @@ public class NodosSimple5 extends MakeTestScene {
                 MaterialOutputNode nodosalida = new MaterialOutputNode();
                 QNodoEnlace enlace2 = new QNodoEnlace(nodoDifuso.getSaColor(), nodosalida.getEnColor());
                 mat5.setNodo(nodosalida);
-                cubo5.addComponent(QMaterialUtil.aplicarMaterial(new QTeapot(), mat5));
+                cubo5.addComponent(MaterialUtil.applyMaterial(new Teapot(), mat5));
                 cubo5.addComponent(mapa2);
                 mapa2.aplicar(QCubeMap.FORMATO_MAPA_CUBO, 1, 0);
                 cubo5.move(0, 0.5f, 0);
@@ -103,7 +103,7 @@ public class NodosSimple5 extends MakeTestScene {
                 MaterialOutputNode nodosalida2 = new MaterialOutputNode();
                 QNodoEnlace enlace3 = new QNodoEnlace(nodoMix.getSaColor(), nodosalida2.getEnColor());
                 mat6.setNodo(nodosalida2);
-                cubo6.addComponent(QMaterialUtil.aplicarMaterial(new QTeapot(), mat6));
+                cubo6.addComponent(MaterialUtil.applyMaterial(new Teapot(), mat6));
                 cubo6.addComponent(mapa3);
                 mapa3.aplicar(QCubeMap.FORMATO_MAPA_CUBO, 1, 0);
                 cubo6.move(6, 0.5f, 0);

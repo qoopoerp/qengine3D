@@ -9,7 +9,7 @@ import java.io.File;
 
 import net.qoopo.engine.core.assets.AssetManager;
 import net.qoopo.engine.core.entity.Entity;
-import net.qoopo.engine.core.entity.component.mesh.primitive.shape.QCaja;
+import net.qoopo.engine.core.entity.component.mesh.primitive.shape.Box;
 import net.qoopo.engine.core.material.basico.QMaterialBas;
 import net.qoopo.engine.core.material.node.MaterialNode;
 import net.qoopo.engine.core.material.node.core.QNodoEnlace;
@@ -18,11 +18,11 @@ import net.qoopo.engine.core.math.QColor;
 import net.qoopo.engine.core.renderer.RenderEngine;
 import net.qoopo.engine.core.scene.Scene;
 import net.qoopo.engine.core.texture.procesador.QProcesadorSimple;
-import net.qoopo.engine.core.texture.util.QMaterialUtil;
+import net.qoopo.engine.core.texture.util.MaterialUtil;
 import net.qoopo.engine.core.util.QGlobal;
-import net.qoopo.engine.renderer.shader.pixelshader.nodos.shader.QNodoColorIluminacion;
-import net.qoopo.engine.renderer.shader.pixelshader.nodos.shader.QNodoColorMix;
-import net.qoopo.engine.renderer.shader.pixelshader.nodos.shader.QNodoColorTextura;
+import net.qoopo.engine.renderer.shader.fragment.nodos.shader.QNodoColorIluminacion;
+import net.qoopo.engine.renderer.shader.fragment.nodos.shader.QNodoColorMix;
+import net.qoopo.engine.renderer.shader.fragment.nodos.shader.QNodoColorTextura;
 import net.qoopo.engine3d.test.generaEjemplos.MakeTestScene;
 
 /**
@@ -44,7 +44,7 @@ public class NodosSimple2 extends MakeTestScene {
         mat1.setMapaNormal(new QProcesadorSimple(AssetManager.get().loadTexture("normal", new File("assets/textures/testNormal/test1-normal.jpg"))));
 
         Entity cubo1 = new Entity("text BAS");
-        cubo1.addComponent(QMaterialUtil.aplicarMaterial(new QCaja(2), mat1));
+        cubo1.addComponent(MaterialUtil.applyMaterial(new Box(2), mat1));
         cubo1.move(-5, 5, 5);
 
         mundo.addEntity(cubo1);
@@ -59,7 +59,7 @@ public class NodosSimple2 extends MakeTestScene {
         matSoloTextura.setNodo(nodosalida1);
 
         Entity cubo2 = new Entity("SoloText");
-        cubo2.addComponent(QMaterialUtil.aplicarMaterial(new QCaja(2), matSoloTextura));
+        cubo2.addComponent(MaterialUtil.applyMaterial(new Box(2), matSoloTextura));
         cubo2.move(5, 5, 5);
 
         mundo.addEntity(cubo2);
@@ -78,7 +78,7 @@ public class NodosSimple2 extends MakeTestScene {
         matNodoTextIlum.setNodo(nodosalida2);
 
         Entity cubo3 = new Entity("nodo.textura.iluminacion");
-        cubo3.addComponent(QMaterialUtil.aplicarMaterial(new QCaja(2), matNodoTextIlum));
+        cubo3.addComponent(MaterialUtil.applyMaterial(new Box(2), matNodoTextIlum));
         cubo3.move(5, 5, -5);
 
         mundo.addEntity(cubo3);
@@ -104,7 +104,7 @@ public class NodosSimple2 extends MakeTestScene {
         materialC4.setNodo(nodosalida3);
 
         Entity cubo4 = new Entity("nodo.text.ilum.mezcla");
-        cubo4.addComponent(QMaterialUtil.aplicarMaterial(new QCaja(2), materialC4));
+        cubo4.addComponent(MaterialUtil.applyMaterial(new Box(2), materialC4));
         cubo4.move(-5, 5, -5);
 
         mundo.addEntity(cubo4);
@@ -133,7 +133,7 @@ public class NodosSimple2 extends MakeTestScene {
         materialC5.setNodo(nodosalida5);
 
         Entity cubo5 = new Entity("nodo.mexcla.textures");
-        cubo5.addComponent(QMaterialUtil.aplicarMaterial(new QCaja(2), materialC5));
+        cubo5.addComponent(MaterialUtil.applyMaterial(new Box(2), materialC5));
         cubo5.move(-5, -5, -5);
 
         mundo.addEntity(cubo5);
@@ -158,7 +158,7 @@ public class NodosSimple2 extends MakeTestScene {
         materialC6.setNodo(nodosalida6);
 
         Entity cubo6 = new Entity("nodo.text.normales");
-        cubo6.addComponent(QMaterialUtil.aplicarMaterial(new QCaja(2), materialC6));
+        cubo6.addComponent(MaterialUtil.applyMaterial(new Box(2), materialC6));
         cubo6.move(0, 0, 0);
 
         mundo.addEntity(cubo6);

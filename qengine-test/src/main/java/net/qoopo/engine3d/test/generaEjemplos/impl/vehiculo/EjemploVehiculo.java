@@ -13,8 +13,8 @@ import javax.imageio.ImageIO;
 
 import net.qoopo.engine.core.assets.AssetManager;
 import net.qoopo.engine.core.entity.Entity;
-import net.qoopo.engine.core.entity.component.mesh.primitive.shape.QCaja;
-import net.qoopo.engine.core.entity.component.mesh.primitive.shape.QCilindroX;
+import net.qoopo.engine.core.entity.component.mesh.primitive.shape.Box;
+import net.qoopo.engine.core.entity.component.mesh.primitive.shape.CylinderX;
 import net.qoopo.engine.core.entity.component.mesh.primitive.shape.PlanarMesh;
 import net.qoopo.engine.core.entity.component.physics.collision.detector.CollisionShape;
 import net.qoopo.engine.core.entity.component.physics.collision.detector.shape.mallas.QColisionMallaConvexa;
@@ -24,7 +24,6 @@ import net.qoopo.engine.core.entity.component.physics.dinamica.QObjetoRigido;
 import net.qoopo.engine.core.entity.component.physics.vehiculo.QRueda;
 import net.qoopo.engine.core.entity.component.physics.vehiculo.QVehiculo;
 import net.qoopo.engine.core.entity.component.physics.vehiculo.QVehiculoControl;
-import net.qoopo.engine.core.entity.component.terrain.HeightMapTerrain;
 import net.qoopo.engine.core.entity.component.terrain.Terrain;
 import net.qoopo.engine.core.material.basico.QMaterialBas;
 import net.qoopo.engine.core.math.QColor;
@@ -32,8 +31,9 @@ import net.qoopo.engine.core.math.QVector3;
 import net.qoopo.engine.core.renderer.RenderEngine;
 import net.qoopo.engine.core.scene.Scene;
 import net.qoopo.engine.core.texture.QTextura;
-import net.qoopo.engine.core.texture.util.QMaterialUtil;
+import net.qoopo.engine.core.texture.util.MaterialUtil;
 import net.qoopo.engine.core.util.QUtilComponentes;
+import net.qoopo.engine.terrain.HeightMapTerrain;
 import net.qoopo.engine3d.test.generaEjemplos.MakeTestScene;
 
 /**
@@ -108,8 +108,8 @@ public class EjemploVehiculo extends MakeTestScene {
         material.setColorBase(QColor.BLUE);
 
         Entity carro = new Entity();
-        QCaja geom = new QCaja(0.5f, 1, 2);
-        QMaterialUtil.aplicarMaterial(geom, material);
+        Box geom = new Box(0.5f, 1, 2);
+        MaterialUtil.applyMaterial(geom, material);
         carro.addComponent(geom);
 
         CollisionShape colision = new QColisionMallaConvexa(geom);
@@ -131,8 +131,8 @@ public class EjemploVehiculo extends MakeTestScene {
         QMaterialBas materialRueda = new QMaterialBas("Rueda");
         materialRueda.setColorBase(QColor.DARK_GRAY);
 
-        QCilindroX forma = new QCilindroX(0.1f, 0.25f);
-        QMaterialUtil.aplicarMaterial(forma, materialRueda);
+        CylinderX forma = new CylinderX(0.1f, 0.25f);
+        MaterialUtil.applyMaterial(forma, materialRueda);
         // --
 
         Entity rueda1E = new Entity("rueda1", false);// la entidad que se actualizara su transformacion con el

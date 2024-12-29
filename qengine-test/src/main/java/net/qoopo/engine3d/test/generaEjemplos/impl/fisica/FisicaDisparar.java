@@ -8,7 +8,7 @@ package net.qoopo.engine3d.test.generaEjemplos.impl.fisica;
 import java.awt.Color;
 
 import net.qoopo.engine.core.entity.Entity;
-import net.qoopo.engine.core.entity.component.mesh.primitive.shape.QEsfera;
+import net.qoopo.engine.core.entity.component.mesh.primitive.shape.Sphere;
 import net.qoopo.engine.core.entity.component.physics.collision.detector.CollisionShape;
 import net.qoopo.engine.core.entity.component.physics.collision.detector.shape.primitivas.QColisionEsfera;
 import net.qoopo.engine.core.entity.component.physics.collision.listeners.QListenerColision;
@@ -19,7 +19,7 @@ import net.qoopo.engine.core.math.QColor;
 import net.qoopo.engine.core.math.QVector3;
 import net.qoopo.engine.core.renderer.RenderEngine;
 import net.qoopo.engine.core.scene.Scene;
-import net.qoopo.engine.core.texture.util.QMaterialUtil;
+import net.qoopo.engine.core.texture.util.MaterialUtil;
 import net.qoopo.engine.core.util.QGlobal;
 import net.qoopo.engine.core.util.QUtilComponentes;
 import net.qoopo.engine3d.test.generaEjemplos.MakeTestScene;
@@ -55,7 +55,7 @@ public class FisicaDisparar extends MakeTestScene {
                 // camara
                 // Balon 3
                 nuevoBalon = new Entity();
-                nuevoBalon.addComponent(QMaterialUtil.aplicarMaterial(new QEsfera(0.25f), materialBalas));
+                nuevoBalon.addComponent(MaterialUtil.applyMaterial(new Sphere(0.25f), materialBalas));
                 colision = new QColisionEsfera(0.25f);
                 nuevoBalon.addComponent(colision);
                 balon3Fisica = new QObjetoRigido(QObjetoDinamico.DINAMICO);
@@ -81,7 +81,7 @@ public class FisicaDisparar extends MakeTestScene {
                 // efecto de bomba
                 // Balon 3
                 nuevoBalon = new Entity();
-                nuevoBalon.addComponent(QMaterialUtil.aplicarMaterial(new QEsfera(0.25f), materialBombas));
+                nuevoBalon.addComponent(MaterialUtil.applyMaterial(new Sphere(0.25f), materialBombas));
                 colision = new QColisionEsfera(0.25f);
                 nuevoBalon.addComponent(colision);
                 balon3Fisica = new QObjetoRigido(QObjetoDinamico.DINAMICO);

@@ -10,12 +10,12 @@ import java.io.File;
 import javax.imageio.ImageIO;
 
 import net.qoopo.engine.core.entity.Entity;
-import net.qoopo.engine.core.entity.component.mesh.primitive.shape.QPlano;
+import net.qoopo.engine.core.entity.component.mesh.primitive.shape.Plane;
 import net.qoopo.engine.core.material.basico.QMaterialBas;
 import net.qoopo.engine.core.math.QColor;
 import net.qoopo.engine.core.texture.QTextura;
 import net.qoopo.engine.core.texture.procesador.QProcesadorSimple;
-import net.qoopo.engine.core.texture.util.QMaterialUtil;
+import net.qoopo.engine.core.texture.util.MaterialUtil;
 
 /**
  *
@@ -38,14 +38,14 @@ public class GenMonitores {
         // e.printStackTrace();
         // }
         monitor.addComponent(
-                QMaterialUtil.aplicarMaterial(new QPlano(3 * 600 / 800 + 0.2f, 3 + 0.1f), materialCarcasa));
+                MaterialUtil.applyMaterial(new Plane(3 * 600 / 800 + 0.2f, 3 + 0.1f), materialCarcasa));
 
         Entity pantalla = new Entity("pantalla");
         QMaterialBas pantallMat = new QMaterialBas();
         pantallMat.setMapaColor(new QProcesadorSimple(textura));
         // pantallMat.setColorBase(new QColor(1, 0.2f, 0.2f, 0.2f));
         pantallMat.setColorBase(QColor.BROWN);
-        pantalla.addComponent(QMaterialUtil.aplicarMaterial(new QPlano(3 * 600 / 800, 3), pantallMat));
+        pantalla.addComponent(MaterialUtil.applyMaterial(new Plane(3 * 600 / 800, 3), pantallMat));
         pantalla.move(0, 0.02f, 0);
         monitor.addChild(pantalla);
 

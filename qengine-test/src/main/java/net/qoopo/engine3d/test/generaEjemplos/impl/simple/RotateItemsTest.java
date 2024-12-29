@@ -12,6 +12,7 @@ import java.util.logging.Logger;
 
 import net.qoopo.engine.core.entity.Entity;
 import net.qoopo.engine.core.renderer.RenderEngine;
+import net.qoopo.engine.core.scene.Camera;
 import net.qoopo.engine.core.scene.Scene;
 import net.qoopo.engine3d.test.generaEjemplos.MakeTestScene;
 
@@ -19,17 +20,20 @@ import net.qoopo.engine3d.test.generaEjemplos.MakeTestScene;
  *
  * @author alberto
  */
-public class EjemplRotarItems extends MakeTestScene {
+public class RotateItemsTest extends MakeTestScene {
 
     public void make(Scene mundo) {
         try {
             this.scene = mundo;
 
-            //uso esta lista en lugar del mundo par arotar.. para rotar solo aquellas entidades creadas antes de llamar a esta clase.. y asi evitar rotar las posteriores como terrenos o pisos que no desean ser rotados
+            // uso esta lista en lugar del mundo par arotar.. para rotar solo aquellas
+            // entidades creadas antes de llamar a esta clase.. y asi evitar rotar las
+            // posteriores como terrenos o pisos que no desean ser rotados
             List<Entity> lista = new ArrayList<>();
 
             for (Entity entidad : mundo.getEntities()) {
-                lista.add(entidad);
+                if (!(entidad instanceof Camera))
+                    lista.add(entidad);
             }
 
             Thread hilo = new Thread(new Runnable() {
@@ -53,7 +57,7 @@ public class EjemplRotarItems extends MakeTestScene {
             hilo.start();
 
         } catch (Exception ex) {
-            Logger.getLogger(EjemplRotarItems.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(RotateItemsTest.class.getName()).log(Level.SEVERE, null, ex);
         }
 
     }

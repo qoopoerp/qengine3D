@@ -10,9 +10,9 @@ import java.io.File;
 import net.qoopo.engine.core.assets.AssetManager;
 import net.qoopo.engine.core.entity.Entity;
 import net.qoopo.engine.core.entity.component.cubemap.QCubeMap;
-import net.qoopo.engine.core.entity.component.mesh.primitive.shape.QCaja;
-import net.qoopo.engine.core.entity.component.mesh.primitive.shape.QEsfera;
-import net.qoopo.engine.core.entity.component.mesh.primitive.shape.QTeapot;
+import net.qoopo.engine.core.entity.component.mesh.primitive.shape.Box;
+import net.qoopo.engine.core.entity.component.mesh.primitive.shape.Sphere;
+import net.qoopo.engine.core.entity.component.mesh.primitive.shape.Teapot;
 import net.qoopo.engine.core.material.node.MaterialNode;
 import net.qoopo.engine.core.material.node.core.QNodoEnlace;
 import net.qoopo.engine.core.material.node.core.output.MaterialOutputNode;
@@ -20,12 +20,12 @@ import net.qoopo.engine.core.math.QColor;
 import net.qoopo.engine.core.renderer.RenderEngine;
 import net.qoopo.engine.core.scene.Scene;
 import net.qoopo.engine.core.texture.procesador.QProcesadorSimple;
-import net.qoopo.engine.core.texture.util.QMaterialUtil;
+import net.qoopo.engine.core.texture.util.MaterialUtil;
 import net.qoopo.engine.core.util.QGlobal;
-import net.qoopo.engine.renderer.shader.pixelshader.nodos.shader.QNodoColorIluminacion;
-import net.qoopo.engine.renderer.shader.pixelshader.nodos.shader.QNodoColorReflexion;
-import net.qoopo.engine.renderer.shader.pixelshader.nodos.shader.QNodoColorTextura;
-import net.qoopo.engine.renderer.shader.pixelshader.nodos.shader.QNodoEmision;
+import net.qoopo.engine.renderer.shader.fragment.nodos.shader.QNodoColorIluminacion;
+import net.qoopo.engine.renderer.shader.fragment.nodos.shader.QNodoColorReflexion;
+import net.qoopo.engine.renderer.shader.fragment.nodos.shader.QNodoColorTextura;
+import net.qoopo.engine.renderer.shader.fragment.nodos.shader.QNodoEmision;
 import net.qoopo.engine3d.test.generaEjemplos.MakeTestScene;
 
 /**
@@ -51,7 +51,7 @@ public class NodosVarios extends MakeTestScene {
         material.setNodo(nodosalida);
 
         Entity esfera = new Entity("esfera");
-        esfera.addComponent(QMaterialUtil.aplicarMaterial(new QEsfera(2), material));
+        esfera.addComponent(MaterialUtil.applyMaterial(new Sphere(2), material));
         esfera.move(-5, 5, 0);
         mundo.addEntity(esfera);
 
@@ -77,7 +77,7 @@ public class NodosVarios extends MakeTestScene {
 
         materialC6.setNodo(nodosalida2);
         Entity cubo6 = new Entity("Caja");
-        cubo6.addComponent(QMaterialUtil.aplicarMaterial(new QCaja(2), materialC6));
+        cubo6.addComponent(MaterialUtil.applyMaterial(new Box(2), materialC6));
         cubo6.move(0, 0, 0);
 
         mundo.addEntity(cubo6);
@@ -87,7 +87,7 @@ public class NodosVarios extends MakeTestScene {
         Entity tetera = new Entity("Tetera");
         QCubeMap mapa2 = new QCubeMap(QGlobal.MAPA_CUPO_RESOLUCION);
 
-        // QGeometria esfera2 = new QEsfera(1);
+        // QGeometria esfera2 = new Sphere(1);
         MaterialNode mat5 = new MaterialNode("Reflexion");
 
         QNodoColorReflexion nodoreflexion = new QNodoColorReflexion(new QProcesadorSimple(mapa2.getTexturaEntorno()));
@@ -103,7 +103,7 @@ public class NodosVarios extends MakeTestScene {
         mat5.setNodo(nodosalida3);
         // mat5.setNodo(nodoreflexion);
 
-        tetera.addComponent(QMaterialUtil.aplicarMaterial(new QTeapot(), mat5));
+        tetera.addComponent(MaterialUtil.applyMaterial(new Teapot(), mat5));
         tetera.addComponent(mapa2);
         tetera.move(2, 0.5f, 0);
         mapa2.aplicar(QCubeMap.FORMATO_MAPA_CUBO, 1, 0);
@@ -120,7 +120,7 @@ public class NodosVarios extends MakeTestScene {
         QNodoEnlace enlace5 = new QNodoEnlace(nodoEmision.getSaColor(), nodosalida5.getEnColor());
 
         matEmisivo.setNodo(nodosalida5);
-        entEmisivo.addComponent(QMaterialUtil.aplicarMaterial(new QEsfera(0.25f), matEmisivo));
+        entEmisivo.addComponent(MaterialUtil.applyMaterial(new Sphere(0.25f), matEmisivo));
         entEmisivo.move(4, 4, 4);
         mundo.addEntity(entEmisivo);
 

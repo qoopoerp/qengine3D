@@ -8,14 +8,14 @@ package net.qoopo.engine3d.test.generaEjemplos.impl.reflejos;
 import net.qoopo.engine.core.entity.Entity;
 import net.qoopo.engine.core.entity.component.cubemap.QCubeMap;
 import net.qoopo.engine.core.entity.component.mesh.Mesh;
-import net.qoopo.engine.core.entity.component.mesh.primitive.shape.QSuzane;
-import net.qoopo.engine.core.entity.component.mesh.primitive.shape.QTeapot;
+import net.qoopo.engine.core.entity.component.mesh.primitive.shape.Suzane;
+import net.qoopo.engine.core.entity.component.mesh.primitive.shape.Teapot;
 import net.qoopo.engine.core.material.basico.QMaterialBas;
 import net.qoopo.engine.core.math.QColor;
 import net.qoopo.engine.core.renderer.RenderEngine;
 import net.qoopo.engine.core.scene.Scene;
 import net.qoopo.engine.core.texture.procesador.QProcesadorSimple;
-import net.qoopo.engine.core.texture.util.QMaterialUtil;
+import net.qoopo.engine.core.texture.util.MaterialUtil;
 import net.qoopo.engine3d.test.generaEjemplos.MakeTestScene;
 
 /**
@@ -26,11 +26,11 @@ public class EjmRefraccion extends MakeTestScene {
 
     public void make(Scene mundo) {
         this.scene = mundo;
-        Entity ob1 = crear("Tetera",new QTeapot());
-        ob1.move(-3, 0, 0);
+        Entity ob1 = crear("Tetera",new Teapot());
+        ob1.move(-3, 3, 0);
         mundo.addEntity(ob1);
-        Entity ob3 = crear("Mona", new QSuzane());
-        ob3.move(3, 0, 0);
+        Entity ob3 = crear("Mona", new Suzane());
+        ob3.move(3, 3, 0);
         mundo.addEntity(ob3);
 
     }
@@ -43,7 +43,7 @@ public class EjmRefraccion extends MakeTestScene {
         material.setMetalico(1f);
         material.setMapaEntorno(new QProcesadorSimple(mapa.getTexturaEntorno()));
         material.setTipoMapaEntorno(QCubeMap.FORMATO_MAPA_CUBO);
-        objeto.addComponent(QMaterialUtil.aplicarMaterial(malla, material));
+        objeto.addComponent(MaterialUtil.applyMaterial(malla, material));
         objeto.addComponent(mapa);
         mapa.aplicar(QCubeMap.FORMATO_MAPA_CUBO, 1f, 1.45f);
         return objeto;

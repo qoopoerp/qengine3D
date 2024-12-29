@@ -12,27 +12,25 @@ import java.util.logging.Logger;
 import net.qoopo.engine.core.assets.AssetManager;
 import net.qoopo.engine.core.entity.Entity;
 import net.qoopo.engine.core.entity.component.mesh.Mesh;
-import net.qoopo.engine.core.entity.component.mesh.primitive.shape.QPlano;
+import net.qoopo.engine.core.entity.component.mesh.primitive.shape.Plane;
 import net.qoopo.engine.core.material.basico.QMaterialBas;
 import net.qoopo.engine.core.renderer.RenderEngine;
 import net.qoopo.engine.core.scene.Scene;
 import net.qoopo.engine.core.texture.QTextura;
-import net.qoopo.engine.core.texture.procesador.QProcesadorSimple;
-import net.qoopo.engine.core.texture.util.QMaterialUtil;
-import net.qoopo.engine.core.util.QGlobal;
+import net.qoopo.engine.core.texture.util.MaterialUtil;
 import net.qoopo.engine3d.test.generaEjemplos.MakeTestScene;
 
 /**
  *
  * @author alberto
  */
-public class Piso extends MakeTestScene {
+public class FloorTestScene extends MakeTestScene {
 
         public void make(Scene mundo) {
                 try {
                         this.scene = mundo;
                         Entity piso = new Entity("Piso");
-                        Mesh pisoGeometria = new QPlano(50, 50);
+                        Mesh pisoGeometria = new Plane(50, 50);
 
                         QMaterialBas material = new QMaterialBas();
 
@@ -44,23 +42,31 @@ public class Piso extends MakeTestScene {
                                         + "textures/pbr/floor/rectangle-polished-tile-ue/roughness.png"));
                         QTextura metalico = AssetManager.get().loadTexture("metalico", new File("assets/"
                                         + "textures/pbr/floor/rectangle-polished-tile-ue/metallic.png"));
-                        QTextura sombras = AssetManager.get().loadTexture("ao", new File("assets/"+
+                        QTextura sombras = AssetManager.get().loadTexture("ao", new File("assets/" +
                                         "textures/pbr/floor/rectangle-polished-tile-ue/ao.png"));
 
-                        material.setMapaColor(new QProcesadorSimple(albedo));
-                        material.setMapaNormal(new QProcesadorSimple(normal));
-                        material.setMapaRugosidad(new QProcesadorSimple(rugoso));
-                        material.setMapaMetalico(new QProcesadorSimple(metalico));
-                        material.setMapaSAO(new QProcesadorSimple(sombras));
+                        material.setMapaColor(albedo);
+                        material.setMapaNormal(normal);
+                        material.setMapaRugosidad(rugoso);
+                        material.setMapaMetalico(metalico);
+                        material.setMapaSAO(sombras);
 
                         material.getMapaColor().setMuestrasU(10);
                         material.getMapaColor().setMuestrasV(10);
-                        QMaterialUtil.aplicarMaterial(pisoGeometria, material);
+                        material.getMapaNormal().setMuestrasU(10);
+                        material.getMapaNormal().setMuestrasV(10);
+                        material.getMapaRugosidad().setMuestrasU(10);
+                        material.getMapaRugosidad().setMuestrasV(10);
+                        material.getMapaMetalico().setMuestrasU(10);
+                        material.getMapaMetalico().setMuestrasV(10);
+                        material.getMapaSAO().setMuestrasU(10);
+                        material.getMapaSAO().setMuestrasV(10);
+                        MaterialUtil.applyMaterial(pisoGeometria, material);
 
                         piso.addComponent(pisoGeometria);
                         mundo.addEntity(piso);
                 } catch (Exception ex) {
-                        Logger.getLogger(Piso.class.getName()).log(Level.SEVERE, null, ex);
+                        Logger.getLogger(FloorTestScene.class.getName()).log(Level.SEVERE, null, ex);
                 }
 
         }

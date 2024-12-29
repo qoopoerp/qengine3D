@@ -41,7 +41,7 @@ public class EjemploPBR_CerberusGun extends MakeTestScene {
             objeto.scale(10);
             objeto.addComponent(mapa);
             objeto.rotate(0, Math.toRadians(180), 0);
-            // objeto.agregarComponente(QMaterialUtil.aplicarMaterial(new QEsfera(1.0f),
+            // objeto.agregarComponente(QMaterialUtil.aplicarMaterial(new Sphere(1.0f),
             // material));
             mapa.aplicar(QCubeMap.FORMATO_MAPA_CUBO, 1.0f, 0);
             escena.addEntity(objeto);

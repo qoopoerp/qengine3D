@@ -9,17 +9,17 @@ import net.qoopo.engine.core.assets.AssetManager;
 import net.qoopo.engine.core.entity.Entity;
 import net.qoopo.engine.core.entity.component.ligth.QPointLigth;
 import net.qoopo.engine.core.entity.component.mesh.Mesh;
-import net.qoopo.engine.core.entity.component.mesh.primitive.QVertex;
-import net.qoopo.engine.core.entity.component.mesh.primitive.shape.QCaja;
-import net.qoopo.engine.core.entity.component.mesh.primitive.shape.QCilindro;
-import net.qoopo.engine.core.entity.component.mesh.primitive.shape.QCono;
-import net.qoopo.engine.core.entity.component.mesh.primitive.shape.QPlano;
+import net.qoopo.engine.core.entity.component.mesh.primitive.Vertex;
+import net.qoopo.engine.core.entity.component.mesh.primitive.shape.Box;
+import net.qoopo.engine.core.entity.component.mesh.primitive.shape.Cylinder;
+import net.qoopo.engine.core.entity.component.mesh.primitive.shape.Cone;
+import net.qoopo.engine.core.entity.component.mesh.primitive.shape.Plane;
 import net.qoopo.engine.core.entity.component.particles.humo.QEmisorHumo;
 import net.qoopo.engine.core.entity.component.physics.collision.detector.shape.primitivas.AABB;
 import net.qoopo.engine.core.material.basico.QMaterialBas;
 import net.qoopo.engine.core.math.QColor;
 import net.qoopo.engine.core.texture.QTextura;
-import net.qoopo.engine.core.texture.util.QMaterialUtil;
+import net.qoopo.engine.core.texture.util.MaterialUtil;
 import net.qoopo.engine.core.util.QGlobal;
 
 /**
@@ -34,13 +34,13 @@ public class GeneradorCasas {
 
     // private static QGeometria
     private static QMaterialBas materialPisos = new QMaterialBas(TEXT_MURO, 0);
-    private static Mesh pisoG = QMaterialUtil.aplicarMaterial(new QCaja(2.5f, 5f, 5f), materialPisos);
-    private static Mesh ventanaG = QMaterialUtil.aplicarColor(new QPlano(0.5f, 0.75f), 0.8f, 1, 1, 0, 1, 1, 1, 1, 64);
-    private static Mesh puertaG = QMaterialUtil.aplicarColor(new QPlano(1f, 0.5f), 1f, QColor.GREEN, QColor.WHITE, 0,
+    private static Mesh pisoG = MaterialUtil.applyMaterial(new Box(2.5f, 5f, 5f), materialPisos);
+    private static Mesh ventanaG = MaterialUtil.applyColor(new Plane(0.5f, 0.75f), 0.8f, 1, 1, 0, 1, 1, 1, 1, 64);
+    private static Mesh puertaG = MaterialUtil.applyColor(new Plane(1f, 0.5f), 1f, QColor.GREEN, QColor.WHITE, 0,
             64);
-    private static Mesh techoG = QMaterialUtil.aplicarColor(new QCono(1, 5f, 4), 1,
+    private static Mesh techoG = MaterialUtil.applyColor(new Cone(1, 5f, 4), 1,
             new QColor(1, 139f / 255f, 99f / 255f, 55f / 255f), QColor.GREEN, 0, 0);
-    private static Mesh chimeneaG = QMaterialUtil.aplicarColor(new QCilindro(0.6f, 0.25f, 4), 1, QColor.GRAY,
+    private static Mesh chimeneaG = MaterialUtil.applyColor(new Cylinder(0.6f, 0.25f, 4), 1, QColor.GRAY,
             QColor.GRAY, 0, 0);
 
     public Entity casa1() {
@@ -108,7 +108,7 @@ public class GeneradorCasas {
     private Entity chimenea() {
         Entity chimenea = new Entity("chimenea");
         chimenea.addComponent(chimeneaG);
-        AABB ambitoHumo = new AABB(new QVertex(-0.15f, 0, -0.15f), new QVertex(.15f, 3.5f, .15f));//
+        AABB ambitoHumo = new AABB(new Vertex(-0.15f, 0, -0.15f), new Vertex(.15f, 3.5f, .15f));//
         QEmisorHumo emisor = new QEmisorHumo(ambitoHumo, 5000, 400, 4);
         Entity emisorEn = new Entity();
         emisorEn.addComponent(emisor);

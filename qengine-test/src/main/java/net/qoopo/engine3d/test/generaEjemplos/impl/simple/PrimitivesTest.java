@@ -13,23 +13,23 @@ import net.qoopo.engine.core.entity.component.ligth.QDirectionalLigth;
 import net.qoopo.engine.core.entity.component.ligth.QPointLigth;
 import net.qoopo.engine.core.entity.component.ligth.QSpotLigth;
 import net.qoopo.engine.core.entity.component.mesh.Mesh;
-import net.qoopo.engine.core.entity.component.mesh.primitive.shape.QCaja;
-import net.qoopo.engine.core.entity.component.mesh.primitive.shape.QCilindro;
-import net.qoopo.engine.core.entity.component.mesh.primitive.shape.QCono;
-import net.qoopo.engine.core.entity.component.mesh.primitive.shape.QEsfera;
-import net.qoopo.engine.core.entity.component.mesh.primitive.shape.QToro;
+import net.qoopo.engine.core.entity.component.mesh.primitive.shape.Box;
+import net.qoopo.engine.core.entity.component.mesh.primitive.shape.Cylinder;
+import net.qoopo.engine.core.entity.component.mesh.primitive.shape.Cone;
+import net.qoopo.engine.core.entity.component.mesh.primitive.shape.Sphere;
+import net.qoopo.engine.core.entity.component.mesh.primitive.shape.Torus;
 import net.qoopo.engine.core.math.QColor;
 import net.qoopo.engine.core.math.QVector3;
 import net.qoopo.engine.core.renderer.RenderEngine;
 import net.qoopo.engine.core.scene.Scene;
-import net.qoopo.engine.core.util.mesh.QUtilNormales;
+import net.qoopo.engine.core.util.mesh.NormalUtil;
 import net.qoopo.engine3d.test.generaEjemplos.MakeTestScene;
 
 /**
  *
  * @author alberto
  */
-public class Ejemplo2 extends MakeTestScene {
+public class PrimitivesTest extends MakeTestScene {
 
     public void make(Scene mundo) {
         try {
@@ -52,7 +52,7 @@ public class Ejemplo2 extends MakeTestScene {
             cubGeometria.addPoly(0, 3, 7, 4);
             cubGeometria.addPoly(1, 5, 6, 2);
             cubGeometria.addPoly(4, 7, 6, 5);
-            cubGeometria = QUtilNormales.calcularNormales(cubGeometria);
+            cubGeometria = NormalUtil.calcularNormales(cubGeometria);
 
             cube.addComponent(cubGeometria);
 
@@ -78,37 +78,37 @@ public class Ejemplo2 extends MakeTestScene {
             sol.addComponent(new QDirectionalLigth(.5f, new QColor(0.5f, 0.5f, 1), 10, true, false));
             mundo.addEntity(sol);
             Entity cuboBeto = new Entity("cubo");
-            cuboBeto.addComponent(new QCaja(2));
+            cuboBeto.addComponent(new Box(2));
             cuboBeto.getTransformacion().getTraslacion().x += 2;
             cuboBeto.getTransformacion().getTraslacion().y += 2;
             mundo.addEntity(cuboBeto);
 
             Entity cilindroBeto = new Entity("cilindro");
-            cilindroBeto.addComponent(new QCilindro(2, 1));
+            cilindroBeto.addComponent(new Cylinder(2, 1));
             cilindroBeto.getTransformacion().getTraslacion().x += 5;
             cilindroBeto.getTransformacion().getTraslacion().z += 5;
             mundo.addEntity(cilindroBeto);
 
             Entity esfera = new Entity("esfera");
-            esfera.addComponent(new QEsfera(2));
+            esfera.addComponent(new Sphere(2));
             esfera.getTransformacion().getTraslacion().x += 5;
             esfera.getTransformacion().getTraslacion().z -= 5;
             mundo.addEntity(esfera);
             //
             Entity toro = new Entity("toro");
-            toro.addComponent(new QToro(4, 2));
+            toro.addComponent(new Torus(4, 2));
             toro.getTransformacion().getTraslacion().x -= 5;
             toro.getTransformacion().getTraslacion().z -= 5;
             mundo.addEntity(toro);
 
             Entity cono = new Entity("cono");
-            cono.addComponent(new QCono(4, 2));
+            cono.addComponent(new Cone(4, 2));
             cono.getTransformacion().getTraslacion().x -= 5;
 
             cono.getTransformacion().getTraslacion().z += 5;
             mundo.addEntity(cono);
         } catch (Exception ex) {
-            Logger.getLogger(Ejemplo2.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(PrimitivesTest.class.getName()).log(Level.SEVERE, null, ex);
         }
 
     }

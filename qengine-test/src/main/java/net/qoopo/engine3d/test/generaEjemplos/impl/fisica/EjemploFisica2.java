@@ -11,7 +11,7 @@ import javax.imageio.ImageIO;
 
 import net.qoopo.engine.core.entity.Entity;
 import net.qoopo.engine.core.entity.component.mesh.Mesh;
-import net.qoopo.engine.core.entity.component.mesh.primitive.shape.QCaja;
+import net.qoopo.engine.core.entity.component.mesh.primitive.shape.Box;
 import net.qoopo.engine.core.entity.component.mesh.util.QUnidadMedida;
 import net.qoopo.engine.core.entity.component.physics.collision.detector.shape.primitivas.QColisionCaja;
 import net.qoopo.engine.core.entity.component.physics.dinamica.QObjetoDinamico;
@@ -20,7 +20,7 @@ import net.qoopo.engine.core.material.basico.QMaterialBas;
 import net.qoopo.engine.core.math.QVector3;
 import net.qoopo.engine.core.scene.Scene;
 import net.qoopo.engine.core.texture.QTextura;
-import net.qoopo.engine.core.texture.util.QMaterialUtil;
+import net.qoopo.engine.core.texture.util.MaterialUtil;
 import net.qoopo.engine.core.util.QGlobal;
 
 /**
@@ -45,7 +45,7 @@ public class EjemploFisica2 extends FisicaDisparar {
         piso.getTransformacion().getTraslacion().y = 0f;
         piso.move(0, 0, 0);
 
-        piso.addComponent(new QCaja(0.1f, mundo.UM.convertirPixel(50), mundo.UM.convertirPixel(50)));
+        piso.addComponent(new Box(0.1f, mundo.UM.convertirPixel(50), mundo.UM.convertirPixel(50)));
 
         QColisionCaja colision = new QColisionCaja(mundo.UM.convertirPixel(50), 0.1f, mundo.UM.convertirPixel(50));
         piso.addComponent(colision);
@@ -93,8 +93,8 @@ public class EjemploFisica2 extends FisicaDisparar {
     private void hacerLadrillo(QVector3 loc, Scene mundo) {
         Entity bloque = new Entity();
         bloque.move(loc);
-        Mesh geometria = new QCaja(altoLadrillo, anchoLadrillo, largoLadrillo);
-        QMaterialUtil.aplicarMaterial(geometria, materialLadrillo);
+        Mesh geometria = new Box(altoLadrillo, anchoLadrillo, largoLadrillo);
+        MaterialUtil.applyMaterial(geometria, materialLadrillo);
         QColisionCaja formaColision = new QColisionCaja(anchoLadrillo, altoLadrillo, largoLadrillo);
         QObjetoRigido bloquefisica = new QObjetoRigido(QObjetoDinamico.DINAMICO);
         bloquefisica.setMasa(4f, QVector3.zero.clone());

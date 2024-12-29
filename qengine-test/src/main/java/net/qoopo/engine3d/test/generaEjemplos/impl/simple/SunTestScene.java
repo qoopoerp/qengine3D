@@ -16,7 +16,7 @@ import net.qoopo.engine3d.world.Sun;
  *
  * @author alberto
  */
-public class SolEjemplo extends MakeTestScene {
+public class SunTestScene extends MakeTestScene {
 
     public void make(Scene mundo) {
         this.scene = mundo;

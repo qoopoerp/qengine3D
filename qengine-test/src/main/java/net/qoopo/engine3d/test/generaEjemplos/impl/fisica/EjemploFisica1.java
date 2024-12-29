@@ -12,8 +12,8 @@ import javax.imageio.ImageIO;
 
 import net.qoopo.engine.core.assets.AssetManager;
 import net.qoopo.engine.core.entity.Entity;
-import net.qoopo.engine.core.entity.component.mesh.primitive.shape.QCaja;
-import net.qoopo.engine.core.entity.component.mesh.primitive.shape.QEsfera;
+import net.qoopo.engine.core.entity.component.mesh.primitive.shape.Box;
+import net.qoopo.engine.core.entity.component.mesh.primitive.shape.Sphere;
 import net.qoopo.engine.core.entity.component.mesh.util.QUnidadMedida;
 import net.qoopo.engine.core.entity.component.physics.collision.detector.shape.primitivas.QColisionCaja;
 import net.qoopo.engine.core.entity.component.physics.collision.detector.shape.primitivas.QColisionEsfera;
@@ -24,7 +24,7 @@ import net.qoopo.engine.core.math.QColor;
 import net.qoopo.engine.core.math.QVector3;
 import net.qoopo.engine.core.scene.Scene;
 import net.qoopo.engine.core.texture.QTextura;
-import net.qoopo.engine.core.texture.util.QMaterialUtil;
+import net.qoopo.engine.core.texture.util.MaterialUtil;
 
 /**
  *
@@ -57,7 +57,7 @@ public class EjemploFisica1 extends FisicaDisparar {
         // piso.mover(0, 0, 0);
         // piso.escalar(10f, 10f, 10f);
         //
-        // piso.agregarComponente(new QCaja(0.1f, mundo.UM.convertirPixel(50),
+        // piso.agregarComponente(new Box(0.1f, mundo.UM.convertirPixel(50),
         // mundo.UM.convertirPixel(50)));
         //
         // QColisionCaja colision = new QColisionCaja(mundo.UM.convertirPixel(50), 0.1f,
@@ -90,7 +90,7 @@ public class EjemploFisica1 extends FisicaDisparar {
     private void crearEsferas(Scene mundo) {
         // Balon 1
         Entity balon = new Entity("Esfera1");// Entity("Esfera 0.05");
-        balon.addComponent(new QEsfera(4));
+        balon.addComponent(new Sphere(4));
         QColisionEsfera colision = new QColisionEsfera(4);
         balon.addComponent(colision);
         QObjetoRigido fisicaBalon = new QObjetoRigido(QObjetoDinamico.DINAMICO);
@@ -105,7 +105,7 @@ public class EjemploFisica1 extends FisicaDisparar {
         Entity balon2 = new Entity("Esfera2");// Entity("Esfera 0.08");
         QColisionEsfera colision2 = new QColisionEsfera(1);
         balon2.addComponent(colision2);
-        balon2.addComponent(new QEsfera(1));
+        balon2.addComponent(new Sphere(1));
         QObjetoRigido balon2Fisica = new QObjetoRigido(QObjetoDinamico.DINAMICO);
         balon2Fisica.setFormaColision(colision2);
         balon2Fisica.setMasa(1f, QVector3.zero.clone());
@@ -116,7 +116,7 @@ public class EjemploFisica1 extends FisicaDisparar {
         // Balon 3
         Entity balon3 = new Entity("Esfera2");// Entity("Esfera 0.01");
 
-        balon3.addComponent(new QEsfera(2));
+        balon3.addComponent(new Sphere(2));
         QColisionEsfera colision3 = new QColisionEsfera(2);
         balon3.addComponent(colision3);
         QObjetoRigido balon3Fisica = new QObjetoRigido(QObjetoDinamico.DINAMICO);
@@ -159,9 +159,9 @@ public class EjemploFisica1 extends FisicaDisparar {
     private void hacerLadrillo(QVector3 loc, Scene mundo) {
         Entity bloque = new Entity("Bloque");
         bloque.move(loc);
-        QCaja geometria = new QCaja(altoLadrillo, anchoLadrillo, largoLadrillo);
+        Box geometria = new Box(altoLadrillo, anchoLadrillo, largoLadrillo);
         geometria.setMaterial(materialLadrillo);
-        QMaterialUtil.aplicarMaterial(geometria, materialLadrillo);
+        MaterialUtil.applyMaterial(geometria, materialLadrillo);
         QColisionCaja formaColision = new QColisionCaja(anchoLadrillo, altoLadrillo, largoLadrillo);
         bloque.addComponent(formaColision);
         QObjetoRigido bloquefisica = new QObjetoRigido(QObjetoDinamico.DINAMICO);

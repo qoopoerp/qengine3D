@@ -8,7 +8,7 @@ package net.qoopo.engine3d.test.animaciones.esqueletica;
 import net.qoopo.engine.core.entity.Entity;
 import net.qoopo.engine.core.entity.component.ligth.QDirectionalLigth;
 import net.qoopo.engine.core.entity.component.ligth.QLigth;
-import net.qoopo.engine.core.entity.component.mesh.primitive.shape.QCaja;
+import net.qoopo.engine.core.entity.component.mesh.primitive.shape.Box;
 import net.qoopo.engine.core.math.QColor;
 import net.qoopo.engine.core.math.QVector3;
 import net.qoopo.engine.core.scene.Camera;
@@ -67,7 +67,7 @@ public class MonstruosDoom {
 
         Entity piso = new Entity("piso");
 //        piso.rotar(Math.toRadians(5), Math.toRadians(5), 0);
-        piso.addComponent(new QCaja(0.f, 500, 500));
+        piso.addComponent(new Box(0.f, 500, 500));
         motor.getEscena().addEntity(piso);
 
         motor.getRenderEngine().setCargando(false);

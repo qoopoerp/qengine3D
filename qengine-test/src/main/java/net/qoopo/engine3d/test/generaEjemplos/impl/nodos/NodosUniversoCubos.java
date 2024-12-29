@@ -11,17 +11,17 @@ import java.util.Random;
 import net.qoopo.engine.core.assets.AssetManager;
 import net.qoopo.engine.core.entity.Entity;
 import net.qoopo.engine.core.entity.component.mesh.Mesh;
-import net.qoopo.engine.core.entity.component.mesh.primitive.shape.QCaja;
+import net.qoopo.engine.core.entity.component.mesh.primitive.shape.Box;
 import net.qoopo.engine.core.material.node.MaterialNode;
 import net.qoopo.engine.core.material.node.core.QNodoEnlace;
 import net.qoopo.engine.core.material.node.core.output.MaterialOutputNode;
 import net.qoopo.engine.core.renderer.RenderEngine;
 import net.qoopo.engine.core.scene.Scene;
 import net.qoopo.engine.core.texture.procesador.QProcesadorSimple;
-import net.qoopo.engine.core.texture.util.QMaterialUtil;
+import net.qoopo.engine.core.texture.util.MaterialUtil;
 import net.qoopo.engine.core.util.QGlobal;
-import net.qoopo.engine.renderer.shader.pixelshader.nodos.shader.QNodoColorIluminacion;
-import net.qoopo.engine.renderer.shader.pixelshader.nodos.shader.QNodoColorTextura;
+import net.qoopo.engine.renderer.shader.fragment.nodos.shader.QNodoColorIluminacion;
+import net.qoopo.engine.renderer.shader.fragment.nodos.shader.QNodoColorTextura;
 import net.qoopo.engine3d.test.generaEjemplos.MakeTestScene;
 
 /**
@@ -85,8 +85,8 @@ public class NodosUniversoCubos extends MakeTestScene {
         // };
         // Color actual;
 
-        Mesh geometria = new QCaja(1);
-        QMaterialUtil.aplicarMaterial(geometria, material);
+        Mesh geometria = new Box(1);
+        MaterialUtil.applyMaterial(geometria, material);
 
         for (int i = 0; i < 3000; i++) {
             Entity cubo = new Entity("Cubo [" + i + "]");

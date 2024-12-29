@@ -7,12 +7,12 @@ package net.qoopo.engine3d.test.generaEjemplos.impl.terrain;
 
 import net.qoopo.engine.core.assets.AssetManager;
 import net.qoopo.engine.core.entity.Entity;
-import net.qoopo.engine.core.entity.component.terrain.SimpleTerrain;
 import net.qoopo.engine.core.entity.component.terrain.Terrain;
 import net.qoopo.engine.core.material.basico.QMaterialBas;
 import net.qoopo.engine.core.renderer.RenderEngine;
 import net.qoopo.engine.core.scene.Scene;
 import net.qoopo.engine.core.texture.QTextura;
+import net.qoopo.engine.terrain.SimpleTerrain;
 import net.qoopo.engine3d.test.generaEjemplos.MakeTestScene;
 
 /**

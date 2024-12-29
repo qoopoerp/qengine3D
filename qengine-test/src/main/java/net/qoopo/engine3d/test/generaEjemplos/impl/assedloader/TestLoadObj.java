@@ -32,7 +32,7 @@ public class TestLoadObj extends MakeTestScene {
 
             // Cargador propio
             List<File> archivos = new ArrayList<>();
-            archivos.add(new File("assets/models/obj/bedroom/iscv2.obj"));
+            archivos.add(new File("assets/models/obj/bunny.obj"));
 
 
             for (int i = 0; i < archivos.size(); i++) {

@@ -14,19 +14,20 @@ import net.qoopo.engine.core.entity.Entity;
 import net.qoopo.engine.core.entity.component.physics.collision.detector.shape.mallas.QColisionMallaIndexada;
 import net.qoopo.engine.core.entity.component.physics.dinamica.QObjetoDinamico;
 import net.qoopo.engine.core.entity.component.physics.dinamica.QObjetoRigido;
-import net.qoopo.engine.core.entity.component.terrain.HeightMapTerrain;
 import net.qoopo.engine.core.entity.component.terrain.Terrain;
 import net.qoopo.engine.core.material.basico.QMaterialBas;
 import net.qoopo.engine.core.scene.QEscenario;
 import net.qoopo.engine.core.scene.Scene;
 import net.qoopo.engine.core.texture.QTextura;
 import net.qoopo.engine.core.util.QUtilComponentes;
+import net.qoopo.engine.terrain.HeightMapTerrain;
 import net.qoopo.engine3d.test.juegotest.monstruos.QDoomMonster;
 
 /**
  *
  * @author alberto
  */
+
 public class DoomTest extends QEscenario {
 
     private static Logger logger = Logger.getLogger("test");
@@ -70,12 +71,12 @@ public class DoomTest extends QEscenario {
     // "res/textures/cielo/esfericos/cielo_noche_2.jpg");
     //
     // escena.setLuzAmbiente(0.5f);
-    // QCielo cielo = new QEsferaCielo(cieloDia, cieloNoche,
+    // QCielo cielo = new SphereCielo(cieloDia, cieloNoche,
     // escena.UM.convertirPixel(500, QUnidadMedida.METRO));
     // escena.addEntity(cielo.getEntidad());
     // }
 
-    private void crearObjetosAleatorios(HeightMapTerrain terreno, Scene escena) {
+    private void crearObjetosAleatorios(Terrain terreno, Scene escena) {
 
         Random rnd = new Random();
 
@@ -87,7 +88,7 @@ public class DoomTest extends QEscenario {
                     if (i % 5 == 0) {
                         x = rnd.nextFloat() * terreno.getWidth() - terreno.getWidth() - terreno.getInicioX();
                         z = rnd.nextFloat() * terreno.getHeight() - terreno.getHeight() - terreno.getInicioZ();
-                        y = terreno.getAltura(x, z);
+                        y = terreno.getHeight(x, z);
                         Entity doomMonster = QDoomMonster.quakeMonster();
                         doomMonster.move(x, y, z);
                         // doomMonster.mover(-100, y + 0.8f, 10);
@@ -100,7 +101,7 @@ public class DoomTest extends QEscenario {
                 if (i % 5 == 0) {
                     x = rnd.nextFloat() * terreno.getWidth() - terreno.getWidth() - terreno.getInicioX();
                     z = rnd.nextFloat() * terreno.getHeight() - terreno.getHeight() - terreno.getInicioZ();
-                    y = terreno.getAltura(x, z);
+                    y = terreno.getHeight(x, z);
                     Entity doomMonster = QDoomMonster.quakeMonster();
                     doomMonster.move(x, y, z);
                     // doomMonster.mover(-100, y + 0.8f, 10);
@@ -114,7 +115,7 @@ public class DoomTest extends QEscenario {
                 if (i % 5 == 0) {
                     x = rnd.nextFloat() * terreno.getWidth() - terreno.getWidth() - terreno.getInicioX();
                     z = rnd.nextFloat() * terreno.getHeight() - terreno.getHeight() - terreno.getInicioZ();
-                    y = terreno.getAltura(x, z);
+                    y = terreno.getHeight(x, z);
                     Entity doomMonster = QDoomMonster.quakeMonster2();
                     doomMonster.move(x, y, z);
                     // doomMonster.mover(-100, y + 0.8f, 10);
@@ -163,14 +164,6 @@ public class DoomTest extends QEscenario {
         AssetManager.get().loadTexture("terreno", "assets/textures/terreno/text4.jpg");
         AssetManager.get().loadTexture("lagoNormal", "assets/textures/agua/matchingNormalMap.png");
         logger.info("Texturas cargadas...");
-    }
-
-    public HeightMapTerrain getTerreno() {
-        return terreno;
-    }
-
-    public void setTerreno(HeightMapTerrain terreno) {
-        this.terreno = terreno;
     }
 
 }

@@ -10,13 +10,13 @@ import java.io.File;
 import net.qoopo.engine.core.assets.AssetManager;
 import net.qoopo.engine.core.entity.Entity;
 import net.qoopo.engine.core.entity.component.cubemap.QCubeMap;
-import net.qoopo.engine.core.entity.component.mesh.primitive.shape.QCaja;
+import net.qoopo.engine.core.entity.component.mesh.primitive.shape.Box;
 import net.qoopo.engine.core.material.basico.QMaterialBas;
 import net.qoopo.engine.core.renderer.RenderEngine;
 import net.qoopo.engine.core.scene.Scene;
 import net.qoopo.engine.core.texture.QTextura;
 import net.qoopo.engine.core.texture.procesador.QProcesadorSimple;
-import net.qoopo.engine.core.texture.util.QMaterialUtil;
+import net.qoopo.engine.core.texture.util.MaterialUtil;
 import net.qoopo.engine.core.util.QGlobal;
 import net.qoopo.engine3d.test.generaEjemplos.MakeTestScene;
 
@@ -48,7 +48,7 @@ public class PBRCubo extends MakeTestScene {
                 material.setMapaMetalico(new QProcesadorSimple(metalico));
                 material.setMapaSAO(new QProcesadorSimple(sombras));
                 Entity objeto = new Entity("cubo");
-                objeto.addComponent(QMaterialUtil.aplicarMaterial(new QCaja(2), material));
+                objeto.addComponent(MaterialUtil.applyMaterial(new Box(2), material));
 
                 // -------------------------------------
                 QCubeMap mapa = new QCubeMap(QGlobal.MAPA_CUPO_RESOLUCION);

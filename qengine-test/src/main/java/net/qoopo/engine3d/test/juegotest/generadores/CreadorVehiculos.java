@@ -10,9 +10,9 @@ import java.awt.event.KeyEvent;
 import net.qoopo.engine.core.entity.Entity;
 import net.qoopo.engine.core.entity.component.animation.QCompAlmacenAnimaciones;
 import net.qoopo.engine.core.entity.component.gui.QTecladoReceptor;
-import net.qoopo.engine.core.entity.component.mesh.primitive.shape.QCaja;
-import net.qoopo.engine.core.entity.component.mesh.primitive.shape.QCilindro;
-import net.qoopo.engine.core.entity.component.mesh.primitive.shape.QToro;
+import net.qoopo.engine.core.entity.component.mesh.primitive.shape.Box;
+import net.qoopo.engine.core.entity.component.mesh.primitive.shape.Cylinder;
+import net.qoopo.engine.core.entity.component.mesh.primitive.shape.Torus;
 import net.qoopo.engine.core.util.QUtilComponentes;
 
 /**
@@ -37,23 +37,23 @@ public class CreadorVehiculos {
 
         vehiculo = new Entity("Vehículo");
 
-        vehiculo.addComponent(new QCaja(0.5f, 1, 1.5f));
+        vehiculo.addComponent(new Box(0.5f, 1, 1.5f));
 
         ruedaDD = new Entity("ruedaDD");
         ruedaDD.move(0, 1.25f, 0);
-        ruedaDD.addComponent(new QToro(0.25f, 0.05f, secciones));
+        ruedaDD.addComponent(new Torus(0.25f, 0.05f, secciones));
 
         ruedaDI = new Entity("ruedaDI");
         ruedaDI.move(0, 0.85f, 0);
-        ruedaDI.addComponent(new QToro(0.25f, 0.05f, secciones));
+        ruedaDI.addComponent(new Torus(0.25f, 0.05f, secciones));
 
         ruedaTD = new Entity("brazoI");
         ruedaTD.move(0.15f, 0.75f, 0);
-        ruedaTD.addComponent(new QCilindro(0.6f, 0.03f, secciones));
+        ruedaTD.addComponent(new Cylinder(0.6f, 0.03f, secciones));
 
         ruedaTI = new Entity("brazoD");
         ruedaTI.move(-0.15f, 0.75f, 0);
-        ruedaTI.addComponent(new QCilindro(0.6f, 0.03f, secciones));
+        ruedaTI.addComponent(new Cylinder(0.6f, 0.03f, secciones));
 
         Entity lampara = GeneradorLamparas.crearLamparaVelador();
         // comov a a estar agregado al brazo se mueve de acuerdo a las coordenadas del

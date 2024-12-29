@@ -21,7 +21,7 @@ import net.qoopo.engine.core.material.basico.QMaterialBas;
 import net.qoopo.engine.core.renderer.RenderEngine;
 import net.qoopo.engine.core.scene.Scene;
 import net.qoopo.engine.core.texture.QTextura;
-import net.qoopo.engine.core.texture.util.QMaterialUtil;
+import net.qoopo.engine.core.texture.util.MaterialUtil;
 import net.qoopo.engine3d.test.generaEjemplos.MakeTestScene;
 
 /**
@@ -47,7 +47,7 @@ public class TestLoadDae extends MakeTestScene {
             // cambio la textura de las geometria cargadas
             for (EntityComponent comp : entidad.getComponents()) {
                 if (comp instanceof Mesh) {
-                    QMaterialUtil.aplicarMaterial((Mesh) comp, material);
+                    MaterialUtil.applyMaterial((Mesh) comp, material);
                     // for (QPrimitiva face : ((Mesh) comp).primitivas) {
                     // if (face.material instanceof QMaterialBas) {
                     // ((QMaterialBas) face.material).setMapaColor(texture);
