@@ -10,7 +10,6 @@ import java.util.logging.Logger;
 
 import net.qoopo.engine.core.entity.component.mesh.primitive.Shape;
 import net.qoopo.engine.core.material.basico.QMaterialBas;
-import net.qoopo.engine.core.util.mesh.NormalUtil;
 
 /**
  *

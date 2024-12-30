@@ -16,7 +16,7 @@ import net.qoopo.engine.core.entity.component.animation.Skeleton;
 import net.qoopo.engine.core.entity.component.camera.QCamaraControl;
 import net.qoopo.engine.core.entity.component.camera.QCamaraOrbitar;
 import net.qoopo.engine.core.entity.component.camera.QCamaraPrimeraPersona;
-import net.qoopo.engine.core.entity.component.cubemap.QCubeMap;
+import net.qoopo.engine.core.entity.component.cubemap.CubeMap;
 import net.qoopo.engine.core.entity.component.gui.QTecladoReceptor;
 import net.qoopo.engine.core.entity.component.mesh.Mesh;
 import net.qoopo.engine.core.entity.component.physics.collision.detector.CollisionShape;
@@ -155,10 +155,10 @@ public class QUtilComponentes {
         return null;
     }
 
-    public static QCubeMap getMapaCubo(Entity entity) {
+    public static CubeMap getMapaCubo(Entity entity) {
         for (EntityComponent componente : entity.getComponents()) {
-            if (componente instanceof QCubeMap) {
-                return (QCubeMap) componente;
+            if (componente instanceof CubeMap) {
+                return (CubeMap) componente;
             }
         }
         return null;
@@ -178,7 +178,7 @@ public class QUtilComponentes {
     public static void eliminarComponenteMapaCubo(Entity entity) {
         List<EntityComponent> tmp = new ArrayList<>();
         for (EntityComponent componente : entity.getComponents()) {
-            if (componente instanceof QCubeMap) {
+            if (componente instanceof CubeMap) {
                 componente.destruir();
                 tmp.add(componente);
             }

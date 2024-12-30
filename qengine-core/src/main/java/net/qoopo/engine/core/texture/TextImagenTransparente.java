@@ -39,7 +39,7 @@ public class TextImagenTransparente {
         protected void paintComponent(Graphics g) {
             try {
                 //prepare a original Image source
-                Image image = ImgReader.leerImagen(new File("assets/textures/transparent.png"));
+                Image image = ImgReader.read(new File("assets/textures/transparent.png"));
 
                 //Get current GraphicsConfiguration
                 GraphicsConfiguration graphicsConfiguration = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDefaultConfiguration();

@@ -26,7 +26,7 @@ public class HeightMapGenerator implements HeightsGenerator {
 
     public HeightMapGenerator(File heigthMap, float minHeight, float maxHeight) {
         try {
-            imagen = ImgReader.leerImagen(heigthMap);
+            imagen = ImgReader.read(heigthMap);
         } catch (IOException ex) {
             ex.printStackTrace();
         }

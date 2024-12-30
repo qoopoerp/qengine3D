@@ -87,10 +87,10 @@ public abstract class Water extends EntityComponent implements UpdatableComponen
             this.textRefraccion = new QTextura();
 
             if (enableReflection || enableRefraction) {
-                frameReflexion = new QFrameBuffer(width/4, height/4, textReflexion);
-                frameRefraccion = new QFrameBuffer(width/4, height/4, textRefraccion);
-                render = AssetManager.get().getRendererFactory().createRenderEngine(scene, "Water", null, width/4,
-                        width/4);
+                frameReflexion = new QFrameBuffer(width / 4, height / 4, textReflexion);
+                frameRefraccion = new QFrameBuffer(width / 4, height / 4, textRefraccion);
+                render = AssetManager.get().getRendererFactory().createRenderEngine(scene, "Water", null, width / 4,
+                        width / 4);
                 render.setEfectosPostProceso(null);
                 render.opciones.setForzarResolucion(true);
                 render.opciones.setNormalMapping(false);
@@ -167,6 +167,8 @@ public abstract class Water extends EntityComponent implements UpdatableComponen
             render.getCamara().getTransformacion().getRotacion().actualizarCuaternion();
             render.getCamara().getTransformacion().trasladar(nuevaPos);
             render.update();
+            render.shadeFragments();
+            render.postRender();
             render.getFrameBuffer().actualizarTextura();
 
             // modifica la textura de refracción para simular el efecto de refracción

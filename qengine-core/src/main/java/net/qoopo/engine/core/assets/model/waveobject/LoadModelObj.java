@@ -30,7 +30,6 @@ import net.qoopo.engine.core.material.basico.QMaterialBas;
 import net.qoopo.engine.core.math.QColor;
 import net.qoopo.engine.core.math.QVector2;
 import net.qoopo.engine.core.texture.QTextura;
-import net.qoopo.engine.core.texture.procesador.QProcesadorSimple;
 import net.qoopo.engine.core.util.image.ImgReader;
 
 /**
@@ -58,6 +57,142 @@ public class LoadModelObj implements ModelLoader {
         return loadModel(stream, "");
     }
 
+    private void readMaterial(File materialFile, HashMap<String, QMaterialBas> materialMap, String directory) {
+        try {
+            if (materialFile.exists()) {
+                BufferedReader materialReader = new BufferedReader(new FileReader(materialFile));
+                String materialLine = "";
+                QMaterialBas readingMaterial = null;
+                while ((materialLine = materialReader.readLine()) != null) {
+                    if (materialLine.startsWith("newmtl ")) {
+                        if (readingMaterial != null) {
+                            materialMap.put(readingMaterial.getNombre(), readingMaterial);
+                        }
+                        String materialName = materialLine.substring("newmtl ".length());
+                        readingMaterial = new QMaterialBas(materialName);
+                    } else if (materialLine.startsWith("Ka ")) {
+                        // String[] att = materialLine.split("\\s+");
+                        // readingMaterial.setColorAmbiente(new QColor(1, Float.parseFloat(att[1]),
+                        // Float.parseFloat(att[2]), Float.parseFloat(att[3])));
+                    } else if (materialLine.startsWith("Kd ")) {
+                        String[] att = materialLine.split("\\s+");
+                        readingMaterial.setColorBase(new QColor(1, Float.parseFloat(att[1]),
+                                Float.parseFloat(att[2]), Float.parseFloat(att[3])));
+                    } else if (materialLine.startsWith("Ks ")) {
+                        // String[] att = materialLine.split("\\s+");
+                        // readingMaterial.setColorEspecular(new QColor(1, Float.parseFloat(att[1]),
+                        // Float.parseFloat(att[2]), Float.parseFloat(att[3])));
+                    } else if (materialLine.startsWith("d ")) {
+                        String[] att = materialLine.split("\\s+");
+                        readingMaterial.setTransAlfa(Float.parseFloat(att[1]));
+                    } else if (materialLine.startsWith("Tr ")) {
+                        String[] att = materialLine.split("\\s+");
+                        readingMaterial.setTransAlfa(1 - Float.parseFloat(att[1]));
+                    } else if (materialLine.startsWith("Ns ")) {
+                        String[] att = materialLine.split("\\s+");
+                        readingMaterial.setSpecularExponent((int) Float.parseFloat(att[1]));
+                    } else if (materialLine.toLowerCase().startsWith("map_kd ")) {
+                        String texture = materialLine.substring("map_Kd ".length()).trim();
+                        if (!texture.isEmpty()) {
+                            texture = texture.replaceAll("\\\\", "/");
+                            try {
+                                readingMaterial.setMapaColor(new QTextura(
+                                        ImgReader.read(validarFile(directory, texture))));
+                            } catch (Exception e) {
+                                System.out.println(
+                                        "Error al cargar " + directory + File.separator + texture);
+                                e.printStackTrace();
+                            }
+                        }
+                    } else if (materialLine.toLowerCase().startsWith("map_d ")) {
+                        String texture = materialLine.substring("map_d ".length()).trim();
+                        if (!texture.isEmpty()) {
+                            texture = texture.replaceAll("\\\\", "/");
+                            try {
+                                readingMaterial.setMapaTransparencia(new QTextura(
+                                        ImgReader.read(validarFile(directory, texture))));
+                            } catch (Exception e) {
+                                System.out.println(
+                                        "Error al cargar " + directory + File.separator + texture);
+                                e.printStackTrace();
+                            }
+                        }
+                    } else if (materialLine.toLowerCase().startsWith("map_bump ")) {
+                        String texture = materialLine.substring("map_Bump ".length()).trim();
+                        if (!texture.isEmpty()) {
+                            if (texture.startsWith("-bm ")) {
+                                texture = texture.substring("-bm ".length()).trim();
+                                readingMaterial.setFactorNormal(Float
+                                        .parseFloat(texture.substring(0, texture.indexOf(" "))));
+                                texture = texture.substring(texture.indexOf(" ")).trim();
+                            }
+                            texture = texture.replaceAll("\\\\", "/");
+                            try {
+                                readingMaterial.setMapaNormal(new QTextura(
+                                        ImgReader.read(validarFile(directory, texture))));
+                            } catch (Exception e) {
+                                System.out.println(
+                                        "Error al cargar " + directory + File.separator + texture);
+                                e.printStackTrace();
+                            }
+                        }
+                    } else if (materialLine.toLowerCase().startsWith("map_ns ")) {
+                        String texture = materialLine.substring("map_Ns ".length()).trim();
+                        if (!texture.isEmpty()) {
+                            texture = texture.replaceAll("\\\\", "/");
+                            try {
+                                readingMaterial.setMapaRugosidad(new QTextura(
+                                        ImgReader.read(validarFile(directory, texture))));
+                            } catch (Exception e) {
+                                System.out.println(
+                                        "Error al cargar " + directory + File.separator + texture);
+                                e.printStackTrace();
+                            }
+                        }
+                    } else if (materialLine.toLowerCase().startsWith("refl ")) {
+                        String texture = materialLine.substring("refl ".length()).trim();
+                        if (!texture.isEmpty()) {
+                            texture = texture.replaceAll("\\\\", "/");
+                            try {
+                                readingMaterial.setMapaMetalico(new QTextura(
+                                        ImgReader.read(validarFile(directory, texture))));
+                            } catch (Exception e) {
+                                System.out.println(
+                                        "Error al cargar " + directory + File.separator + texture);
+                                e.printStackTrace();
+                            }
+                        }
+                    } else if (materialLine.toLowerCase().startsWith("bump ")) {
+                        String texture = materialLine.substring("bump ".length()).trim();
+                        if (!texture.isEmpty()) {
+                            if (texture.startsWith("-bm ")) {
+                                texture = texture.substring("-bm ".length()).trim();
+                                readingMaterial.setFactorNormal(Float
+                                        .parseFloat(texture.substring(0, texture.indexOf(" "))));
+                                texture = texture.substring(texture.indexOf(" ")).trim();
+                            }
+                            texture = texture.replaceAll("\\\\", "/");
+                            // System.out.println(directory + File.separator + texture);
+                            try {
+                                readingMaterial.setMapaNormal(new QTextura(
+                                        ImgReader.read(validarFile(directory, texture))));
+                            } catch (Exception e) {
+                                System.out.println(
+                                        "Error al cargar " + directory + File.separator + texture);
+                                e.printStackTrace();
+                            }
+                        }
+                    }
+                }
+                if (readingMaterial != null) {
+                    materialMap.put(readingMaterial.getNombre(), readingMaterial);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     public Entity loadModel(InputStream stream, String directory) {
 
         List<Entity> lista = new ArrayList<>();
@@ -77,8 +212,6 @@ public class LoadModelObj implements ModelLoader {
                 QMaterialBas defaultMaterial = new QMaterialBas("Default");
                 QMaterialBas currentMaterial = null;
                 while ((line = reader.readLine()) != null) {
-                    
-
                     String[] tokens = line.split("\\s+");
                     switch (tokens[0]) {
                         case "mtllib":
@@ -86,126 +219,7 @@ public class LoadModelObj implements ModelLoader {
                             String materialFileName = line.substring("mtllib ".length());
                             // String materialFileName = tokens[1];
                             File materialFile = new File(directory, materialFileName);
-                            try {
-                                if (materialFile.exists()) {
-                                    BufferedReader materialReader = new BufferedReader(new FileReader(materialFile));
-                                    String materialLine = "";
-                                    QMaterialBas readingMaterial = null;
-                                    while ((materialLine = materialReader.readLine()) != null) {
-                                        if (materialLine.startsWith("newmtl ")) {
-                                            if (readingMaterial != null) {
-                                                materialMap.put(readingMaterial.getNombre(), readingMaterial);
-                                            }
-                                            String materialName = materialLine.substring("newmtl ".length());
-                                            readingMaterial = new QMaterialBas(materialName);
-                                        } else if (materialLine.startsWith("Ka ")) {
-                                            // String[] att = materialLine.split("\\s+");
-                                            // readingMaterial.setColorAmbiente(new QColor(1, Float.parseFloat(att[1]),
-                                            // Float.parseFloat(att[2]), Float.parseFloat(att[3])));
-                                        } else if (materialLine.startsWith("Kd ")) {
-                                            String[] att = materialLine.split("\\s+");
-                                            readingMaterial.setColorBase(new QColor(1, Float.parseFloat(att[1]),
-                                                    Float.parseFloat(att[2]), Float.parseFloat(att[3])));
-                                        } else if (materialLine.startsWith("Ks ")) {
-                                            // String[] att = materialLine.split("\\s+");
-                                            // readingMaterial.setColorEspecular(new QColor(1, Float.parseFloat(att[1]),
-                                            // Float.parseFloat(att[2]), Float.parseFloat(att[3])));
-                                        } else if (materialLine.startsWith("d ")) {
-                                            String[] att = materialLine.split("\\s+");
-                                            readingMaterial.setTransAlfa(Float.parseFloat(att[1]));
-                                        } else if (materialLine.startsWith("Tr ")) {
-                                            String[] att = materialLine.split("\\s+");
-                                            readingMaterial.setTransAlfa(1 - Float.parseFloat(att[1]));
-                                        } else if (materialLine.startsWith("Ns ")) {
-                                            String[] att = materialLine.split("\\s+");
-                                            readingMaterial.setSpecularExponent((int) Float.parseFloat(att[1]));
-                                        } else if (materialLine.toLowerCase().startsWith("map_kd ")) {
-                                            String texture = materialLine.substring("map_Kd ".length()).trim();
-                                            if (!texture.isEmpty()) {
-                                                texture = texture.replaceAll("\\\\", "/");
-                                                try {
-                                                    readingMaterial.setMapaColor(new QProcesadorSimple(new QTextura(
-                                                            ImgReader.leerImagen(validarFile(directory, texture)))));
-                                                } catch (Exception e) {
-                                                    System.out.println(
-                                                            "Error al cargar " + directory + File.separator + texture);
-                                                    e.printStackTrace();
-                                                }
-                                            }
-                                        } else if (materialLine.toLowerCase().startsWith("map_bump ")) {
-                                            String texture = materialLine.substring("map_Bump ".length()).trim();
-                                            if (!texture.isEmpty()) {
-                                                if (texture.startsWith("-bm ")) {
-                                                    texture = texture.substring("-bm ".length()).trim();
-                                                    readingMaterial.setFactorNormal(Float
-                                                            .parseFloat(texture.substring(0, texture.indexOf(" "))));
-                                                    texture = texture.substring(texture.indexOf(" ")).trim();
-                                                }
-                                                texture = texture.replaceAll("\\\\", "/");
-                                                try {
-                                                    readingMaterial.setMapaNormal(new QProcesadorSimple(new QTextura(
-                                                            ImgReader.leerImagen(validarFile(directory, texture)))));
-                                                } catch (Exception e) {
-                                                    System.out.println(
-                                                            "Error al cargar " + directory + File.separator + texture);
-                                                    e.printStackTrace();
-                                                }
-                                            }
-                                        } else if (materialLine.toLowerCase().startsWith("map_ns ")) {
-                                            String texture = materialLine.substring("map_Ns ".length()).trim();
-                                            if (!texture.isEmpty()) {
-                                                texture = texture.replaceAll("\\\\", "/");
-                                                try {
-                                                    readingMaterial.setMapaRugosidad(new QProcesadorSimple(new QTextura(
-                                                            ImgReader.leerImagen(validarFile(directory, texture)))));
-                                                } catch (Exception e) {
-                                                    System.out.println(
-                                                            "Error al cargar " + directory + File.separator + texture);
-                                                    e.printStackTrace();
-                                                }
-                                            }
-                                        } else if (materialLine.toLowerCase().startsWith("refl ")) {
-                                            String texture = materialLine.substring("refl ".length()).trim();
-                                            if (!texture.isEmpty()) {
-                                                texture = texture.replaceAll("\\\\", "/");
-                                                try {
-                                                    readingMaterial.setMapaMetalico(new QProcesadorSimple(new QTextura(
-                                                            ImgReader.leerImagen(validarFile(directory, texture)))));
-                                                } catch (Exception e) {
-                                                    System.out.println(
-                                                            "Error al cargar " + directory + File.separator + texture);
-                                                    e.printStackTrace();
-                                                }
-                                            }
-                                        } else if (materialLine.toLowerCase().startsWith("bump ")) {
-                                            String texture = materialLine.substring("bump ".length()).trim();
-                                            if (!texture.isEmpty()) {
-                                                if (texture.startsWith("-bm ")) {
-                                                    texture = texture.substring("-bm ".length()).trim();
-                                                    readingMaterial.setFactorNormal(Float
-                                                            .parseFloat(texture.substring(0, texture.indexOf(" "))));
-                                                    texture = texture.substring(texture.indexOf(" ")).trim();
-                                                }
-                                                texture = texture.replaceAll("\\\\", "/");
-                                                // System.out.println(directory + File.separator + texture);
-                                                try {
-                                                    readingMaterial.setMapaNormal(new QProcesadorSimple(new QTextura(
-                                                            ImgReader.leerImagen(validarFile(directory, texture)))));
-                                                } catch (Exception e) {
-                                                    System.out.println(
-                                                            "Error al cargar " + directory + File.separator + texture);
-                                                    e.printStackTrace();
-                                                }
-                                            }
-                                        }
-                                    }
-                                    if (readingMaterial != null) {
-                                        materialMap.put(readingMaterial.getNombre(), readingMaterial);
-                                    }
-                                }
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
+                            readMaterial(materialFile, materialMap, directory);
                             break;
                         case "o":
                             if (geometriaLeyendo != null) {
@@ -232,9 +246,6 @@ public class LoadModelObj implements ModelLoader {
                                 rigido.setFormaColision(colision);
                                 ent.addComponent(rigido);
                                 lista.add(ent);
-                                // QGestorRecursos.agregarRecurso("g" + geometriaLeyendo.nombre,
-                                // geometriaLeyendo);
-                                // QGestorRecursos.agregarRecurso("e" + ent.nombre, ent);
                             }
                             String name = tokens[1].trim();
                             // System.out.println(name);
@@ -377,8 +388,16 @@ public class LoadModelObj implements ModelLoader {
             return f;
         } else {
             f = new File(ruta, textura);
+            if (f.exists()) {
+                return f;
+            } else {
+                f = new File(ruta, new File(textura).getName());
+                if (f.exists())
+                    return f;
+
+            }
         }
-        return f;
+        return null;
     }
 
 }

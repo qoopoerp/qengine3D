@@ -63,7 +63,7 @@ public abstract class RenderEngine extends Engine {
             // bi.getWidth(), bi.getType());
             // imageSplash.getGraphics().drawImage(bi, imageSplash.getWidth(),
             // imageSplash.getHeight(), null);
-            imageSplash = ImgReader.leerImagen(RenderEngine.class.getResourceAsStream("/imagenes/wolf/wolf_9.png"));
+            imageSplash = ImgReader.read(RenderEngine.class.getResourceAsStream("/imagenes/wolf/wolf_9.png"));
         } catch (Exception ex) {
             ex.printStackTrace();
             imageSplash = null;

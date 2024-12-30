@@ -40,7 +40,7 @@ import net.qoopo.engine.core.util.QGlobal;
  */
 @Getter
 @Setter
-public class QCubeMap extends EntityComponent implements UpdatableComponent {
+public class CubeMap extends EntityComponent implements UpdatableComponent {
 
     private static Logger logger = Logger.getLogger("cube-map");
 
@@ -77,11 +77,11 @@ public class QCubeMap extends EntityComponent implements UpdatableComponent {
 
     private boolean generarIrradiacion = false;
 
-    public QCubeMap() {
+    public CubeMap() {
         this(QGlobal.MAPA_CUPO_RESOLUCION);
     }
 
-    public QCubeMap(int resolution) {
+    public CubeMap(int resolution) {
         direcciones = new QVector3[6];
 
         // -------------------------------------
@@ -137,7 +137,7 @@ public class QCubeMap extends EntityComponent implements UpdatableComponent {
      * @param negativoX
      * @param negativoZ
      */
-    public QCubeMap(int tipo, QTextura positivoX, QTextura positivoY, QTextura positivoZ, QTextura negativoX,
+    public CubeMap(int tipo, QTextura positivoX, QTextura positivoY, QTextura positivoZ, QTextura negativoX,
             QTextura negativoY, QTextura negativoZ) {
         this.size = positivoX.getAncho();
         direcciones = new QVector3[6];
@@ -163,6 +163,7 @@ public class QCubeMap extends EntityComponent implements UpdatableComponent {
 
     public void build(int size) {
         this.size = size;
+        render.setRenderReal(false);
         render.opciones.setForzarResolucion(true);
         render.opciones.setAncho(size);
         render.opciones.setAlto(size);
@@ -171,6 +172,8 @@ public class QCubeMap extends EntityComponent implements UpdatableComponent {
         render.opciones.setSombras(false);
         render.opciones.setDibujarLuces(false);
         render.opciones.setNormalMapping(false);
+        render.opciones.setDefferedShadding(false);
+        // render.opciones.setDefferedShadding(false);
         render.resize();
         dimensionLado = new Dimension(size, size);
         dinamico = false;
@@ -221,6 +224,8 @@ public class QCubeMap extends EntityComponent implements UpdatableComponent {
         for (int i = 0; i < 6; i++) {
             render.getCamara().lookAt(posicion, direcciones[i], direccionesArriba[i]);
             render.update();
+            // render.shadeFragments();
+            // render.postRender();
             textures[i].loadTexture(render.getFrameBuffer().getRendered());
             logger.info("[>] Generado " + (i + 1) + "/" + 6);
         }

@@ -25,7 +25,7 @@ public class Test {
     public static void main(String[] args) {
         try {
             // BufferedImage img1= ImgReader.leerImagen(new File("/home/alberto/test.png"));
-            BufferedImage img1 = ImgReader.leerImagen(new File("/home/alberto/testFiltro.png"));
+            BufferedImage img1 = ImgReader.read(new File("/home/alberto/testFiltro.png"));
             // BufferedImage img2= QProcesadorBlur.transposedHBlur(img1);
 
             int n = 8;

@@ -7,7 +7,7 @@ package net.qoopo.engine.core.texture;
 
 import java.awt.image.BufferedImage;
 
-import net.qoopo.engine.core.entity.component.cubemap.QCubeMap;
+import net.qoopo.engine.core.entity.component.cubemap.CubeMap;
 import net.qoopo.engine.core.math.QColor;
 import net.qoopo.engine.core.math.QMath;
 import net.qoopo.engine.core.math.QVector3;
@@ -22,9 +22,9 @@ public class QTexturaUtil {
 
     public static QColor getColorMapaEntorno(QVector3 vector, QProcesadorTextura mapaEntorno, int tipoMapaEntorno) {
         switch (tipoMapaEntorno) {
-            case QCubeMap.FORMATO_MAPA_CUBO:
+            case CubeMap.FORMATO_MAPA_CUBO:
                 return getColorTexturaCubeMap(vector, mapaEntorno);
-            case QCubeMap.FORMATO_MAPA_HDRI:
+            case CubeMap.FORMATO_MAPA_HDRI:
             default:
                 return getColorTexturaHDRI(vector, mapaEntorno);
         }

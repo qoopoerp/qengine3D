@@ -33,7 +33,7 @@ public class QImagen implements Serializable {
             if (is == null) {
                 throw new RuntimeException("No se puede cargar el recurso " + resource + " !");
             }
-            BufferedImage biProv = ImgReader.leerImagen(is);
+            BufferedImage biProv = ImgReader.read(is);
             this.bi = new BufferedImage(biProv.getWidth(), biProv.getHeight(), BufferedImage.TYPE_INT_ARGB);
             this.bi.getGraphics().drawImage(biProv, 0, 0, null);
         } catch (IOException ex) {

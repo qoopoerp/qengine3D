@@ -110,7 +110,7 @@ public class AssetManager implements Serializable {
         try {
             QTextura text = new QTextura();
             logger.info("  Cargando textura " + file.getName());
-            text.loadTexture(ImgReader.leerImagen(file));
+            text.loadTexture(ImgReader.read(file));
             agregarRecurso(clave, text);
             return text;
         } catch (IOException ex) {

@@ -117,6 +117,8 @@ public class PlanarReflection extends EntityComponent implements UpdatableCompon
         }
 
         render.update();
+        render.shadeFragments();
+        render.postRender();
         entity.setToRender(true);
     }
 

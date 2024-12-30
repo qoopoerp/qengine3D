@@ -1,6 +1,6 @@
 package net.qoopo.engine.core.material.basico;
 
-import net.qoopo.engine.core.entity.component.cubemap.QCubeMap;
+import net.qoopo.engine.core.entity.component.cubemap.CubeMap;
 import net.qoopo.engine.core.material.AbstractMaterial;
 import net.qoopo.engine.core.math.QColor;
 import net.qoopo.engine.core.texture.QTextura;
@@ -41,7 +41,7 @@ public class QMaterialBas extends AbstractMaterial {
     // private QColor colorEspecular = QColor.WHITE.clone();
 
     // ***************** ENTORNO *********************
-    private int tipoMapaEntorno = QCubeMap.FORMATO_MAPA_CUBO;// 1. Mapa cubico, 2. Mapa HDRI,
+    private int tipoMapaEntorno = CubeMap.FORMATO_MAPA_CUBO;// 1. Mapa cubico, 2. Mapa HDRI,
 
     // ***************** REFLEXION *********************
     private boolean reflexion = false;

@@ -39,7 +39,7 @@ public class QEmisorNieve extends ParticleEmissor {
         material = null;
         try {
             material = new QMaterialBas(
-                    new QTextura(ImgReader.leerImagen(new File("assets/textures/nieve/copo0.png"))), 64);
+                    new QTextura(ImgReader.read(new File("assets/textures/nieve/copo0.png"))), 64);
             // material.setTransAlfa(0.90f);// el objeto tiene una transparencia
             material.setColorTransparente(QColor.BLACK);
             material.setTransparencia(true);

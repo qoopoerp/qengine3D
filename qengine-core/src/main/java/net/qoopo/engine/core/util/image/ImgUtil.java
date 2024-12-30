@@ -421,7 +421,7 @@ public class ImgUtil {
                 return null;
             }
             if (jpg) {
-                return ImgReader.leerImagen(new ByteArrayInputStream(datos));
+                return ImgReader.read(new ByteArrayInputStream(datos));
             } else {
                 //byte
                 BufferedImage img = new BufferedImage(ancho, alto, tipoImagen);
