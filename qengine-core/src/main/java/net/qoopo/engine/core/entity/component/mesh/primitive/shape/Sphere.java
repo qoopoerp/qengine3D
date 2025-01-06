@@ -86,7 +86,9 @@ public class Sphere extends Shape {
                 // vertex tex coord (s, t) range between [0, 1]
                 s = (float) j / sectors;
                 t = (float) i / stacks;
-                addVertex(x, y, z, s, 1.0f - t).normal.set(nx, ny, nz);
+                addVertex(x, y, z);
+                addUV(s, 1.0f - t);
+                addNormal(nx, ny, nz);
             }
         }
 
@@ -105,7 +107,8 @@ public class Sphere extends Shape {
                 // k1 => k2 => k1+1
                 if (i != 0) {
                     try {
-                        addPoly(k1, k2, k1 + 1);
+                        addPoly(new int[] { k1, k2, k1 + 1 }, new int[] { k1, k2, k1 + 1 },
+                                new int[] { k1, k2, k1 + 1 });
                     } catch (Exception ex) {
                         Logger.getLogger(Sphere.class.getName()).log(Level.SEVERE, null, ex);
                     }
@@ -115,7 +118,8 @@ public class Sphere extends Shape {
                 // if (i != (stacks - 1)) {
                 if (i != (stacks - 1)) {
                     try {
-                        addPoly(k1 + 1, k2, k2 + 1);
+                        addPoly(new int[] { k1 + 1, k2, k2 + 1 }, new int[] { k1 + 1, k2, k2 + 1 },
+                                new int[] { k1 + 1, k2, k2 + 1 });
                     } catch (Exception ex) {
                         Logger.getLogger(Sphere.class.getName()).log(Level.SEVERE, null, ex);
                     }
@@ -133,6 +137,7 @@ public class Sphere extends Shape {
         }
         smooth();
         applyMaterial(material);
+        // computeNormals();
     }
 
     public float getRadio() {

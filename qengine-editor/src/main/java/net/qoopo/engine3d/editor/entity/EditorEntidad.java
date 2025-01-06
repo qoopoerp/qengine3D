@@ -31,27 +31,32 @@ import net.qoopo.engine.core.entity.component.EntityComponent;
 import net.qoopo.engine.core.entity.component.animation.AnimationComponent;
 import net.qoopo.engine.core.entity.component.animation.QCompAlmacenAnimaciones;
 import net.qoopo.engine.core.entity.component.animation.Skeleton;
-import net.qoopo.engine.core.entity.component.cubemap.QCubeMap;
+import net.qoopo.engine.core.entity.component.cubemap.CubeMap;
 import net.qoopo.engine.core.entity.component.ligth.QDirectionalLigth;
 import net.qoopo.engine.core.entity.component.ligth.QLigth;
 import net.qoopo.engine.core.entity.component.ligth.QPointLigth;
 import net.qoopo.engine.core.entity.component.ligth.QSpotLigth;
 import net.qoopo.engine.core.entity.component.mesh.Mesh;
 import net.qoopo.engine.core.entity.component.mesh.primitive.Poly;
-import net.qoopo.engine.core.entity.component.mesh.primitive.QPrimitiva;
+import net.qoopo.engine.core.entity.component.mesh.primitive.Primitive;
 import net.qoopo.engine.core.entity.component.mesh.primitive.Vertex;
-import net.qoopo.engine.core.entity.component.mesh.primitive.shape.IcoSphere;
-import net.qoopo.engine.core.entity.component.mesh.primitive.shape.PlanarMesh;
 import net.qoopo.engine.core.entity.component.mesh.primitive.shape.Box;
+import net.qoopo.engine.core.entity.component.mesh.primitive.shape.Cone;
 import net.qoopo.engine.core.entity.component.mesh.primitive.shape.Cylinder;
 import net.qoopo.engine.core.entity.component.mesh.primitive.shape.CylinderX;
-import net.qoopo.engine.core.entity.component.mesh.primitive.shape.Cone;
-import net.qoopo.engine.core.entity.component.mesh.primitive.shape.SphereBox;
-import net.qoopo.engine.core.entity.component.mesh.primitive.shape.Sphere;
 import net.qoopo.engine.core.entity.component.mesh.primitive.shape.GeoSphere;
+import net.qoopo.engine.core.entity.component.mesh.primitive.shape.IcoSphere;
+import net.qoopo.engine.core.entity.component.mesh.primitive.shape.PlanarMesh;
 import net.qoopo.engine.core.entity.component.mesh.primitive.shape.Plane;
 import net.qoopo.engine.core.entity.component.mesh.primitive.shape.Prism;
+import net.qoopo.engine.core.entity.component.mesh.primitive.shape.Sphere;
+import net.qoopo.engine.core.entity.component.mesh.primitive.shape.SphereBox;
 import net.qoopo.engine.core.entity.component.mesh.primitive.shape.Torus;
+import net.qoopo.engine.core.entity.component.modifier.ModifierComponent;
+import net.qoopo.engine.core.entity.component.modifier.generate.InflateModifier;
+import net.qoopo.engine.core.entity.component.modifier.generate.SubdivisionModifier;
+import net.qoopo.engine.core.entity.component.movement.JumpComponent;
+import net.qoopo.engine.core.entity.component.movement.RotationComponent;
 import net.qoopo.engine.core.entity.component.particles.ParticleEmissor;
 import net.qoopo.engine.core.entity.component.physics.collision.QComponenteColision;
 import net.qoopo.engine.core.entity.component.physics.collision.detector.CollisionShape;
@@ -92,8 +97,8 @@ import net.qoopo.engine.core.scene.Camera;
 import net.qoopo.engine.core.scene.Scene;
 import net.qoopo.engine.core.texture.QTextura;
 import net.qoopo.engine.core.texture.util.MaterialUtil;
+import net.qoopo.engine.core.util.ComponentUtil;
 import net.qoopo.engine.core.util.QGlobal;
-import net.qoopo.engine.core.util.QUtilComponentes;
 import net.qoopo.engine.core.util.mesh.NormalUtil;
 import net.qoopo.engine.terrain.HeightMapTerrain;
 import net.qoopo.engine3d.editor.Principal;
@@ -137,6 +142,8 @@ import net.qoopo.engine3d.editor.entity.componentes.geometria.PnlPlano;
 import net.qoopo.engine3d.editor.entity.componentes.geometria.PnlPrisma;
 import net.qoopo.engine3d.editor.entity.componentes.geometria.PnlToro;
 import net.qoopo.engine3d.editor.entity.componentes.luces.PnlLuz;
+import net.qoopo.engine3d.editor.entity.componentes.modifiers.PnlInflate;
+import net.qoopo.engine3d.editor.entity.componentes.modifiers.PnlSubdivision;
 import net.qoopo.engine3d.editor.entity.componentes.procesadores.agua.PnlAguaSimple;
 import net.qoopo.engine3d.editor.entity.componentes.procesadores.espejo.PnlEspejo;
 import net.qoopo.engine3d.editor.entity.componentes.terreno.PnlTerreno;
@@ -206,19 +213,10 @@ public class EditorEntidad extends javax.swing.JPanel {
     }
 
     private void crearMenuComponentes() {
-        /*
-         * private JMenu mnuGeometria;
-         * private JMenu mnuFisica;
-         * private JMenu mnuEfectos;
-         * private JMenu mnuSonido;
-         * private JMenu mnuAnimacion;
-         * private JMenu mnuComportamiento;
-         * private JMenu mnuAgua;
-         * private JMenu mnuEntorno;
-         * private JMenu mnuIluminacion;
-         * 
-         */
+
         mnuGeometria = new JMenu("Geometría");
+        mnuMovimiento = new JMenu("Movimiento");
+        mnuModifiers = new JMenu("Modificadores");
         mnuIluminacion = new JMenu("Iluminación");
         mnuFisica = new JMenu("Física");
         mnuEfectos = new JMenu("Efectos");
@@ -228,8 +226,7 @@ public class EditorEntidad extends javax.swing.JPanel {
         mnuTerreno = new JMenu("Terreno");
         mnuEntorno = new JMenu("Entorno");
 
-        // ---------------------------------- GEOMETRIA
-        // -----------------------------------------
+        // ---------- GEOMETRIA -----------------
         mnuGeometria.setIcon(Util.cargarIcono16("/cube_16.png"));
         JMenuItem itmCaja = GuiUTIL.crearMenuItem("Caja", "", Util.cargarIcono16("/cube_16.png"), false);
         itmCaja.addActionListener(new ActionListener() {
@@ -259,8 +256,7 @@ public class EditorEntidad extends javax.swing.JPanel {
         });
         mnuGeometria.add(itmPlano);
 
-        // ---------------------------------- LUCES
-        // -----------------------------------------
+        // ---------- LUCES -----------------
         mnuIluminacion.setIcon(Util.cargarIcono16("/luz.png"));
         JMenuItem itmLuzDireccional = GuiUTIL.crearMenuItem("Direccional", "", Util.cargarIcono16("/sol_16.png"),
                 false);
@@ -294,20 +290,18 @@ public class EditorEntidad extends javax.swing.JPanel {
         });
         mnuIluminacion.add(itmLuzConica);
 
-        // ---------------------------------- ENTORNO
-        // -----------------------------------------
+        // ---------- ENTORNO -----------------
         mnuEntorno.setIcon(Util.cargarIcono16("/cube.png"));
         JMenuItem itmMapaCubo = GuiUTIL.crearMenuItem("Mapa cúbico", "", Util.cargarIcono16("/cube.png"), false);
         itmMapaCubo.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                entity.addComponent(new QCubeMap(QGlobal.MAPA_CUPO_RESOLUCION));
+                entity.addComponent(new CubeMap(QGlobal.MAPA_CUPO_RESOLUCION));
                 editarEntidad(entity);
             }
         });
         mnuEntorno.add(itmMapaCubo);
-        // ---------------------------------- COMPORTAMIENTO
-        // -----------------------------------------
+        // ---------- COMPORTAMIENTO -----------------
         mnuComportamiento.setIcon(Util.cargarIcono16("/cube.png"));
         JMenuItem itmControladorVehiculo = GuiUTIL.crearMenuItem("Controlador vehículo", "",
                 Util.cargarIcono16("/cube.png"), false);
@@ -315,7 +309,7 @@ public class EditorEntidad extends javax.swing.JPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
 
-                QVehiculo vehi = QUtilComponentes.getVehiculo(entity);
+                QVehiculo vehi = ComponentUtil.getVehiculo(entity);
                 if (vehi != null) {
                     entity.addComponent(new QVehiculoControl(vehi));
                     editarEntidad(entity);
@@ -329,8 +323,7 @@ public class EditorEntidad extends javax.swing.JPanel {
         });
         mnuComportamiento.add(itmControladorVehiculo);
 
-        // ---------------------------------- TERRENO
-        // -----------------------------------------
+        // ---------- TERRENO -----------------
         mnuTerreno.setIcon(Util.cargarIcono16("/cube.png"));
         JMenuItem itmTerreno = GuiUTIL.crearMenuItem("Terreno", "", Util.cargarIcono16("/cube.png"), false);
         itmTerreno.addActionListener(new ActionListener() {
@@ -342,8 +335,7 @@ public class EditorEntidad extends javax.swing.JPanel {
         });
         mnuTerreno.add(itmTerreno);
 
-        // ---------------------------------- FISICA
-        // -----------------------------------------
+        // ---------- FISICA -----------------
         mnuFisica.setIcon(Util.cargarIcono16("/cube.png"));
 
         JMenu mnuColision = GuiUTIL.crearMenu("Colisiones", "Formas de colisión", Util.cargarIcono16("/cube.png"),
@@ -405,7 +397,7 @@ public class EditorEntidad extends javax.swing.JPanel {
         itmColisionTerreno.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                Terrain terr = QUtilComponentes.getTerreno(entity);
+                Terrain terr = ComponentUtil.getTerreno(entity);
                 if (terr != null) {
                     entity.addComponent(new QColisionTerreno(terr));
                     editarEntidad(entity);
@@ -422,7 +414,7 @@ public class EditorEntidad extends javax.swing.JPanel {
         itmMallaColision.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                Mesh gem = QUtilComponentes.getMesh(entity);
+                Mesh gem = ComponentUtil.getMesh(entity);
                 if (gem != null) {
                     entity.addComponent(new QColisionMallaConvexa(gem));
                     editarEntidad(entity);
@@ -440,7 +432,7 @@ public class EditorEntidad extends javax.swing.JPanel {
         itmMallaColisionIndexada.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                Mesh gem = QUtilComponentes.getMesh(entity);
+                Mesh gem = ComponentUtil.getMesh(entity);
                 if (gem != null) {
                     entity.addComponent(new QColisionMallaIndexada(gem));
                     editarEntidad(entity);
@@ -473,9 +465,9 @@ public class EditorEntidad extends javax.swing.JPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 // valida si existe un componente de colisión
-                CollisionShape col = QUtilComponentes.getColision(entity);
+                CollisionShape col = ComponentUtil.getColision(entity);
                 if (col != null) {
-                    QObjetoRigido comp = QUtilComponentes.getFisicoRigido(entity);
+                    QObjetoRigido comp = ComponentUtil.getFisicoRigido(entity);
                     if (comp == null) {
                         entity.addComponent(new QObjetoRigido(QObjetoDinamico.DINAMICO, 1.0f));
                         editarEntidad(entity);
@@ -494,7 +486,7 @@ public class EditorEntidad extends javax.swing.JPanel {
         itmVehiculo.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                QObjetoRigido rigido = QUtilComponentes.getFisicoRigido(entity);
+                QObjetoRigido rigido = ComponentUtil.getFisicoRigido(entity);
                 if (rigido != null) {
                     entity.addComponent(new QVehiculo(rigido));
                     editarEntidad(entity);
@@ -515,7 +507,7 @@ public class EditorEntidad extends javax.swing.JPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 // valida si existe un componente rigido
-                QObjetoRigido comp = QUtilComponentes.getFisicoRigido(entity);
+                QObjetoRigido comp = ComponentUtil.getFisicoRigido(entity);
                 if (comp != null) {
                     entity.addComponent(new QRestriccionFija(comp));
                     editarEntidad(entity);
@@ -532,7 +524,7 @@ public class EditorEntidad extends javax.swing.JPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 // valida si existe un componente rigido
-                QObjetoRigido comp = QUtilComponentes.getFisicoRigido(entity);
+                QObjetoRigido comp = ComponentUtil.getFisicoRigido(entity);
                 if (comp != null) {
                     entity.addComponent(new QRestriccionPunto2Punto(comp));
                     editarEntidad(entity);
@@ -548,7 +540,7 @@ public class EditorEntidad extends javax.swing.JPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 // valida si existe un componente rigido
-                QObjetoRigido comp = QUtilComponentes.getFisicoRigido(entity);
+                QObjetoRigido comp = ComponentUtil.getFisicoRigido(entity);
                 if (comp != null) {
                     entity.addComponent(new QRestriccionBisagra(comp));
                     editarEntidad(entity);
@@ -564,7 +556,7 @@ public class EditorEntidad extends javax.swing.JPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 // valida si existe un componente rigido
-                QObjetoRigido comp = QUtilComponentes.getFisicoRigido(entity);
+                QObjetoRigido comp = ComponentUtil.getFisicoRigido(entity);
                 if (comp != null) {
                     entity.addComponent(new QRestriccionBisagra(comp));
                     editarEntidad(entity);
@@ -580,7 +572,7 @@ public class EditorEntidad extends javax.swing.JPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 // valida si existe un componente rigido
-                QObjetoRigido comp = QUtilComponentes.getFisicoRigido(entity);
+                QObjetoRigido comp = ComponentUtil.getFisicoRigido(entity);
                 if (comp != null) {
                     entity.addComponent(new QRestriccionGenerica6DOF(comp));
                     editarEntidad(entity);
@@ -592,6 +584,55 @@ public class EditorEntidad extends javax.swing.JPanel {
         });
         mnuRestricciones.add(itmGeneric6DOF);
 
+        // -------- MOVIMIENTO ---
+
+        mnuMovimiento.setIcon(Util.cargarIcono16("/cube_16.png"));
+        JMenuItem itmRotacioncomponent = GuiUTIL.crearMenuItem("Rotación", "", Util.cargarIcono16("/cube_16.png"),
+                false);
+        itmRotacioncomponent.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                entity.addComponent(new RotationComponent());
+                editarEntidad(entity);
+            }
+        });
+        mnuMovimiento.add(itmRotacioncomponent);
+
+        JMenuItem itmJumping = GuiUTIL.crearMenuItem("Salto / Jumping", "", Util.cargarIcono16("/cube_16.png"),
+                false);
+        itmJumping.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                entity.addComponent(new JumpComponent());
+                editarEntidad(entity);
+            }
+        });
+        mnuMovimiento.add(itmJumping);
+
+        // -------- MOVIMIENTO ---
+
+        mnuModifiers.setIcon(Util.cargarIcono16("/cube_16.png"));
+        JMenuItem itmSubidivisionModifier = GuiUTIL.crearMenuItem("Subdivisión", "", Util.cargarIcono16("/cube_16.png"),
+                false);
+        itmSubidivisionModifier.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                entity.addComponent(new SubdivisionModifier());
+                editarEntidad(entity);
+            }
+        });
+        mnuModifiers.add(itmSubidivisionModifier);
+        JMenuItem itmInflateModifier = GuiUTIL.crearMenuItem("Inflar", "", Util.cargarIcono16("/cube_16.png"),
+                false);
+        itmInflateModifier.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                entity.addComponent(new InflateModifier());
+                editarEntidad(entity);
+            }
+        });
+        mnuModifiers.add(itmInflateModifier);
+
         // --------agrega al popup menu
         mnuComponentes.add(mnuGeometria);
         mnuComponentes.add(mnuIluminacion);
@@ -602,6 +643,8 @@ public class EditorEntidad extends javax.swing.JPanel {
         mnuComponentes.add(mnuComportamiento);
         mnuComponentes.add(mnuTerreno);
         mnuComponentes.add(mnuEntorno);
+        mnuComponentes.add(mnuMovimiento);
+        mnuComponentes.add(mnuModifiers);
 
     }
 
@@ -633,9 +676,9 @@ public class EditorEntidad extends javax.swing.JPanel {
             // QColor.WHITE, 50));
             // entidadVistaPrevia = crearTestEsfera(new QMaterial(QColor.LIGHT_GRAY,
             // QColor.WHITE, 50));
-            renderVistaPrevia.getEscena().addEntity(fondoVistaPrevia);
+            renderVistaPrevia.getScene().addEntity(fondoVistaPrevia);
             // renderVistaPrevia.getUniverso().addEntity(entidadVistaPrevia);
-            renderVistaPrevia.getEscena().addEntity(luz);
+            renderVistaPrevia.getScene().addEntity(luz);
             renderVistaPrevia.setShowStats(false);
             renderVistaPrevia.opciones.setDibujarLuces(false);
             renderVistaPrevia.setInteractuar(false);
@@ -669,7 +712,7 @@ public class EditorEntidad extends javax.swing.JPanel {
     public void editarEntidad(Entity objeto) {
         objectLock = true;
         if (this.entity != null) {
-            renderVistaPrevia.getEscena().eliminarEntidadSindestruir(entity);
+            renderVistaPrevia.getScene().eliminarEntidadSindestruir(entity);
         }
         this.pnlInspector.setVisible(true);
         this.renderVistaPrevia.start();
@@ -706,6 +749,8 @@ public class EditorEntidad extends javax.swing.JPanel {
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     entity.getComponents().remove(componente);
+                    if (componente instanceof ModifierComponent)
+                        ((Mesh) entity.getComponent(Mesh.class)).updateTimeMark();
                     editarEntidad(entity);
                 }
             };
@@ -766,9 +811,9 @@ public class EditorEntidad extends javax.swing.JPanel {
                 // totales de la geometria
                 JPanel pnTotales = new JPanel();
                 pnTotales.setLayout(new GridLayout(1, 1));
-                pnTotales.add(GuiUTIL.crearJLabel("Vert:" + ((Mesh) componente).vertices.length,
+                pnTotales.add(GuiUTIL.crearJLabel("Vert:" + ((Mesh) componente).vertexList.length,
                         Util.cargarIcono16("/cube_16.png")));
-                pnTotales.add(GuiUTIL.crearJLabel("Pol:" + ((Mesh) componente).primitivas.length,
+                pnTotales.add(GuiUTIL.crearJLabel("Pol:" + ((Mesh) componente).primitiveList.length,
                         Util.cargarIcono16("/cube_16.png")));
                 pnTotales.setPreferredSize(dimensionLabel);
                 pnTotales.setMaximumSize(dimensionLabel);
@@ -794,8 +839,8 @@ public class EditorEntidad extends javax.swing.JPanel {
                 pnlListaComponentes.add(new PnlAguaSimple((WaterDuDv) componente));
             } else if (componente instanceof PlanarReflection) {
                 pnlListaComponentes.add(new PnlEspejo());
-            } else if (componente instanceof QCubeMap) {
-                pnlListaComponentes.add(new PnlMapaCubo((QCubeMap) componente));
+            } else if (componente instanceof CubeMap) {
+                pnlListaComponentes.add(new PnlMapaCubo((CubeMap) componente));
             } else if (componente instanceof QObjetoRigido) {
                 pnlListaComponentes.add(new PnlFisicoRigido((QObjetoRigido) componente));
             } else if (componente instanceof QVehiculo) {
@@ -838,10 +883,19 @@ public class EditorEntidad extends javax.swing.JPanel {
                 pnlListaComponentes.add(new PnlFisRestriccionBisagra((QRestriccionBisagra) componente));
             } else if (componente instanceof QRestriccionGenerica6DOF) {
                 pnlListaComponentes.add(new PnlFisRestriccion6DOF((QRestriccionGenerica6DOF) componente));
+                // modificadores
+            } else if (componente instanceof SubdivisionModifier) {
+                pnlListaComponentes.add(new PnlSubdivision((SubdivisionModifier) componente));
+            } else if (componente instanceof InflateModifier) {
+                pnlListaComponentes.add(new PnlInflate((InflateModifier) componente));
             } else {
                 JPanel pnBar2 = new JPanel();
                 pnBar2.setLayout(new GridLayout(1, 1));
-                pnBar2.add(GuiUTIL.crearJLabel("Desconocido", Util.cargarIcono16("/cube.png")));
+                pnBar2.add(GuiUTIL.crearJLabel(
+                        "Desconocido " + componente.getClass().getName()
+                                .substring(componente.getClass().getName().lastIndexOf(".")),
+                        componente.getClass().getCanonicalName(),
+                        Util.cargarIcono16("/cube.png")));
                 pnBar2.setPreferredSize(dimensionLabel);
                 pnBar2.setMaximumSize(dimensionLabel);
                 pnlListaComponentes.add(pnBar2);
@@ -903,7 +957,7 @@ public class EditorEntidad extends javax.swing.JPanel {
     //
     private void desplegarListaMateriales(Mesh object) {
         DefaultListModel model = (DefaultListModel) lstMaterials.getModel();
-        for (QPrimitiva face : object.primitivas) {
+        for (Primitive face : object.primitiveList) {
             if (!editingMaterial.contains(face.material)) {
                 editingMaterial.add(face.material);
                 if (face.material instanceof QMaterialBas) {
@@ -1514,14 +1568,14 @@ public class EditorEntidad extends javax.swing.JPanel {
 
             if (geomActual != null) {
                 int c = 0;
-                for (Vertex vertice : geomActual.vertices) {
+                for (Vertex vertice : geomActual.vertexList) {
                     // verticesModel.addElement(vertice);
                     verticesModel.addElement(c);
                     c++;
                 }
 
                 c = 0;
-                for (QPrimitiva poligono : geomActual.primitivas) {
+                for (Primitive poligono : geomActual.primitiveList) {
                     // verticesModel.addElement(vertice);
                     carasModel.addElement(c);
                     c++;
@@ -1534,7 +1588,7 @@ public class EditorEntidad extends javax.swing.JPanel {
 
     private void lstVerticesValueChanged(javax.swing.event.ListSelectionEvent evt) {// GEN-FIRST:event_lstVerticesValueChanged
         try {
-            verticeActual = geomActual.vertices[lstVertices.getSelectedIndex()];
+            verticeActual = geomActual.vertexList[lstVertices.getSelectedIndex()];
             if (verticeActual != null) {
                 txtVerticeX.setText(String.valueOf(verticeActual.location.x));
                 txtVerticeY.setText(String.valueOf(verticeActual.location.y));
@@ -1580,7 +1634,7 @@ public class EditorEntidad extends javax.swing.JPanel {
     private void lstCarasValueChanged(javax.swing.event.ListSelectionEvent evt) {// GEN-FIRST:event_lstCarasValueChanged
         try {
 
-            QPrimitiva tmp = geomActual.primitivas[lstCaras.getSelectedIndex()];
+            Primitive tmp = geomActual.primitiveList[lstCaras.getSelectedIndex()];
             if (tmp instanceof Poly) {
                 this.poligonoActual = (Poly) tmp;
             } else {
@@ -1675,6 +1729,8 @@ public class EditorEntidad extends javax.swing.JPanel {
     private JMenu mnuTerreno;
     private JMenu mnuEntorno;
     private JMenu mnuIluminacion;
+    private JMenu mnuMovimiento;
+    private JMenu mnuModifiers;
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton brnAgregarComponente;

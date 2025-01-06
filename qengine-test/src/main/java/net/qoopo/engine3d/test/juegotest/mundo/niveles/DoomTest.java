@@ -19,7 +19,7 @@ import net.qoopo.engine.core.material.basico.QMaterialBas;
 import net.qoopo.engine.core.scene.QEscenario;
 import net.qoopo.engine.core.scene.Scene;
 import net.qoopo.engine.core.texture.QTextura;
-import net.qoopo.engine.core.util.QUtilComponentes;
+import net.qoopo.engine.core.util.ComponentUtil;
 import net.qoopo.engine.terrain.HeightMapTerrain;
 import net.qoopo.engine3d.test.juegotest.monstruos.QDoomMonster;
 
@@ -151,7 +151,7 @@ public class DoomTest extends QEscenario {
 
         // QColisionTerreno colision = new QColisionTerreno(terreno);
         // entidadTerreno.agregarComponente(colision);
-        QColisionMallaIndexada colision = new QColisionMallaIndexada(QUtilComponentes.getMesh(entidadTerreno));
+        QColisionMallaIndexada colision = new QColisionMallaIndexada(ComponentUtil.getMesh(entidadTerreno));
         QObjetoRigido terrenoRigidez = new QObjetoRigido(QObjetoDinamico.ESTATICO);
         terrenoRigidez.setFormaColision(colision);
         entidadTerreno.addComponent(terrenoRigidez);

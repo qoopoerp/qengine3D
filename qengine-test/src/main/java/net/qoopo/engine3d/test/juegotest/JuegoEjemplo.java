@@ -44,7 +44,7 @@ public class JuegoEjemplo {
                 Camera cam = new Camera();
                 cam.frustrumLejos = 1000;
                 cam.updateCamera();
-                motor.getEscena().addEntity(cam);
+                motor.getScene().addEntity(cam);
                 motor.exitonEsc();
 
                 // estas lineas es por el java3D que debo cargar el escenario antes del
@@ -191,7 +191,7 @@ public class JuegoEjemplo {
                                 true);
                 solLuz.setResolucionMapaSombra(1024);
                 sol.addComponent(solLuz);
-                motor.getEscena().addEntity(sol);
+                motor.getScene().addEntity(sol);
 
                 // QTextura cieloDia = QGestorRecursos.loadTexture("dia", "assets/"+
                 // "textures/cielo/esfericos/cielo_dia.jpg");
@@ -202,8 +202,8 @@ public class JuegoEjemplo {
                 QTextura cieloNoche = AssetManager.get().loadTexture("noche",
                                 "assets/textures/cielo/esfericos/cielo_noche_2.jpg");
                 QCielo cielo = new SphereCielo(cieloDia, cieloNoche,
-                                motor.getEscena().UM.convertirPixel(500, QUnidadMedida.METRO));
-                motor.getEscena().addEntity(cielo.getEntidad());
+                                motor.getScene().UM.convertirPixel(500, QUnidadMedida.METRO));
+                motor.getScene().addEntity(cielo.getEntidad());
 
                 // motor.configurarDiaNoche(cielo, 60 * 2, solLuz, 9); //el dia dura 2 minutos
                 // motor.configurarDiaNoche(cielo, 60, solLuz, 9);
@@ -215,7 +215,7 @@ public class JuegoEjemplo {
                 // QEscenario nivel = new NivelTest();
                 QEscenario nivel = new NivelTest2();
                 // QEscenario nivel = new DoomTest();
-                nivel.cargar(motor.getEscena());
+                nivel.cargar(motor.getScene());
                 //
                 // Entity sol = new Entity("Sol");
                 // QLuzDireccional solLuz = new QLuzDireccional(1.5f, QColor.WHITE, true, 1,
@@ -238,7 +238,7 @@ public class JuegoEjemplo {
                         // personaje.mover(-90, 200, 9);
                         // personaje.setTerreno(nivel.getTerreno());
 
-                        Entity personaje = crearVehiculo(motor.getEscena());
+                        Entity personaje = crearVehiculo(motor.getScene());
                         personaje.move(-90, 15, 9);
                         // pongo las coordenadas para q este detras del jugador
                         cam.lookAtTarget(
@@ -263,7 +263,7 @@ public class JuegoEjemplo {
                         // personaje.posicionPistola();
                         // configuro a personaje como listener de audio
                         personaje.addComponent(new SoundListenerAL(personaje.getTransformacion().getTraslacion()));
-                        motor.getEscena().addEntity(personaje);
+                        motor.getScene().addEntity(personaje);
                 } catch (Exception e) {
                         e.printStackTrace();
                 }

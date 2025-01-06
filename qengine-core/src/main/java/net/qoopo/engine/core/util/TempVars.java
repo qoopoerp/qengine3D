@@ -22,7 +22,7 @@ public class TempVars {
     /**
      * Allow X instances of TempVars in a single thread.
      */
-    private static final int STACK_SIZE = 10;
+    private static final int STACK_SIZE = 20;
 
     /**
      * ThreadLocal to store a TempVarsStack for each thread. This ensures each
@@ -109,6 +109,7 @@ public class TempVars {
     public final Vertex vertex1 = new Vertex();
     public final Vertex vertex2 = new Vertex();
     public final Vertex vertex3 = new Vertex();
+    public final Vertex vertex4 = new Vertex();
 
     /**
      * General matrices.

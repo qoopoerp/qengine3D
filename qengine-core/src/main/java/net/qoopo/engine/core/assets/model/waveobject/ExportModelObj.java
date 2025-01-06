@@ -15,10 +15,11 @@ import net.qoopo.engine.core.entity.Entity;
 import net.qoopo.engine.core.entity.component.EntityComponent;
 import net.qoopo.engine.core.entity.component.mesh.Mesh;
 import net.qoopo.engine.core.entity.component.mesh.primitive.Poly;
-import net.qoopo.engine.core.entity.component.mesh.primitive.QPrimitiva;
+import net.qoopo.engine.core.entity.component.mesh.primitive.Primitive;
 import net.qoopo.engine.core.entity.component.mesh.primitive.Vertex;
 import net.qoopo.engine.core.material.basico.QMaterialBas;
 import net.qoopo.engine.core.math.QColor;
+import net.qoopo.engine.core.math.QVector2;
 import net.qoopo.engine.core.math.QVector3;
 import net.qoopo.engine.core.util.QGlobal;
 
@@ -88,7 +89,7 @@ public class ExportModelObj implements ModelExporter {
                     // writer.write("o " + mesh.nombre);
                     // writer.newLine();
                     // escribe los vértices
-                    for (Vertex vertex : mesh.vertices) {
+                    for (Vertex vertex : mesh.vertexList) {
                         writer.write(String
                                 .format("v %.6f %.6f %.6f",
                                         vertex.location.x + parentLocation.x
@@ -102,17 +103,17 @@ public class ExportModelObj implements ModelExporter {
                     }
 
                     // escribe las coordenadas de texturas
-                    for (Vertex vertex : mesh.vertices) {
-                        writer.write(String.format("vt %.6f %.6f", vertex.u, vertex.v).replace(",", "."));
+                    for (QVector2 uv : mesh.uvList) {
+                        writer.write(String.format("vt %.6f %.6f", uv.x, uv.y).replace(",", "."));
                         writer.newLine();
                     }
 
                     // escribe las normales
-                    for (Vertex vertex : mesh.vertices) {
+                    for (QVector3 normal : mesh.normalList) {
                         // vertex.normal.normalize();
                         writer.write(
-                                String.format("vn %.4f %.4f %.4f", vertex.normal.x, vertex.normal.y,
-                                        vertex.normal.z)
+                                String.format("vn %.4f %.4f %.4f", normal.x, normal.y,
+                                        normal.z)
                                         .replace(",", "."));
                         writer.newLine();
                     }
@@ -123,7 +124,7 @@ public class ExportModelObj implements ModelExporter {
                     // f 1/1/1 2/2/2 3/3/3
                     String currentMaterialName = "";
                     Boolean currentSmooth = null;
-                    for (QPrimitiva poly : mesh.primitivas) {
+                    for (Primitive poly : mesh.primitiveList) {
 
                         if (poly.material != null && !poly.material.getNombre().equals(currentMaterialName)) {
                             currentMaterialName = poly.material.getNombre();
@@ -141,7 +142,7 @@ public class ExportModelObj implements ModelExporter {
                         }
 
                         writer.write("f");
-                        for (int index : poly.listaVertices) {
+                        for (int index : poly.vertexIndexList) {
                             // indice de vertice/indice de texura /indice de normal
                             writer.write(String.format(" %d/%d/%d", (index + vertextCount + vertextCountLocal + 1),
                                     (index + vertextCount + vertextCountLocal + 1),
@@ -149,7 +150,7 @@ public class ExportModelObj implements ModelExporter {
                         }
                         writer.newLine();
                     }
-                    vertextCountLocal += mesh.vertices.length;
+                    vertextCountLocal += mesh.vertexList.length;
                 }
             }
 
@@ -256,7 +257,7 @@ public class ExportModelObj implements ModelExporter {
             // Exporta las mallas
             if (component instanceof Mesh) {
                 Mesh mesh = (Mesh) component;
-                for (QPrimitiva poly : mesh.primitivas) {
+                for (Primitive poly : mesh.primitiveList) {
                     if (poly.material instanceof QMaterialBas) {
                         QMaterialBas material = (QMaterialBas) poly.material;
                         if (!materialList.contains(material))

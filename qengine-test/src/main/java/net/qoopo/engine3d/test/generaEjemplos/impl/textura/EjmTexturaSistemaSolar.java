@@ -33,7 +33,7 @@ public class EjmTexturaSistemaSolar extends MakeTestScene {
                 Mesh universeGeometry = MaterialUtil.applyMaterial(new Sphere(20, 36), new QMaterialBas(
                                 AssetManager.get().loadTexture("sol", new File(
                                                 "assets/textures/solar_system/2k_stars_milky_way.jpg"))));
-                ((QMaterialBas) universeGeometry.primitivas[0].material).setFactorEmision(1.0f);
+                ((QMaterialBas) universeGeometry.primitiveList[0].material).setFactorEmision(1.0f);
                 NormalUtil.invertirNormales(universeGeometry);
                 sky.addComponent(universeGeometry);
                 sky.move(QVector3.zero);
@@ -44,7 +44,7 @@ public class EjmTexturaSistemaSolar extends MakeTestScene {
                 Mesh geomeSol = MaterialUtil.applyMaterial(new Sphere(2, 36), new QMaterialBas(
                                 AssetManager.get().loadTexture("sol",
                                                 new File("assets/textures/solar_system/2k_sun.jpg"))));
-                ((QMaterialBas) geomeSol.primitivas[0].material).setFactorEmision(1.0f);
+                ((QMaterialBas) geomeSol.primitiveList[0].material).setFactorEmision(1.0f);
                 sol.addComponent(geomeSol);
                 sol.move(QVector3.zero);
                 mundo.addEntity(sol);

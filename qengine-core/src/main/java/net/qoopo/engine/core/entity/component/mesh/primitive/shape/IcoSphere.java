@@ -9,9 +9,11 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import net.qoopo.engine.core.entity.component.mesh.primitive.Shape;
+import net.qoopo.engine.core.entity.component.modifier.generate.InflateModifier;
+import net.qoopo.engine.core.entity.component.modifier.generate.SubdivisionModifier;
 import net.qoopo.engine.core.material.basico.QMaterialBas;
 import net.qoopo.engine.core.math.QColor;
-import net.qoopo.engine.core.texture.util.MaterialUtil;
+import net.qoopo.engine.core.util.array.IntArray;
 
 /**
  * Geoesfera o Icoesfera
@@ -53,21 +55,12 @@ public class IcoSphere extends Shape {
         deleteData();
         // paso 1.- generar el icosaedro origen
         crearOriginal();
-        // ahora armamos las caras
-        calculateNormals();
-
-        // paso 2
-        // for (int i = 0; i < divisiones; i++) {
-        // dividir();
-        // inflar(radio);
-        // }
-        dividir(divisiones);
-        inflate(radio);
-
-        // el objeto es suavizado
-        MaterialUtil.smooth(this, true);
+        computeNormals();
+        new SubdivisionModifier(SubdivisionModifier.TYPE_SIMPLE, divisiones).apply(this);
+        new InflateModifier(radio).apply(this);
+        computeNormals();
+        smooth();
         applyMaterial(material);
-        // QMaterialUtil.aplicarMaterial(this, material);
     }
 
     /**
@@ -90,10 +83,16 @@ public class IcoSphere extends Shape {
             addVertex(radio / 2, -radio / 2, -radio / 2);// 3
             addVertex(-radio / 2, radio / 2, -radio / 2);// 4
 
-            addPoly(blanco, 1, 0, 2);
-            addPoly(rojo, 0, 1, 3);
-            addPoly(amarillo, 3, 4, 0);
-            addPoly(azul, 2, 3, 1);
+            addUV(0, 0);
+            addUV(0, 0);
+            addUV(0, 0);
+            addUV(0, 0);
+            addUV(0, 0);
+
+            addPoly(blanco, IntArray.of(1, 0, 2));
+            addPoly(rojo, IntArray.of(0, 1, 3));
+            addPoly(amarillo, IntArray.of(3, 4, 0));
+            addPoly(azul, IntArray.of(2, 3, 1));
         } catch (Exception ex) {
             Logger.getLogger(IcoSphere.class.getName()).log(Level.SEVERE, null, ex);
         }

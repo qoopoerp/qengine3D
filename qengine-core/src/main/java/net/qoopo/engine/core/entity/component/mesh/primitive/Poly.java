@@ -11,7 +11,7 @@ import net.qoopo.engine.core.math.QVector3;
  *
  * @author alberto
  */
-public class Poly extends QPrimitiva implements Comparable<Poly> {
+public class Poly extends Primitive implements Comparable<Poly> {
 
     private QVector3 normal = QVector3.empty();
     // la normal transformada
@@ -29,9 +29,16 @@ public class Poly extends QPrimitiva implements Comparable<Poly> {
         super(parent);
     }
 
-    public Poly(Mesh parent, int... vertices) {
-        // this(parent);
-        super(parent, vertices);
+    public Poly(Mesh parent, int[] vertexList) {
+        super(parent, vertexList);
+    }
+
+    // public Poly(Mesh parent,List<Integer> vertexList){
+    //     super(parent, (Integer[])vertexList.toArray());
+    // }
+
+    public Poly(Mesh parent, int[] vertexList, int[] normalList, int[] uvList) {
+        super(parent, vertexList, normalList, uvList);
     }
 
     public boolean verificarPuntoEnPlano(QVector3 punto) {
@@ -49,22 +56,21 @@ public class Poly extends QPrimitiva implements Comparable<Poly> {
         return false;
     }
 
-    public void calculaNormalYCentro() {
-        calculaNormalYCentro(geometria.vertices);
+    public void computeNormalCenter() {
+        computeNormalCenter(mesh.vertexList);
         normalInversa = false;
     }
 
-    public void calculaNormalYCentro(Vertex[] vertices) {
-        if (vertices.length >= 3) {
+    public void computeNormalCenter(Vertex[] vertexList) {
+        if (vertexList.length >= 3) {
             try {
-                // normal = QVector3.of(vertices[vertices[0]], vertices[vertices[1]]);
-                normal.set(vertices[listaVertices[0]], vertices[listaVertices[1]]);
-                normal.cross(QVector3.of(vertices[listaVertices[0]], vertices[listaVertices[2]]));
+                normal.set(vertexList[vertexIndexList[0]], vertexList[vertexIndexList[1]]);
+                normal.cross(QVector3.of(vertexList[vertexIndexList[0]], vertexList[vertexIndexList[2]]));
                 normal.normalize();
                 int count = 0;
                 center.location.set(0, 0, 0, 1);
-                for (int i : listaVertices) {
-                    center.location.add(vertices[i].location);
+                for (int i : vertexIndexList) {
+                    center.location.add(vertexList[i].location);
                     count++;
                 }
                 center.location.multiply(1.0f / count);
@@ -109,7 +115,7 @@ public class Poly extends QPrimitiva implements Comparable<Poly> {
     // }
     @Override
     public String toString() {
-        return "Poly{" + "listaVertices=" + Arrays.toString(listaVertices) + '}';
+        return "Poly{" + "listaVertices=" + Arrays.toString(vertexIndexList) + '}';
     }
 
     @Override

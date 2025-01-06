@@ -6,7 +6,7 @@
 package net.qoopo.engine3d.test.generaEjemplos.impl.nodos;
 
 import net.qoopo.engine.core.entity.Entity;
-import net.qoopo.engine.core.entity.component.cubemap.QCubeMap;
+import net.qoopo.engine.core.entity.component.cubemap.CubeMap;
 import net.qoopo.engine.core.entity.component.mesh.primitive.shape.Teapot;
 import net.qoopo.engine.core.material.basico.QMaterialBas;
 import net.qoopo.engine.core.material.node.MaterialNode;
@@ -51,26 +51,26 @@ public class NodosSimple5 extends MakeTestScene {
                 // Reflexion estandar
                 // a cada entidad le agrego su generador de mapa de reflexion con un mapa cubico
                 Entity cubo4 = new Entity("vidrioBAS");
-                QCubeMap mapa = new QCubeMap(QGlobal.MAPA_CUPO_RESOLUCION);
+                CubeMap mapa = new CubeMap(QGlobal.MAPA_CUPO_RESOLUCION);
                 QMaterialBas mat4 = new QMaterialBas("Reflexion real");
                 mat4.setColorBase(QColor.YELLOW);
                 mat4.setMetalico(1);
                 mat4.setIndiceRefraccion(1.45f);
                 mat4.setMapaEntorno(new QProcesadorSimple(mapa.getTexturaEntorno()));
-                mat4.setTipoMapaEntorno(QCubeMap.FORMATO_MAPA_CUBO);
+                mat4.setTipoMapaEntorno(CubeMap.FORMATO_MAPA_CUBO);
                 cubo4.addComponent(MaterialUtil.applyMaterial(new Teapot(), mat4));
                 cubo4.addComponent(mapa);
-                mapa.aplicar(QCubeMap.FORMATO_MAPA_CUBO, 1, 1.45f);
+                mapa.aplicar(CubeMap.FORMATO_MAPA_CUBO, 1, 1.45f);
                 cubo4.move(-6, 0.5f, 0);
                 mundo.addEntity(cubo4);
                 // ---------------------------------------------------------------------------------------
                 // vidrio con pbr
                 Entity cubo5 = new Entity("Vidrio Nodo");
-                QCubeMap mapa2 = new QCubeMap(QGlobal.MAPA_CUPO_RESOLUCION);
+                CubeMap mapa2 = new CubeMap(QGlobal.MAPA_CUPO_RESOLUCION);
                 MaterialNode mat5 = new MaterialNode("Vidrio real Nodo");
                 QNodoColorVidrio nodoVidrio = new QNodoColorVidrio(new QProcesadorSimple(mapa2.getTexturaEntorno()),
                                 1.45f);
-                nodoVidrio.setTipoMapaEntorno(QCubeMap.FORMATO_MAPA_CUBO);
+                nodoVidrio.setTipoMapaEntorno(CubeMap.FORMATO_MAPA_CUBO);
                 QNodoColorIluminacion nodoDifuso = new QNodoColorIluminacion();
                 // enlace que une la salida de la textura con con difuso
                 QNodoEnlace enlace = new QNodoEnlace(nodoVidrio.getSaColor(), nodoDifuso.getEnColor());
@@ -79,20 +79,20 @@ public class NodosSimple5 extends MakeTestScene {
                 mat5.setNodo(nodosalida);
                 cubo5.addComponent(MaterialUtil.applyMaterial(new Teapot(), mat5));
                 cubo5.addComponent(mapa2);
-                mapa2.aplicar(QCubeMap.FORMATO_MAPA_CUBO, 1, 0);
+                mapa2.aplicar(CubeMap.FORMATO_MAPA_CUBO, 1, 0);
                 cubo5.move(0, 0.5f, 0);
                 mundo.addEntity(cubo5);
                 // ---------------------------------------------------------------------------------------
                 // vidrio con pbr con mix
                 Entity cubo6 = new Entity("Mix");
-                QCubeMap mapa3 = new QCubeMap(QGlobal.MAPA_CUPO_RESOLUCION);
+                CubeMap mapa3 = new CubeMap(QGlobal.MAPA_CUPO_RESOLUCION);
                 MaterialNode mat6 = new MaterialNode("Vidrio real Nodo");
                 QNodoColorReflexion nodoReflejo = new QNodoColorReflexion(
                                 new QProcesadorSimple(mapa3.getTexturaEntorno()));
-                nodoReflejo.setTipoMapaEntorno(QCubeMap.FORMATO_MAPA_CUBO);
+                nodoReflejo.setTipoMapaEntorno(CubeMap.FORMATO_MAPA_CUBO);
                 QNodoColorRefraccion nodoRefraccion = new QNodoColorRefraccion(
                                 new QProcesadorSimple(mapa3.getTexturaEntorno()), 1.45f);
-                nodoRefraccion.setTipoMapaEntorno(QCubeMap.FORMATO_MAPA_CUBO);
+                nodoRefraccion.setTipoMapaEntorno(CubeMap.FORMATO_MAPA_CUBO);
                 QNodoColorMix nodoMix = new QNodoColorMix(0.5f);
                 QNodoColorIluminacion nodoDifuso6_1 = new QNodoColorIluminacion();
 
@@ -105,7 +105,7 @@ public class NodosSimple5 extends MakeTestScene {
                 mat6.setNodo(nodosalida2);
                 cubo6.addComponent(MaterialUtil.applyMaterial(new Teapot(), mat6));
                 cubo6.addComponent(mapa3);
-                mapa3.aplicar(QCubeMap.FORMATO_MAPA_CUBO, 1, 0);
+                mapa3.aplicar(CubeMap.FORMATO_MAPA_CUBO, 1, 0);
                 cubo6.move(6, 0.5f, 0);
                 mundo.addEntity(cubo6);
 

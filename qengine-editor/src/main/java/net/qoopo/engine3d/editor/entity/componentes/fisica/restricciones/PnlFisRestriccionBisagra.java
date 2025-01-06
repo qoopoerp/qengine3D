@@ -43,7 +43,7 @@ public class PnlFisRestriccionBisagra extends javax.swing.JPanel {
         }
         cboFisico.setModel(modelo);
         if (componente.getB() != null) {
-            cboFisico.setSelectedItem(componente.getB().entity.getName());
+            cboFisico.setSelectedItem(componente.getB().getEntity().getName());
         }
         aplicarCambios();
         // cboFisico.setSelectedItem(forma.getMalla().nombre);

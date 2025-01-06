@@ -12,7 +12,7 @@ import java.util.logging.Logger;
 import net.qoopo.engine.core.assets.AssetManager;
 import net.qoopo.engine.core.assets.model.waveobject.LoadModelObj;
 import net.qoopo.engine.core.entity.Entity;
-import net.qoopo.engine.core.entity.component.cubemap.QCubeMap;
+import net.qoopo.engine.core.entity.component.cubemap.CubeMap;
 import net.qoopo.engine.core.renderer.RenderEngine;
 import net.qoopo.engine.core.scene.Scene;
 import net.qoopo.engine.core.util.QGlobal;
@@ -31,7 +31,7 @@ public class EjemploPBR_CerberusGun extends MakeTestScene {
     public void make(Scene escena) {
         this.scene = escena;
         try {
-            QCubeMap mapa = new QCubeMap(QGlobal.MAPA_CUPO_RESOLUCION);
+            CubeMap mapa = new CubeMap(QGlobal.MAPA_CUPO_RESOLUCION);
 
             // Entity objeto = new Entity("PBR");
             // Entity objeto = AssimpLoader.cargarAssimpItems(new File("assets/"+
@@ -43,7 +43,7 @@ public class EjemploPBR_CerberusGun extends MakeTestScene {
             objeto.rotate(0, Math.toRadians(180), 0);
             // objeto.agregarComponente(QMaterialUtil.aplicarMaterial(new Sphere(1.0f),
             // material));
-            mapa.aplicar(QCubeMap.FORMATO_MAPA_CUBO, 1.0f, 0);
+            mapa.aplicar(CubeMap.FORMATO_MAPA_CUBO, 1.0f, 0);
             escena.addEntity(objeto);
         } catch (Exception ex) {
             Logger.getLogger(EjemploPBR_CerberusGun.class.getName()).log(Level.SEVERE, null, ex);

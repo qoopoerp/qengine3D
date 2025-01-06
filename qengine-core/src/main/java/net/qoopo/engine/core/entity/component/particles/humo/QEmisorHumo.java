@@ -162,7 +162,7 @@ public class QEmisorHumo extends ParticleEmissor {
             //modifico transparencia
             for (EntityComponent componente : particula.objeto.getComponents()) {
                 if (componente instanceof Mesh) {
-                    ((QMaterialBas) ((Mesh) componente).primitivas[0].material).setTransAlfa(d - 0.5f);//para que nunca sea 100 visible, se agrega mas transparencia al ser humo
+                    ((QMaterialBas) ((Mesh) componente).primitiveList[0].material).setTransAlfa(d - 0.5f);//para que nunca sea 100 visible, se agrega mas transparencia al ser humo
                 }
             }
         }

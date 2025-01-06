@@ -5,7 +5,10 @@
  */
 package net.qoopo.engine.core.entity.component.reflections;
 
+import lombok.Getter;
+import lombok.Setter;
 import net.qoopo.engine.core.assets.AssetManager;
+import net.qoopo.engine.core.entity.Entity;
 import net.qoopo.engine.core.entity.component.EntityComponent;
 import net.qoopo.engine.core.entity.component.UpdatableComponent;
 import net.qoopo.engine.core.math.QVector3;
@@ -19,7 +22,11 @@ import net.qoopo.engine.core.texture.QTextura;
  *
  * @author alberto
  */
-public class PlanarReflection extends EntityComponent implements UpdatableComponent {
+public class PlanarReflection implements EntityComponent, UpdatableComponent {
+
+    @Getter
+    @Setter
+    private Entity entity;
 
     // es el renderizador que tomara la imagen para reflejar
     private RenderEngine render;

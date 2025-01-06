@@ -21,7 +21,7 @@ public class Fragment implements Serializable {
     public QVector3 up = QVector3.empty();//usada para el mapa normal con los somreadores nodo y no en el raster
     public QVector3 right = QVector3.empty();//usada para el mapa normal con los somreadores nodo y no en el raster
     public AbstractMaterial material;
-    public QPrimitiva primitiva;
+    public Primitive primitiva;
     public Entity entity;
 
     public Fragment() {
@@ -107,7 +107,7 @@ public class Fragment implements Serializable {
         this.material = material;
     }
 
-    public QPrimitiva getPrimitiva() {
+    public Primitive getPrimitiva() {
         return primitiva;
     }
 

@@ -47,9 +47,9 @@ public class QOrigen extends Entity {
             matZ.setColorBase(QColor.BLUE);
             matZ.setFactorEmision(1.0f);
 
-            geometria.agregarLinea(matX, 0, 1);
-            geometria.agregarLinea(matY, 0, 2);
-            geometria.agregarLinea(matZ, 0, 3);
+            geometria.addLine(matX, 0, 1);
+            geometria.addLine(matY, 0, 2);
+            geometria.addLine(matZ, 0, 3);
             addComponent(geometria);
         } catch (Exception e) {
             e.printStackTrace();

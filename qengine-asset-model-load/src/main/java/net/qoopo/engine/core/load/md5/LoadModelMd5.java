@@ -41,7 +41,6 @@ import net.qoopo.engine.core.texture.QTextura;
 import net.qoopo.engine.core.texture.util.MaterialUtil;
 import net.qoopo.engine.core.util.QJOMLUtil;
 import net.qoopo.engine.core.util.Utils;
-import net.qoopo.engine.core.util.mesh.NormalUtil;
 
 public class LoadModelMd5 implements ModelLoader {
 
@@ -222,8 +221,8 @@ public class LoadModelMd5 implements ModelLoader {
                         .mult(QJOMLUtil.convertirQVector3(weight.getPosition())).multiply(weight.getBias()));
                 c++;
             }
-            Vertex vertice = geometria.addVertex(posicionVertice.x, posicionVertice.y, posicionVertice.z,
-                    vertex.getTextCoords().x, 1.0f - vertex.getTextCoords().y);
+            Vertex vertice = geometria.addVertex(posicionVertice.x, posicionVertice.y, posicionVertice.z);
+            geometria.addUV(vertex.getTextCoords().x, 1.0f - vertex.getTextCoords().y);
             vertice.setListaHuesos(huesos);
             vertice.setListaHuesosPesos(pesos);
             vertice.setListaHuesosIds(huesosIds);
@@ -231,11 +230,15 @@ public class LoadModelMd5 implements ModelLoader {
         }
 
         for (MD5Mesh.MD5Triangle tri : md5Mesh.getTriangles()) {
-            geometria.addPoly(tri.getVertex0(), tri.getVertex2(), tri.getVertex1());
+            geometria.addPoly(
+                    new int[] { tri.getVertex0(), tri.getVertex2(), tri.getVertex1() }, // vertices
+                    new int[] { tri.getVertex0(), tri.getVertex2(), tri.getVertex1() }, // normales
+                    new int[] { tri.getVertex0(), tri.getVertex2(), tri.getVertex1() }// coordenadas UV
+            );
         }
 
-        geometria = NormalUtil.calcularNormales(geometria);
-        geometria = MaterialUtil.smooth(geometria, true);
+        geometria.computeNormals();
+        geometria.smooth();
         // geometria = QUtilNormales.invertirNormales(geometria);
         return geometria;
     }
@@ -304,7 +307,8 @@ public class LoadModelMd5 implements ModelLoader {
                             normalMapFileName = basePath + NORMAL_FILE_SUFFIX_2 + extension;
                             // System.out.println("el archivo de normal deberia ser:" + normalMapFileName);
                             if (Utils.existsResourceFile(normalMapFileName)) {
-                                QTextura normalMap = AssetManager.get().loadTexture(normalMapFileName, normalMapFileName);
+                                QTextura normalMap = AssetManager.get().loadTexture(normalMapFileName,
+                                        normalMapFileName);
                                 material.setMapaNormal(normalMap);
                             }
                         }
@@ -316,7 +320,7 @@ public class LoadModelMd5 implements ModelLoader {
                             material.setMapaEspecular(specularMap);
                         }
                     }
-                    MaterialUtil.applyMaterial(mesh, material);
+                    mesh.applyMaterial(material);
 
                 } else {
                     // mesh.setMaterial(new Material(defaultColour, 1));

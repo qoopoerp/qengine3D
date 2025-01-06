@@ -18,7 +18,7 @@ import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 import net.qoopo.engine.core.texture.QTextura;
-import net.qoopo.engine.core.util.QUtilComponentes;
+import net.qoopo.engine.core.util.ComponentUtil;
 import net.qoopo.engine.core.util.image.ImgUtil;
 import net.qoopo.engine.terrain.HeightMapTerrain;
 import net.qoopo.engine3d.editor.Principal;
@@ -64,7 +64,7 @@ public class PnlTerreno extends javax.swing.JPanel {
 
         private void aplicarCambios() {
                 // elimino los componentes de geometria que se haya generado anteriormente
-                QUtilComponentes.eliminarComponenteGeometria(terreno.entity);
+                ComponentUtil.eliminarComponenteGeometria(terreno.getEntity());
                 if (textura != null) {
                         textura.setMuestrasU(Float.valueOf(txtMU_Difusa.getText()));
                         textura.setMuestrasV(Float.valueOf(txtMV_Difusa.getText()));

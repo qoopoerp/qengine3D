@@ -26,7 +26,7 @@ public class PnlColisionMallaConvexa extends javax.swing.JPanel {
         initComponents();
         this.forma = forma;
         DefaultComboBoxModel modelo = new DefaultComboBoxModel<>();
-        for (EntityComponent comp : forma.entity.getComponents()) {
+        for (EntityComponent comp : forma.getEntity().getComponents()) {
             if (comp instanceof Mesh) {
                 modelo.addElement(((Mesh) comp).nombre);
             }
@@ -38,7 +38,7 @@ public class PnlColisionMallaConvexa extends javax.swing.JPanel {
 
     private void aplicarCambios() {
         // forma.setRadio(Float.parseFloat(txtRadio.getText()));
-        for (EntityComponent comp : forma.entity.getComponents()) {
+        for (EntityComponent comp : forma.getEntity().getComponents()) {
             if (comp instanceof Mesh) {
                 if (((Mesh) comp).nombre.equals(cboMalla.getSelectedItem().toString())) {
                     forma.setMalla((Mesh) comp);

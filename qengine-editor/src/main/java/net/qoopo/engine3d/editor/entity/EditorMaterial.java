@@ -26,7 +26,7 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 
 import net.qoopo.engine.core.assets.AssetManager;
 import net.qoopo.engine.core.entity.Entity;
-import net.qoopo.engine.core.entity.component.cubemap.QCubeMap;
+import net.qoopo.engine.core.entity.component.cubemap.CubeMap;
 import net.qoopo.engine.core.entity.component.ligth.QDirectionalLigth;
 import net.qoopo.engine.core.entity.component.mesh.primitive.shape.Box;
 import net.qoopo.engine.core.entity.component.mesh.primitive.shape.Sphere;
@@ -45,7 +45,7 @@ import net.qoopo.engine.core.texture.procesador.QProcesadorMipMap;
 import net.qoopo.engine.core.texture.procesador.QProcesadorSimple;
 import net.qoopo.engine.core.texture.util.MaterialUtil;
 import net.qoopo.engine.core.util.QGlobal;
-import net.qoopo.engine.core.util.QUtilComponentes;
+import net.qoopo.engine.core.util.ComponentUtil;
 import net.qoopo.engine.core.util.mesh.NormalUtil;
 import net.qoopo.engine3d.editor.Principal;
 import net.qoopo.engine3d.editor.util.ImagePreviewPanel;
@@ -135,9 +135,9 @@ public class EditorMaterial extends javax.swing.JPanel {
 
             fondoVistaPrevia = crearFondoCuadros();
             entidadVistaPrevia = crearTestEsfera(new QMaterialBas(QColor.LIGHT_GRAY, 50));
-            renderVistaPrevia.getEscena().addEntity(fondoVistaPrevia);
-            renderVistaPrevia.getEscena().addEntity(entidadVistaPrevia);
-            renderVistaPrevia.getEscena().addEntity(luz);
+            renderVistaPrevia.getScene().addEntity(fondoVistaPrevia);
+            renderVistaPrevia.getScene().addEntity(entidadVistaPrevia);
+            renderVistaPrevia.getScene().addEntity(luz);
             renderVistaPrevia.setShowStats(false);
             renderVistaPrevia.opciones.setDibujarLuces(false);
             renderVistaPrevia.setEfectosPostProceso(null);
@@ -158,9 +158,9 @@ public class EditorMaterial extends javax.swing.JPanel {
             txtNombre.setText(material.getNombre());
             // vista previa
             // mtrVistaPrevia.getUniverso().getListaEntidades().get(0).get
-            renderVistaPrevia.getEscena().eliminarEntidadSindestruir(entidadVistaPrevia);
+            renderVistaPrevia.getScene().eliminarEntidadSindestruir(entidadVistaPrevia);
             entidadVistaPrevia = crearTestCubo(material);
-            renderVistaPrevia.getEscena().addEntity(entidadVistaPrevia);
+            renderVistaPrevia.getScene().addEntity(entidadVistaPrevia);
             pnlDiffuseColor.setBackground(material.getColorBase().getColor());
             // pnlSpecularColor.setBackground(material.getColorEspecular().getColor());
             if (material.getColorTransparente() != null) {
@@ -281,7 +281,7 @@ public class EditorMaterial extends javax.swing.JPanel {
     }
 
     private Entity crearTestPlano(QMaterialBas material) {
-        QUtilComponentes.eliminarComponenteGeometria(entidadVistaPrevia);
+        ComponentUtil.eliminarComponenteGeometria(entidadVistaPrevia);
         entidadVistaPrevia.addComponent(MaterialUtil.applyMaterial(new Plane(2.0f, 2.0f), material));
         entidadVistaPrevia.rotate(Math.toRadians(45), Math.toRadians(45), 0);
         // entidadVistaPrevia.transformacion.getRotacion().getCuaternion().lookAt(QVector3.unitario_xyz,
@@ -292,7 +292,7 @@ public class EditorMaterial extends javax.swing.JPanel {
     }
 
     private Entity crearTestCubo(QMaterialBas material) {
-        QUtilComponentes.eliminarComponenteGeometria(entidadVistaPrevia);
+        ComponentUtil.eliminarComponenteGeometria(entidadVistaPrevia);
         entidadVistaPrevia.addComponent(MaterialUtil.applyMaterial(new Box(1.0f), material));
         entidadVistaPrevia.getTransformacion().getRotacion().getCuaternion().set(0, 0, 0, 1);
         entidadVistaPrevia.getTransformacion().getRotacion().actualizarAngulos();
@@ -301,7 +301,7 @@ public class EditorMaterial extends javax.swing.JPanel {
     }
 
     private Entity crearTestEsfera(QMaterialBas material) {
-        QUtilComponentes.eliminarComponenteGeometria(entidadVistaPrevia);
+        ComponentUtil.eliminarComponenteGeometria(entidadVistaPrevia);
         entidadVistaPrevia.addComponent(MaterialUtil.applyMaterial(new Sphere(.5f), material));
         entidadVistaPrevia.getTransformacion().getRotacion().getCuaternion().set(0, 0, 0, 1);
         entidadVistaPrevia.getTransformacion().getRotacion().actualizarAngulos();
@@ -310,7 +310,7 @@ public class EditorMaterial extends javax.swing.JPanel {
     }
 
     private Entity crearTetera(QMaterialBas material) {
-        QUtilComponentes.eliminarComponenteGeometria(entidadVistaPrevia);
+        ComponentUtil.eliminarComponenteGeometria(entidadVistaPrevia);
         entidadVistaPrevia.addComponent(MaterialUtil.applyMaterial(new Teapot(), material));
         entidadVistaPrevia.getTransformacion().getRotacion().getCuaternion().set(0, 0, 0, 1);
         entidadVistaPrevia.getTransformacion().getRotacion().actualizarAngulos();
@@ -2374,48 +2374,48 @@ public class EditorMaterial extends javax.swing.JPanel {
 
     private void jButton11ActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jButton11ActionPerformed
         try {
-            renderVistaPrevia.getEscena().eliminarEntidadSindestruir(entidadVistaPrevia);
+            renderVistaPrevia.getScene().eliminarEntidadSindestruir(entidadVistaPrevia);
         } catch (Exception e) {
             e.printStackTrace();
         }
         entidadVistaPrevia = crearTestPlano(activeMaterial);
-        renderVistaPrevia.getEscena().addEntity(entidadVistaPrevia);
+        renderVistaPrevia.getScene().addEntity(entidadVistaPrevia);
         renderVistaPrevia.update();
     }// GEN-LAST:event_jButton11ActionPerformed
 
     private void jButton12ActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jButton12ActionPerformed
         try {
-            renderVistaPrevia.getEscena().eliminarEntidadSindestruir(entidadVistaPrevia);
+            renderVistaPrevia.getScene().eliminarEntidadSindestruir(entidadVistaPrevia);
         } catch (Exception e) {
             e.printStackTrace();
         }
 
         entidadVistaPrevia = crearTestCubo(activeMaterial);
-        renderVistaPrevia.getEscena().addEntity(entidadVistaPrevia);
+        renderVistaPrevia.getScene().addEntity(entidadVistaPrevia);
         renderVistaPrevia.update();
     }// GEN-LAST:event_jButton12ActionPerformed
 
     private void jButton13ActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jButton13ActionPerformed
         try {
-            renderVistaPrevia.getEscena().eliminarEntidadSindestruir(entidadVistaPrevia);
+            renderVistaPrevia.getScene().eliminarEntidadSindestruir(entidadVistaPrevia);
         } catch (Exception e) {
             e.printStackTrace();
         }
         // renderVistaPrevia.getUniverso().eliminarEntidades();
         // renderVistaPrevia.getUniverso().addEntity(crearFondoCuadros());
         entidadVistaPrevia = crearTestEsfera(activeMaterial);
-        renderVistaPrevia.getEscena().addEntity(entidadVistaPrevia);
+        renderVistaPrevia.getScene().addEntity(entidadVistaPrevia);
         renderVistaPrevia.update();
     }// GEN-LAST:event_jButton13ActionPerformed
 
     private void jButton14ActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jButton14ActionPerformed
         try {
-            renderVistaPrevia.getEscena().eliminarEntidadSindestruir(entidadVistaPrevia);
+            renderVistaPrevia.getScene().eliminarEntidadSindestruir(entidadVistaPrevia);
         } catch (Exception e) {
             e.printStackTrace();
         }
         entidadVistaPrevia = crearTetera(activeMaterial);
-        renderVistaPrevia.getEscena().addEntity(entidadVistaPrevia);
+        renderVistaPrevia.getScene().addEntity(entidadVistaPrevia);
         renderVistaPrevia.update();
     }// GEN-LAST:event_jButton14ActionPerformed
 
@@ -2712,7 +2712,7 @@ public class EditorMaterial extends javax.swing.JPanel {
             }
             if (c == 6) {
 
-                QCubeMap tmp = new QCubeMap(QCubeMap.FORMATO_MAPA_HDRI,
+                CubeMap tmp = new CubeMap(CubeMap.FORMATO_MAPA_HDRI,
                         textures[0],
                         textures[1],
                         textures[2],
@@ -2749,7 +2749,7 @@ public class EditorMaterial extends javax.swing.JPanel {
             }
             if (c == 6) {
 
-                QCubeMap tmp = new QCubeMap(QCubeMap.FORMATO_MAPA_CUBO,
+                CubeMap tmp = new CubeMap(CubeMap.FORMATO_MAPA_CUBO,
                         textures[0],
                         textures[1],
                         textures[2],
@@ -2761,7 +2761,7 @@ public class EditorMaterial extends javax.swing.JPanel {
                         .setMapaEntorno(new QProcesadorMipMap(tmp.getTexturaEntorno(), 5, QProcesadorMipMap.TIPO_BLUR));
                 // activeMaterial.setMapaEntorno(new
                 // QProcesadorSimple(tmp.getTexturaEntorno()));
-                activeMaterial.setTipoMapaEntorno(QCubeMap.FORMATO_MAPA_CUBO);// mapa cubico
+                activeMaterial.setTipoMapaEntorno(CubeMap.FORMATO_MAPA_CUBO);// mapa cubico
                 populateMaterialControl(activeMaterial);
                 tmp.destruir();
                 tmp = null;
@@ -3085,7 +3085,7 @@ public class EditorMaterial extends javax.swing.JPanel {
             }
             if (c == 6) {
 
-                QCubeMap tmp = new QCubeMap(QCubeMap.FORMATO_MAPA_CUBO,
+                CubeMap tmp = new CubeMap(CubeMap.FORMATO_MAPA_CUBO,
                         textures[0],
                         textures[1],
                         textures[2],
@@ -3094,7 +3094,7 @@ public class EditorMaterial extends javax.swing.JPanel {
                         textures[5]);
 
                 activeMaterial.setMapaIrradiacion(new QProcesadorSimple(tmp.getTexturaEntorno()));
-                activeMaterial.setTipoMapaEntorno(QCubeMap.FORMATO_MAPA_CUBO);// mapa cubico
+                activeMaterial.setTipoMapaEntorno(CubeMap.FORMATO_MAPA_CUBO);// mapa cubico
                 populateMaterialControl(activeMaterial);
                 tmp.destruir();
                 tmp = null;

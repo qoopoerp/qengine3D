@@ -10,8 +10,6 @@ import java.util.logging.Logger;
 
 import net.qoopo.engine.core.entity.component.mesh.primitive.Shape;
 import net.qoopo.engine.core.material.basico.QMaterialBas;
-import net.qoopo.engine.core.texture.util.MaterialUtil;
-import net.qoopo.engine.core.util.mesh.NormalUtil;
 
 /**
  * Crea un Plano
@@ -36,17 +34,24 @@ public class QPlanoBilateral extends Shape {
         try {
             deleteData();
 
-            this.addVertex(-ancho / 2, 0, -alto / 2, 0, 1); // primer vertice superiro
-            this.addVertex(ancho / 2, 0, -alto / 2, 1, 1); // tercer vertice superior
-            this.addVertex(ancho / 2, 0, alto / 2, 1, 0); // cuarto vertice superio
-            this.addVertex(-ancho / 2, 0, alto / 2, 0, 0); // segundo vertice superior
+            this.addVertex(-ancho / 2, -alto / 2, 0); // primer vertice superiro
+            this.addVertex(ancho / 2, -alto / 2, 0); // tercer vertice superior
+            this.addVertex(ancho / 2, alto / 2, 0); // cuarto vertice superio
+            this.addVertex(-ancho / 2, alto / 2, 0); // segundo vertice superior
 
-            // segundo paso generar caras
-            this.addPoly(material, 3, 2, 1, 0);// superior
-            this.addPoly(material, 0, 1, 2, 3);// superior
+            this.addUV(0, 1);
+            this.addUV(1, 1);
+            this.addUV(1, 0);
+            this.addUV(0, 0);
 
-            MaterialUtil.applyMaterial(this, material);
-            NormalUtil.calcularNormales(this);
+            this.addNormal(0, 0, 1);
+            this.addNormal(0, 0, -1);
+
+            this.addPoly(material, new int[] { 3, 2, 1, 0 }, new int[] { 0, 0, 0, 0 }, new int[] { 0, 1, 2, 3 });// superior
+            this.addPoly(material, new int[] { 0, 1, 2, 3 }, new int[] { 1, 1, 1, 1 }, new int[] { 0, 1, 2, 3 });// superior
+
+            applyMaterial(material);
+            computeNormals();
         } catch (Exception ex) {
             Logger.getLogger(QPlanoBilateral.class.getName()).log(Level.SEVERE, null, ex);
         }

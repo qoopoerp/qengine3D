@@ -28,7 +28,7 @@ import net.qoopo.engine.core.entity.Entity;
 import net.qoopo.engine.core.entity.component.EntityComponent;
 import net.qoopo.engine.core.entity.component.ligth.QLigth;
 import net.qoopo.engine.core.entity.component.mesh.Mesh;
-import net.qoopo.engine.core.entity.component.mesh.primitive.QPrimitiva;
+import net.qoopo.engine.core.entity.component.mesh.primitive.Primitive;
 import net.qoopo.engine.core.entity.component.mesh.primitive.Vertex;
 import net.qoopo.engine.core.entity.component.particles.Particle;
 import net.qoopo.engine.core.entity.component.particles.ParticleEmissor;
@@ -103,7 +103,7 @@ public class QRenderJava3D extends RenderEngine {
         // actualizarEscena();
         moverCamara(universoJava3D);
         // modificadoresGeometria();
-        ambientColor.set(escena.getAmbientColor().getColor());
+        ambientColor.set(scene.getAmbientColor().getColor());
 
         actualizarObjetos();
         // modificadoresTexturas();
@@ -351,8 +351,8 @@ public class QRenderJava3D extends RenderEngine {
                 // raiz.addChild(light1);
                 // ambiente
                 // ambientColor = new Color3f(1f, 1f, 1f);
-                ambientColor = new Color3f(escena.getAmbientColor().r, escena.getAmbientColor().g,
-                        escena.getAmbientColor().b);
+                ambientColor = new Color3f(scene.getAmbientColor().r, scene.getAmbientColor().g,
+                        scene.getAmbientColor().b);
                 // ambientColor = new Color3f(0.5f, 0.5f, 0.5f);
                 AmbientLight ambientLightNode = new AmbientLight(ambientColor);
                 ambientLightNode.setInfluencingBounds(bounds);
@@ -372,7 +372,7 @@ public class QRenderJava3D extends RenderEngine {
             // escenaJava3D.addChild(dibujaFondo());
             // escenaJava3D.addChild(dibujaBola());
 
-            for (Entity entidad : super.escena.getEntities()) {
+            for (Entity entidad : super.scene.getEntities()) {
                 addEntity(entidad, raiz);
             }
             //
@@ -504,7 +504,7 @@ public class QRenderJava3D extends RenderEngine {
     public void actualizarObjetos() {
         try {
             // actualizo la transformacion de los objetos
-            for (Entity entidad : this.escena.getEntities()) {
+            for (Entity entidad : this.scene.getEntities()) {
                 actualizarObjeto(entidad);
             }
         } catch (Exception e) {
@@ -519,14 +519,14 @@ public class QRenderJava3D extends RenderEngine {
         boolean modificado = false;
         ParticleEmissor emisor;
         // se aplica las emisiones de particulas
-        for (Entity entidad : super.escena.getEntities()) {
+        for (Entity entidad : super.scene.getEntities()) {
             for (EntityComponent componente : entidad.getComponents()) {
                 // particulas
                 if (componente instanceof ParticleEmissor) {
                     emisor = (ParticleEmissor) componente;
-                    emisor.emitir(EngineTime.delta);
+                    emisor.emitir(EngineTime.deltaNano);
                     for (Particle particula : emisor.getParticulasNuevas()) {
-                        super.escena.addEntity(particula.objeto);
+                        super.scene.addEntity(particula.objeto);
                         modificado = true;
                     }
                 }
@@ -552,13 +552,13 @@ public class QRenderJava3D extends RenderEngine {
     }
 
     @Override
-    public void renderLine(QPrimitiva primitiva, Vertex... vertex) {
+    public void renderLine(Primitive primitiva, Vertex... vertex) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'rasterLine'");
     }
 
     @Override
-    public void render(QVertexBuffer bufferVertices, QPrimitiva primitiva, boolean wire) {
+    public void render(QVertexBuffer bufferVertices, Primitive primitiva, boolean wire) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'raster'");
     }

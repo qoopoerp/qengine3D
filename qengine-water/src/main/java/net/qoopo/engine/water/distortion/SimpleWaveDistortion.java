@@ -24,9 +24,9 @@ public class SimpleWaveDistortion implements WaveDistortion {
     public void apply(Mesh mesh) {
         // calcula la distorisión de los vértices con la función de ola
 
-        float deltaTime = EngineTime.delta / 1000f;
+        float deltaTime = EngineTime.deltaNano / 1000f;
         // actualizo los vértices
-        for (Vertex vertex : mesh.vertices) {
+        for (Vertex vertex : mesh.vertexList) {
             QVector4 original = vertex.location;
             // float wave = amplitude * Mathf.Sin((original.x + time * speed) * (2 *
             // Mathf.PI / wavelength));
@@ -37,7 +37,7 @@ public class SimpleWaveDistortion implements WaveDistortion {
             vertex.location.y += wave;
 
         }
-        NormalUtil.calcularNormales(mesh);
+        NormalUtil.computeNormals(mesh);
     }
 
 }

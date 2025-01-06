@@ -23,10 +23,10 @@ public class ThinMatrixWaveDistortion implements WaveDistortion {
     @Override
     public void apply(Mesh mesh) {
         // calcula la distorisión de los vérties con la función de ola
-        float deltaTime = EngineTime.delta / 1000f;
+        float deltaTime = EngineTime.deltaNano / 1000f;
         float waveTime = deltaTime * speed;
         // actualizo los vértices
-        for (Vertex vertex : mesh.vertices) {
+        for (Vertex vertex : mesh.vertexList) {
             QVector4 original = vertex.location;
 
             // de thinmatrix
@@ -37,7 +37,7 @@ public class ThinMatrixWaveDistortion implements WaveDistortion {
             // vertex.location.y=vertex.location.y+distortion;
 
         }
-        NormalUtil.calcularNormales(mesh);
+        NormalUtil.computeNormals(mesh);
     }
 
 }

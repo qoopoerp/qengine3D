@@ -5,9 +5,9 @@
  */
 package net.qoopo.engine3d.editor.entity.componentes.basicos;
 
-import net.qoopo.engine.core.entity.component.camera.QCamaraControl;
+import net.qoopo.engine.core.entity.component.camera.CameraController;
 import net.qoopo.engine.core.scene.Camera;
-import net.qoopo.engine.core.util.QUtilComponentes;
+import net.qoopo.engine.core.util.ComponentUtil;
 import net.qoopo.engine3d.editor.Principal;
 
 /**
@@ -299,8 +299,8 @@ public class PnlCamara extends javax.swing.JPanel {
 
     private void btnEscogerActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btnEscogerActionPerformed
         // elimino los componentes usados para mover la camara
-        QUtilComponentes.eliminarComponenteCamaraControl(Principal.instancia.getRenderer().getCamara());
-        camara.addComponent(new QCamaraControl(camara));
+        ComponentUtil.eliminarComponenteCamaraControl(Principal.instancia.getRenderer().getCamara());
+        camara.addComponent(new CameraController(camara));
         // QUtilComponentes.eliminarComponenteCamaraOrbitar(Principal.instancia.getRenderer().getCamara());
         // QUtilComponentes.eliminarComponenteCamaraPrimeraPersona(Principal.instancia.getRenderer().getCamara());
         // camara.agregarComponente(new QCamaraOrbitar(camara));

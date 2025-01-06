@@ -17,7 +17,7 @@ import net.qoopo.engine.core.engine.EngineTime;
 import net.qoopo.engine.core.entity.Entity;
 import net.qoopo.engine.core.entity.component.ligth.QLigth;
 import net.qoopo.engine.core.entity.component.mesh.primitive.Poly;
-import net.qoopo.engine.core.entity.component.mesh.primitive.QPrimitiva;
+import net.qoopo.engine.core.entity.component.mesh.primitive.Primitive;
 import net.qoopo.engine.core.entity.component.mesh.primitive.Vertex;
 import net.qoopo.engine.core.entity.component.transform.QVertexBuffer;
 import net.qoopo.engine.core.input.QDefaultListener;
@@ -91,7 +91,7 @@ public abstract class RenderEngine extends Engine {
     /**
      * La escena que se está renderizando
      */
-    protected Scene escena;
+    protected Scene scene;
     /**
      * La cámara actual para la toma de la escena
      */
@@ -164,7 +164,7 @@ public abstract class RenderEngine extends Engine {
     public RenderEngine(Scene escena, String nombre, Superficie superficie, int ancho, int alto) {
         System.out.println("instanciando nuevo rendered -> " + nombre);
 
-        this.escena = escena;
+        this.scene = escena;
         this.nombre = nombre;
         this.superficie = superficie;
         this.opciones.setAncho(ancho);
@@ -252,12 +252,12 @@ public abstract class RenderEngine extends Engine {
         this.camara = camara;
     }
 
-    public Scene getEscena() {
-        return escena;
+    public Scene getScene() {
+        return scene;
     }
 
-    public void setEscena(Scene escena) {
-        this.escena = escena;
+    public void setScene(Scene escena) {
+        this.scene = escena;
     }
 
     protected void prepararInputListener() {
@@ -338,7 +338,7 @@ public abstract class RenderEngine extends Engine {
             g.setFont(new Font("Arial", Font.PLAIN, 10));
             g.drawString(ancho + "x" + alto, 10, 20);
             g.drawString("FPS_______________: " + EngineTime.FPS, 10, 30);
-            g.drawString("Delta (ms)________: " + EngineTime.delta / 1000000, 10, 40);
+            g.drawString("Delta (ms)________: " + EngineTime.deltaNano / 1000000, 10, 40);
             g.drawString("FPS Raster________: " + DF.format(getFPS()), 10, 50);
             g.drawString("Delta Raster (ms)_: " + DF.format(getDelta()), 10, 60);
             g.drawString("Pol_______________: " + poligonosDibujados, 10, 70);
@@ -494,7 +494,7 @@ public abstract class RenderEngine extends Engine {
      * @param p1
      * @param p2
      */
-    public abstract void renderLine(QPrimitiva primitiva, Vertex... vertex);
+    public abstract void renderLine(Primitive primitiva, Vertex... vertex);
 
     /**
      * Realiza la rasterización de un polígono
@@ -503,7 +503,7 @@ public abstract class RenderEngine extends Engine {
      * @param primitiva
      * @param wire
      */
-    public abstract void render(QVertexBuffer bufferVertices, QPrimitiva primitiva, boolean wire);
+    public abstract void render(QVertexBuffer bufferVertices, Primitive primitiva, boolean wire);
 
     public abstract void render() throws Exception;
 

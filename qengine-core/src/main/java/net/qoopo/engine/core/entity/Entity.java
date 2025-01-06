@@ -12,6 +12,7 @@ import net.qoopo.engine.core.math.Cuaternion;
 import net.qoopo.engine.core.math.QMatriz3;
 import net.qoopo.engine.core.math.QMatriz4;
 import net.qoopo.engine.core.math.QVector3;
+import net.qoopo.engine.core.util.ComponentUtil;
 import net.qoopo.engine.core.util.TempVars;
 
 public class Entity implements Serializable {
@@ -39,9 +40,10 @@ public class Entity implements Serializable {
             }
         }
     }
+
     protected final List<EntityComponent> components = new ArrayList<>();
 
-    //unico componente que no esta en la lista, todos necesitan este componente
+    // unico componente que no esta en la lista, todos necesitan este componente
     protected QTransformacion transformacion = new QTransformacion();
     protected String name;
     protected Entity parent;
@@ -51,7 +53,7 @@ public class Entity implements Serializable {
     protected long cached_time = 0;
     protected QMatriz4 cachedMatriz;
 
-    //indica si es una entity billboard
+    // indica si es una entity billboard
     /**
      * Las entidades billboard son planos que siempre apuntan a la cámara. Son
      * usados en los sistemas de particulas En el momento de la trasnformación
@@ -92,12 +94,16 @@ public class Entity implements Serializable {
         if (componente == null) {
             return;
         }
-        componente.entity = this;
+        componente.setEntity(this);
         components.add(componente);
     }
 
     public void removeComponent(EntityComponent componente) {
         components.remove(componente);
+    }
+
+    public EntityComponent getComponent(Class<? extends EntityComponent> className) {
+        return ComponentUtil.getComponent(this, className);
     }
 
     public void addChild(Entity hijo) {
@@ -215,7 +221,7 @@ public class Entity implements Serializable {
         QVector3 tmp = transformacion.getTraslacion().clone();
         tmp.add(getDirection().multiply(-valor));
         move(tmp);
-        //la diferencia la suma a los hijos
+        // la diferencia la suma a los hijos
     }
 
     /**
@@ -228,6 +234,7 @@ public class Entity implements Serializable {
         tmp.add(getLeft().multiply(valor));
         move(tmp);
     }
+
     /**
      * Mueve el objeto izquierda -derecha
      *
@@ -289,10 +296,11 @@ public class Entity implements Serializable {
 
                 tv.vector3f1.set(camaraVista.toTranslationVector());
                 tv.vector3f1.add(this.transformacion.getTraslacion().clone().multiply(-1));
-//            tv.vector3f1.normalize();
-//            transformacion.getRotacion().getCuaternion().tv.vect1At(tv.vector3f1, getArriba());
+                // tv.vector3f1.normalize();
+                // transformacion.getRotacion().getCuaternion().tv.vect1At(tv.vector3f1,
+                // getArriba());
 
-//metodo tomado de jme3engine
+                // metodo tomado de jme3engine
                 // coopt left for our own purposes.
                 QVector3 xzp = getLeft();
                 // The xzp vector is the projection of the tv.vector3f1 vector on the xz plane
@@ -369,9 +377,9 @@ public class Entity implements Serializable {
             }
             components.clear();
 
-//            for (Entity hijo : hijos) {
-//                hijo.destruir();
-//            }
+            // for (Entity hijo : hijos) {
+            // hijo.destruir();
+            // }
             parent = null;
             cachedMatriz = null;
 

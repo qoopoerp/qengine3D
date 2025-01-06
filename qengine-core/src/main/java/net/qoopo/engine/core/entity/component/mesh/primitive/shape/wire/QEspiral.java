@@ -42,7 +42,7 @@ public class QEspiral extends Shape {
         }
         for (int i = 0; i < nSegmentos - 1; i++) {
             try {
-                this.agregarLinea(material, i, i + 1);
+                this.addLine(material, i, i + 1);
             } catch (Exception ex) {
                 ex.printStackTrace();
             }

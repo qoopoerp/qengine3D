@@ -14,10 +14,11 @@ import java.util.logging.Logger;
 import lombok.Getter;
 import lombok.Setter;
 import net.qoopo.engine.core.assets.AssetManager;
+import net.qoopo.engine.core.entity.Entity;
 import net.qoopo.engine.core.entity.component.EntityComponent;
 import net.qoopo.engine.core.entity.component.UpdatableComponent;
 import net.qoopo.engine.core.entity.component.mesh.Mesh;
-import net.qoopo.engine.core.entity.component.mesh.primitive.QPrimitiva;
+import net.qoopo.engine.core.entity.component.mesh.primitive.Primitive;
 import net.qoopo.engine.core.material.basico.QMaterialBas;
 import net.qoopo.engine.core.math.QMath;
 import net.qoopo.engine.core.math.QVector3;
@@ -40,7 +41,11 @@ import net.qoopo.engine.core.util.QGlobal;
  */
 @Getter
 @Setter
-public class CubeMap extends EntityComponent implements UpdatableComponent {
+public class CubeMap implements EntityComponent, UpdatableComponent {
+
+    @Getter
+    @Setter
+    private Entity entity;
 
     private static Logger logger = Logger.getLogger("cube-map");
 
@@ -190,7 +195,7 @@ public class CubeMap extends EntityComponent implements UpdatableComponent {
         if (entity.getComponents() != null && !entity.getComponents().isEmpty()) {
             for (EntityComponent componente : entity.getComponents()) {
                 if (componente instanceof Mesh) {
-                    for (QPrimitiva poligono : ((Mesh) componente).primitivas) {
+                    for (Primitive poligono : ((Mesh) componente).primitiveList) {
                         if (poligono.material instanceof QMaterialBas) {
                             if (!lst.contains((QMaterialBas) poligono.material)) {
                                 lst.add((QMaterialBas) poligono.material);
@@ -250,7 +255,7 @@ public class CubeMap extends EntityComponent implements UpdatableComponent {
         if (dinamico || actualizar) {
             boolean dibujar = entity.isToRender();
             try {
-                render.setEscena(mainRender.getEscena());
+                render.setScene(mainRender.getScene());
                 // seteo para q no se dibuje a la entity
                 entity.setToRender(false);
                 actualizarMapa(entity.getMatrizTransformacion(QGlobal.tiempo).toTranslationVector());

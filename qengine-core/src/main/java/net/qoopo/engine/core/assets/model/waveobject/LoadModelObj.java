@@ -21,7 +21,7 @@ import net.qoopo.engine.core.assets.model.ModelLoader;
 import net.qoopo.engine.core.entity.Entity;
 import net.qoopo.engine.core.entity.component.mesh.Mesh;
 import net.qoopo.engine.core.entity.component.mesh.primitive.Poly;
-import net.qoopo.engine.core.entity.component.mesh.primitive.QPrimitiva;
+import net.qoopo.engine.core.entity.component.mesh.primitive.Primitive;
 import net.qoopo.engine.core.entity.component.physics.collision.detector.CollisionShape;
 import net.qoopo.engine.core.entity.component.physics.collision.detector.shape.mallas.QColisionMallaConvexa;
 import net.qoopo.engine.core.entity.component.physics.dinamica.QObjetoDinamico;
@@ -29,6 +29,7 @@ import net.qoopo.engine.core.entity.component.physics.dinamica.QObjetoRigido;
 import net.qoopo.engine.core.material.basico.QMaterialBas;
 import net.qoopo.engine.core.math.QColor;
 import net.qoopo.engine.core.math.QVector2;
+import net.qoopo.engine.core.math.QVector3;
 import net.qoopo.engine.core.texture.QTextura;
 import net.qoopo.engine.core.util.image.ImgReader;
 
@@ -42,10 +43,6 @@ public class LoadModelObj implements ModelLoader {
 
     public LoadModelObj() {
     }
-
-    // public static List<QEntity> cargarWaveObject(InputStream stream) {
-    // return cargarWaveObject(null, stream, "", 0);
-    // }
 
     @Override
     public Entity loadModel(File file) throws FileNotFoundException {
@@ -197,7 +194,7 @@ public class LoadModelObj implements ModelLoader {
 
         List<Entity> lista = new ArrayList<>();
         try {
-            Mesh geometriaLeyendo = null;
+            Mesh readingMesh = new Mesh();
             int vertexIndexOffset = 0;
             BufferedReader reader = null;
             boolean smoothMode = false;
@@ -207,7 +204,6 @@ public class LoadModelObj implements ModelLoader {
                 // reader = new BufferedReader(new FileReader(archivo));
                 reader = new BufferedReader(new InputStreamReader(stream));
                 String line;
-                List<QVector2> listaUV = new ArrayList<>();
                 HashMap<String, QMaterialBas> materialMap = new HashMap<>();
                 QMaterialBas defaultMaterial = new QMaterialBas("Default");
                 QMaterialBas currentMaterial = null;
@@ -217,30 +213,29 @@ public class LoadModelObj implements ModelLoader {
                         case "mtllib":
                             // Lee el archivo del material
                             String materialFileName = line.substring("mtllib ".length());
-                            // String materialFileName = tokens[1];
                             File materialFile = new File(directory, materialFileName);
                             readMaterial(materialFile, materialMap, directory);
                             break;
                         case "o":
-                            if (geometriaLeyendo != null) {
-                                for (QPrimitiva face : geometriaLeyendo.primitivas) {
-                                    if (face.listaVertices.length >= 3) {
-                                        ((Poly) face).calculaNormalYCentro();
-                                        if (!vertexNormalSpecified || true) {
-                                            for (int i : face.listaVertices) {
-                                                face.geometria.vertices[i].normal.add(((Poly) face).getNormal());
-                                            }
-                                        }
+                            if (readingMesh != null && readingMesh.vertexList.length > 0) {
+                                for (Primitive face : readingMesh.primitiveList) {
+                                    if (face.vertexIndexList.length >= 3) {
+                                        ((Poly) face).computeNormalCenter();
+                                        // if (!vertexNormalSpecified || true) {
+                                        // for (int i : face.vertexList) {
+                                        // face.mesh.vertices[i].normal.add(((Poly) face).getNormal());
+                                        // }
+                                        // }
                                     }
                                 }
-                                for (int i = 0; i < geometriaLeyendo.vertices.length; i++) {
-                                    geometriaLeyendo.vertices[i].normal.normalize();
-                                }
-                                vertexIndexOffset += geometriaLeyendo.vertices.length;
+                                // for (int i = 0; i < geometriaLeyendo.vertices.length; i++) {
+                                // geometriaLeyendo.vertices[i].normal.normalize();
+                                // }
+                                vertexIndexOffset += readingMesh.vertexList.length;
 
-                                Entity ent = new Entity(geometriaLeyendo.nombre);
-                                ent.addComponent(geometriaLeyendo);
-                                CollisionShape colision = new QColisionMallaConvexa(geometriaLeyendo);
+                                Entity ent = new Entity(readingMesh.nombre);
+                                ent.addComponent(readingMesh);
+                                CollisionShape colision = new QColisionMallaConvexa(readingMesh);
                                 ent.addComponent(colision);
                                 QObjetoRigido rigido = new QObjetoRigido(QObjetoDinamico.ESTATICO, 0);
                                 rigido.setFormaColision(colision);
@@ -252,74 +247,70 @@ public class LoadModelObj implements ModelLoader {
                             if (name.isEmpty()) {
                                 name = null;
                             }
-                            geometriaLeyendo = new Mesh();
-                            geometriaLeyendo.nombre = name;
+                            readingMesh = new Mesh();
+                            readingMesh.nombre = name;
                             break;
                         case "v":
-                            if (geometriaLeyendo == null) {
-                                geometriaLeyendo = new Mesh();
+                            if (readingMesh == null) {
+                                readingMesh = new Mesh();
                             }
-                            geometriaLeyendo.addVertex(Float.parseFloat(tokens[1]), Float.parseFloat(tokens[2]),
+                            readingMesh.addVertex(Float.parseFloat(tokens[1]), Float.parseFloat(tokens[2]),
                                     Float.parseFloat(tokens[3]));
                             break;
 
                         case "vt":
-                            listaUV.add(new QVector2(Float.parseFloat(tokens[1]), Float.parseFloat(tokens[2])));
+                            readingMesh.addUV(new QVector2(Float.parseFloat(tokens[1]), Float.parseFloat(tokens[2])));
                             break;
                         case "vn":
                             // String[] att = line.split("\\s+");
-                            // readingObject.vertices[currentVertex].normal
-                            // .set(Float.parseFloat(att[1]),
-                            // Float.parseFloat(att[2]),
-                            // Float.parseFloat(att[3]));
-                            // vertexNormalSpecified = true;
+                            readingMesh.addNormal(new QVector3(Float.parseFloat(tokens[1]), Float.parseFloat(tokens[2]),
+                                    Float.parseFloat(tokens[3])));
+                            vertexNormalSpecified = true;
                             break;
                         case "s":
                             // smoothMode = line.trim().equals("s 1");
                             smoothMode = tokens[1].equals("1");
                             break;
                         case "usemtl":
-                            // currentMaterial = materialMap.get(line.substring("usemtl ".length()));
                             currentMaterial = materialMap.get(tokens[1]);
                             break;
                         case "f":
-                            if (geometriaLeyendo == null) {
-                                geometriaLeyendo = new Mesh();
+                            if (readingMesh == null) {
+                                readingMesh = new Mesh();
                             }
-
-                            int[] verticesCara = new int[tokens.length - 1];
-                            // QPoligono.UVCoordinate[] newFaceTexture = null;
-                            // lee las caras, este for toma los vertices que definen la cara
-                            // System.out.println("leyendo cara ");
-                            // System.out.println(" tokens=" + tokens.length);
-                            // System.out.println(" " + Arrays.toString(tokens));
+                            int[] vertexFace = new int[tokens.length - 1];
+                            int[] uvFace = new int[tokens.length - 1];
+                            int[] normalsFace = new int[tokens.length - 1];
                             int c = 0;
                             for (String token : tokens) {
                                 if (!token.equals("f")) {
                                     String[] partes = token.split("/");
-                                    verticesCara[c] = Integer.parseInt(partes[0]) - 1 - vertexIndexOffset;
+                                    vertexFace[c] = Integer.parseInt(partes[0]) - 1 - vertexIndexOffset;
                                     // si tiene textures
                                     if (partes.length > 1) {
                                         if (!partes[1].isEmpty()) {
-                                            geometriaLeyendo.vertices[verticesCara[c]].u = listaUV
-                                                    .get(Integer.parseInt(partes[1]) - 1).x;
-                                            geometriaLeyendo.vertices[verticesCara[c]].v = listaUV
-                                                    .get(Integer.parseInt(partes[1]) - 1).y;
+                                            uvFace[c] = Integer.parseInt(partes[1]) - 1 - vertexIndexOffset;
+                                            // geometriaLeyendo.vertices[verticesCara[c]].u = listaUV
+                                            // .get(Integer.parseInt(partes[1]) - 1).x;
+                                            // geometriaLeyendo.vertices[verticesCara[c]].v = listaUV
+                                            // .get(Integer.parseInt(partes[1]) - 1).y;
                                         }
                                         // si tiene la normal
                                         if (partes.length > 2) {
-
+                                            if (!partes[2].isEmpty()) {
+                                                normalsFace[c] = Integer.parseInt(partes[2]) - 1 - vertexIndexOffset;
+                                            }
                                         }
                                     }
                                     c++;
                                 }
                             }
-                            Poly nuevaCara = geometriaLeyendo.addPoly(verticesCara);
-                            nuevaCara.setSmooth(smoothMode);
+                            Poly newFace = readingMesh.addPoly(vertexFace, normalsFace, uvFace);
+                            newFace.setSmooth(smoothMode);
                             if (currentMaterial != null) {
-                                nuevaCara.material = currentMaterial;
+                                newFace.material = currentMaterial;
                             } else {
-                                nuevaCara.material = defaultMaterial;
+                                newFace.material = defaultMaterial;
                             }
                             break;
 
@@ -338,24 +329,24 @@ public class LoadModelObj implements ModelLoader {
                     }
                 }
             }
-            if (geometriaLeyendo != null) {
-                for (QPrimitiva face : geometriaLeyendo.primitivas) {
-                    if (face.listaVertices.length >= 3) {
-                        ((Poly) face).calculaNormalYCentro();
+            if (readingMesh != null) {
+                for (Primitive face : readingMesh.primitiveList) {
+                    if (face.vertexIndexList.length >= 3) {
+                        ((Poly) face).computeNormalCenter();
                         if (!vertexNormalSpecified || true) {
-                            for (int i : face.listaVertices) {
-                                face.geometria.vertices[i].normal.add(((Poly) face).getNormal());
-                            }
+                            // for (int i : face.vertexList) {
+                            // face.mesh.vertices[i].normal.add(((Poly) face).getNormal());
+                            // }
                         }
                     }
                 }
-                for (int i = 0; i < geometriaLeyendo.vertices.length; i++) {
-                    geometriaLeyendo.vertices[i].normal.normalize();
-                }
+                // for (int i = 0; i < geometriaLeyendo.vertices.length; i++) {
+                // geometriaLeyendo.vertices[i].normal.normalize();
+                // }
 
-                Entity ent = new Entity(geometriaLeyendo.nombre);
-                ent.addComponent(geometriaLeyendo);
-                CollisionShape colision = new QColisionMallaConvexa(geometriaLeyendo);
+                Entity ent = new Entity(readingMesh.nombre);
+                ent.addComponent(readingMesh);
+                CollisionShape colision = new QColisionMallaConvexa(readingMesh);
                 ent.addComponent(colision);
                 QObjetoRigido rigido = new QObjetoRigido(QObjetoDinamico.ESTATICO, 0);
                 rigido.setFormaColision(colision);
@@ -363,9 +354,7 @@ public class LoadModelObj implements ModelLoader {
                 lista.add(ent);
 
             }
-            // QGestorRecursos.agregarRecurso("g" + geometriaLeyendo.nombre,
-            // geometriaLeyendo);
-            // QGestorRecursos.agregarRecurso("e" + ent.nombre, ent);
+
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -373,7 +362,7 @@ public class LoadModelObj implements ModelLoader {
             if (lista.size() == 1) {
                 return lista.get(0);
             } else {
-                Entity entity = new Entity("output");
+                Entity entity = new Entity("loaded_" + lista.get(0).getName());
                 lista.forEach(child -> entity.addChild(child));
                 return entity;
             }

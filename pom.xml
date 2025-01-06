@@ -18,7 +18,8 @@
 
     <modules>
         <module>qengine-core</module>
-        <module>qengine-load-model</module>
+        <module>qengine-asset-model-load</module>
+        <module>qengine-asset-model-export</module>
         <module>qengine-renderer</module>
         <module>qengine-water</module>
         <module>qengine-lwjgl</module>        

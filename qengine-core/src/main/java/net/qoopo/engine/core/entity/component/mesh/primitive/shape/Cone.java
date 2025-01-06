@@ -9,8 +9,6 @@ import net.qoopo.engine.core.entity.component.mesh.generator.MeshGenerator;
 import net.qoopo.engine.core.entity.component.mesh.primitive.Poly;
 import net.qoopo.engine.core.entity.component.mesh.primitive.Shape;
 import net.qoopo.engine.core.material.basico.QMaterialBas;
-import net.qoopo.engine.core.texture.util.MaterialUtil;
-import net.qoopo.engine.core.util.mesh.NormalUtil;
 
 /**
  *
@@ -53,15 +51,17 @@ public class Cone extends Shape {
     public void build() {
         deleteData();
         // primer paso generar vertices
-        this.addVertex(0, alto / 2, 0, 0, 1);
-        this.addVertex(radio, -alto / 2, 0, 0, 0);
-        this.addVertex(0, -alto / 2, 0, 0, 0);
+        this.addVertex(0, alto / 2, 0);
+        this.addVertex(radio, -alto / 2, 0);
+        this.addVertex(0, -alto / 2, 0);
+        // generar uv
+
         MeshGenerator.generateRevolutionMesh(this, secciones);
-        for (int i = 0; i < this.primitivas.length; i += 2) {
-            ((Poly) primitivas[i]).setSmooth(true);
+        for (int i = 0; i < this.primitiveList.length; i += 2) {
+            ((Poly) primitiveList[i]).setSmooth(true);
         }
-        NormalUtil.calcularNormales(this);
-        MaterialUtil.applyMaterial(this, material);
+        computeNormals();
+        applyMaterial(material);
     }
 
     public float getRadio() {

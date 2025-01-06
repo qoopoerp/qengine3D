@@ -31,10 +31,10 @@ public class RadialWavesDistortion implements WaveDistortion {
         float k = (float) (2 * Math.PI / wavelength); // Número de onda
         float omega = speed * k; // Frecuencia angular
 
-        float deltaTime = EngineTime.delta / 1000f;
+        float deltaTime = EngineTime.deltaNano / 1000f;
 
         // actualizo los vértices
-        for (Vertex vertex : mesh.vertices) {
+        for (Vertex vertex : mesh.vertexList) {
             QVector4 original = vertex.location;
 
             // Calcula la distancia al centro de las olas
@@ -49,7 +49,7 @@ public class RadialWavesDistortion implements WaveDistortion {
 
             vertex.location.y += wave; // desplazaminto en Y
         }
-        NormalUtil.calcularNormales(mesh);
+        NormalUtil.computeNormals(mesh);
     }
 
 }

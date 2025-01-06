@@ -7,7 +7,7 @@ package net.qoopo.engine.core.texture.util;
 
 import net.qoopo.engine.core.entity.component.mesh.Mesh;
 import net.qoopo.engine.core.entity.component.mesh.primitive.Poly;
-import net.qoopo.engine.core.entity.component.mesh.primitive.QPrimitiva;
+import net.qoopo.engine.core.entity.component.mesh.primitive.Primitive;
 import net.qoopo.engine.core.entity.component.mesh.primitive.Shape;
 import net.qoopo.engine.core.material.AbstractMaterial;
 import net.qoopo.engine.core.material.basico.QMaterialBas;
@@ -20,7 +20,7 @@ import net.qoopo.engine.core.math.QColor;
 public class MaterialUtil {
 
     public static Mesh smooth(Mesh geometria, boolean suave) {
-        for (QPrimitiva face : geometria.primitivas) {
+        for (Primitive face : geometria.primitiveList) {
             if (face instanceof Poly) {
                 ((Poly) face).setSmooth(suave);
             }
@@ -36,7 +36,7 @@ public class MaterialUtil {
      * @return
      */
     public static Mesh applyMaterial(Mesh mesh, AbstractMaterial material) {
-        for (QPrimitiva primitiva : mesh.primitivas) {
+        for (Primitive primitiva : mesh.primitiveList) {
             primitiva.material = material;
         }
         if (mesh instanceof Shape) {

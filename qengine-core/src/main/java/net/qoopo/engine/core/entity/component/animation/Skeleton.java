@@ -8,6 +8,9 @@ package net.qoopo.engine.core.entity.component.animation;
 import java.util.ArrayList;
 import java.util.List;
 
+import lombok.Getter;
+import lombok.Setter;
+import net.qoopo.engine.core.entity.Entity;
 import net.qoopo.engine.core.entity.component.EntityComponent;
 import net.qoopo.engine.core.math.QMatriz4;
 
@@ -15,9 +18,13 @@ import net.qoopo.engine.core.math.QMatriz4;
  *
  * @author alberto
  */
-public class Skeleton extends EntityComponent {
+public class Skeleton implements EntityComponent {
 
-//    private Entity huesoRaiz;
+    @Getter
+    @Setter
+    private Entity entity;
+
+    // private Entity huesoRaiz;
     private List<Bone> huesos = new ArrayList<>();
     private boolean mostrar = false;
     private boolean superponer = false;
@@ -47,7 +54,7 @@ public class Skeleton extends EntityComponent {
                 return hueso;
             }
         }
-//        System.out.println("Hueso no encontrado (i)" + i);
+        // System.out.println("Hueso no encontrado (i)" + i);
         return null;
     }
 
@@ -58,7 +65,7 @@ public class Skeleton extends EntityComponent {
                 return hueso;
             }
         }
-//        System.out.println("Hueso no encontrado (n) " + nombre);
+        // System.out.println("Hueso no encontrado (n) " + nombre);
         return null;
 
     }
@@ -79,16 +86,16 @@ public class Skeleton extends EntityComponent {
      * animacion
      */
     public void calcularMatricesInversas() {
-//        System.out.println("Calculando inversas ");
+        // System.out.println("Calculando inversas ");
         for (Bone hueso : huesos) {
-            //si es el hueso raiz
+            // si es el hueso raiz
             if (hueso.getParent() == null) {
-//                System.out.println("Hueso raiz=" + hueso.getNombre());
+                // System.out.println("Hueso raiz=" + hueso.getNombre());
                 hueso.calcularTransformacionInversa(new QMatriz4());
-//                return;
+                // return;
             }
         }
-//        System.out.println("No se encontr[o hueso raiz");
+        // System.out.println("No se encontr[o hueso raiz");
     }
 
     public boolean isMostrar() {

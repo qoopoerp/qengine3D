@@ -14,7 +14,7 @@ import net.qoopo.engine.core.material.basico.QMaterialBas;
 import net.qoopo.engine.core.math.QColor;
 import net.qoopo.engine.core.texture.util.MaterialUtil;
 import net.qoopo.engine.core.util.QGlobal;
-import net.qoopo.engine.core.util.QUtilComponentes;
+import net.qoopo.engine.core.util.ComponentUtil;
 import net.qoopo.engine3d.core.input.control.gizmo.QGizmo;
 import net.qoopo.engine3d.core.input.control.gizmo.transformacion.rotacion.QGizmoRotacion;
 
@@ -38,9 +38,9 @@ public class QGizmoTraslacion extends QGizmo {
         ModelLoader loadModel = new LoadModelObj();
         Entity ent = loadModel.loadModel(QGizmoRotacion.class.getResourceAsStream("/gizmos/Giz_mov.obj"));
 
-        formaY = QUtilComponentes.getMesh(ent.getChilds().get(0));
-        formaX = QUtilComponentes.getMesh(ent.getChilds().get(1));
-        formaZ = QUtilComponentes.getMesh(ent.getChilds().get(2));
+        formaY = ComponentUtil.getMesh(ent.getChilds().get(0));
+        formaX = ComponentUtil.getMesh(ent.getChilds().get(1));
+        formaZ = ComponentUtil.getMesh(ent.getChilds().get(2));
 
         matX = new QMaterialBas("x");
         matX.setColorBase(QColor.RED);

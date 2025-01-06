@@ -5,110 +5,103 @@
  */
 package net.qoopo.engine.core.entity.component.transform;
 
-import net.qoopo.engine.core.entity.component.mesh.primitive.QPrimitiva;
+import lombok.Getter;
+import lombok.Setter;
 import net.qoopo.engine.core.entity.component.mesh.primitive.Vertex;
+import net.qoopo.engine.core.math.QVector2;
+import net.qoopo.engine.core.math.QVector3;
 
 /**
  * Contiene la información despues de realizar la transformación
  *
  * @author alberto
  */
+@Getter
+@Setter
 public class QVertexBuffer {
 
-    private Vertex[] verticesTransformados = null;
-    private QPrimitiva[] poligonosTransformados = null;
+    private Vertex[] vertexList = null;
+    private QVector3[] normalList = null;
+    private QVector2[] uvList = null;
 
     public QVertexBuffer() {
 
     }
 
-    public void init(int vertices, int caras) {
-        if (verticesTransformados == null) {
-            verticesTransformados = new Vertex[vertices];
-            poligonosTransformados = new QPrimitiva[caras];
-            // System.out.println("se instancio vertices y poligonos (" + vertices + "," +
-            // caras + ")");
+    public void init(int vertexCount, int normalCount, int uvCount) {
+        if (vertexList == null) {
+            vertexList = new Vertex[vertexCount];
+            normalList = new QVector3[normalCount];
+            uvList = new QVector2[uvCount];
         } else {
             // si ya tiene instancias compruebo las longitudes para no volver a isntanciar
-            if (verticesTransformados.length != vertices) {
-                verticesTransformados = new Vertex[vertices];
+            if (vertexList.length != vertexCount) {
+                vertexList = new Vertex[vertexCount];
             }
 
-            if (poligonosTransformados.length != caras) {
-                poligonosTransformados = new QPrimitiva[caras];
+            // if (poligonosTransformados.length != caras) {
+            // poligonosTransformados = new Primitive[caras];
+            // }
+
+            if (normalList.length != normalCount) {
+                normalList = new QVector3[normalCount];
+            }
+
+            if (uvList.length != uvCount) {
+                uvList = new QVector2[uvCount];
             }
         }
     }
 
-    public QVertexBuffer(Vertex[] verticesTransformados) {
-        this.verticesTransformados = verticesTransformados;
+    public QVertexBuffer(Vertex[] vertexList) {
+        this.vertexList = vertexList;
     }
 
-    public Vertex[] getVerticesTransformados() {
-        return verticesTransformados;
-    }
-
-    public void setVerticesTransformados(Vertex[] verticesTransformados) {
-        this.verticesTransformados = verticesTransformados;
-    }
-
-    public Vertex getVertice(int i) {
-        if (verticesTransformados.length > i) {
-            return verticesTransformados[i];
+    public Vertex getVertex(int i) {
+        if (vertexList.length > i) {
+            return vertexList[i];
         } else {
             return new Vertex();
         }
     }
 
-    public void setVertice(Vertex vertice, int i) {
-        if (verticesTransformados.length > i) {
-            verticesTransformados[i] = vertice;
+    public void setVertex(Vertex vertice, int i) {
+        if (vertexList.length > i) {
+            vertexList[i] = vertice;
         }
     }
 
-    public QPrimitiva getPoligono(int i) {
-        if (poligonosTransformados.length > i) {
-            if (poligonosTransformados[i] != null) {
-                return poligonosTransformados[i];
-            } else {
-                return new QPrimitiva(null);
-            }
-        } else {
-            return null;
-            // return new QPrimitiva(null);
+    public QVector3 getNormal(int i) {
+        // if (normalList.length > i) {
+            return normalList[i];
+        // } else {
+        //     return QVector3.empty();
+        // }
+    }
+
+    public void setNormal(QVector3 normal, int i) {
+        if (normalList.length > i) {
+            normalList[i] = normal;
         }
     }
 
-    public QPrimitiva getLinea(int i) {
-        if (poligonosTransformados.length > i) {
-            if (poligonosTransformados[i] != null) {
-                return poligonosTransformados[i];
-            } else {
-                return new QPrimitiva(null);
-            }
-        } else {
-            return null;
-            // return new QPrimitiva(null);
+    public QVector2 getUV(int i) {
+        // if (uvList.length > i) {
+            return uvList[i];
+        // } else {
+        //     return new QVector2();
+        // }
+    }
+
+    public void setUV(QVector2 uv, int i) {
+        if (uvList.length > i) {
+            uvList[i] = uv;
         }
-    }
-
-    public void setPoligono(QPrimitiva poligono, int i) {
-        if (poligonosTransformados.length > i) {
-            poligonosTransformados[i] = poligono;
-        }
-    }
-
-    public QPrimitiva[] getPoligonosTransformados() {
-        return poligonosTransformados;
-    }
-
-    public void setPoligonosTransformados(QPrimitiva[] poligonosTransformados) {
-        this.poligonosTransformados = poligonosTransformados;
     }
 
     public QVertexBuffer clone() {
         QVertexBuffer nuevo = new QVertexBuffer();
-        nuevo.init(this.verticesTransformados.length, this.poligonosTransformados.length);
+        nuevo.init(this.vertexList.length, this.normalList.length, this.uvList.length);
         return nuevo;
     }
 

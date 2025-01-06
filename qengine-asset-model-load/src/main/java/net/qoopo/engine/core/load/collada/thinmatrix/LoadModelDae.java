@@ -34,7 +34,6 @@ import net.qoopo.engine.core.load.collada.thinmatrix.loader.ColladaLoader;
 import net.qoopo.engine.core.material.basico.QMaterialBas;
 import net.qoopo.engine.core.math.QMatriz4;
 import net.qoopo.engine.core.util.QJOMLUtil;
-import net.qoopo.engine.core.util.mesh.NormalUtil;
 
 /**
  * Carga un modelo según el algoritmo de ThinMatrix para archivos Collada en
@@ -68,7 +67,7 @@ public class LoadModelDae implements ModelLoader {
             entity.addComponent(almacen);
             entity.addComponent(animacion);
             // Geometria
-            entity.addComponent(cargarGeometria(modelo.getMeshData(), esqueleto));
+            entity.addComponent(loadMesh(modelo.getMeshData(), esqueleto));
             // System.out.println("Entidad Cargada COLLADA");
             // System.out.println("================================");
             // Entity.imprimirArbolEntidad(entity, "");
@@ -158,9 +157,9 @@ public class LoadModelDae implements ModelLoader {
         return esqueleto;
     }
 
-    public static Mesh cargarGeometria(MeshData data, Skeleton esqueleto) {
+    public static Mesh loadMesh(MeshData data, Skeleton esqueleto) {
         QMaterialBas material = new QMaterialBas("default");
-        Mesh geometria = new Mesh();
+        Mesh mesh = new Mesh();
 
         int verticesReales = data.getVertexCount();
         int vertices = data.getVertices().length;
@@ -172,13 +171,15 @@ public class LoadModelDae implements ModelLoader {
         // agrega los vertices, de 3 en tres por q son triangulos
         int indiceTextura = 0;
         int indiceHueso = 0;
+
         for (int indiceVertice = 0; indiceVertice < vertices; indiceVertice += 3) {
             Bone[] huesos = new Bone[huesosXVertice];
             float[] pesos = new float[huesosXVertice];
             int[] huesosIds = new int[huesosXVertice];
-            Vertex vertice = geometria.addVertex(data.getVertices()[indiceVertice],
-                    data.getVertices()[indiceVertice + 1], data.getVertices()[indiceVertice + 2],
-                    data.getTextureCoords()[indiceTextura * 2], data.getTextureCoords()[indiceTextura * 2 + 1]);
+            Vertex vertice = mesh.addVertex(data.getVertices()[indiceVertice],
+                    data.getVertices()[indiceVertice + 1], data.getVertices()[indiceVertice + 2]);
+            mesh.addUV(data.getTextureCoords()[indiceTextura * 2], data.getTextureCoords()[indiceTextura * 2 + 1]);
+            // geometria.addNormal(data.getNormals()[indice], indiceHueso, indiceVertice)
             if (esqueleto != null) {
                 for (int j = 0; j < huesosXVertice; j++) {
                     huesos[j] = esqueleto.getBone(data.getJointIds()[indiceHueso + j]);
@@ -202,16 +203,17 @@ public class LoadModelDae implements ModelLoader {
             i2 = data.getIndices()[i + 1]; // segundo vertice
             i3 = data.getIndices()[i + 2]; // tercer vertice
             try {
-                geometria.addPoly(material, i1, i2, i3);
+                mesh.addPoly(material, new int[] { i1, i2, i3 }, new int[] { i1, i2, i3 },
+                        new int[] { i1, i2, i3 });
             } catch (Exception ex) {
                 Logger.getLogger(LoadModelDae.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
 
-        NormalUtil.calcularNormales(geometria);
+        mesh.computeNormals();
         // QUtilNormales.invertirNormales(objeto);
         // QMaterialUtil.suavizar(geometria, true);
-        return geometria;
+        return mesh;
     }
 
 }

@@ -13,7 +13,7 @@ import net.qoopo.engine.core.entity.component.gui.QTecladoReceptor;
 import net.qoopo.engine.core.entity.component.mesh.primitive.shape.Box;
 import net.qoopo.engine.core.entity.component.mesh.primitive.shape.Cylinder;
 import net.qoopo.engine.core.entity.component.mesh.primitive.shape.Torus;
-import net.qoopo.engine.core.util.QUtilComponentes;
+import net.qoopo.engine.core.util.ComponentUtil;
 
 /**
  * Clase para crear personajes del juego
@@ -102,15 +102,15 @@ public class CreadorVehiculos {
                         case KeyEvent.VK_W:
                             if (shift) {
                                 // corre
-                                QUtilComponentes.eliminarComponenteAnimacion(entity);
+                                ComponentUtil.eliminarComponenteAnimacion(entity);
                                 vehiculo.addComponent(
-                                        QUtilComponentes.getAlmacenAnimaciones(entity).getAnimacion("correr"));
+                                        ComponentUtil.getAlmacenAnimaciones(entity).getAnimacion("correr"));
                                 vehiculo.moveForward(0.15f);
                             } else {
                                 // camina
-                                QUtilComponentes.eliminarComponenteAnimacion(entity);
+                                ComponentUtil.eliminarComponenteAnimacion(entity);
                                 vehiculo.addComponent(
-                                        QUtilComponentes.getAlmacenAnimaciones(entity).getAnimacion("caminar"));
+                                        ComponentUtil.getAlmacenAnimaciones(entity).getAnimacion("caminar"));
                                 vehiculo.moveForward(0.05f);
                             }
 
@@ -118,15 +118,15 @@ public class CreadorVehiculos {
                         case KeyEvent.VK_S:
                             if (shift) {
                                 // corre
-                                QUtilComponentes.eliminarComponenteAnimacion(entity);
+                                ComponentUtil.eliminarComponenteAnimacion(entity);
                                 vehiculo.addComponent(
-                                        QUtilComponentes.getAlmacenAnimaciones(entity).getAnimacion("correr"));
+                                        ComponentUtil.getAlmacenAnimaciones(entity).getAnimacion("correr"));
                                 vehiculo.moveForward(-0.15f);
                             } else {
                                 // camina
-                                QUtilComponentes.eliminarComponenteAnimacion(entity);
+                                ComponentUtil.eliminarComponenteAnimacion(entity);
                                 vehiculo.addComponent(
-                                        QUtilComponentes.getAlmacenAnimaciones(entity).getAnimacion("caminar"));
+                                        ComponentUtil.getAlmacenAnimaciones(entity).getAnimacion("caminar"));
                                 vehiculo.moveForward(-0.05f);
                             }
                             break;
@@ -150,7 +150,7 @@ public class CreadorVehiculos {
             @Override
             public void keyReleased(KeyEvent evt) {
                 // elimino cualquier animacion
-                QUtilComponentes.eliminarComponenteAnimacion(entity);
+                ComponentUtil.eliminarComponenteAnimacion(entity);
                 switch (evt.getKeyCode()) {
 
                     case KeyEvent.VK_SHIFT:

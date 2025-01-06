@@ -5,6 +5,9 @@
  */
 package net.qoopo.engine.core.entity.component.physics.collision.detector;
 
+import lombok.Getter;
+import lombok.Setter;
+import net.qoopo.engine.core.entity.Entity;
 import net.qoopo.engine.core.entity.component.EntityComponent;
 
 /**
@@ -13,7 +16,11 @@ import net.qoopo.engine.core.entity.component.EntityComponent;
  * @author alberto
  */
 //CollisionShape
-public abstract class CollisionShape extends EntityComponent {
+public abstract class CollisionShape implements EntityComponent {
+
+    @Getter
+    @Setter
+    private Entity entity;
 
     public abstract boolean verificarColision(CollisionShape otro);
 }

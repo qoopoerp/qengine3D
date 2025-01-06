@@ -8,6 +8,8 @@ package net.qoopo.engine.core.entity.component.animation;
 import java.util.ArrayList;
 import java.util.List;
 
+import lombok.Getter;
+import lombok.Setter;
 import net.qoopo.engine.core.animation.AnimationFrame;
 import net.qoopo.engine.core.animation.AnimationPair;
 import net.qoopo.engine.core.entity.Entity;
@@ -23,7 +25,11 @@ import net.qoopo.engine.core.util.QGlobal;
  *
  * @author alberto
  */
-public class AnimationComponent extends EntityComponent {
+public class AnimationComponent implements EntityComponent {
+
+    @Getter
+    @Setter
+    private Entity entity;
 
     private String nombre = "Animación";
 

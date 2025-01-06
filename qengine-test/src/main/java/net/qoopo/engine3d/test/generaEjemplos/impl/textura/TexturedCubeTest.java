@@ -27,22 +27,23 @@ public class TexturedCubeTest extends MakeTestScene {
         this.scene = mundo;
         Entity cubo = new Entity("cubo");
         QMaterialBas material = new QMaterialBas();
-        // material.setMapaColor(new QProcesadorSimple(
-        //         AssetManager.get().loadTexture("difusa", new File("assets/textures/cube_map.png"))));
-
         material.setMapaColor(new QProcesadorSimple(
-                AssetManager.get().loadTexture("difusa", new File("assets/textures/rock.png"))));
-        material.setMapaNormal(new QProcesadorSimple(
-                AssetManager.get().loadTexture("normal", new File("assets/textures/rock_normals.png"))));
+                AssetManager.get().loadTexture("difusa", new File("assets/textures/uv.png"))));
+
+        // material.setMapaColor(new QProcesadorSimple(
+        // AssetManager.get().loadTexture("difusa", new
+        // File("assets/textures/rock.png"))));
+        // material.setMapaNormal(new QProcesadorSimple(
+        // AssetManager.get().loadTexture("normal", new
+        // File("assets/textures/rock_normals.png"))));
 
         cubo.addComponent(MaterialUtil.applyMaterial(new Box(2), material));
+        cubo.move(-5, 0, 0);
         mundo.addEntity(cubo);
 
-
-
-        Entity box2 = new Entity("box2");        
-        box2.addComponent(MaterialUtil.applyMaterial(new Box(2,true), material));
-        box2.move(5,0,0);
+        Entity box2 = new Entity("box2");
+        box2.addComponent(MaterialUtil.applyMaterial(new Box(2, true), material));
+        box2.move(5, 0, 0);
         mundo.addEntity(box2);
     }
 

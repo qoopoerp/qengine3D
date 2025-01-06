@@ -7,10 +7,17 @@ import static org.lwjgl.openal.AL10.alListener3f;
 import static org.lwjgl.openal.AL10.alListenerfv;
 //import static org.lwjgl.openal.AL10.*;
 
+import lombok.Getter;
+import lombok.Setter;
+import net.qoopo.engine.core.entity.Entity;
 import net.qoopo.engine.core.entity.component.EntityComponent;
 import net.qoopo.engine.core.math.QVector3;
 
-public class SoundListenerAL extends EntityComponent {
+public class SoundListenerAL implements EntityComponent {
+
+    @Getter
+    @Setter
+    private Entity entity;
 
     public SoundListenerAL() {
         this(QVector3.of(0, 0, 0));

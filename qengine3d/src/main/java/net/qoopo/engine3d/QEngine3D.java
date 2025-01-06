@@ -28,6 +28,8 @@ import net.qoopo.engine.core.entity.component.EntityComponent;
 import net.qoopo.engine.core.entity.component.UpdatableComponent;
 import net.qoopo.engine.core.entity.component.gui.QTecladoReceptor;
 import net.qoopo.engine.core.entity.component.ligth.QDirectionalLigth;
+import net.qoopo.engine.core.entity.component.mesh.Mesh;
+import net.qoopo.engine.core.entity.component.modifier.ModifierComponent;
 import net.qoopo.engine.core.entity.component.particles.Particle;
 import net.qoopo.engine.core.entity.component.particles.ParticleEmissor;
 import net.qoopo.engine.core.ia.IAEngine;
@@ -88,7 +90,7 @@ public class QEngine3D extends Engine implements Runnable {
     private boolean modificando = false;
 
     // Escena a usar en todos los motores
-    private Scene escena;
+    private Scene scene;
     // motores
     private PhysicsEngine physicsEngine = null;// el motor de fisica
     private RenderEngine renderEngine = null; // motor de renderizado
@@ -129,14 +131,14 @@ public class QEngine3D extends Engine implements Runnable {
 
     public QEngine3D() {
         ImgUtil.iniciar();
-        escena = new Scene();
+        scene = new Scene();
         hiloPrincipal = new Thread(this, "QENGINE_PRINCIPAL");
         INSTANCIA = this;
     }
 
     public QEngine3D(String titulo) {
         ImgUtil.iniciar();
-        escena = new Scene();
+        scene = new Scene();
         this.titulo = titulo;
         hiloPrincipal = new Thread(this, "QENGINE_PRINCIPAL");
         INSTANCIA = this;
@@ -144,14 +146,14 @@ public class QEngine3D extends Engine implements Runnable {
 
     public QEngine3D(Scene escena) {
         ImgUtil.iniciar();
-        this.escena = escena;
+        this.scene = escena;
         hiloPrincipal = new Thread(this, "QENGINE_PRINCIPAL");
         INSTANCIA = this;
     }
 
     public QEngine3D(Scene escena, String titulo) {
         ImgUtil.iniciar();
-        this.escena = escena;
+        this.scene = escena;
         this.titulo = titulo;
         hiloPrincipal = new Thread(this, "QENGINE_PRINCIPAL");
         INSTANCIA = this;
@@ -166,7 +168,7 @@ public class QEngine3D extends Engine implements Runnable {
                 startAudio();
             }
 
-            animationEngine = new AnimationEngine(getEscena());
+            animationEngine = new AnimationEngine(getScene());
             if (iniciarAnimaciones) {
                 startAnimation();
             }
@@ -228,7 +230,8 @@ public class QEngine3D extends Engine implements Runnable {
             QGlobal.tiempo = System.currentTimeMillis();
 
             // ejecuta los componentes que realizan modificadiones
-            ejecutarComponentes();
+            // runComponents();
+
             // ejecuta los motores
             if (animationEngine != null && animationEngine.isEjecutando()) {
                 animationEngine.update();
@@ -241,9 +244,7 @@ public class QEngine3D extends Engine implements Runnable {
             }
 
             if (rendererList != null && !rendererList.isEmpty()) {
-                rendererList.forEach(renderer -> {
-                    renderer.update();
-                });
+                rendererList.forEach(renderer -> renderer.update());
             } else {
                 if (renderEngine != null) {
                     renderEngine.update();
@@ -269,9 +270,8 @@ public class QEngine3D extends Engine implements Runnable {
                     renderEngine.postRender();
                 }
             }
-
             // elimina las entidades que estan marcadas para eliminarse (no vivas)
-            escena.eliminarEntidadesNoVivas();
+            scene.eliminarEntidadesNoVivas();
             EngineTime.update();
         } catch (Exception e) {
             e.printStackTrace();
@@ -288,12 +288,12 @@ public class QEngine3D extends Engine implements Runnable {
         loop();
     }
 
-    public Scene getEscena() {
-        return escena;
+    public Scene getScene() {
+        return scene;
     }
 
-    public void setEscena(Scene escena) {
-        this.escena = escena;
+    public void setScene(Scene escena) {
+        this.scene = escena;
     }
 
     public AnimationEngine getAnimationEngine() {
@@ -354,10 +354,10 @@ public class QEngine3D extends Engine implements Runnable {
             case PhysicsEngine.FISICA_INTERNO:
             default:
                 // usa el motor interno
-                physicsEngine = new InternalPhysicsEngine(getEscena());
+                physicsEngine = new InternalPhysicsEngine(getScene());
                 break;
             case PhysicsEngine.FISICA_JBULLET:
-                physicsEngine = new JBulletPhysicsEngine(getEscena());
+                physicsEngine = new JBulletPhysicsEngine(getScene());
                 break;
         }
         physicsEngine.start();
@@ -374,7 +374,7 @@ public class QEngine3D extends Engine implements Runnable {
      * Inicial el motor de Audio OpenAL
      */
     public void startAudio() {
-        audioEngine = new OpenALAudioEngine(escena);
+        audioEngine = new OpenALAudioEngine(scene);
         audioEngine.start();
 
         AssetManager.get().setAudioLoader(new LwjglAudioLoader());
@@ -404,7 +404,7 @@ public class QEngine3D extends Engine implements Runnable {
      * Inicia el motor de inteligencia
      */
     public void startAI() {
-        motorInteligencia = new DefaultIA(getEscena());
+        motorInteligencia = new DefaultIA(getScene());
         motorInteligencia.start();
     }
 
@@ -543,13 +543,13 @@ public class QEngine3D extends Engine implements Runnable {
         switch (tipoRenderer) {
             default:
             case RenderEngine.RENDER_INTERNO:
-                renderEngine = new SoftwareRenderer(escena, new Superficie(panelDibujo), ancho, alto);
+                renderEngine = new SoftwareRenderer(scene, new Superficie(panelDibujo), ancho, alto);
                 break;
             case RenderEngine.RENDER_JAVA3D:
-                renderEngine = new QRenderJava3D(escena, new Superficie(panelDibujo), ancho, alto);
+                renderEngine = new QRenderJava3D(scene, new Superficie(panelDibujo), ancho, alto);
                 break;
             case RenderEngine.RENDER_OPENGL:
-                renderEngine = new OpenGlRenderer(escena, new Superficie(panelDibujo), ancho, alto);
+                renderEngine = new OpenGlRenderer(scene, new Superficie(panelDibujo), ancho, alto);
                 break;
         }
 
@@ -637,39 +637,6 @@ public class QEngine3D extends Engine implements Runnable {
         });
     }
 
-    /**
-     * Ejecuta los componentes que modifican geometrias y textures
-     *
-     */
-    private void ejecutarComponentes() {
-        try {
-            ParticleEmissor emisor; // emisor de particula
-            for (Entity entity : escena.getEntities()) {
-                for (EntityComponent componente : entity.getComponents()) {
-                    if (componente instanceof UpdatableComponent) {
-                        if (((UpdatableComponent) componente).isRequierepdate())
-                            ((UpdatableComponent) componente).update(getRenderEngine(), escena);
-                        // particulas
-                    } else if (componente instanceof ParticleEmissor) {
-                        emisor = (ParticleEmissor) componente;
-                        emisor.emitir(EngineTime.delta);
-                        for (Particle particula : emisor.getParticulasNuevas()) {
-                            escena.addEntity(particula.objeto);
-                        }
-                    }
-
-                    // for (Particle particula : emisor.getParticulasEliminadas()) {
-                    // escena.eliminarGeometria(particula.objeto);
-                    // particula.objeto.renderizar=false;
-                    // modificado = true;
-                    // }
-                    // agrego las particulas nueva y elimino las viejas
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
 
     public List<RenderEngine> getRendererList() {
         return rendererList;

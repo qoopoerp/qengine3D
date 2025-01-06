@@ -10,7 +10,7 @@ import java.util.logging.Logger;
 
 import net.qoopo.engine.core.entity.component.mesh.Mesh;
 import net.qoopo.engine.core.entity.component.mesh.primitive.Poly;
-import net.qoopo.engine.core.entity.component.mesh.primitive.QPrimitiva;
+import net.qoopo.engine.core.entity.component.mesh.primitive.Primitive;
 import net.qoopo.engine.core.entity.component.mesh.primitive.Vertex;
 import net.qoopo.engine.core.material.basico.QMaterialBas;
 import net.qoopo.engine.core.math.QVector3;
@@ -40,7 +40,7 @@ public class MeshGenerator {
      * Genera objetos de revolución El objeto pasado como parametro solo
      * contiene vértices que corresponden a media silueta del objeto
      *
-     * @param objeto         Objeto con los vertices
+     * @param mesh         Objeto con los vertices
      * @param lados
      * @param cerrarFigura
      * @param tipotoro
@@ -49,23 +49,24 @@ public class MeshGenerator {
      *                       se puede usar para los cilindros y conos
      * @return
      */
-    public static Mesh generateRevolutionMesh(Mesh objeto, int lados, boolean cerrarFigura, boolean tipotoro,
+    public static Mesh generateRevolutionMesh(Mesh mesh, int lados, boolean cerrarFigura, boolean tipotoro,
             boolean suavizar, boolean suavizarTopes) {
         float angulo = (float) Math.toRadians((float) 360 / lados);
-        int puntos_iniciales = objeto.vertices.length;
+        int puntos_iniciales = mesh.vertexList.length;
 
         // generamos los siguientes puntos, comienza en 1 porque ya existe un lado (con
         // el que se manda a crear objetos de revolucion)
         for (int i = 1; i < lados; i++) {
             // recorremos los puntos iniciales solamente
             for (int j = 0; j < puntos_iniciales; j++) {
-                QVector3 tmp = QVector3.of(objeto.vertices[j].location.x, objeto.vertices[j].location.y,
-                        objeto.vertices[j].location.z);
+                QVector3 tmp = QVector3.of(mesh.vertexList[j].location.x, mesh.vertexList[j].location.y,
+                        mesh.vertexList[j].location.z);
                 // se rota en el ejey de las Y cada punto
                 tmp.rotateY(angulo * i);// se rota solo en Eje de Y
-                objeto.addVertex(tmp.x, tmp.y, tmp.z, (float) 1.0f / lados * i, objeto.vertices[j].v);// agrega el
-                                                                                                           // vertice
-                                                                                                           // rotado
+                // agrega el vertice rotado
+                mesh.addVertex(tmp);
+                //pendiente la coordenada uv
+                // mesh.addUV((float) 1.0f / lados * i, mesh.vertices[j].v);
             }
         }
         // ahora unimos las caras con los nuevos vertices
@@ -101,22 +102,22 @@ public class MeshGenerator {
                         try {
                             // agrega solo un triangulo
                             // objeto.addPoly(v1, v2, v3);
-                            objeto.addPoly(0, v2, v3).setSmooth(suavizarTopes);
+                            mesh.addPoly(new int[]{0, v2, v3}).setSmooth(suavizarTopes);
                         } catch (Exception ex) {
                             Logger.getLogger(MeshGenerator.class.getName()).log(Level.SEVERE, null, ex);
                         }
                     } else if (j == poligonos_x_lado - 1) {
                         try {
                             // objeto.addPoly(v3, v4, v1);
-                            objeto.addPoly(j + 1, v4, v1).setSmooth(suavizarTopes);
+                            mesh.addPoly(new int[]{j + 1, v4, v1}).setSmooth(suavizarTopes);
                         } catch (Exception ex) {
                             Logger.getLogger(MeshGenerator.class.getName()).log(Level.SEVERE, null, ex);
                         }
                     } else {
                         try {
                             // agrega 2 triangulos
-                            objeto.addPoly(v1, v2, v3).setSmooth(suavizar);
-                            objeto.addPoly(v3, v4, v1).setSmooth(suavizar);
+                            mesh.addPoly(new int[]{v1, v2, v3}).setSmooth(suavizar);
+                            mesh.addPoly(new int[]{v3, v4, v1}).setSmooth(suavizar);
                         } catch (Exception ex) {
                             Logger.getLogger(MeshGenerator.class.getName()).log(Level.SEVERE, null, ex);
                         }
@@ -124,8 +125,8 @@ public class MeshGenerator {
                 } else {
                     try {
                         // agrega 2 triangulos
-                        objeto.addPoly(v1, v2, v3).setSmooth(suavizar);
-                        objeto.addPoly(v3, v4, v1).setSmooth(suavizar);
+                        mesh.addPoly(new int[]{v1, v2, v3}).setSmooth(suavizar);
+                        mesh.addPoly(new int[]{v3, v4, v1}).setSmooth(suavizar);
                     } catch (Exception ex) {
                         Logger.getLogger(MeshGenerator.class.getName()).log(Level.SEVERE, null, ex);
                     }
@@ -144,16 +145,16 @@ public class MeshGenerator {
                     /// 203
                     // 352
                     // agrega 2 triangulos
-                    objeto.addPoly(p1, p2, v2);
+                    mesh.addPoly(new int[]{p1, p2, v2});
                     // objeto.addPoly(p1, v3, v2);
-                    objeto.addPoly(p2, v3, v2);
+                    mesh.addPoly(new int[]{p2, v3, v2});
                 } catch (Exception ex) {
                     Logger.getLogger(MeshGenerator.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
         }
         // ultimo lado
-        return objeto;
+        return mesh;
     }
 
     public static Mesh generarSombrero(float alto, float radio, int secciones) {
@@ -165,7 +166,7 @@ public class MeshGenerator {
         objeto.addVertex(radio * 2, -alto / 2, 0);
         objeto.addVertex(0, -alto / 2, 0);
         objeto = generateRevolutionMesh(objeto, secciones);
-        objeto = NormalUtil.calcularNormales(objeto);
+        objeto = NormalUtil.computeNormals(objeto);
         objeto = MaterialUtil.applyMaterial(objeto, material);
         return objeto;
     }
@@ -176,7 +177,7 @@ public class MeshGenerator {
         // primer paso generar vertices
         objeto.addVertex(radio / 2, 0, 0);
         objeto = generateRevolutionMesh(objeto, secciones);
-        objeto = NormalUtil.calcularNormales(objeto);
+        objeto = NormalUtil.computeNormals(objeto);
         objeto = MaterialUtil.applyMaterial(objeto, material);
         return objeto;
     }
@@ -200,9 +201,9 @@ public class MeshGenerator {
         }
 
         objeto = generateRevolutionMesh(objeto, secciones, false, false, false, false);
-        objeto = NormalUtil.calcularNormales(objeto);
+        objeto = NormalUtil.computeNormals(objeto);
         // el objeto es suavizado
-        for (QPrimitiva face : objeto.primitivas) {
+        for (Primitive face : objeto.primitiveList) {
             ((Poly) face).setSmooth(true);
         }
         objeto = MaterialUtil.applyMaterial(objeto, material);

@@ -30,7 +30,7 @@ import net.qoopo.engine.core.scene.Scene;
 import net.qoopo.engine.core.texture.QTextura;
 import net.qoopo.engine.core.texture.procesador.QProcesadorSimple;
 import net.qoopo.engine.core.texture.util.MaterialUtil;
-import net.qoopo.engine.core.util.QUtilComponentes;
+import net.qoopo.engine.core.util.ComponentUtil;
 import net.qoopo.engine.terrain.HeightMapTerrain;
 import net.qoopo.engine3d.core.sky.QCielo;
 import net.qoopo.engine3d.core.sky.SphereCielo;
@@ -85,16 +85,16 @@ public class NivelTest2 extends QEscenario {
 
         try {
             logger.info("  Cargando geometrías..");
-            Mesh pinoG = QUtilComponentes.getMesh(AssetManager.get().loadModel(new File(
+            Mesh pinoG = ComponentUtil.getMesh(AssetManager.get().loadModel(new File(
                     "assets/models/obj/VEGETACION/EXTERIOR/baja_calidad/pino/lowpolytree.obj")));
-            Mesh arbolG = QUtilComponentes.getMesh(AssetManager.get().loadModel(new File(
+            Mesh arbolG = ComponentUtil.getMesh(AssetManager.get().loadModel(new File(
                     "assets/models/obj/VEGETACION/EXTERIOR/alta_calidad/Tree/Tree.obj")));
-            Mesh arbol2G = QUtilComponentes.getMesh(AssetManager.get().loadModel(new File(
+            Mesh arbol2G = ComponentUtil.getMesh(AssetManager.get().loadModel(new File(
                     "assets/models/obj/VEGETACION/EXTERIOR/baja_calidad/tree/tree.obj")));
-            Mesh arbolMuerto = QUtilComponentes
+            Mesh arbolMuerto = ComponentUtil
                     .getMesh(AssetManager.get().loadModel(new File("assets/"
                             + "models/obj/VEGETACION/EXTERIOR/baja_calidad/dead_tree/DeadTree.obj")));
-            Mesh roca1 = QUtilComponentes.getMesh(AssetManager.get().loadModel(
+            Mesh roca1 = ComponentUtil.getMesh(AssetManager.get().loadModel(
                     new File("assets/models/obj/TERRENO/baja_calidad/Rock1/Rock1.obj")).getChilds()
                     .get(1));
             // List<QGeometria> arbol3 = CargaEstatica.cargarWaveObject(new
@@ -320,7 +320,7 @@ public class NivelTest2 extends QEscenario {
 
         // QColisionTerreno colision = new QColisionTerreno(terreno);
         // entidadTerreno.agregarComponente(colision);
-        QColisionMallaIndexada colision = new QColisionMallaIndexada(QUtilComponentes.getMesh(entidadTerreno));
+        QColisionMallaIndexada colision = new QColisionMallaIndexada(ComponentUtil.getMesh(entidadTerreno));
         QObjetoRigido terrenoRigidez = new QObjetoRigido(QObjetoDinamico.ESTATICO);
         terrenoRigidez.setFormaColision(colision);
         entidadTerreno.addComponent(terrenoRigidez);

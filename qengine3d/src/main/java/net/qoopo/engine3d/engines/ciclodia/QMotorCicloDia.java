@@ -110,16 +110,16 @@ public class QMotorCicloDia extends Engine {
                 if (horaDelDia < 12) {
                     // antes del medio dia
                     float v = maximo * (horaDelDia - 6) / 12 + minimo;
-                    render.getEscena().setAmbientColor(new QColor(v, v, v));
+                    render.getScene().setAmbientColor(new QColor(v, v, v));
                 } else {
                     float v = maximo - maximo * (horaDelDia - 12) / 12;
-                    render.getEscena().setAmbientColor(new QColor(v, v, v));
+                    render.getScene().setAmbientColor(new QColor(v, v, v));
                 }
 
                 // System.out.println("luz ambiente=" + render.ambient);
             } else {
                 // si es de noche seteo una iluminacin global minima
-                render.getEscena().setAmbientColor(new QColor(minimo, minimo, minimo));
+                render.getScene().setAmbientColor(new QColor(minimo, minimo, minimo));
                 sol.setEnable(false);
             }
 

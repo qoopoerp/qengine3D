@@ -11,7 +11,7 @@ import javax.swing.DefaultListModel;
 
 import net.qoopo.engine.core.entity.component.animation.AnimationComponent;
 import net.qoopo.engine.core.entity.component.animation.QCompAlmacenAnimaciones;
-import net.qoopo.engine.core.util.QUtilComponentes;
+import net.qoopo.engine.core.util.ComponentUtil;
 
 /**
  *
@@ -192,7 +192,7 @@ public class PnlAlamacenAnimacion extends javax.swing.JPanel {
     private void lstAnimacionValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_lstAnimacionValueChanged
         try {
             if (lstAnimacion.getSelectedIndex() >= 0) {
-                animacionActiva = QUtilComponentes.getAlmacenAnimaciones(almacen.entity).getAnimacion(lstAnimacion.getSelectedValue());
+                animacionActiva = ComponentUtil.getAlmacenAnimaciones(almacen.getEntity()).getAnimacion(lstAnimacion.getSelectedValue());
                 if (animacionActiva != null) {
                     lblAnimDuracion.setText(df.format(animacionActiva.getDuracion()) + " s");
                     lblAnimFrames.setText("" + animacionActiva.getListaFrames().size());
@@ -212,18 +212,18 @@ public class PnlAlamacenAnimacion extends javax.swing.JPanel {
     private void btnAnimActualIniciarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAnimActualIniciarActionPerformed
         
         if (animacionActiva != null) {
-            QUtilComponentes.eliminarComponenteAnimacion(almacen.entity);
-            almacen.entity.addComponent(animacionActiva);
+            ComponentUtil.eliminarComponenteAnimacion(almacen.getEntity());
+            almacen.getEntity().addComponent(animacionActiva);
         }
     }//GEN-LAST:event_btnAnimActualIniciarActionPerformed
 
     private void btnAnimActualDetenerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAnimActualDetenerActionPerformed
-        QUtilComponentes.eliminarComponenteAnimacion(almacen.entity);
+        ComponentUtil.eliminarComponenteAnimacion(almacen.getEntity());
     }//GEN-LAST:event_btnAnimActualDetenerActionPerformed
 
     private void btnEliminarAnimacionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEliminarAnimacionActionPerformed
         if (animacionActiva != null) {
-            QUtilComponentes.getAlmacenAnimaciones(almacen.entity).eliminarAnimacion(lstAnimacion.getSelectedValue());
+            ComponentUtil.getAlmacenAnimaciones(almacen.getEntity()).eliminarAnimacion(lstAnimacion.getSelectedValue());
             
         }
     }//GEN-LAST:event_btnEliminarAnimacionActionPerformed

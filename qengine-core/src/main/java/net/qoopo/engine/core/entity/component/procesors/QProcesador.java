@@ -5,6 +5,9 @@
  */
 package net.qoopo.engine.core.entity.component.procesors;
 
+import lombok.Getter;
+import lombok.Setter;
+import net.qoopo.engine.core.entity.Entity;
 import net.qoopo.engine.core.entity.component.EntityComponent;
 import net.qoopo.engine.core.renderer.RenderEngine;
 import net.qoopo.engine.core.scene.Scene;
@@ -13,7 +16,11 @@ import net.qoopo.engine.core.scene.Scene;
  *
  * @author alberto
  */
-public abstract class QProcesador extends EntityComponent {
+public abstract class QProcesador implements EntityComponent {
+
+    @Getter
+    @Setter
+    private Entity entity;
 
     public abstract void preProceso();
 

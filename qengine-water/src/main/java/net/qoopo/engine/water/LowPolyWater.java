@@ -50,7 +50,7 @@ public class LowPolyWater extends Water {
         // material.setMapaNormal(getTextNormal());
         material.setMapaColor(getOutputTexture());
         mesh = new PlanarMesh(width, height, sections, sections);
-        NormalUtil.calcularNormales(mesh);
+        NormalUtil.computeNormals(mesh);
         MaterialUtil.smooth(mesh, false);
         MaterialUtil.applyMaterial(mesh, material);
         entity.addComponent(mesh);

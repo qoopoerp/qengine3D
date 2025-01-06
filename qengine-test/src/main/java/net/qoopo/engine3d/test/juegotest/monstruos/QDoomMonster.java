@@ -15,7 +15,7 @@ import net.qoopo.engine.core.entity.component.animation.AnimationComponent;
 import net.qoopo.engine.core.entity.component.ia.acciones.QAccion;
 import net.qoopo.engine.core.lwjgl.audio.component.SoundEmissorAL;
 import net.qoopo.engine.core.util.QGlobal;
-import net.qoopo.engine.core.util.QUtilComponentes;
+import net.qoopo.engine.core.util.ComponentUtil;
 import net.qoopo.engine3d.core.util.SerializarUtil;
 
 /**
@@ -50,15 +50,15 @@ public class QDoomMonster {
             monstruo.addComponent(emisorAudio);
 
             // animacion idle
-            monstruo.addComponent(QUtilComponentes.getAlmacenAnimaciones(monstruo).getAnimacion("idle1"));
+            monstruo.addComponent(ComponentUtil.getAlmacenAnimaciones(monstruo).getAnimacion("idle1"));
 
             QAccion accionIdle = new QAccion("Idle") {
                 @Override
                 public void ejecutar(Object... parametros) {
 
                     // configura la animacion de caminar
-                    QUtilComponentes.eliminarComponenteAnimacion(monstruo);
-                    AnimationComponent anim = QUtilComponentes.getAlmacenAnimaciones(monstruo).getAnimacion("idle1");
+                    ComponentUtil.eliminarComponenteAnimacion(monstruo);
+                    AnimationComponent anim = ComponentUtil.getAlmacenAnimaciones(monstruo).getAnimacion("idle1");
                     monstruo.addComponent(anim);
 
                     try {
@@ -80,8 +80,8 @@ public class QDoomMonster {
                 public void ejecutar(Object... parametros) {
 
                     // configura la animacion de caminar
-                    QUtilComponentes.eliminarComponenteAnimacion(monstruo);
-                    AnimationComponent anim = QUtilComponentes.getAlmacenAnimaciones(monstruo).getAnimacion("walk1");
+                    ComponentUtil.eliminarComponenteAnimacion(monstruo);
+                    AnimationComponent anim = ComponentUtil.getAlmacenAnimaciones(monstruo).getAnimacion("walk1");
                     // le quito el loop
                     anim.reiniciar();
                     anim.setLoop(false);
@@ -108,9 +108,9 @@ public class QDoomMonster {
                 @Override
                 public void ejecutar(Object... parametros) {
                     // configura la animacion de caminar
-                    QUtilComponentes.eliminarComponenteAnimacion(monstruo);
+                    ComponentUtil.eliminarComponenteAnimacion(monstruo);
 
-                    AnimationComponent anim = QUtilComponentes.getAlmacenAnimaciones(monstruo).getAnimacion("melee1");
+                    AnimationComponent anim = ComponentUtil.getAlmacenAnimaciones(monstruo).getAnimacion("melee1");
                     // le quito el loop
                     anim.reiniciar();
                     anim.setLoop(false);
@@ -189,15 +189,15 @@ public class QDoomMonster {
             monstruo.addComponent(emisorAudio);
 
             // animacion idle
-            monstruo.addComponent(QUtilComponentes.getAlmacenAnimaciones(monstruo).getAnimacion("idle02"));
+            monstruo.addComponent(ComponentUtil.getAlmacenAnimaciones(monstruo).getAnimacion("idle02"));
 
             QAccion accionIdle = new QAccion("caminar") {
                 @Override
                 public void ejecutar(Object... parametros) {
 
                     // configura la animacion de caminar
-                    QUtilComponentes.eliminarComponenteAnimacion(monstruo);
-                    AnimationComponent anim = QUtilComponentes.getAlmacenAnimaciones(monstruo).getAnimacion("idle02");
+                    ComponentUtil.eliminarComponenteAnimacion(monstruo);
+                    AnimationComponent anim = ComponentUtil.getAlmacenAnimaciones(monstruo).getAnimacion("idle02");
                     monstruo.addComponent(anim);
 
                     try {
@@ -213,9 +213,9 @@ public class QDoomMonster {
                 @Override
                 public void ejecutar(Object... parametros) {
                     // configura la animacion de caminar
-                    QUtilComponentes.eliminarComponenteAnimacion(monstruo);
+                    ComponentUtil.eliminarComponenteAnimacion(monstruo);
 
-                    AnimationComponent anim = QUtilComponentes.getAlmacenAnimaciones(monstruo).getAnimacion("attack02");
+                    AnimationComponent anim = ComponentUtil.getAlmacenAnimaciones(monstruo).getAnimacion("attack02");
                     // le quito el loop
                     anim.reiniciar();
                     anim.setLoop(false);

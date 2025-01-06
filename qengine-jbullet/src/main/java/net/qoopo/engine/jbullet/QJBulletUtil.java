@@ -87,7 +87,8 @@ public class QJBulletUtil {
             CollisionShape colShape = QJBulletUtil.getFormaColision(rigido.formaColision);
             if (colShape == null) {
                 System.out
-                        .println("ERROR AL AGREGAR OBJETO RIGIDO, NO HAY FORMA DE COLISION " + rigido.entity.getName());
+                        .println("ERROR AL AGREGAR OBJETO RIGIDO, NO HAY FORMA DE COLISION "
+                                + rigido.getEntity().getName());
                 return null;
             }
             // formasColision.add(colShape);
@@ -108,7 +109,7 @@ public class QJBulletUtil {
             // using motionstate is recommended, it provides
             // interpolation capabilities, and only synchronizes
             // 'active' objects
-            DefaultMotionState myMotionState = new DefaultMotionState(getTransformacion(rigido.entity));
+            DefaultMotionState myMotionState = new DefaultMotionState(getTransformacion(rigido.getEntity()));
 
             RigidBodyConstructionInfo rbInfo = new RigidBodyConstructionInfo(mass, myMotionState, colShape,
                     localInertia);
@@ -127,7 +128,7 @@ public class QJBulletUtil {
             // body.applyCentralForce(QVectMathUtil.convertirVector3f(rigido.fuerzaTotal));
             body.applyCentralImpulse(QVectMathUtil.convertirVector3f(rigido.fuerzaTotal));
 
-            body.setUserPointer(rigido.entity);
+            body.setUserPointer(rigido.getEntity());
             return body;
         } catch (Exception e) {
             e.printStackTrace();
@@ -205,7 +206,7 @@ public class QJBulletUtil {
         // Escalo la forma de colisión de acuerdo a la escala de la entity
         try {
             colShape.setLocalScaling(
-                    QVectMathUtil.convertirVector3f(formaColision.entity.getTransformacion().getEscala()));
+                    QVectMathUtil.convertirVector3f(formaColision.getEntity().getTransformacion().getEscala()));
         } catch (Exception e) {
         }
         return colShape;
@@ -227,10 +228,11 @@ public class QJBulletUtil {
                     c++;
                 }
             }
-            // HeightfieldTerrainShape tt = new HeightfieldTerrainShape(terreno.getWidthTiles(), terreno.getHeightTiles(),
-            //         data, 1.0f, terreno.getMinY(), terreno.getMaxY(), 1, false);
+            // HeightfieldTerrainShape tt = new
+            // HeightfieldTerrainShape(terreno.getWidthTiles(), terreno.getHeightTiles(),
+            // data, 1.0f, terreno.getMinY(), terreno.getMaxY(), 1, false);
             HeightfieldTerrainShape tt = new HeightfieldTerrainShape(terreno.getWidthTiles(), terreno.getHeightTiles(),
-                    data, 1.0f,minHeight, maxHeight, 1, false);
+                    data, 1.0f, minHeight, maxHeight, 1, false);
             return tt;
         } catch (Exception e) {
             e.printStackTrace();
@@ -240,8 +242,8 @@ public class QJBulletUtil {
 
     public static ConvexHullShape getFormaColisionMallaConvexa(Mesh malla) {
         try {
-            ObjectArrayList<Vector3f> lst = new ObjectArrayList(malla.vertices.length);
-            for (Vertex vert : malla.vertices) {
+            ObjectArrayList<Vector3f> lst = new ObjectArrayList(malla.vertexList.length);
+            for (Vertex vert : malla.vertexList) {
                 lst.add(new Vector3f(vert.location.x, vert.location.y, vert.location.z));
             }
             return new ConvexHullShape(lst);
@@ -278,29 +280,30 @@ public class QJBulletUtil {
     public static synchronized IndexedMesh getIndexedMesh(Mesh mesh) {
         try {
             IndexedMesh jBulletIndexedMesh = new IndexedMesh();
-            jBulletIndexedMesh.triangleIndexBase = ByteBuffer.allocate(mesh.primitivas.length * 3 * 4);// 3 verts * 4
-                                                                                                       // bytes per.
-            jBulletIndexedMesh.vertexBase = ByteBuffer.allocate(mesh.vertices.length * 3 * 4);// 3 coords * 4 bytes per.
+            jBulletIndexedMesh.triangleIndexBase = ByteBuffer.allocate(mesh.primitiveList.length * 3 * 4);// 3 verts * 4
+                                                                                                          // bytes per.
+            jBulletIndexedMesh.vertexBase = ByteBuffer.allocate(mesh.vertexList.length * 3 * 4);// 3 coords * 4 bytes
+                                                                                                // per.
 
             // IndexBuffer indices = mesh.getIndicesAsList();
             // FloatBuffer vertices = mesh.getFloatBuffer(Type.Position);
             // vertices.rewind();
-            int verticesLength = mesh.vertices.length;
-            jBulletIndexedMesh.numVertices = mesh.vertices.length;
+            int verticesLength = mesh.vertexList.length;
+            jBulletIndexedMesh.numVertices = mesh.vertexList.length;
             jBulletIndexedMesh.vertexStride = 12; // 3 verts * 4 bytes per.
             for (int i = 0; i < verticesLength; i++) {
-                jBulletIndexedMesh.vertexBase.putFloat(mesh.vertices[i].location.x);
-                jBulletIndexedMesh.vertexBase.putFloat(mesh.vertices[i].location.y);
-                jBulletIndexedMesh.vertexBase.putFloat(mesh.vertices[i].location.z);
+                jBulletIndexedMesh.vertexBase.putFloat(mesh.vertexList[i].location.x);
+                jBulletIndexedMesh.vertexBase.putFloat(mesh.vertexList[i].location.y);
+                jBulletIndexedMesh.vertexBase.putFloat(mesh.vertexList[i].location.z);
             }
 
-            int indicesLength = mesh.primitivas.length;
+            int indicesLength = mesh.primitiveList.length;
             jBulletIndexedMesh.numTriangles = indicesLength;
             jBulletIndexedMesh.triangleIndexStride = 12; // 3 index entries * 4 bytes each.
             for (int i = 0; i < indicesLength; i++) {
-                jBulletIndexedMesh.triangleIndexBase.putInt(mesh.primitivas[i].listaVertices[0]);
-                jBulletIndexedMesh.triangleIndexBase.putInt(mesh.primitivas[i].listaVertices[1]);
-                jBulletIndexedMesh.triangleIndexBase.putInt(mesh.primitivas[i].listaVertices[2]);
+                jBulletIndexedMesh.triangleIndexBase.putInt(mesh.primitiveList[i].vertexIndexList[0]);
+                jBulletIndexedMesh.triangleIndexBase.putInt(mesh.primitiveList[i].vertexIndexList[1]);
+                jBulletIndexedMesh.triangleIndexBase.putInt(mesh.primitiveList[i].vertexIndexList[2]);
             }
 
             return jBulletIndexedMesh;

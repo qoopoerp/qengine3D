@@ -86,8 +86,8 @@ public class Prism extends Shape {
     }
 
     private boolean validaVertice(String nombre, int vertice) {
-        if (this.vertices.length < vertice) {
-            System.out.println(nombre + " fuera de rango " + vertice + " limite " + this.vertices.length);
+        if (this.vertexList.length < vertice) {
+            System.out.println(nombre + " fuera de rango " + vertice + " limite " + this.vertexList.length);
             return false;
         }
         return true;
@@ -114,16 +114,17 @@ public class Prism extends Shape {
         // cara superior - vertices
         for (int i = 0; i <= secciones; i++) {
 
-            this.addVertex(vector.x, vector.y, vector.z, vUV.x, vUV.y);
+            this.addVertex(vector.x, vector.y, vector.z);
+            this.addUV(vUV.x, vUV.y);
             vector.rotateY((float) Math.toRadians(angulo));
             vUV.rotateZ((float) Math.toRadians(angulo));
             indiceOffsetAux++;
 
         }
         // cara superior - triangulos
-        for (int i = 1; i < this.vertices.length - 1; i++) {
+        for (int i = 1; i < this.vertexList.length - 1; i++) {
             try {
-                this.addPoly(0, i, i + 1);
+                this.addPoly(new int[] { 0, i, i + 1 }, new int[] {}, new int[] { 0, i, i + 1 });
             } catch (Exception ex) {
                 Logger.getLogger(Prism.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -139,8 +140,8 @@ public class Prism extends Shape {
         for (int nivel = 0; nivel <= seccionesVerticales; nivel++) {
             vector.set(0, alto - alto / seccionesVerticales * nivel, radioSuperior);
             for (int i = 0; i <= secciones; i++) {
-                this.addVertex(vector.x, vector.y, vector.z,
-                        1.0f / secciones * i, 1.0f - 1.0f / seccionesVerticales * nivel);
+                this.addVertex(vector.x, vector.y, vector.z);
+                this.addUV(1.0f / secciones * i, 1.0f - 1.0f / seccionesVerticales * nivel);
                 vector.rotateY((float) Math.toRadians(angulo));
                 indiceOffsetAux++;
             }
@@ -163,7 +164,9 @@ public class Prism extends Shape {
                     validaVertice(" k2 + indiceOffset", k2 + indiceOffset);
                     validaVertice(" k1 + 1 + indiceOffset", k1 + 1 + indiceOffset);
 
-                    addPoly(k1 + indiceOffset, k2 + indiceOffset, k1 + 1 + indiceOffset).setSmooth(true);
+                    addPoly(new int[] { k1 + indiceOffset, k2 + indiceOffset, k1 + 1 + indiceOffset },
+                            new int[] {},
+                            new int[] { k1 + indiceOffset, k2 + indiceOffset, k1 + 1 + indiceOffset }).setSmooth(true);
                     // addPoly(k1 + 1 + indiceOffset, k2 + indiceOffset, k1 +
                     // indiceOffset).smooth = true;
 
@@ -171,7 +174,10 @@ public class Prism extends Shape {
                     validaVertice(" k2 + indiceOffset", k2 + indiceOffset);
                     validaVertice(" k2 + 1 + indiceOffset", k2 + 1 + indiceOffset);
 
-                    addPoly(k1 + 1 + indiceOffset, k2 + indiceOffset, k2 + 1 + indiceOffset).setSmooth(true);
+                    addPoly(new int[] { k1 + 1 + indiceOffset, k2 + indiceOffset, k2 + 1 + indiceOffset },
+                            new int[] {},
+                            new int[] { k1 + 1 + indiceOffset, k2 + indiceOffset, k2 + 1 + indiceOffset })
+                            .setSmooth(true);
                     // addPoly(k2 + 1 + indiceOffset, k2 + indiceOffset, k1 + 1 +
                     // indiceOffset).smooth = true;
                 } catch (Exception ex) {
@@ -185,17 +191,19 @@ public class Prism extends Shape {
         vector.set(0, 0, radioSuperior);
         vUV.set(0.5f, 0.f, 0);
         for (int i = 0; i <= secciones; i++) {
-
-            this.addVertex(vector.x, vector.y, vector.z, vUV.x, vUV.y);
+            this.addVertex(vector.x, vector.y, vector.z);
+            this.addUV(vUV.x, vUV.y);
             vector.rotateY((float) Math.toRadians(angulo));
             vUV.rotateZ((float) Math.toRadians(angulo));
             indiceOffsetAux++;
 
         }
         // cara inferior - triangulos
-        for (int i = indiceOffset + 1; i < this.vertices.length - 1; i++) {
+        for (int i = indiceOffset + 1; i < this.vertexList.length - 1; i++) {
             try {
-                this.addPoly(i + 1, i, indiceOffset);
+                this.addPoly(new int[] { i + 1, i, indiceOffset },
+                        new int[] {},
+                        new int[] { i + 1, i, indiceOffset });
             } catch (Exception ex) {
                 Logger.getLogger(Prism.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -203,11 +211,11 @@ public class Prism extends Shape {
         indiceOffset = indiceOffsetAux;
 
         // ajustamos la altura
-        for (Vertex v : this.vertices) {
+        for (Vertex v : this.vertexList) {
             v.location.y -= ajusteAltura;
         }
 
-        calculateNormals();
+        computeNormals();
         applyMaterial(material);
     }
 

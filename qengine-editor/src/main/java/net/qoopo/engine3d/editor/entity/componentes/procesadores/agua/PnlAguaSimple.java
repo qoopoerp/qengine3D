@@ -10,13 +10,13 @@ import java.util.List;
 
 import net.qoopo.engine.core.entity.component.EntityComponent;
 import net.qoopo.engine.core.entity.component.mesh.Mesh;
-import net.qoopo.engine.core.entity.component.mesh.primitive.QPrimitiva;
+import net.qoopo.engine.core.entity.component.mesh.primitive.Primitive;
 import net.qoopo.engine.core.entity.component.water.WaterDuDv;
 import net.qoopo.engine.core.material.basico.QMaterialBas;
 import net.qoopo.engine.core.math.QColor;
 import net.qoopo.engine.core.texture.procesador.QProcesadorSimple;
 import net.qoopo.engine.core.texture.util.MaterialUtil;
-import net.qoopo.engine.core.util.QUtilComponentes;
+import net.qoopo.engine.core.util.ComponentUtil;
 
 /**
  *
@@ -153,7 +153,7 @@ public class PnlAguaSimple extends javax.swing.JPanel {
         List<QMaterialBas> lst = new ArrayList<>();
         // ahora recorro todos los materiales del objeto y le agrego la textura de
         // reflexion
-        for (EntityComponent componente : agua.entity.getComponents()) {
+        for (EntityComponent componente : agua.getEntity().getComponents()) {
             if (componente instanceof Mesh) {
                 MaterialUtil.applyMaterial((Mesh) componente, material);
             }
@@ -162,14 +162,14 @@ public class PnlAguaSimple extends javax.swing.JPanel {
     }// GEN-LAST:event_btnAgregaAguaActionPerformed
 
     private void btnQuitarAguaActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btnQuitarAguaActionPerformed
-        QUtilComponentes.eliminarComponenteAguaSimple(agua.entity);
+        ComponentUtil.eliminarComponenteAguaSimple(agua.getEntity());
 
         List<QMaterialBas> lst = new ArrayList<>();
         // ahora recorro todos los materiales del objeto y le quito la textura de
         // reflexion
-        for (EntityComponent componente : agua.entity.getComponents()) {
+        for (EntityComponent componente : agua.getEntity().getComponents()) {
             if (componente instanceof Mesh) {
-                for (QPrimitiva poligono : ((Mesh) componente).primitivas) {
+                for (Primitive poligono : ((Mesh) componente).primitiveList) {
                     if (poligono.material instanceof QMaterialBas) {
                         if (!lst.contains((QMaterialBas) poligono.material)) {
                             lst.add((QMaterialBas) poligono.material);

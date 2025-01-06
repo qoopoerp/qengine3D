@@ -5,13 +5,20 @@
  */
 package net.qoopo.engine.core.entity.component.gui;
 
+import lombok.Getter;
+import lombok.Setter;
+import net.qoopo.engine.core.entity.Entity;
 import net.qoopo.engine.core.entity.component.EntityComponent;
 
 /**
  *
  * @author alberto
  */
-public abstract class QMouseReceptor extends EntityComponent {
+public abstract class QMouseReceptor implements EntityComponent {
+
+    @Getter
+    @Setter
+    private Entity entity;
 
     public abstract void mouseEntered(java.awt.event.MouseEvent evt);
 

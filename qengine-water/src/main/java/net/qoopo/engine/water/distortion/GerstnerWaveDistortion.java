@@ -31,10 +31,10 @@ public class GerstnerWaveDistortion implements WaveDistortion {
         float k = (float) (2 * Math.PI / wavelength); // Número de onda
         float omega = speed * k; // Frecuencia angular
 
-        float deltaTime = EngineTime.delta / 1000f;
+        float deltaTime = EngineTime.deltaNano / 1000f;
 
         // actualizo los vértices
-        for (Vertex vertex : mesh.vertices) {
+        for (Vertex vertex : mesh.vertexList) {
             QVector4 original = vertex.location;
 
             // chat gtp
@@ -65,7 +65,7 @@ public class GerstnerWaveDistortion implements WaveDistortion {
             // vertex.location.z=original.z+Q*amplitude*0.5f*(float)Math.sin(wave);
 
         }
-        NormalUtil.calcularNormales(mesh);
+        NormalUtil.computeNormals(mesh);
     }
 
 }

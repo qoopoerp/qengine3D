@@ -9,12 +9,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.qoopo.engine.core.entity.component.EntityComponent;
-import net.qoopo.engine.core.entity.component.cubemap.QCubeMap;
+import net.qoopo.engine.core.entity.component.cubemap.CubeMap;
 import net.qoopo.engine.core.entity.component.mesh.Mesh;
-import net.qoopo.engine.core.entity.component.mesh.primitive.QPrimitiva;
+import net.qoopo.engine.core.entity.component.mesh.primitive.Primitive;
 import net.qoopo.engine.core.material.basico.QMaterialBas;
 import net.qoopo.engine.core.util.QGlobal;
-import net.qoopo.engine.core.util.QUtilComponentes;
+import net.qoopo.engine.core.util.ComponentUtil;
 
 /**
  *
@@ -22,14 +22,14 @@ import net.qoopo.engine.core.util.QUtilComponentes;
  */
 public class PnlMapaCubo extends javax.swing.JPanel {
 
-    private QCubeMap mapa;
+    private CubeMap mapa;
 
     /**
      * Creates new form PnlMapaCubo
      *
      * @param mapa
      */
-    public PnlMapaCubo(QCubeMap mapa) {
+    public PnlMapaCubo(CubeMap mapa) {
         initComponents();
         txtFactorReflexion.setText(String.valueOf(mapa.getFactorReflexion()));
         txtFactorRefraccion.setText(String.valueOf(mapa.getIndiceRefraccion()));
@@ -214,20 +214,20 @@ public class PnlMapaCubo extends javax.swing.JPanel {
         mapa.build(ancho);
         mapa.setGenerarIrradiacion(chkIrradiacion.isSelected());
         if (optMapaCubo.isSelected()) {
-            mapa.aplicar(QCubeMap.FORMATO_MAPA_CUBO, factor, indice);
+            mapa.aplicar(CubeMap.FORMATO_MAPA_CUBO, factor, indice);
         } else if (optHDRI.isSelected()) {
-            mapa.aplicar(QCubeMap.FORMATO_MAPA_HDRI, factor, indice);
+            mapa.aplicar(CubeMap.FORMATO_MAPA_HDRI, factor, indice);
         }
     }// GEN-LAST:event_btnAplicarActionPerformed
 
     private void btnQuitarActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btnQuitarActionPerformed
-        QUtilComponentes.eliminarComponenteMapaCubo(mapa.entity);
+        ComponentUtil.eliminarComponenteMapaCubo(mapa.getEntity());
         List<QMaterialBas> lst = new ArrayList<>();
         // ahora recorro todos los materiales del objeto y le quito la textura de
         // reflexion
-        for (EntityComponent componente : mapa.entity.getComponents()) {
+        for (EntityComponent componente : mapa.getEntity().getComponents()) {
             if (componente instanceof Mesh) {
-                for (QPrimitiva poligono : ((Mesh) componente).primitivas) {
+                for (Primitive poligono : ((Mesh) componente).primitiveList) {
                     if (poligono.material instanceof QMaterialBas) {
                         if (!lst.contains((QMaterialBas) poligono.material)) {
                             lst.add((QMaterialBas) poligono.material);

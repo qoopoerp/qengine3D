@@ -1,5 +1,7 @@
 package net.qoopo.engine.core.engine;
 
+import java.time.Duration;
+
 /**
  *
  * @author Alberto
@@ -7,7 +9,9 @@ package net.qoopo.engine.core.engine;
 public class EngineTime {
 
     public static int FPS;
-    public static long delta;
+    public static long deltaNano;
+    public static long deltaMS;
+    public static long deltaS;
 
     private static long frameStartTime = System.nanoTime();
     private static long frameLastTime = System.nanoTime();
@@ -22,7 +26,10 @@ public class EngineTime {
         } else {
             framesCount++;
         }
-        delta = currentFrameTime - frameLastTime;
+        deltaNano = currentFrameTime - frameLastTime;
+        Duration duration = Duration.ofNanos(deltaNano);
+        deltaMS = duration.toMillis(); // deltaNano / 10000;
+        deltaS = duration.toSeconds();// deltaNano / 1000000;
         frameLastTime = currentFrameTime;
     }
 

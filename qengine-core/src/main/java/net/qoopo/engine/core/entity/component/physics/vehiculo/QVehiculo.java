@@ -8,6 +8,9 @@ package net.qoopo.engine.core.entity.component.physics.vehiculo;
 import java.util.ArrayList;
 import java.util.List;
 
+import lombok.Getter;
+import lombok.Setter;
+import net.qoopo.engine.core.entity.Entity;
 import net.qoopo.engine.core.entity.component.EntityComponent;
 import net.qoopo.engine.core.entity.component.physics.dinamica.QObjetoRigido;
 
@@ -16,7 +19,11 @@ import net.qoopo.engine.core.entity.component.physics.dinamica.QObjetoRigido;
  *
  * @author alberto
  */
-public class QVehiculo extends EntityComponent {
+public class QVehiculo implements EntityComponent {
+
+    @Getter
+    @Setter
+    private Entity entity;
 
     private QObjetoRigido chasis;
     private List<QRueda> ruedas = null;

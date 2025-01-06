@@ -9,6 +9,7 @@ import lombok.Getter;
 import lombok.Setter;
 import net.qoopo.engine.core.assets.AssetManager;
 import net.qoopo.engine.core.engine.EngineTime;
+import net.qoopo.engine.core.entity.Entity;
 import net.qoopo.engine.core.entity.component.EntityComponent;
 import net.qoopo.engine.core.entity.component.UpdatableComponent;
 import net.qoopo.engine.core.entity.component.mesh.primitive.Shape;
@@ -32,7 +33,11 @@ import net.qoopo.engine.core.texture.QTextura;
  */
 @Getter
 @Setter
-public abstract class Water extends EntityComponent implements UpdatableComponent {
+public abstract class Water implements EntityComponent, UpdatableComponent {
+
+    @Getter
+    @Setter
+    protected Entity entity;
 
     protected final static float VELOCIDAD_AGUA = 0.05f;
 
@@ -128,7 +133,7 @@ public abstract class Water extends EntityComponent implements UpdatableComponen
             render.resize();
         }
 
-        render.setEscena(scene);
+        render.setScene(scene);
         render.setNombre(entity.getName());
         render.getCamara().setName(entity.getName());
         try {
@@ -212,9 +217,9 @@ public abstract class Water extends EntityComponent implements UpdatableComponen
 
         // DELTA para cada eje
         // factorX = deltaTime * VELOCIDAD_AGUA;
-        factorX = EngineTime.delta * velocity.x;
-        factorY = EngineTime.delta * velocity.y;
-        factorZ = EngineTime.delta * velocity.z;
+        factorX = EngineTime.deltaNano * velocity.x;
+        factorY = EngineTime.deltaNano * velocity.y;
+        factorZ = EngineTime.deltaNano * velocity.z;
 
         factorX %= 1;
         factorY %= 1;

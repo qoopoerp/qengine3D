@@ -58,7 +58,7 @@ public class HeightMapTerrain extends Terrain {
     public HeightMapTerrain(File heigthMap, float tileSize, float minY, float maxY,
             int offset, QMaterialBas material, boolean smooth) {
         try {
-            imagen = ImgReader.leerImagen(heigthMap);
+            imagen = ImgReader.read(heigthMap);
         } catch (IOException ex) {
             ex.printStackTrace();
         }
@@ -102,7 +102,7 @@ public class HeightMapTerrain extends Terrain {
             mesh = new PlanarMesh(width, height, widthTiles, heightTiles, heightsGenerator);
             //actualizo las alturas 
 
-            NormalUtil.calcularNormales(mesh);
+            NormalUtil.computeNormals(mesh);
             MaterialUtil.smooth(mesh, smooth);
             MaterialUtil.applyMaterial(mesh, material);
 

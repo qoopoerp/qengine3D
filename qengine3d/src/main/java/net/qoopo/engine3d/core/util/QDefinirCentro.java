@@ -41,7 +41,7 @@ public class QDefinirCentro {
         List<Vertex> vertices = new ArrayList<>();
         for (EntityComponent com : entity.getComponents()) {
             if (com instanceof Mesh) {
-                for (Vertex ver : ((Mesh) com).vertices) {
+                for (Vertex ver : ((Mesh) com).vertexList) {
                     vertices.add(ver);
                 }
             }

@@ -43,7 +43,7 @@ public class PnlFisRestriccion6DOF extends javax.swing.JPanel {
         }
         cboFisico.setModel(modelo);
         if (componente.getB() != null) {
-            cboFisico.setSelectedItem(componente.getB().entity.getName());
+            cboFisico.setSelectedItem(componente.getB().getEntity().getName());
         }
         chkUsarReferenciaLinear.setSelected(componente.isUsarReferenciaLinearA());
         aplicarCambios();

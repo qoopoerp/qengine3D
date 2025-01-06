@@ -5,6 +5,9 @@
  */
 package net.qoopo.engine.renderer.shader.fragment;
 
+import lombok.Getter;
+import lombok.Setter;
+import net.qoopo.engine.core.entity.Entity;
 import net.qoopo.engine.core.entity.component.EntityComponent;
 
 /**
@@ -13,7 +16,11 @@ import net.qoopo.engine.core.entity.component.EntityComponent;
  *
  * @author alberto
  */
-public class FragmentShaderComponent extends EntityComponent {
+public class FragmentShaderComponent implements EntityComponent {
+
+    @Getter
+    @Setter
+    private Entity entity;
 
     private FragmentShader shader;
 

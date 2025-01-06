@@ -67,7 +67,7 @@ public class SimpleTerrain extends Terrain {
 
             heights = new float[widthTiles][heightTiles];
             mesh = new PlanarMesh(width, height, widthTiles, heightTiles);
-            NormalUtil.calcularNormales(mesh);
+            NormalUtil.computeNormals(mesh);
             MaterialUtil.smooth(mesh, smooth);
             MaterialUtil.applyMaterial(mesh, material);
 

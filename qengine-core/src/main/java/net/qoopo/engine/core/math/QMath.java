@@ -97,6 +97,24 @@ final public class QMath {
         return number;
     }
 
+    // /**
+    // * Linearly interpolates between two translations based on a "progression"
+    // * value.
+    // *
+    // * @param start - the start translation.
+    // * @param end - the end translation.
+    // * @param progression - a value between 0 and 1 indicating how far to
+    // * interpolate between the two translations.
+    // * @return
+    // */
+    // public static QVector3 interpolate(QVector3 start, QVector3 end, float
+    // progression) {
+    // float x = start.x + (end.x - start.x) * progression;
+    // float y = start.y + (end.y - start.y) * progression;
+    // float z = start.z + (end.z - start.z) * progression;
+    // return QVector3.of(x, y, z);
+    // }
+
     /**
      * Linear interpolation from startValue to endValue by the given percent.
      * Basically: ((1 - percent) * startValue) + (percent * endValue)
@@ -107,17 +125,18 @@ final public class QMath {
      * @param endValue   ending value. 100% of f
      * @return The interpolated value between startValue and endValue.
      */
-    // public static float interpolateLinear(float scale, float startValue, float endValue) {
-    //     if (startValue == endValue) {
-    //         return startValue;
-    //     }
-    //     if (scale <= 0f) {
-    //         return startValue;
-    //     }
-    //     if (scale >= 1f) {
-    //         return endValue;
-    //     }
-    //     return ((1f - scale) * startValue) + (scale * endValue);
+    // public static float interpolateLinear(float scale, float startValue, float
+    // endValue) {
+    // if (startValue == endValue) {
+    // return startValue;
+    // }
+    // if (scale <= 0f) {
+    // return startValue;
+    // }
+    // if (scale >= 1f) {
+    // return endValue;
+    // }
+    // return ((1f - scale) * startValue) + (scale * endValue);
     // }
 
     public static float interpolateLinear(float alpha, float start, float end) {
@@ -135,11 +154,12 @@ final public class QMath {
         newVertex.location.x = interpolateLinear(alpha, start.location.x, end.location.x);
         newVertex.location.y = interpolateLinear(alpha, start.location.y, end.location.y);
         newVertex.location.z = interpolateLinear(alpha, start.location.z, end.location.z);
-        newVertex.u = interpolateLinear(alpha, start.u, end.u);
-        newVertex.v = interpolateLinear(alpha, start.v, end.v);
-        newVertex.normal.x = interpolateLinear(alpha, start.normal.x, end.normal.x);
-        newVertex.normal.y = interpolateLinear(alpha, start.normal.y, end.normal.y);
-        newVertex.normal.z = interpolateLinear(alpha, start.normal.z, end.normal.z);
+
+        // newVertex.u = interpolateLinear(alpha, start.u, end.u);
+        // newVertex.v = interpolateLinear(alpha, start.v, end.v);
+        // newVertex.normal.x = interpolateLinear(alpha, start.normal.x, end.normal.x);
+        // newVertex.normal.y = interpolateLinear(alpha, start.normal.y, end.normal.y);
+        // newVertex.normal.z = interpolateLinear(alpha, start.normal.z, end.normal.z);
     }
 
     public static void interpolateLinear(QVector2 newVector, float alpha, QVector2 start, QVector2 end) {
@@ -160,7 +180,8 @@ final public class QMath {
         newVector.w = interpolateLinear(alpha, start.w, end.w);
     }
 
-    // public static void interpolateLinear(QPoligono.UVCoordinate newUV, float alpha,
+    // public static void interpolateLinear(QPoligono.UVCoordinate newUV, float
+    // alpha,
     // QPoligono.UVCoordinate start, QPoligono.UVCoordinate end) {
     // newUV.u = interpolateLinear(alpha, start.u, end.u);
     // newUV.v = interpolateLinear(alpha, start.v, end.v);
@@ -172,7 +193,8 @@ final public class QMath {
                         / (endProgress - startProgress);
     }
 
-    public static float interpolateLinear(float startProgress, float endProgress, float progress, float start, float end) {
+    public static float interpolateLinear(float startProgress, float endProgress, float progress, float start,
+            float end) {
         return startProgress == endProgress
                 ? start
                 : start + (end - start) * (progress - startProgress)
@@ -788,23 +810,6 @@ final public class QMath {
                 Math.min(a.x, b.x),
                 Math.min(a.y, b.y),
                 Math.min(a.z, b.z));
-    }
-
-    /**
-     * Linearly interpolates between two translations based on a "progression"
-     * value.
-     *
-     * @param start       - the start translation.
-     * @param end         - the end translation.
-     * @param progression - a value between 0 and 1 indicating how far to
-     *                    interpolate between the two translations.
-     * @return
-     */
-    public static QVector3 interpolate(QVector3 start, QVector3 end, float progression) {
-        float x = start.x + (end.x - start.x) * progression;
-        float y = start.y + (end.y - start.y) * progression;
-        float z = start.z + (end.z - start.z) * progression;
-        return QVector3.of(x, y, z);
     }
 
     public static float byteToFloat(byte number) {

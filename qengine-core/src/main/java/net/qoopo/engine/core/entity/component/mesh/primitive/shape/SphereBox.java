@@ -5,13 +5,11 @@
  */
 package net.qoopo.engine.core.entity.component.mesh.primitive.shape;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import lombok.Getter;
 import lombok.Setter;
+import net.qoopo.engine.core.entity.component.modifier.generate.InflateModifier;
+import net.qoopo.engine.core.entity.component.modifier.generate.SubdivisionModifier;
 import net.qoopo.engine.core.material.basico.QMaterialBas;
-import net.qoopo.engine.core.util.mesh.NormalUtil;
 
 /**
  * Crea una esfera a partir de un cubo
@@ -48,20 +46,16 @@ public class SphereBox extends Box {
 
     @Override
     public void build() {
-        try {
-            setAlto(radio);
-            setAncho(radio);
-            setLargo(radio);
-            super.build();
-            NormalUtil.calcularNormales(this);
-            dividir(divisiones);
-            inflate(radio);
-            // el objeto es suavizado
-            smooth();
-            applyMaterial(material);
-        } catch (Exception ex) {
-            Logger.getLogger(SphereBox.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        setAlto(radio);
+        setAncho(radio);
+        setLargo(radio);
+        super.build();
+        computeNormals();
+        new SubdivisionModifier(SubdivisionModifier.TYPE_SIMPLE, divisiones).apply(this);
+        new InflateModifier(radio).apply(this);
+        computeNormals();
+        smooth();
+        applyMaterial(material);
     }
 
 }

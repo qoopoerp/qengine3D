@@ -2,12 +2,19 @@ package net.qoopo.engine.core.entity.component.ligth;
 
 import java.awt.Color;
 
+import lombok.Getter;
+import lombok.Setter;
+import net.qoopo.engine.core.entity.Entity;
 import net.qoopo.engine.core.entity.component.EntityComponent;
 import net.qoopo.engine.core.math.QColor;
 import net.qoopo.engine.core.math.QVector3;
 import net.qoopo.engine.core.shadow.QProcesadorSombra;
 
-public abstract class QLigth extends EntityComponent {
+public abstract class QLigth implements EntityComponent {
+
+    @Getter
+    @Setter
+    protected Entity entity;
 
     public final QVector3 coeficientesAtenuacion = QVector3.of(1, 0.045f, 0.0075f); // PARA UNA DISTANCIA DE 100
 

@@ -52,7 +52,7 @@ public class PnlEsqueleto extends javax.swing.JPanel {
 //            }
 //        }
         
-        DefaultMutableTreeNode nodoRaiz = new DefaultMutableTreeNode(esqueleto.entity.getName());
+        DefaultMutableTreeNode nodoRaiz = new DefaultMutableTreeNode(esqueleto.getEntity().getName());
 //        DefaultMutableTreeNode nodoRaiz = new DefaultMutableTreeNode("Esqueleto");
         
         for (Bone hueso : esqueleto.getHuesos()) {

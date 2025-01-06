@@ -434,7 +434,7 @@ public class AssimpModelLoader implements ModelLoader {
             for (EntityComponent componente : entity.getComponents()) {
                 if (componente instanceof Mesh) {
                     Mesh malla = (Mesh) componente;
-                    for (Vertex vertice : malla.vertices) {
+                    for (Vertex vertice : malla.vertexList) {
                         Bone[] listaHuesos = new Bone[vertice.getListaHuesosIds().length];
                         for (int j = 0; j < vertice.getListaHuesosIds().length; j++) {
                             listaHuesos[j] = esqueleto.getBone(vertice.getListaHuesosIds()[j]);
@@ -675,8 +675,8 @@ public class AssimpModelLoader implements ModelLoader {
             }
 
             // codigo para el formato QEngine
-            malla.vertices[i].setListaHuesosIds(huesosIds);
-            malla.vertices[i].setListaHuesosPesos(pesos);
+            malla.vertexList[i].setListaHuesosIds(huesosIds);
+            malla.vertexList[i].setListaHuesosPesos(pesos);
         }
     }
 
@@ -703,7 +703,7 @@ public class AssimpModelLoader implements ModelLoader {
         procesarVertices(aiMesh, malla);
         procesarPoligonos(aiMesh, malla, material);
         procesarBones(aiMesh, malla, boneList);
-        NormalUtil.calcularNormales(malla);
+        NormalUtil.computeNormals(malla);
         return malla;
     }
 
@@ -809,7 +809,8 @@ public class AssimpModelLoader implements ModelLoader {
             aiVertex = aiVertices.get();
             if (textCoords != null && textCoords.hasRemaining()) {
                 textCoord = textCoords.get();
-                malla.addVertex(aiVertex.x(), aiVertex.y(), aiVertex.z(), textCoord.x(), textCoord.y());
+                malla.addVertex(aiVertex.x(), aiVertex.y(), aiVertex.z());
+                malla.addUV(textCoord.x(), textCoord.y());
             } else {
                 malla.addVertex(aiVertex.x(), aiVertex.y(), aiVertex.z());
             }
@@ -825,7 +826,7 @@ public class AssimpModelLoader implements ModelLoader {
                 IntBuffer buffer = aiFace.mIndices();
                 int[] tmp = new int[aiFace.mNumIndices()];
                 buffer.get(tmp);
-                malla.addPoly(material, tmp).setSmooth(true);
+                malla.addPoly(material, tmp, tmp, tmp).setSmooth(true);
             } catch (Exception ex) {
                 Logger.getLogger(AssimpModelLoader.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -936,23 +937,23 @@ public class AssimpModelLoader implements ModelLoader {
         // material.setColorEspecular(specular);
 
         if (texturaColor != null) {
-            material.setMapaColor(new QProcesadorSimple(texturaColor));
+            material.setMapaColor(texturaColor);
         }
         if (texturaNormal != null) {
-            material.setMapaNormal(new QProcesadorSimple(texturaNormal));
+            material.setMapaNormal(texturaNormal);
         }
         if (texturaEmisivo != null) {
-            material.setMapaEmisivo(new QProcesadorSimple(texturaEmisivo));
+            material.setMapaEmisivo(texturaEmisivo);
         }
         if (texturaTransparencia != null) {
-            material.setMapaTransparencia(new QProcesadorSimple(texturaTransparencia));
+            material.setMapaTransparencia(texturaTransparencia);
             material.setTransparencia(true);
         }
         if (texturaEspecular != null) {
-            material.setMapaEspecular(new QProcesadorSimple(texturaEspecular));
+            material.setMapaEspecular(texturaEspecular);
         }
         if (texturaMetalica != null) {
-            material.setMapaMetalico(new QProcesadorSimple(texturaMetalica));
+            material.setMapaMetalico(texturaMetalica);
         }
 
         if (texturaRugosidad != null) {

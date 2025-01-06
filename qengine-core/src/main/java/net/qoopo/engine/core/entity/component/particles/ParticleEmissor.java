@@ -8,6 +8,9 @@ package net.qoopo.engine.core.entity.component.particles;
 import java.util.ArrayList;
 import java.util.List;
 
+import lombok.Getter;
+import lombok.Setter;
+import net.qoopo.engine.core.entity.Entity;
 import net.qoopo.engine.core.entity.component.EntityComponent;
 import net.qoopo.engine.core.entity.component.physics.collision.detector.shape.primitivas.AABB;
 import net.qoopo.engine.core.math.QVector3;
@@ -16,9 +19,13 @@ import net.qoopo.engine.core.math.QVector3;
  *
  * @author alberto
  */
-public abstract class ParticleEmissor extends EntityComponent {
+public abstract class ParticleEmissor implements EntityComponent {
 
-    //define el area sobre el que se va a emitir las particulas
+    @Getter
+    @Setter
+    protected Entity entity;
+
+    // define el area sobre el que se va a emitir las particulas
     protected AABB ambito;
 
     protected List<Particle> particulas = new ArrayList<>();
@@ -51,7 +58,8 @@ public abstract class ParticleEmissor extends EntityComponent {
      */
     public abstract void emitir(long deltaTime);
 
-    public ParticleEmissor(AABB ambito, float tiempoVida, int maximoParticulas, int velocidadEmision, QVector3 direccion) {
+    public ParticleEmissor(AABB ambito, float tiempoVida, int maximoParticulas, int velocidadEmision,
+            QVector3 direccion) {
         this.ambito = ambito;
         this.tiempoVida = tiempoVida;
         this.maximoParticulas = maximoParticulas;

@@ -10,7 +10,6 @@ import java.util.logging.Logger;
 
 import net.qoopo.engine.core.entity.component.mesh.primitive.Shape;
 import net.qoopo.engine.core.material.basico.QMaterialBas;
-import net.qoopo.engine.core.util.mesh.NormalUtil;
 
 /**
  *
@@ -39,14 +38,19 @@ public class Triangle extends Shape {
              * P2/_______\P3
              */
             // primer paso generar vertices
-            this.addVertex(0, lado, 0, 0.5f, 1);
-            this.addVertex(-lado / 2, 0, 0, 0, 0);
-            this.addVertex(lado / 2, 0, 0, 1, 0);
+            addVertex(0, lado, 0);
+            addUV(0.5f, 1);
+            addVertex(-lado / 2, 0, 0);
+            addUV(0, 0);
+            addVertex(lado / 2, 0, 0);
+            addUV(1, 0);
+            addNormal(0, 0, 1);
+            addNormal(0, 0, -1);
             // caras
-            this.addPoly(material, 0, 1, 2);
-            this.addPoly(material, 0, 2, 1);
+            this.addPoly(material, new int[] { 0, 1, 2 }, new int[] { 0, 0, 0 }, new int[] { 0, 1, 2 });
+            this.addPoly(material, new int[] { 0, 2, 1 }, new int[] { 1, 1, 1 }, new int[] { 0, 2, 1 });
 
-            NormalUtil.calcularNormales(this);
+            computeNormals();
         } catch (Exception ex) {
             Logger.getLogger(Triangle.class.getName()).log(Level.SEVERE, null, ex);
         }

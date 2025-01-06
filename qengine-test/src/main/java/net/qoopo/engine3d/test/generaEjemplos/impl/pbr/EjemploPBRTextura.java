@@ -9,7 +9,7 @@ import java.io.File;
 
 import net.qoopo.engine.core.assets.AssetManager;
 import net.qoopo.engine.core.entity.Entity;
-import net.qoopo.engine.core.entity.component.cubemap.QCubeMap;
+import net.qoopo.engine.core.entity.component.cubemap.CubeMap;
 import net.qoopo.engine.core.entity.component.mesh.primitive.shape.Sphere;
 import net.qoopo.engine.core.material.basico.QMaterialBas;
 import net.qoopo.engine.core.math.QColor;
@@ -49,9 +49,9 @@ public class EjemploPBRTextura extends MakeTestScene {
 
         // la entidad reflexion se encargara de renderizar el mapa de reflejos
         Entity reflexion = new Entity();
-        QCubeMap cubeMap = new QCubeMap(QGlobal.MAPA_CUPO_RESOLUCION);
+        CubeMap cubeMap = new CubeMap(QGlobal.MAPA_CUPO_RESOLUCION);
         reflexion.addComponent(cubeMap);
-        cubeMap.aplicar(QCubeMap.FORMATO_MAPA_CUBO, 1.0f, 0);
+        cubeMap.aplicar(CubeMap.FORMATO_MAPA_CUBO, 1.0f, 0);
         escena.addEntity(reflexion);
 
         for (int row = 0; row < nrRows; ++row) {

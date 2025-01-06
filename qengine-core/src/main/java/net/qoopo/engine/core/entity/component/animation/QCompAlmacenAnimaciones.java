@@ -8,6 +8,9 @@ package net.qoopo.engine.core.entity.component.animation;
 import java.util.HashMap;
 import java.util.Map;
 
+import lombok.Getter;
+import lombok.Setter;
+import net.qoopo.engine.core.entity.Entity;
 import net.qoopo.engine.core.entity.component.EntityComponent;
 
 /**
@@ -16,7 +19,11 @@ import net.qoopo.engine.core.entity.component.EntityComponent;
  *
  * @author alberto
  */
-public class QCompAlmacenAnimaciones extends EntityComponent {
+public class QCompAlmacenAnimaciones implements EntityComponent {
+
+    @Getter
+    @Setter
+    private Entity entity;
 
     private final Map<String, AnimationComponent> animaciones = new HashMap<>();
 

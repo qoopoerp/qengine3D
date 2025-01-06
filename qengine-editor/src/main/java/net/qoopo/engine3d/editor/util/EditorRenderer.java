@@ -16,12 +16,13 @@ import net.qoopo.engine.core.entity.component.physics.collision.detector.shape.p
 import net.qoopo.engine.core.material.basico.QMaterialBas;
 import net.qoopo.engine.core.math.QColor;
 import net.qoopo.engine.core.math.QMatriz4;
-import net.qoopo.engine.core.math.QVector4;
+import net.qoopo.engine.core.math.QVector2;
+import net.qoopo.engine.core.math.QVector3;
 import net.qoopo.engine.core.renderer.RenderEngine;
 import net.qoopo.engine.core.util.QGlobal;
 import net.qoopo.engine.core.util.TempVars;
+import net.qoopo.engine.renderer.shader.vertex.DefaultVertexShader;
 import net.qoopo.engine.renderer.shader.vertex.VertexShader;
-import net.qoopo.engine.renderer.util.TransformationVectorUtil;
 
 @Getter
 @Setter
@@ -53,7 +54,7 @@ public class EditorRenderer {
 
         private RenderEngine renderer;
 
-        private VertexShader vertexShader = new VertexShader();
+        private VertexShader vertexShader = new DefaultVertexShader();
 
         static {
                 matX = new QMaterialBas("x");
@@ -102,14 +103,17 @@ public class EditorRenderer {
         public void render() {
                 if (renderer.getFrameBuffer() != null) {
                         renderGrid();
-                        // renderSkeleton();
+                        renderSelectedBox();
                         // renderArtefactosEditor();
+                        // renderSkeleton();
                         // renderer.render();
                 }
         }
 
+        /**
+         * Dibuja la grid del editor
+         */
         private void renderGrid() {
-
                 if (renderer.opciones.isDibujarGrid()) {
 
                         // La Matriz de vista es la inversa de la matriz de la camara.
@@ -134,6 +138,9 @@ public class EditorRenderer {
                         matVistaModelo = matrizVista.mult(matrizModelo);
 
                         TempVars t = TempVars.get();
+                        QVector3 normal = QVector3.unitario_y.clone();
+                        QVector2 uv = new QVector2();
+                        QColor color = QColor.WHITE;
                         try {
                                 int secciones = 50;
                                 float espacio = 1.0f;
@@ -144,8 +151,10 @@ public class EditorRenderer {
                                         t.vertex2.set((-secciones / 2 + i) * espacio, 0, -maxCoordenada, 1);
 
                                         renderer.renderLine(polGrid,
-                                                        vertexShader.apply(t.vertex1, matVistaModelo),
-                                                        vertexShader.apply(t.vertex2, matVistaModelo));
+                                                        vertexShader.apply(t.vertex1, normal, uv, color,
+                                                                        matVistaModelo),
+                                                        vertexShader.apply(t.vertex2, normal, uv, color,
+                                                                        matVistaModelo));
                                 }
                                 // lineas paralelas en el eje Z
                                 for (int i = 0; i <= secciones; i++) {
@@ -153,8 +162,10 @@ public class EditorRenderer {
                                         t.vertex2.set(-maxCoordenada, 0, (-secciones / 2 + i) * espacio, 1);
 
                                         renderer.renderLine(polGrid,
-                                                        vertexShader.apply(t.vertex1, matVistaModelo),
-                                                        vertexShader.apply(t.vertex2, matVistaModelo));
+                                                        vertexShader.apply(t.vertex1, normal, uv, color,
+                                                                        matVistaModelo),
+                                                        vertexShader.apply(t.vertex2, normal, uv, color,
+                                                                        matVistaModelo));
                                 }
                                 // el eje de X
                                 {
@@ -162,8 +173,10 @@ public class EditorRenderer {
                                         t.vertex2.set(-maxCoordenada, 0, 0.001f, 1);
 
                                         renderer.renderLine(polSeleccion,
-                                                        vertexShader.apply(t.vertex1, matVistaModelo),
-                                                        vertexShader.apply(t.vertex2, matVistaModelo));
+                                                        vertexShader.apply(t.vertex1, normal, uv, color,
+                                                                        matVistaModelo),
+                                                        vertexShader.apply(t.vertex2, normal, uv, color,
+                                                                        matVistaModelo));
                                 }
                                 // el eje de Z
                                 {
@@ -171,8 +184,10 @@ public class EditorRenderer {
                                         t.vertex2.set(0, 0.001f, -maxCoordenada, 1);
 
                                         renderer.renderLine(polSeleccion,
-                                                        vertexShader.apply(t.vertex1, matVistaModelo),
-                                                        vertexShader.apply(t.vertex2, matVistaModelo));
+                                                        vertexShader.apply(t.vertex1, normal, uv, color,
+                                                                        matVistaModelo),
+                                                        vertexShader.apply(t.vertex2, normal, uv, color,
+                                                                        matVistaModelo));
                                 }
                         } catch (Exception e) {
                                 e.printStackTrace();
@@ -196,7 +211,7 @@ public class EditorRenderer {
                         // una entity que contiene a los huesos para mostrarlos, aplicamos la misma
                         // transofmraicon de la entity original
                         Entity entidadTmp = null;
-                        for (Entity entity : renderer.getEscena().getEntities()) {
+                        for (Entity entity : renderer.getScene().getEntities()) {
                                 for (EntityComponent componente : entity.getComponents()) {
                                         if (componente instanceof Skeleton) {
                                                 Skeleton esqueleto = (Skeleton) componente;
@@ -242,9 +257,10 @@ public class EditorRenderer {
                 }
         }
 
-        private void renderArtefactosEditor() {
-                // -------------------- RENDERIZA OBJETOS FUERA DE LA ESCENA PROPIOS DEL EDITOR
-
+        /**
+         * Dibuja la caja de seleccion sobre los objetos seleccionados
+         */
+        private void renderSelectedBox() {
                 // ------------------------------------ CAJA DE SELECCION
                 // ------------------------------------
                 if (!entidadesSeleccionadas.isEmpty()) {
@@ -265,6 +281,10 @@ public class EditorRenderer {
                         // Traslación, rotacion (en su propio eje ) y escala
                         QMatriz4 matrizModelo;
 
+                        QVector3 normal = QVector3.unitario_y.clone();
+                        QVector2 uv = new QVector2();
+                        QColor color = QColor.WHITE;
+
                         for (Entity entidadSeleccionado : entidadesSeleccionadas) {
 
                                 // Matriz de modelo
@@ -281,10 +301,10 @@ public class EditorRenderer {
                                 for (EntityComponent comp : entidadSeleccionado.getComponents()) {
                                         if (comp instanceof Mesh) {
                                                 if (tmp == null) {
-                                                        tmp = new AABB(((Mesh) comp).vertices[0].clone(),
-                                                                        ((Mesh) comp).vertices[0].clone());
+                                                        tmp = new AABB(((Mesh) comp).vertexList[0].clone(),
+                                                                        ((Mesh) comp).vertexList[0].clone());
                                                 }
-                                                for (Vertex vertice : ((Mesh) comp).vertices) {
+                                                for (Vertex vertice : ((Mesh) comp).vertexList) {
                                                         if (vertice.location.x < tmp.aabMinimo.location.x) {
                                                                 tmp.aabMinimo.location.x = vertice.location.x;
                                                         }
@@ -319,213 +339,288 @@ public class EditorRenderer {
                                         TempVars t = TempVars.get();
                                         try {
 
-                                                // ((QMaterialBas) polSeleccion.material).setColorDifusa(QColor.YELLOW);
-                                                // superiores
                                                 // 1
-                                                t.vector4f1.set(tmp.aabMaximo.location.x, tmp.aabMaximo.location.y,
+                                                t.vertex1.set(tmp.aabMaximo.location.x, tmp.aabMaximo.location.y,
                                                                 tmp.aabMaximo.location.z,
                                                                 tmp.aabMaximo.location.w);
 
-                                                QVector4 ps2 = TransformationVectorUtil.transformarVector(
-                                                                new QVector4(t.vector4f1.x, t.vector4f1.y,
-                                                                                t.vector4f1.z - dz, 1),
-                                                                entidadSeleccionado,
-                                                                renderer.getCamara());
-                                                QVector4 ps3 = TransformationVectorUtil.transformarVector(
-                                                                new QVector4(t.vector4f1.x, t.vector4f1.y - dy,
-                                                                                t.vector4f1.z, 1),
-                                                                entidadSeleccionado,
-                                                                renderer.getCamara());
-                                                QVector4 ps4 = TransformationVectorUtil.transformarVector(
-                                                                new QVector4(t.vector4f1.x - dx, t.vector4f1.y,
-                                                                                t.vector4f1.z, 1),
-                                                                entidadSeleccionado,
-                                                                renderer.getCamara());
+                                                t.vertex2.set(tmp.aabMaximo.location.x, tmp.aabMaximo.location.y,
+                                                                tmp.aabMaximo.location.z - dz,
+                                                                tmp.aabMaximo.location.w);
 
-                                                t.vector4f1.set(TransformationVectorUtil.transformarVector(t.vector4f1,
-                                                                entidadSeleccionado, renderer.getCamara()));
+                                                t.vertex3.set(tmp.aabMaximo.location.x, tmp.aabMaximo.location.y - dy,
+                                                                tmp.aabMaximo.location.z,
+                                                                tmp.aabMaximo.location.w);
 
-                                                // renderer.renderLine(polSeleccion, t.vector4f1, ps2);
-                                                // renderer.renderLine(polSeleccion, t.vector4f1, ps3);
-                                                // renderer.renderLine(polSeleccion, t.vector4f1, ps4);
+                                                t.vertex4.set(tmp.aabMaximo.location.x - dx, tmp.aabMaximo.location.y,
+                                                                tmp.aabMaximo.location.z,
+                                                                tmp.aabMaximo.location.w);
+
+                                                // t.vector4f1.set(TransformationVectorUtil.transformarVector(t.vector4f1,
+                                                // entidadSeleccionado, renderer.getCamara()));
+
+                                                renderer.renderLine(polSeleccion,
+                                                                vertexShader.apply(t.vertex1, normal, uv, color,
+                                                                                matVistaModelo),
+                                                                vertexShader.apply(t.vertex2, normal, uv, color,
+                                                                                matVistaModelo));
+                                                renderer.renderLine(polSeleccion,
+                                                                vertexShader.apply(t.vertex1, normal, uv, color,
+                                                                                matVistaModelo),
+                                                                vertexShader.apply(t.vertex3, normal, uv, color,
+                                                                                matVistaModelo));
+                                                renderer.renderLine(polSeleccion,
+                                                                vertexShader.apply(t.vertex1, normal, uv, color,
+                                                                                matVistaModelo),
+                                                                vertexShader.apply(t.vertex4, normal, uv, color,
+                                                                                matVistaModelo));
                                                 // 2
-                                                t.vector4f1.set(tmp.aabMinimo.location.x, tmp.aabMaximo.location.y,
+
+                                                t.vertex1.set(tmp.aabMinimo.location.x, tmp.aabMaximo.location.y,
                                                                 tmp.aabMaximo.location.z,
                                                                 tmp.aabMaximo.location.w);
-                                                ps2 = TransformationVectorUtil.transformarVector(
-                                                                new QVector4(t.vector4f1.x, t.vector4f1.y,
-                                                                                t.vector4f1.z - dz, 1),
-                                                                entidadSeleccionado,
-                                                                renderer.getCamara());
-                                                ps3 = TransformationVectorUtil.transformarVector(
-                                                                new QVector4(t.vector4f1.x, t.vector4f1.y - dy,
-                                                                                t.vector4f1.z, 1),
-                                                                entidadSeleccionado,
-                                                                renderer.getCamara());
-                                                ps4 = TransformationVectorUtil.transformarVector(
-                                                                new QVector4(t.vector4f1.x + dx, t.vector4f1.y,
-                                                                                t.vector4f1.z, 1),
-                                                                entidadSeleccionado,
-                                                                renderer.getCamara());
-                                                t.vector4f1.set(TransformationVectorUtil.transformarVector(t.vector4f1,
-                                                                entidadSeleccionado, renderer.getCamara()));
-                                                // renderer.renderLine(polSeleccion, t.vector4f1, ps2);
-                                                // renderer.renderLine(polSeleccion, t.vector4f1, ps3);
-                                                // renderer.renderLine(polSeleccion, t.vector4f1, ps4);
+
+                                                t.vertex2.set(tmp.aabMinimo.location.x, tmp.aabMaximo.location.y,
+                                                                tmp.aabMaximo.location.z - dz,
+                                                                tmp.aabMaximo.location.w);
+
+                                                t.vertex3.set(tmp.aabMinimo.location.x, tmp.aabMaximo.location.y - dy,
+                                                                tmp.aabMaximo.location.z,
+                                                                tmp.aabMaximo.location.w);
+
+                                                t.vertex4.set(tmp.aabMinimo.location.x + dx, tmp.aabMaximo.location.y,
+                                                                tmp.aabMaximo.location.z,
+                                                                tmp.aabMaximo.location.w);
+
+                                                renderer.renderLine(polSeleccion,
+                                                                vertexShader.apply(t.vertex1, normal, uv, color,
+                                                                                matVistaModelo),
+                                                                vertexShader.apply(t.vertex2, normal, uv, color,
+                                                                                matVistaModelo));
+                                                renderer.renderLine(polSeleccion,
+                                                                vertexShader.apply(t.vertex1, normal, uv, color,
+                                                                                matVistaModelo),
+                                                                vertexShader.apply(t.vertex3, normal, uv, color,
+                                                                                matVistaModelo));
+                                                renderer.renderLine(polSeleccion,
+                                                                vertexShader.apply(t.vertex1, normal, uv, color,
+                                                                                matVistaModelo),
+                                                                vertexShader.apply(t.vertex4, normal, uv, color,
+                                                                                matVistaModelo));
                                                 // 3
-                                                t.vector4f1.set(tmp.aabMinimo.location.x, tmp.aabMaximo.location.y,
+                                                t.vertex1.set(tmp.aabMinimo.location.x, tmp.aabMaximo.location.y,
                                                                 tmp.aabMinimo.location.z,
                                                                 tmp.aabMaximo.location.w);
-                                                ps2 = TransformationVectorUtil.transformarVector(
-                                                                new QVector4(t.vector4f1.x, t.vector4f1.y,
-                                                                                t.vector4f1.z + dz, 1),
-                                                                entidadSeleccionado,
-                                                                renderer.getCamara());
-                                                ps3 = TransformationVectorUtil.transformarVector(
-                                                                new QVector4(t.vector4f1.x, t.vector4f1.y - dy,
-                                                                                t.vector4f1.z, 1),
-                                                                entidadSeleccionado,
-                                                                renderer.getCamara());
-                                                ps4 = TransformationVectorUtil.transformarVector(
-                                                                new QVector4(t.vector4f1.x + dx, t.vector4f1.y,
-                                                                                t.vector4f1.z, 1),
-                                                                entidadSeleccionado,
-                                                                renderer.getCamara());
-                                                t.vector4f1.set(TransformationVectorUtil.transformarVector(t.vector4f1,
-                                                                entidadSeleccionado, renderer.getCamara()));
-                                                // renderer.renderLine(polSeleccion, t.vector4f1, ps2);
-                                                // renderer.renderLine(polSeleccion, t.vector4f1, ps3);
-                                                // renderer.renderLine(polSeleccion, t.vector4f1, ps4);
+
+                                                t.vertex2.set(tmp.aabMinimo.location.x, tmp.aabMaximo.location.y,
+                                                                tmp.aabMinimo.location.z + dz,
+                                                                tmp.aabMaximo.location.w);
+
+                                                t.vertex3.set(tmp.aabMinimo.location.x, tmp.aabMaximo.location.y - dy,
+                                                                tmp.aabMinimo.location.z,
+                                                                tmp.aabMaximo.location.w);
+
+                                                t.vertex4.set(tmp.aabMinimo.location.x + dx, tmp.aabMaximo.location.y,
+                                                                tmp.aabMinimo.location.z,
+                                                                tmp.aabMaximo.location.w);
+
+                                                renderer.renderLine(polSeleccion,
+                                                                vertexShader.apply(t.vertex1, normal, uv, color,
+                                                                                matVistaModelo),
+                                                                vertexShader.apply(t.vertex2, normal, uv, color,
+                                                                                matVistaModelo));
+                                                renderer.renderLine(polSeleccion,
+                                                                vertexShader.apply(t.vertex1, normal, uv, color,
+                                                                                matVistaModelo),
+                                                                vertexShader.apply(t.vertex3, normal, uv, color,
+                                                                                matVistaModelo));
+                                                renderer.renderLine(polSeleccion,
+                                                                vertexShader.apply(t.vertex1, normal, uv, color,
+                                                                                matVistaModelo),
+                                                                vertexShader.apply(t.vertex4, normal, uv, color,
+                                                                                matVistaModelo));
                                                 // 4
-                                                t.vector4f1.set(tmp.aabMaximo.location.x, tmp.aabMaximo.location.y,
+
+                                                t.vertex1.set(tmp.aabMaximo.location.x, tmp.aabMaximo.location.y,
                                                                 tmp.aabMinimo.location.z,
                                                                 tmp.aabMaximo.location.w);
-                                                ps2 = TransformationVectorUtil.transformarVector(
-                                                                new QVector4(t.vector4f1.x, t.vector4f1.y,
-                                                                                t.vector4f1.z + dz, 1),
-                                                                entidadSeleccionado,
-                                                                renderer.getCamara());
-                                                ps3 = TransformationVectorUtil.transformarVector(
-                                                                new QVector4(t.vector4f1.x, t.vector4f1.y - dy,
-                                                                                t.vector4f1.z, 1),
-                                                                entidadSeleccionado,
-                                                                renderer.getCamara());
-                                                ps4 = TransformationVectorUtil.transformarVector(
-                                                                new QVector4(t.vector4f1.x - dx, t.vector4f1.y,
-                                                                                t.vector4f1.z, 1),
-                                                                entidadSeleccionado,
-                                                                renderer.getCamara());
-                                                t.vector4f1.set(TransformationVectorUtil.transformarVector(t.vector4f1,
-                                                                entidadSeleccionado, renderer.getCamara()));
-                                                // renderer.renderLine(polSeleccion, t.vector4f1, ps2);
-                                                // renderer.renderLine(polSeleccion, t.vector4f1, ps3);
-                                                // renderer.renderLine(polSeleccion, t.vector4f1, ps4);
+
+                                                t.vertex2.set(tmp.aabMaximo.location.x, tmp.aabMaximo.location.y,
+                                                                tmp.aabMinimo.location.z + dz,
+                                                                tmp.aabMaximo.location.w);
+
+                                                t.vertex3.set(tmp.aabMaximo.location.x, tmp.aabMaximo.location.y - dy,
+                                                                tmp.aabMinimo.location.z,
+                                                                tmp.aabMaximo.location.w);
+
+                                                t.vertex4.set(tmp.aabMaximo.location.x - dx, tmp.aabMaximo.location.y,
+                                                                tmp.aabMinimo.location.z,
+                                                                tmp.aabMaximo.location.w);
+
+                                                renderer.renderLine(polSeleccion,
+                                                                vertexShader.apply(t.vertex1, normal, uv, color,
+                                                                                matVistaModelo),
+                                                                vertexShader.apply(t.vertex2, normal, uv, color,
+                                                                                matVistaModelo));
+                                                renderer.renderLine(polSeleccion,
+                                                                vertexShader.apply(t.vertex1, normal, uv, color,
+                                                                                matVistaModelo),
+                                                                vertexShader.apply(t.vertex3, normal, uv, color,
+                                                                                matVistaModelo));
+                                                renderer.renderLine(polSeleccion,
+                                                                vertexShader.apply(t.vertex1, normal, uv, color,
+                                                                                matVistaModelo),
+                                                                vertexShader.apply(t.vertex4, normal, uv, color,
+                                                                                matVistaModelo));
 
                                                 // ((QMaterialBas) polSeleccion.material).setColorDifusa(QColor.CYAN);
                                                 // inferiores
                                                 // 1
-                                                t.vector4f1.set(tmp.aabMinimo.location.x, tmp.aabMinimo.location.y,
+
+                                                t.vertex1.set(tmp.aabMinimo.location.x, tmp.aabMinimo.location.y,
                                                                 tmp.aabMinimo.location.z,
                                                                 tmp.aabMinimo.location.w);
-                                                ps2 = TransformationVectorUtil.transformarVector(
-                                                                new QVector4(t.vector4f1.x, t.vector4f1.y,
-                                                                                t.vector4f1.z + dz, 1),
-                                                                entidadSeleccionado,
-                                                                renderer.getCamara());
-                                                ps3 = TransformationVectorUtil.transformarVector(
-                                                                new QVector4(t.vector4f1.x, t.vector4f1.y + dy,
-                                                                                t.vector4f1.z, 1),
-                                                                entidadSeleccionado,
-                                                                renderer.getCamara());
-                                                ps4 = TransformationVectorUtil.transformarVector(
-                                                                new QVector4(t.vector4f1.x + dx, t.vector4f1.y,
-                                                                                t.vector4f1.z, 1),
-                                                                entidadSeleccionado,
-                                                                renderer.getCamara());
-                                                t.vector4f1.set(TransformationVectorUtil.transformarVector(t.vector4f1,
-                                                                entidadSeleccionado, renderer.getCamara()));
-                                                // renderer.renderLine(polSeleccion, t.vector4f1, ps2);
-                                                // renderer.renderLine(polSeleccion, t.vector4f1, ps3);
-                                                // renderer.renderLine(polSeleccion, t.vector4f1, ps4);
+
+                                                t.vertex2.set(tmp.aabMinimo.location.x, tmp.aabMinimo.location.y,
+                                                                tmp.aabMinimo.location.z + dz,
+                                                                tmp.aabMinimo.location.w);
+
+                                                t.vertex3.set(tmp.aabMinimo.location.x, tmp.aabMinimo.location.y + dy,
+                                                                tmp.aabMinimo.location.z,
+                                                                tmp.aabMinimo.location.w);
+
+                                                t.vertex4.set(tmp.aabMinimo.location.x + dx, tmp.aabMinimo.location.y,
+                                                                tmp.aabMinimo.location.z,
+                                                                tmp.aabMinimo.location.w);
+
+                                                renderer.renderLine(polSeleccion,
+                                                                vertexShader.apply(t.vertex1, normal, uv, color,
+                                                                                matVistaModelo),
+                                                                vertexShader.apply(t.vertex2, normal, uv, color,
+                                                                                matVistaModelo));
+                                                renderer.renderLine(polSeleccion,
+                                                                vertexShader.apply(t.vertex1, normal, uv, color,
+                                                                                matVistaModelo),
+                                                                vertexShader.apply(t.vertex3, normal, uv, color,
+                                                                                matVistaModelo));
+                                                renderer.renderLine(polSeleccion,
+                                                                vertexShader.apply(t.vertex1, normal, uv, color,
+                                                                                matVistaModelo),
+                                                                vertexShader.apply(t.vertex4, normal, uv, color,
+                                                                                matVistaModelo));
+
                                                 // 2
-                                                t.vector4f1.set(tmp.aabMaximo.location.x, tmp.aabMinimo.location.y,
+
+                                                t.vertex1.set(tmp.aabMaximo.location.x, tmp.aabMinimo.location.y,
                                                                 tmp.aabMinimo.location.z,
                                                                 tmp.aabMinimo.location.w);
-                                                ps2 = TransformationVectorUtil.transformarVector(
-                                                                new QVector4(t.vector4f1.x, t.vector4f1.y,
-                                                                                t.vector4f1.z + dz, 1),
-                                                                entidadSeleccionado,
-                                                                renderer.getCamara());
-                                                ps3 = TransformationVectorUtil.transformarVector(
-                                                                new QVector4(t.vector4f1.x, t.vector4f1.y + dy,
-                                                                                t.vector4f1.z, 1),
-                                                                entidadSeleccionado,
-                                                                renderer.getCamara());
-                                                ps4 = TransformationVectorUtil.transformarVector(
-                                                                new QVector4(t.vector4f1.x - dx, t.vector4f1.y,
-                                                                                t.vector4f1.z, 1),
-                                                                entidadSeleccionado,
-                                                                renderer.getCamara());
-                                                t.vector4f1.set(TransformationVectorUtil.transformarVector(t.vector4f1,
-                                                                entidadSeleccionado, renderer.getCamara()));
-                                                // renderer.renderLine(polSeleccion, t.vector4f1, ps2);
-                                                // renderer.renderLine(polSeleccion, t.vector4f1, ps3);
-                                                // renderer.renderLine(polSeleccion, t.vector4f1, ps4);
+
+                                                t.vertex2.set(tmp.aabMaximo.location.x, tmp.aabMinimo.location.y,
+                                                                tmp.aabMinimo.location.z + dz,
+                                                                tmp.aabMinimo.location.w);
+
+                                                t.vertex3.set(tmp.aabMaximo.location.x, tmp.aabMinimo.location.y + dy,
+                                                                tmp.aabMinimo.location.z,
+                                                                tmp.aabMinimo.location.w);
+
+                                                t.vertex4.set(tmp.aabMaximo.location.x - dx, tmp.aabMinimo.location.y,
+                                                                tmp.aabMinimo.location.z,
+                                                                tmp.aabMinimo.location.w);
+
+                                                renderer.renderLine(polSeleccion,
+                                                                vertexShader.apply(t.vertex1, normal, uv, color,
+                                                                                matVistaModelo),
+                                                                vertexShader.apply(t.vertex2, normal, uv, color,
+                                                                                matVistaModelo));
+                                                renderer.renderLine(polSeleccion,
+                                                                vertexShader.apply(t.vertex1, normal, uv, color,
+                                                                                matVistaModelo),
+                                                                vertexShader.apply(t.vertex3, normal, uv, color,
+                                                                                matVistaModelo));
+                                                renderer.renderLine(polSeleccion,
+                                                                vertexShader.apply(t.vertex1, normal, uv, color,
+                                                                                matVistaModelo),
+                                                                vertexShader.apply(t.vertex4, normal, uv, color,
+                                                                                matVistaModelo));
+
                                                 // 3
-                                                t.vector4f1.set(tmp.aabMaximo.location.x, tmp.aabMinimo.location.y,
+
+                                                t.vertex1.set(tmp.aabMaximo.location.x, tmp.aabMinimo.location.y,
                                                                 tmp.aabMaximo.location.z,
                                                                 tmp.aabMinimo.location.w);
-                                                ps2 = TransformationVectorUtil.transformarVector(
-                                                                new QVector4(t.vector4f1.x, t.vector4f1.y,
-                                                                                t.vector4f1.z - dz, 1),
-                                                                entidadSeleccionado,
-                                                                renderer.getCamara());
-                                                ps3 = TransformationVectorUtil.transformarVector(
-                                                                new QVector4(t.vector4f1.x, t.vector4f1.y + dy,
-                                                                                t.vector4f1.z, 1),
-                                                                entidadSeleccionado,
-                                                                renderer.getCamara());
-                                                ps4 = TransformationVectorUtil.transformarVector(
-                                                                new QVector4(t.vector4f1.x - dx, t.vector4f1.y,
-                                                                                t.vector4f1.z, 1),
-                                                                entidadSeleccionado,
-                                                                renderer.getCamara());
-                                                t.vector4f1.set(TransformationVectorUtil.transformarVector(t.vector4f1,
-                                                                entidadSeleccionado, renderer.getCamara()));
-                                                // renderer.renderLine(polSeleccion, t.vector4f1, ps2);
-                                                // renderer.renderLine(polSeleccion, t.vector4f1, ps3);
-                                                // renderer.renderLine(polSeleccion, t.vector4f1, ps4);
+
+                                                t.vertex2.set(tmp.aabMaximo.location.x, tmp.aabMinimo.location.y,
+                                                                tmp.aabMaximo.location.z - dz,
+                                                                tmp.aabMinimo.location.w);
+
+                                                t.vertex3.set(tmp.aabMaximo.location.x, tmp.aabMinimo.location.y + dy,
+                                                                tmp.aabMaximo.location.z,
+                                                                tmp.aabMinimo.location.w);
+
+                                                t.vertex4.set(tmp.aabMaximo.location.x - dx, tmp.aabMinimo.location.y,
+                                                                tmp.aabMaximo.location.z,
+                                                                tmp.aabMinimo.location.w);
+
+                                                renderer.renderLine(polSeleccion,
+                                                                vertexShader.apply(t.vertex1, normal, uv, color,
+                                                                                matVistaModelo),
+                                                                vertexShader.apply(t.vertex2, normal, uv, color,
+                                                                                matVistaModelo));
+                                                renderer.renderLine(polSeleccion,
+                                                                vertexShader.apply(t.vertex1, normal, uv, color,
+                                                                                matVistaModelo),
+                                                                vertexShader.apply(t.vertex3, normal, uv, color,
+                                                                                matVistaModelo));
+                                                renderer.renderLine(polSeleccion,
+                                                                vertexShader.apply(t.vertex1, normal, uv, color,
+                                                                                matVistaModelo),
+                                                                vertexShader.apply(t.vertex4, normal, uv, color,
+                                                                                matVistaModelo));
+
                                                 // 4
-                                                t.vector4f1.set(tmp.aabMinimo.location.x, tmp.aabMinimo.location.y,
+
+                                                t.vertex1.set(tmp.aabMinimo.location.x, tmp.aabMinimo.location.y,
                                                                 tmp.aabMaximo.location.z,
                                                                 tmp.aabMinimo.location.w);
-                                                ps2 = TransformationVectorUtil.transformarVector(
-                                                                new QVector4(t.vector4f1.x, t.vector4f1.y,
-                                                                                t.vector4f1.z - dz, 1),
-                                                                entidadSeleccionado,
-                                                                renderer.getCamara());
-                                                ps3 = TransformationVectorUtil.transformarVector(
-                                                                new QVector4(t.vector4f1.x, t.vector4f1.y + dy,
-                                                                                t.vector4f1.z, 1),
-                                                                entidadSeleccionado,
-                                                                renderer.getCamara());
-                                                ps4 = TransformationVectorUtil.transformarVector(
-                                                                new QVector4(t.vector4f1.x + dx, t.vector4f1.y,
-                                                                                t.vector4f1.z, 1),
-                                                                entidadSeleccionado,
-                                                                renderer.getCamara());
-                                                t.vector4f1.set(TransformationVectorUtil.transformarVector(t.vector4f1,
-                                                                entidadActiva,
-                                                                renderer.getCamara()));
-                                                // renderer.renderLine(polSeleccion, t.vector4f1, ps2);
-                                                // renderer.renderLine(polSeleccion, t.vector4f1, ps3);
-                                                // renderer.renderLine(polSeleccion, t.vector4f1, ps4);
+
+                                                t.vertex2.set(tmp.aabMinimo.location.x, tmp.aabMinimo.location.y,
+                                                                tmp.aabMaximo.location.z - dz,
+                                                                tmp.aabMinimo.location.w);
+
+                                                t.vertex3.set(tmp.aabMinimo.location.x, tmp.aabMinimo.location.y + dy,
+                                                                tmp.aabMaximo.location.z,
+                                                                tmp.aabMinimo.location.w);
+
+                                                t.vertex4.set(tmp.aabMinimo.location.x + dx, tmp.aabMinimo.location.y,
+                                                                tmp.aabMaximo.location.z,
+                                                                tmp.aabMinimo.location.w);
+
+                                                renderer.renderLine(polSeleccion,
+                                                                vertexShader.apply(t.vertex1, normal, uv, color,
+                                                                                matVistaModelo),
+                                                                vertexShader.apply(t.vertex2, normal, uv, color,
+                                                                                matVistaModelo));
+                                                renderer.renderLine(polSeleccion,
+                                                                vertexShader.apply(t.vertex1, normal, uv, color,
+                                                                                matVistaModelo),
+                                                                vertexShader.apply(t.vertex3, normal, uv, color,
+                                                                                matVistaModelo));
+                                                renderer.renderLine(polSeleccion,
+                                                                vertexShader.apply(t.vertex1, normal, uv, color,
+                                                                                matVistaModelo),
+                                                                vertexShader.apply(t.vertex4, normal, uv, color,
+                                                                                matVistaModelo));
+
                                         } finally {
                                                 t.release();
                                         }
                                 }
                         }
                 }
+        }
+
+        private void renderArtefactosEditor() {
+                // -------------------- RENDERIZA OBJETOS FUERA DE LA ESCENA PROPIOS DEL EDITOR
 
                 // // ------------------------------------ GIZMOS
                 // // ------------------------------------

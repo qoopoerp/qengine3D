@@ -8,11 +8,10 @@ package net.qoopo.engine.core.entity.component.mesh.primitive.shape;
 import lombok.Getter;
 import lombok.Setter;
 import net.qoopo.engine.core.entity.component.mesh.generator.MeshGenerator;
-import net.qoopo.engine.core.entity.component.mesh.primitive.Vertex;
 import net.qoopo.engine.core.entity.component.mesh.primitive.Shape;
+import net.qoopo.engine.core.entity.component.mesh.primitive.Vertex;
 import net.qoopo.engine.core.material.basico.QMaterialBas;
 import net.qoopo.engine.core.math.QVector3;
-import net.qoopo.engine.core.util.mesh.NormalUtil;
 
 /**
  * http://www.songho.ca/opengl/gl_torus.html
@@ -25,17 +24,16 @@ public class Torus extends Shape {
 
     private float radio1;
     private float radio2;
-    private int secciones = 36;
-    private int secciones2 = 18;
+    private int horizontalSectors = 36;
+    private int verticalSectors = 18;
 
     public Torus() {
         nombre = "Toro";
         radio1 = 1;
         radio2 = 0.5f;
-        secciones = 36;
-        secciones2 = 18;
+        horizontalSectors = 36;
+        verticalSectors = 18;
         material = new QMaterialBas("Toro");
-
         build();
     }
 
@@ -43,8 +41,8 @@ public class Torus extends Shape {
         nombre = "Toro";
         this.radio1 = radio1;
         this.radio2 = radio2;
-        secciones = 36;
-        secciones2 = 18;
+        horizontalSectors = 36;
+        verticalSectors = 18;
         material = new QMaterialBas("Toro");
         build();
     }
@@ -53,8 +51,8 @@ public class Torus extends Shape {
         nombre = "Toro";
         this.radio1 = radio1;
         this.radio2 = radio2;
-        this.secciones = secciones;
-        secciones2 = secciones;
+        this.horizontalSectors = secciones;
+        verticalSectors = secciones;
         material = new QMaterialBas("Toro");
         build();
     }
@@ -64,8 +62,8 @@ public class Torus extends Shape {
         nombre = "Toro";
         this.radio1 = radio1;
         this.radio2 = radio2;
-        this.secciones = secciones;
-        this.secciones2 = secciones2;
+        this.horizontalSectors = secciones;
+        this.verticalSectors = secciones2;
         material = new QMaterialBas("Toro");
         build();
     }
@@ -75,24 +73,27 @@ public class Torus extends Shape {
 
         // primero el circulo
         Vertex inicial = this.addVertex(0, radio2, 0); // primer vertice
+        addUV(0, 1);
+
         QVector3 vector = QVector3.of(inicial.location.x, inicial.location.y, inicial.location.z);
-        float angulo = 360.0f / secciones2;
+        float angulo = 360.0f / verticalSectors;
         QVector3 tmp = vector;
         // se crean las secciones menos la ultima
-        for (int i = 1; i < secciones2; i++) {
+        for (int i = 1; i < verticalSectors; i++) {
             tmp = tmp.rotateZ((float) Math.toRadians(angulo));
-            this.addVertex(tmp.x, tmp.y, tmp.z, 0, 1.0f - (1.0f / secciones2 * (i - 1)));
+            this.addVertex(tmp.x, tmp.y, tmp.z);
+            addUV(0, 1.0f - (1.0f / verticalSectors * (i - 1)));
         }
 
         // para la ultima seccion se debe unir con los primeros puntos
         // this.addVertex(inicial.x, inicial.y, inicial.z);
         // luego movemos los puntos al radio 1
-        for (Vertex vertice : this.vertices) {
+        for (Vertex vertice : this.vertexList) {
             vertice.location.x -= radio1;
         }
 
-        MeshGenerator.generateRevolutionMesh(this, secciones, true, true, false, false);
-        NormalUtil.calcularNormales(this);
+        MeshGenerator.generateRevolutionMesh(this, horizontalSectors, true, true, false, false);
+        computeNormals();
         smooth();
         applyMaterial(material);
 
@@ -231,6 +232,5 @@ public class Torus extends Shape {
     // v.ubicacion.x = x * QMath.cos(v.ubicacion.y);
     // v.ubicacion.y = x * QMath.sin(v.ubicacion.y);
     // }
-  
 
 }

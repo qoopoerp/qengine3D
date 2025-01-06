@@ -35,15 +35,21 @@ public class Plane extends Shape {
             deleteData();
 
             // primer paso generar vertices
-            this.addVertex(-ancho / 2, 0, -alto / 2, 0, 1); // primer vertice superior
-            this.addVertex(ancho / 2, 0, -alto / 2, 1, 1); // tercer vertice superior
-            this.addVertex(ancho / 2, 0, alto / 2, 1, 0); // cuarto vertice superio
-            this.addVertex(-ancho / 2, 0, alto / 2, 0, 0); // segundo vertice superior
+            this.addVertex(-ancho / 2, 0, -alto / 2); // primer vertice superior
+            this.addVertex(ancho / 2, 0, -alto / 2); // tercer vertice superior
+            this.addVertex(ancho / 2, 0, alto / 2); // cuarto vertice superio
+            this.addVertex(-ancho / 2, 0, alto / 2); // segundo vertice superior
+
+            addNormal(0, 1, 0);
+            addUV(0, 1);
+            addUV(1, 1);
+            addUV(1, 0);
+            addUV(0, 0);
 
             // segundo paso generar caras
-            this.addPoly(material, 3, 2, 1, 0);// superior
+            this.addPoly(material, new int[] { 3, 2, 1, 0 }, new int[] { 0, 0, 0, 0 }, new int[] { 3, 2, 1, 0 });
             applyMaterial(material);
-            calculateNormals();
+            computeNormals();
         } catch (Exception ex) {
             Logger.getLogger(Plane.class.getName()).log(Level.SEVERE, null, ex);
         }

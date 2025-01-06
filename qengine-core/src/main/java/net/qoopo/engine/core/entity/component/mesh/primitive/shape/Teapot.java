@@ -12,11 +12,13 @@ import net.qoopo.engine.core.assets.model.ModelLoader;
 import net.qoopo.engine.core.assets.model.waveobject.LoadModelObj;
 import net.qoopo.engine.core.entity.Entity;
 import net.qoopo.engine.core.entity.component.mesh.Mesh;
-import net.qoopo.engine.core.entity.component.mesh.primitive.QPrimitiva;
-import net.qoopo.engine.core.entity.component.mesh.primitive.Vertex;
+import net.qoopo.engine.core.entity.component.mesh.primitive.Primitive;
 import net.qoopo.engine.core.entity.component.mesh.primitive.Shape;
+import net.qoopo.engine.core.entity.component.mesh.primitive.Vertex;
 import net.qoopo.engine.core.material.basico.QMaterialBas;
-import net.qoopo.engine.core.util.QUtilComponentes;
+import net.qoopo.engine.core.math.QVector2;
+import net.qoopo.engine.core.math.QVector3;
+import net.qoopo.engine.core.util.ComponentUtil;
 
 /**
  *
@@ -36,17 +38,23 @@ public class Teapot extends Shape {
         try {
             ModelLoader loadModel = new LoadModelObj();
             Entity ent = loadModel.loadModel(Teapot.class.getResourceAsStream("/models/teapot.obj"));
-            Mesh teapot = QUtilComponentes.getMesh(ent);
-            for (Vertex vertice : teapot.vertices) {
+            Mesh mesh = ComponentUtil.getMesh(ent);
+            for (Vertex vertice : mesh.vertexList) {
                 this.addVertex(vertice);
             }
-            for (QPrimitiva primitiva : teapot.primitivas) {
-                this.addPoly(primitiva.listaVertices);
+            for (QVector3 normal : mesh.normalList) {
+                this.addNormal(normal);
+            }
+            for (QVector2 uv : mesh.uvList) {
+                this.addUV(uv);
+            }
+            for (Primitive primitiva : mesh.primitiveList) {
+                this.addPoly(primitiva.vertexIndexList, primitiva.normalIndexList, primitiva.uvIndexList);
             }
         } catch (Exception ex) {
             Logger.getLogger(Teapot.class.getName()).log(Level.SEVERE, null, ex);
         }
-        calculateNormals();
+        computeNormals();
         smooth();
         applyMaterial(material);
     }

@@ -41,8 +41,8 @@ import net.qoopo.engine.core.assets.AssetManager;
 import net.qoopo.engine.core.assets.model.ModelLoader;
 import net.qoopo.engine.core.entity.Entity;
 import net.qoopo.engine.core.entity.component.EntityComponent;
-import net.qoopo.engine.core.entity.component.camera.QCamaraControl;
-import net.qoopo.engine.core.entity.component.camera.QCamaraOrbitar;
+import net.qoopo.engine.core.entity.component.camera.CameraController;
+import net.qoopo.engine.core.entity.component.camera.CameraOrbiter;
 import net.qoopo.engine.core.entity.component.gui.QMouseReceptor;
 import net.qoopo.engine.core.entity.component.gui.QTecladoReceptor;
 import net.qoopo.engine.core.entity.component.ligth.QDirectionalLigth;
@@ -93,7 +93,7 @@ import net.qoopo.engine.core.scene.Camera;
 import net.qoopo.engine.core.scene.Scene;
 import net.qoopo.engine.core.texture.util.MaterialUtil;
 import net.qoopo.engine.core.util.QGlobal;
-import net.qoopo.engine.core.util.QUtilComponentes;
+import net.qoopo.engine.core.util.ComponentUtil;
 import net.qoopo.engine.core.util.mesh.NormalUtil;
 import net.qoopo.engine.java3d.renderer.QRenderJava3D;
 import net.qoopo.engine.renderer.SoftwareRenderer;
@@ -173,17 +173,17 @@ public class Principal extends javax.swing.JFrame {
         initComponents();
         chooser.setCurrentDirectory(new File("assets/"));
         motor = new QEngine3D();
-        this.escena = motor.getEscena();
+        this.escena = motor.getScene();
         motor.getCustomActions().add(actionUpdateEditor);
-        motor.getEscena().setAmbientColor(new QColor(50.0f / 255.0f, 50.0f / 255.0f, 50.0f / 255.0f));
-        pnlColorFondo.setBackground(motor.getEscena().getAmbientColor().getColor());
+        motor.getScene().setAmbientColor(new QColor(50.0f / 255.0f, 50.0f / 255.0f, 50.0f / 255.0f));
+        pnlColorFondo.setBackground(motor.getScene().getAmbientColor().getColor());
 
         motor.setIniciarAudio(false);
         motor.setIniciarDiaNoche(false);
         motor.setIniciarFisica(false);
         motor.setIniciarInteligencia(false);
         motor.setIniciarAnimaciones(false);
-        agregarRenderer("Main", QVector3.of(0, 20, 40), QVector3.of(0, 0, 0), RenderEngine.RENDER_INTERNO);
+        agregarRenderer("Main", QVector3.of(-5, 10, 12), QVector3.of(0, 0, 0), RenderEngine.RENDER_INTERNO);
         renderer.opciones.setDibujarLuces(true);
         motor.setRenderEngine(renderer);
 
@@ -240,7 +240,7 @@ public class Principal extends javax.swing.JFrame {
 
     public void loadInitialScene() {
         InitialScene initialScene = new InitialScene();
-        initialScene.make(motor.getEscena());
+        initialScene.make(motor.getScene());
         actualizarArbolEscena();
     }
 
@@ -295,14 +295,14 @@ public class Principal extends javax.swing.JFrame {
         RenderEngine nuevoRenderer;
         switch (tipoRenderer) {
             case RenderEngine.RENDER_JAVA3D:
-                nuevoRenderer = new QRenderJava3D(motor.getEscena(), nombre, new Superficie(panelDibujo), 800, 600);
+                nuevoRenderer = new QRenderJava3D(motor.getScene(), nombre, new Superficie(panelDibujo), 800, 600);
                 break;
             case RenderEngine.RENDER_OPENGL:
-                nuevoRenderer = new OpenGlRenderer(motor.getEscena(), nombre, new Superficie(panelDibujo), 800, 600);
+                nuevoRenderer = new OpenGlRenderer(motor.getScene(), nombre, new Superficie(panelDibujo), 800, 600);
                 break;
             case RenderEngine.RENDER_INTERNO:
             default:
-                nuevoRenderer = new SoftwareRenderer(motor.getEscena(), nombre, new Superficie(panelDibujo), 800, 600);
+                nuevoRenderer = new SoftwareRenderer(motor.getScene(), nombre, new Superficie(panelDibujo), 800, 600);
                 break;
         }
         // nuevoRenderer.opciones.setRenderArtefactos(true);
@@ -322,7 +322,7 @@ public class Principal extends javax.swing.JFrame {
             // }
         });
 
-        motor.getEscena().addEntity(camara);
+        motor.getScene().addEntity(camara);
         nuevoRenderer.setCamara(camara);// setea la camara inicial creada
         // nuevoRenderer.setAccionSeleccionar(accionSeleccionar);
 
@@ -337,7 +337,7 @@ public class Principal extends javax.swing.JFrame {
         setRenderer(nuevoRenderer);
         this.editorRenderer = nuevoEditorRenderer;
 
-        camara.addComponent(new QCamaraControl(camara));
+        camara.addComponent(new CameraController(camara));
         // camara.agregarComponente(new QCamaraOrbitar(camara));
         // camara.agregarComponente(new QCamaraPrimeraPersona(camara));
         prepararInputListenerRenderer(nuevoRenderer);
@@ -541,7 +541,7 @@ public class Principal extends javax.swing.JFrame {
         itmCrearNcoesfera = new javax.swing.JMenuItem();
         itmCrearcuboesfera = new javax.swing.JMenuItem();
         jSeparator4 = new javax.swing.JPopupMenu.Separator();
-        jMenuItem10 = new javax.swing.JMenuItem();
+        itmToro = new javax.swing.JMenuItem();
         jMenuItem11 = new javax.swing.JMenuItem();
         jMenuItem26 = new javax.swing.JMenuItem();
         jMenuItem1 = new javax.swing.JMenuItem();
@@ -1218,7 +1218,7 @@ public class Principal extends javax.swing.JFrame {
         jButton9.setText("Inflar");
         jButton9.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton9ActionPerformed(evt);
+                // jButton9ActionPerformed(evt);
             }
         });
 
@@ -2090,6 +2090,14 @@ public class Principal extends javax.swing.JFrame {
         });
         jMenu1.add(jMenuItem18);
 
+        itmCrearCaja.setText("Cubo");
+        itmCrearCaja.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                itmCrearCajaActionPerformed(evt);
+            }
+        });
+        jMenu1.add(itmCrearCaja);
+
         jMenuItem8.setText("Esfera");
         jMenuItem8.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -2106,15 +2114,7 @@ public class Principal extends javax.swing.JFrame {
         });
         jMenu1.add(mnuItemGeosfera);
 
-        itmCrearCaja.setText("Cubo");
-        itmCrearCaja.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                itmCrearCajaActionPerformed(evt);
-            }
-        });
-        jMenu1.add(itmCrearCaja);
-
-        itmCrearNcoesfera.setText("Nicoesfera");
+        itmCrearNcoesfera.setText("Icoesfera");
         itmCrearNcoesfera.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 itmCrearNcoesferaActionPerformed(evt);
@@ -2131,13 +2131,13 @@ public class Principal extends javax.swing.JFrame {
         jMenu1.add(itmCrearcuboesfera);
         jMenu1.add(jSeparator4);
 
-        jMenuItem10.setText("Toro");
-        jMenuItem10.addActionListener(new java.awt.event.ActionListener() {
+        itmToro.setText("Toro");
+        itmToro.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItem10ActionPerformed(evt);
+                itmToroActionPerformed(evt);
             }
         });
-        jMenu1.add(jMenuItem10);
+        jMenu1.add(itmToro);
 
         jMenuItem11.setText("Cilindro");
         jMenuItem11.addActionListener(new java.awt.event.ActionListener() {
@@ -2350,7 +2350,7 @@ public class Principal extends javax.swing.JFrame {
         }
         for (Entity object : toRemove) {
             // renderer.eliminarObjeto(object);
-            motor.getEscena().removeEntity(object);
+            motor.getScene().removeEntity(object);
         }
 
         actualizarArbolEscena();
@@ -2389,7 +2389,7 @@ public class Principal extends javax.swing.JFrame {
             for (Entity object : clipboard) {
                 Entity newObject = object.clone();
                 newObject.setName(object.getName() + " Copy");
-                motor.getEscena().addEntity(newObject);
+                motor.getScene().addEntity(newObject);
                 editorRenderer.entidadesSeleccionadas.add(newObject);
                 editorRenderer.entidadActiva = newObject;
             }
@@ -2419,7 +2419,7 @@ public class Principal extends javax.swing.JFrame {
         esfera.addComponent(new Sphere(1.0f));
         esfera.addComponent(new QColisionEsfera(1.0f));
 
-        motor.getEscena().addEntity(esfera);
+        motor.getScene().addEntity(esfera);
         actualizarArbolEscena();
         seleccionarEntidad(esfera);
     }// GEN-LAST:event_jMenuItem8ActionPerformed
@@ -2428,29 +2428,29 @@ public class Principal extends javax.swing.JFrame {
         Entity cubo = new Entity("Cubo");
         cubo.addComponent(new Box(1));
         cubo.addComponent(new QColisionCaja(1, 1, 1));
-        motor.getEscena().addEntity(cubo);
+        motor.getScene().addEntity(cubo);
         actualizarArbolEscena();
         seleccionarEntidad(cubo);
         // actualizarFigurasRenderers();
     }// GEN-LAST:event_itmCrearCajaActionPerformed
 
-    private void jMenuItem10ActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jMenuItem10ActionPerformed
+    private void itmToroActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_itmToroActionPerformed
         Entity objeto = new Entity("Toro");
-        Torus toro = new Torus(3, 1, 30, 20);
+        Torus toro = new Torus(2, 1, 30, 20);
         objeto.addComponent(toro);
         // objeto.agregarComponente(new QColisionCapsula(1, 2));
         // objeto.agregarComponente(new QColisionCaja(2, 1, 2));
         objeto.addComponent(new QColisionMallaConvexa(toro));
-        motor.getEscena().addEntity(objeto);
+        motor.getScene().addEntity(objeto);
         actualizarArbolEscena();
         seleccionarEntidad(objeto);
-    }// GEN-LAST:event_jMenuItem10ActionPerformed
+    }// GEN-LAST:event_itmToroActionPerformed
 
     private void jMenuItem11ActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jMenuItem11ActionPerformed
         Entity objeto = new Entity("Cilindro");
         objeto.addComponent(new Cylinder(1, 1.0f));
         objeto.addComponent(new QColisionCilindro(1, 1.0f));
-        motor.getEscena().addEntity(objeto);
+        motor.getScene().addEntity(objeto);
         actualizarArbolEscena();
         seleccionarEntidad(objeto);
     }// GEN-LAST:event_jMenuItem11ActionPerformed
@@ -2459,7 +2459,7 @@ public class Principal extends javax.swing.JFrame {
         Entity objeto = new Entity("Cono");
         objeto.addComponent(new Cone(1, 1.0f));
         objeto.addComponent(new QColisionCono(1, 1.0f));
-        motor.getEscena().addEntity(objeto);
+        motor.getScene().addEntity(objeto);
         actualizarArbolEscena();
         seleccionarEntidad(objeto);
     }// GEN-LAST:event_jMenuItem12ActionPerformed
@@ -2488,7 +2488,7 @@ public class Principal extends javax.swing.JFrame {
         Entity nuevaLuz = new Entity("Luz Puntual");
         nuevaLuz.addComponent(
                 new QPointLigth(0.75f, new QColor(Color.white), Float.POSITIVE_INFINITY, false, false));
-        motor.getEscena().addEntity(nuevaLuz);
+        motor.getScene().addEntity(nuevaLuz);
         actualizarArbolEscena();
         seleccionarEntidad(nuevaLuz);
     }// GEN-LAST:event_mnuLuzPuntualActionPerformed
@@ -2497,7 +2497,7 @@ public class Principal extends javax.swing.JFrame {
         Entity nuevaLuz = new Entity("Luz Direccional");
         nuevaLuz.addComponent(
                 new QDirectionalLigth(1f, new QColor(Color.white), Float.POSITIVE_INFINITY, false, false));
-        motor.getEscena().addEntity(nuevaLuz);
+        motor.getScene().addEntity(nuevaLuz);
         actualizarArbolEscena();
         seleccionarEntidad(nuevaLuz);
     }// GEN-LAST:event_mnuLuzDireccionalActionPerformed
@@ -2506,7 +2506,7 @@ public class Principal extends javax.swing.JFrame {
         Entity nuevaLuz = new Entity("Luz Cónica");
         nuevaLuz.addComponent(new QSpotLigth(0.75f, new QColor(Color.white), Float.POSITIVE_INFINITY,
                 QVector3.of(0, -1, 0), (float) Math.toRadians(45), (float) Math.toRadians(40), false, false));
-        motor.getEscena().addEntity(nuevaLuz);
+        motor.getScene().addEntity(nuevaLuz);
         actualizarArbolEscena();
         seleccionarEntidad(nuevaLuz);
     }// GEN-LAST:event_mnuLuzConicaActionPerformed
@@ -2563,7 +2563,7 @@ public class Principal extends javax.swing.JFrame {
             try {
                 ModelLoader loader = new DefaultModelLoader();
                 Entity entity = loader.loadModel(chooser.getSelectedFile());
-                motor.getEscena().addEntity(entity);
+                motor.getScene().addEntity(entity);
                 seleccionarEntidad(entity);
                 actualizarArbolEscena();
             } catch (Exception e) {
@@ -2587,7 +2587,7 @@ public class Principal extends javax.swing.JFrame {
         Mesh plano = new Plane(2, 2);
         entidad.addComponent(plano);
         entidad.addComponent(new QColisionMallaConvexa(plano));
-        motor.getEscena().addEntity(entidad);
+        motor.getScene().addEntity(entidad);
         actualizarArbolEscena();
         seleccionarEntidad(entidad);
     }// GEN-LAST:event_jMenuItem18ActionPerformed
@@ -2618,8 +2618,8 @@ public class Principal extends javax.swing.JFrame {
                 archivo = archivo + ".qengineuni";
             }
             int i = 0;
-            int tam = motor.getEscena().getEntities().size();
-            for (Entity entidad : motor.getEscena().getEntities()) {
+            int tam = motor.getScene().getEntities().size();
+            for (Entity entidad : motor.getScene().getEntities()) {
                 SerializarUtil.agregarObjeto(archivo, entidad, true, true);
                 i++;
                 barraProgreso.setValue((int) (100 * (float) i / (float) tam));
@@ -2635,7 +2635,7 @@ public class Principal extends javax.swing.JFrame {
             chooser.setFileFilter(new FileNameExtensionFilter("Archivo Escenario Motor3D", "qengineuni"));
             if (chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
                 Entity entity = AssetManager.get().loadModel(chooser.getSelectedFile());
-                motor.getEscena().addEntity(entity);
+                motor.getScene().addEntity(entity);
                 if (entity instanceof Camera) {
                     renderer.setCamara((Camera) entity);
                     actualizarArbolEscena();
@@ -2695,7 +2695,7 @@ public class Principal extends javax.swing.JFrame {
         Color newColor = colorChooser.showDialog(this, "Seleccione un color", pnlColorFondo.getBackground());
         if (newColor != null) {
             pnlColorFondo.setBackground(newColor);
-            motor.getEscena().setAmbientColor(new QColor(newColor));
+            motor.getScene().setAmbientColor(new QColor(newColor));
             // renderer.setColorFondo(new QColor(newColor));
         }
     }// GEN-LAST:event_pnlColorFondoMousePressed
@@ -2709,16 +2709,16 @@ public class Principal extends javax.swing.JFrame {
         Color newColor = colorChooser.showDialog(this, "Seleccione un color", pnlColorFondo.getBackground());
         if (newColor != null) {
             pnlColorFondo.setBackground(newColor);
-            renderer.getEscena().fog.setColour(new QColor(newColor));
+            renderer.getScene().fog.setColour(new QColor(newColor));
         }
     }// GEN-LAST:event_pnlNeblinaColorMousePressed
 
     private void chkNeblinaActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_chkNeblinaActionPerformed
-        renderer.getEscena().fog.setActive(chkNeblina.isSelected());
+        renderer.getScene().fog.setActive(chkNeblina.isSelected());
     }// GEN-LAST:event_chkNeblinaActionPerformed
 
     private void spnNeblinaDensidadStateChanged(javax.swing.event.ChangeEvent evt) {// GEN-FIRST:event_spnNeblinaDensidadStateChanged
-        renderer.getEscena().fog.setDensity(((Double) spnNeblinaDensidad.getValue()).floatValue());
+        renderer.getScene().fog.setDensity(((Double) spnNeblinaDensidad.getValue()).floatValue());
     }// GEN-LAST:event_spnNeblinaDensidadStateChanged
 
     private void jMenuItem2ActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jMenuItem2ActionPerformed
@@ -2726,7 +2726,7 @@ public class Principal extends javax.swing.JFrame {
         PlanarMesh malla = new PlanarMesh(true, 20, 20, 20, 20);
         entidad.addComponent(malla);
         entidad.addComponent(new QColisionMallaConvexa(malla));
-        motor.getEscena().addEntity(entidad);
+        motor.getScene().addEntity(entidad);
         actualizarArbolEscena();
         seleccionarEntidad(entidad);
     }// GEN-LAST:event_jMenuItem2ActionPerformed
@@ -2738,7 +2738,7 @@ public class Principal extends javax.swing.JFrame {
             HeightMapTerrain terreno = new HeightMapTerrain(chooser.getSelectedFile(), 1, 0f, 50f, 5, null, true);
             entidad.addComponent(terreno);
             terreno.build();
-            motor.getEscena().addEntity(entidad);
+            motor.getScene().addEntity(entidad);
             actualizarArbolEscena();
             seleccionarEntidad(entidad);
         }
@@ -2746,7 +2746,7 @@ public class Principal extends javax.swing.JFrame {
 
     private void jMenuItem3ActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jMenuItem3ActionPerformed
         Entity entidad = new Entity("Entidad");
-        motor.getEscena().addEntity(entidad);
+        motor.getScene().addEntity(entidad);
         actualizarArbolEscena();
         seleccionarEntidad(entidad);
     }// GEN-LAST:event_jMenuItem3ActionPerformed
@@ -2755,7 +2755,7 @@ public class Principal extends javax.swing.JFrame {
         Entity objeto = new Entity("Cilindro");
         objeto.addComponent(new CylinderX(1, 1.0f));
         objeto.addComponent(new QColisionCilindroX(1, 1.0f));
-        motor.getEscena().addEntity(objeto);
+        motor.getScene().addEntity(objeto);
         actualizarArbolEscena();
         seleccionarEntidad(objeto);
     }// GEN-LAST:event_jMenuItem26ActionPerformed
@@ -2764,7 +2764,7 @@ public class Principal extends javax.swing.JFrame {
         for (Entity seleccionado : editorRenderer.entidadesSeleccionadas) {
             for (EntityComponent compo : seleccionado.getComponents()) {
                 if (compo instanceof Mesh) {
-                    NormalUtil.invertirNormales((Mesh) compo);
+                    ((Mesh) compo).invertNormals();
                 }
             }
         }
@@ -2781,7 +2781,7 @@ public class Principal extends javax.swing.JFrame {
         for (Entity seleccionado : editorRenderer.entidadesSeleccionadas) {
             for (EntityComponent compo : seleccionado.getComponents()) {
                 if (compo instanceof Mesh) {
-                    MaterialUtil.smooth((Mesh) compo, true);
+                    ((Mesh) compo).smooth();
                 }
             }
         }
@@ -2791,7 +2791,7 @@ public class Principal extends javax.swing.JFrame {
         for (Entity seleccionado : editorRenderer.entidadesSeleccionadas) {
             for (EntityComponent compo : seleccionado.getComponents()) {
                 if (compo instanceof Mesh) {
-                    MaterialUtil.smooth((Mesh) compo, false);
+                    ((Mesh) compo).unSmooth();
                 }
             }
         }
@@ -2824,7 +2824,7 @@ public class Principal extends javax.swing.JFrame {
 
     private void itmAddCamaraActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_itmAddCamaraActionPerformed
         Camera entidad = new Camera();
-        motor.getEscena().addEntity(entidad);
+        motor.getScene().addEntity(entidad);
         actualizarArbolEscena();
         seleccionarEntidad(entidad);
     }// GEN-LAST:event_itmAddCamaraActionPerformed
@@ -2834,7 +2834,7 @@ public class Principal extends javax.swing.JFrame {
             for (EntityComponent compo : seleccionado.getComponents()) {
                 if (compo instanceof Mesh) {
                     // QMallaUtil.subdividir((QGeometria) compo, 1);
-                    ((Mesh) compo).dividir();
+                    // ((Mesh) compo).subdivisionSurfaceSimple();
                 }
             }
         }
@@ -2845,7 +2845,7 @@ public class Principal extends javax.swing.JFrame {
         Triangle triangulo = new Triangle(1);
         entidad.addComponent(triangulo);
         entidad.addComponent(new QColisionTriangulo(triangulo));
-        motor.getEscena().addEntity(entidad);
+        motor.getScene().addEntity(entidad);
         actualizarArbolEscena();
         seleccionarEntidad(entidad);
     }// GEN-LAST:event_jMenuItem5ActionPerformed
@@ -2858,7 +2858,7 @@ public class Principal extends javax.swing.JFrame {
         Entity objeto = new Entity("Espiral");
         objeto.addComponent(new QEspiral(1, 10, 20));
         // objeto.agregarComponente(new QColisionCilindro(1, 1.0f));
-        motor.getEscena().addEntity(objeto);
+        motor.getScene().addEntity(objeto);
         actualizarArbolEscena();
         seleccionarEntidad(objeto);
     }// GEN-LAST:event_mnuEspiralActionPerformed
@@ -2879,7 +2879,7 @@ public class Principal extends javax.swing.JFrame {
         Entity objeto = new Entity("Cilindro");
         objeto.addComponent(new CylinderZ(1, 1.0f));
         objeto.addComponent(new QColisionCilindroX(1, 1.0f));
-        motor.getEscena().addEntity(objeto);
+        motor.getScene().addEntity(objeto);
         actualizarArbolEscena();
         seleccionarEntidad(objeto);
     }// GEN-LAST:event_jMenuItem1ActionPerformed
@@ -2889,7 +2889,7 @@ public class Principal extends javax.swing.JFrame {
         // objeto.agregarComponente(new QPrisma(3, 1.0f, 1.0f, 20, 3));
         objeto.addComponent(new Prism(3, 1.0f, 1.0f, 5, 3));
         // objeto.agregarComponente(new QColisionCilindro(1, 1.0f));
-        motor.getEscena().addEntity(objeto);
+        motor.getScene().addEntity(objeto);
         actualizarArbolEscena();
         seleccionarEntidad(objeto);
     }// GEN-LAST:event_mnuItemPrismaActionPerformed
@@ -2898,7 +2898,7 @@ public class Principal extends javax.swing.JFrame {
         Entity esfera = new Entity("Geoesfera");
         esfera.addComponent(new GeoSphere(1.0f, 3));
         esfera.addComponent(new QColisionEsfera(1.0f));
-        motor.getEscena().addEntity(esfera);
+        motor.getScene().addEntity(esfera);
         actualizarArbolEscena();
         seleccionarEntidad(esfera);
     }// GEN-LAST:event_mnuItemGeosferaActionPerformed
@@ -3063,7 +3063,7 @@ public class Principal extends javax.swing.JFrame {
         Mesh malla = new Teapot();
         item.addComponent(malla);
         item.addComponent(new QColisionMallaConvexa(malla));
-        motor.getEscena().addEntity(item);
+        motor.getScene().addEntity(item);
         actualizarArbolEscena();
         seleccionarEntidad(item);
     }// GEN-LAST:event_mnuItemTeteraActionPerformed
@@ -3073,40 +3073,38 @@ public class Principal extends javax.swing.JFrame {
         Mesh malla = new Suzane();
         item.addComponent(malla);
         item.addComponent(new QColisionMallaConvexa(malla));
-        motor.getEscena().addEntity(item);
+        motor.getScene().addEntity(item);
         actualizarArbolEscena();
         seleccionarEntidad(item);
-    }// GEN-LAST:event_mnuItemSusaneActionPerformed
+    }
 
-    private void btnCalcularNormalesActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btnCalcularNormalesActionPerformed
+    private void btnCalcularNormalesActionPerformed(java.awt.event.ActionEvent evt) {
         for (Entity seleccionado : editorRenderer.entidadesSeleccionadas) {
             for (EntityComponent compo : seleccionado.getComponents()) {
                 if (compo instanceof Mesh) {
-                    NormalUtil.calcularNormales((Mesh) compo);
+                    ((Mesh) compo).computeNormals();
+                    ((Mesh) compo).updateTimeMark();
                 }
             }
         }
-    }// GEN-LAST:event_btnCalcularNormalesActionPerformed
+    }
 
-    private void itmMenuEliminarRecursivoActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_itmMenuEliminarRecursivoActionPerformed
-        // TODO add your handling code here:
+    private void itmMenuEliminarRecursivoActionPerformed(java.awt.event.ActionEvent evt) {
         LinkedList<Entity> toRemove = new LinkedList<>();
         for (Entity object : editorRenderer.entidadesSeleccionadas) {
             toRemove.add(object);
         }
         for (Entity object : toRemove) {
-            // renderer.eliminarObjeto(object);
-            motor.getEscena().removeEntityAndChilds(object);
+            motor.getScene().removeEntityAndChilds(object);
         }
-
         actualizarArbolEscena();
-    }// GEN-LAST:event_itmMenuEliminarRecursivoActionPerformed
+    }
 
     private void itmCrearNcoesferaActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_itmCrearNcoesferaActionPerformed
         Entity esfera = new Entity("Nicoesfera");
         esfera.addComponent(new IcoSphere(1.0f, 3));
         esfera.addComponent(new QColisionEsfera(1.0f));
-        motor.getEscena().addEntity(esfera);
+        motor.getScene().addEntity(esfera);
         actualizarArbolEscena();
         seleccionarEntidad(esfera);
     }// GEN-LAST:event_itmCrearNcoesferaActionPerformed
@@ -3115,41 +3113,28 @@ public class Principal extends javax.swing.JFrame {
         Entity esfera = new Entity("Cuboesfera");
         esfera.addComponent(new SphereBox(1.0f, 3));
         esfera.addComponent(new QColisionEsfera(1.0f));
-        motor.getEscena().addEntity(esfera);
+        motor.getScene().addEntity(esfera);
         actualizarArbolEscena();
         seleccionarEntidad(esfera);
-    }// GEN-LAST:event_itmCrearcuboesferaActionPerformed
+    }
 
     private void btnDividirCatmullActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btnDividirCatmullActionPerformed
         for (Entity seleccionado : editorRenderer.entidadesSeleccionadas) {
             for (EntityComponent compo : seleccionado.getComponents()) {
                 if (compo instanceof Mesh) {
                     // QMallaUtil.subdividir((QGeometria) compo, 1);
-                    ((Mesh) compo).dividirCatmullClark();
+                    // ((Mesh) compo).subdivisionSurfaceCatmullClark();
                 }
             }
         }
-    }// GEN-LAST:event_btnDividirCatmullActionPerformed
-
-    private void jButton9ActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jButton9ActionPerformed
-
-        float radio = Float.parseFloat(txtInflarRadio.getText());
-        for (Entity seleccionado : editorRenderer.entidadesSeleccionadas) {
-            for (EntityComponent compo : seleccionado.getComponents()) {
-                if (compo instanceof Mesh) {
-                    // QMallaUtil.subdividir((QGeometria) compo, 1);
-                    ((Mesh) compo).inflate(radio);
-                }
-            }
-        }
-    }// GEN-LAST:event_jButton9ActionPerformed
+    }
 
     private void btnEliminarVerticesDuplicadosActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btnEliminarVerticesDuplicadosActionPerformed
         for (Entity seleccionado : editorRenderer.entidadesSeleccionadas) {
             for (EntityComponent compo : seleccionado.getComponents()) {
                 if (compo instanceof Mesh) {
                     // QMallaUtil.subdividir((QGeometria) compo, 1);
-                    ((Mesh) compo).cleanDuplicateVertex();
+                    // ((Mesh) compo).cleanDuplicateVertex();
                 }
             }
         } // TODO add your handling code here:
@@ -3165,25 +3150,25 @@ public class Principal extends javax.swing.JFrame {
     private void refreshStats() {
         int vertexCount = 0;
         int faceCount = 0;
-        for (Entity objeto : motor.getEscena().getEntities()) {
+        for (Entity objeto : motor.getScene().getEntities()) {
             if (objeto != null && objeto.isToRender()) {
                 for (EntityComponent componente : objeto.getComponents()) {
                     if (componente instanceof Mesh) {
-                        vertexCount += ((Mesh) componente).vertices.length;
-                        faceCount += ((Mesh) componente).primitivas.length;
+                        vertexCount += ((Mesh) componente).vertexList.length;
+                        faceCount += ((Mesh) componente).primitiveList.length;
                     }
                 }
 
             }
         }
         lblEstad.setText(vertexCount + " vértices; " + faceCount + " polígonos; "
-                + motor.getEscena().getEntities().size() + " objetos");
+                + motor.getScene().getEntities().size() + " objetos");
     }
 
     public void actualizarArbolEscena() {
         // actualizo el arbol
         DefaultMutableTreeNode raiz = new DefaultMutableTreeNode(new QArbolWrapper("Escena", null));
-        for (Entity entidad : motor.getEscena().getEntities()) {
+        for (Entity entidad : motor.getScene().getEntities()) {
             // solo agrego los que no tienen un padre
             if (entidad.getParent() == null) {
                 raiz.add(generarArbolEntidad(entidad));
@@ -3419,20 +3404,19 @@ public class Principal extends javax.swing.JFrame {
 
                     case KeyEvent.VK_DECIMAL: {
                         try {
-                            QCamaraControl control = QUtilComponentes.getCamaraControl(renderer.getCamara());
+                            CameraController control = ComponentUtil.getCamaraControl(renderer.getCamara());
                             if (control != null) {
                                 control.getTarget()
                                         .set(editorRenderer.entidadActiva.getTransformacion().getTraslacion());
                                 control.updateCamera();
                             } else {
-                                QCamaraOrbitar control2 = QUtilComponentes.getCamaraOrbitar(renderer.getCamara());
+                                CameraOrbiter control2 = ComponentUtil.getCamaraOrbitar(renderer.getCamara());
                                 if (control2 != null) {
                                     control2.getTarget()
                                             .set(editorRenderer.entidadActiva.getTransformacion().getTraslacion());
                                     control2.updateCamera();
                                 }
                             }
-
                         } catch (Exception e) {
 
                         }
@@ -3610,7 +3594,7 @@ public class Principal extends javax.swing.JFrame {
     private javax.swing.JMenu jMenu8;
     private javax.swing.JMenu jMenu9;
     private javax.swing.JMenuItem jMenuItem1;
-    private javax.swing.JMenuItem jMenuItem10;
+    private javax.swing.JMenuItem itmToro;
     private javax.swing.JMenuItem jMenuItem11;
     private javax.swing.JMenuItem jMenuItem12;
     private javax.swing.JMenuItem jMenuItem13;

@@ -1,12 +1,14 @@
 package net.qoopo.engine.renderer;
 
 import java.util.List;
-import java.util.stream.IntStream;
+import java.util.logging.Logger;
 
 import lombok.Getter;
 import lombok.Setter;
+import net.qoopo.engine.core.engine.EngineTime;
 import net.qoopo.engine.core.entity.Entity;
 import net.qoopo.engine.core.entity.component.EntityComponent;
+import net.qoopo.engine.core.entity.component.UpdatableComponent;
 import net.qoopo.engine.core.entity.component.ligth.QDirectionalLigth;
 import net.qoopo.engine.core.entity.component.ligth.QLigth;
 import net.qoopo.engine.core.entity.component.ligth.QPointLigth;
@@ -14,10 +16,14 @@ import net.qoopo.engine.core.entity.component.ligth.QSpotLigth;
 import net.qoopo.engine.core.entity.component.mesh.Mesh;
 import net.qoopo.engine.core.entity.component.mesh.primitive.Fragment;
 import net.qoopo.engine.core.entity.component.mesh.primitive.Poly;
-import net.qoopo.engine.core.entity.component.mesh.primitive.QPrimitiva;
+import net.qoopo.engine.core.entity.component.mesh.primitive.Primitive;
 import net.qoopo.engine.core.entity.component.mesh.primitive.Vertex;
+import net.qoopo.engine.core.entity.component.modifier.ModifierComponent;
+import net.qoopo.engine.core.entity.component.particles.Particle;
+import net.qoopo.engine.core.entity.component.particles.ParticleEmissor;
 import net.qoopo.engine.core.entity.component.transform.QVertexBuffer;
 import net.qoopo.engine.core.material.basico.QMaterialBas;
+import net.qoopo.engine.core.math.QColor;
 import net.qoopo.engine.core.math.QMatriz4;
 import net.qoopo.engine.core.math.QVector2;
 import net.qoopo.engine.core.math.QVector3;
@@ -28,13 +34,11 @@ import net.qoopo.engine.core.renderer.superficie.Superficie;
 import net.qoopo.engine.core.scene.Camera;
 import net.qoopo.engine.core.scene.Scene;
 import net.qoopo.engine.core.shadow.QProcesadorSombra;
+import net.qoopo.engine.core.util.ComponentUtil;
 import net.qoopo.engine.core.util.QGlobal;
-import net.qoopo.engine.core.util.QUtilComponentes;
 import net.qoopo.engine.core.util.TempVars;
 import net.qoopo.engine.renderer.raster.AbstractRaster;
 import net.qoopo.engine.renderer.raster.ParallelRaster;
-import net.qoopo.engine.renderer.raster.Raster;
-import net.qoopo.engine.renderer.raster.Raster2;
 import net.qoopo.engine.renderer.shader.fragment.FragmentShader;
 import net.qoopo.engine.renderer.shader.fragment.FragmentShaderComponent;
 import net.qoopo.engine.renderer.shader.fragment.proxy.QFlatProxyShader;
@@ -44,8 +48,8 @@ import net.qoopo.engine.renderer.shader.fragment.proxy.QPbrProxyShader;
 import net.qoopo.engine.renderer.shader.fragment.proxy.QPhongProxyShader;
 import net.qoopo.engine.renderer.shader.fragment.proxy.QShadowProxyShader;
 import net.qoopo.engine.renderer.shader.fragment.proxy.QSimpleProxyShader;
-import net.qoopo.engine.renderer.shader.fragment.proxy.QTexturaProxyShader;
-import net.qoopo.engine.renderer.shader.vertex.VertexShader;
+import net.qoopo.engine.renderer.shader.fragment.proxy.QTextureProxyShader;
+import net.qoopo.engine.renderer.shader.vertex.DefaultVertexShader;
 import net.qoopo.engine.renderer.shader.vertex.VertexShaderComponent;
 import net.qoopo.engine.renderer.shadow.procesadores.QSombraCono;
 import net.qoopo.engine.renderer.shadow.procesadores.QSombraDireccional;
@@ -62,7 +66,7 @@ import net.qoopo.engine.renderer.util.TransformationVectorUtil;
 @Setter
 public class SoftwareRenderer extends RenderEngine {
 
-    // private static Logger logger = Logger.getLogger("qrender");
+    private static Logger logger = Logger.getLogger("SoftwareRenderer");
     // El sombreador (el que calcula el color de cada pixel)
     protected FragmentShader shader;
     // El sombreador default (el que calcula el color de cada pixel)
@@ -70,26 +74,29 @@ public class SoftwareRenderer extends RenderEngine {
     // El que crea los triangulos y llama al shader en cada pixel
     protected AbstractRaster raster;
 
-    protected VertexShader vertexShader = new VertexShader();
-    protected VertexShader defaultVertexShader = new VertexShader();
+    protected DefaultVertexShader vertexShader = new DefaultVertexShader();
+    protected DefaultVertexShader defaultVertexShader = new DefaultVertexShader();
 
     public SoftwareRenderer(Scene escena, Superficie superficie, int ancho, int alto) {
         super(escena, superficie, ancho, alto);
         defaultShader = new QFullProxyShader(this);
-        raster = new Raster(this);
+        // defaultShader = new QPhongShaderBAS(this);
+        // raster = new Raster(this);
+        raster = new ParallelRaster(this);
         // cambiarShader(7);//pbr
     }
 
     public SoftwareRenderer(Scene escena, String nombre, Superficie superficie, int ancho, int alto) {
         super(escena, nombre, superficie, ancho, alto);
         defaultShader = new QFullProxyShader(this);
-        raster = new Raster(this);
+        // raster = new Raster(this);
+        raster = new ParallelRaster(this);
         // cambiarShader(7);//pbr
     }
 
     @Override
     public long update() {
-      
+
         try {
             if (!isCargando()) {
                 if (frameBuffer != null) {
@@ -97,14 +104,13 @@ public class SoftwareRenderer extends RenderEngine {
                     // logger.info("======================= QRENDER =======================");
                     // logger.info("");
                     getSubDelta();
-                    setColorFondo(escena.getAmbientColor());// pintamos el fondo con el color ambiente
+                    setColorFondo(scene.getAmbientColor());// pintamos el fondo con el color ambiente
                     clean();
                     // logger.info("P1. Limpiar pantalla=" + getSubDelta());
                     updateLigths();
                     // logger.info("P2. Actualizar luces y sombras=" + getSubDelta());
                     // logger.info("P5. ----Renderizado-----");
                     render();
-
                     // shadeFragments();
                     // postRender();
 
@@ -126,7 +132,6 @@ public class SoftwareRenderer extends RenderEngine {
         return tiempoPrevio;
     }
 
-    
     /**
      * Realiza la limpieza de pantalla
      */
@@ -153,14 +158,14 @@ public class SoftwareRenderer extends RenderEngine {
             QMatriz4 matrizVista = camara.getMatrizTransformacion(QGlobal.tiempo).invert();
             QMatriz4 matrizVistaInvertidaBillboard = camara.getMatrizTransformacion(QGlobal.tiempo);
             // caras solidas
-            escena.getEntities().stream()
+            scene.getEntities().stream()
                     .filter(entity -> entity.isToRender())
-                    .parallel()
+                    // .parallel()
                     .forEach(entity -> renderEntity(entity, matrizVista, matrizVistaInvertidaBillboard, false));
             // caras transperentes
-            escena.getEntities().stream()
+            scene.getEntities().stream()
                     .filter(entity -> entity.isToRender())
-                    .parallel()
+                    // .parallel()
                     .forEach(entity -> renderEntity(entity, matrizVista, matrizVistaInvertidaBillboard, true));
         } catch (Exception e) {
             System.out.println("Error render:" + nombre);
@@ -178,56 +183,63 @@ public class SoftwareRenderer extends RenderEngine {
      * Se encarga de pasar el fragment shader en caso de ser diferido
      */
     public void shadeFragments() {
-        if (opciones.isDefferedShadding()) {
-            if (getFrameBuffer() != null) {
-                // toda la pantalla
-                // shadeFragments(0, getFrameBuffer().getAncho(), 0,
-                // getFrameBuffer().getAlto());
-                // divide la pantalla en secciones
-                int sections = 4;
-                int widthSection = getFrameBuffer().getAncho() / sections;
-                int heigthSection = getFrameBuffer().getAlto() / sections;
-                // // procesa cada seccion en paralelo
-                IntStream.range(0, sections)
-                        .parallel()
-                        .forEach(i -> IntStream.range(0, sections)
-                                .parallel()
-                                .forEach(j -> {
-                                    shadeFragments(i * widthSection, widthSection, j * heigthSection,
-                                            heigthSection);
-                                }));
+        if (!isCargando()) {
+            if (opciones.isDefferedShadding()) {
+                if (getFrameBuffer() != null) {
+                    // toda la pantalla
+                    shadeFragments(0, getFrameBuffer().getAncho(), 0,
+                            getFrameBuffer().getAlto());
+                    // // divide la pantalla en secciones
+                    // int sections = 4;
+                    // int widthSection = getFrameBuffer().getAncho() / sections;
+                    // int heigthSection = getFrameBuffer().getAlto() / sections;
+                    // // // procesa cada seccion en paralelo
+                    // IntStream.range(0, sections)
+                    // .parallel()
+                    // .forEach(i -> IntStream.range(0, sections)
+                    // .parallel()
+                    // .forEach(j -> {
+                    // shadeFragments(i * widthSection, widthSection, j * heigthSection,
+                    // heigthSection);
+                    // }));
+                }
             }
         }
     }
 
     private void shadeFragments(int xFrom, int width, int yFrom, int height) {
-        if (getFrameBuffer() != null) {
-            for (int x = xFrom; x < xFrom + width; x++) {
-                for (int y = yFrom; y < yFrom + height; y++) {
-                    if (getFrameBuffer().getPixel(x, y).isDibujar())
-                        getFrameBuffer().setQColor(x, y,
-                                getShader().shadeFragment(getFrameBuffer().getPixel(x, y), x, y));
+        if (!isCargando()) {
+            if (getFrameBuffer() != null && getShader() != null) {
+                for (int x = xFrom; x < xFrom + width; x++) {
+                    for (int y = yFrom; y < yFrom + height; y++) {
+                        if (getFrameBuffer().getPixel(x, y).isDibujar())
+                            getFrameBuffer().setQColor(x, y,
+                                    getShader().shadeFragment(
+                                            getFrameBuffer().getPixel(x, y), x, y));
+                    }
                 }
             }
         }
     }
 
     public void postRender() {
-        if (frameBuffer != null) {
-            efectosPostProcesamiento();
-            if (renderReal) {
-                showStats(frameBuffer.getRendered().getGraphics());
-                // logger.info("P8. Estadísticas=" + getSubDelta());
-            }
+        if (!isCargando()) {
+            if (frameBuffer != null) {
+                efectosPostProcesamiento();
+                if (renderReal) {
+                    showStats(frameBuffer.getRendered().getGraphics());
+                    // logger.info("P8. Estadísticas=" + getSubDelta());
+                }
 
-            // Dibuja sobre la superficie
-            if (renderReal
-                    && (this.getSuperficie() != null
-                            && this.getSuperficie().getComponente() != null
-                            && this.getSuperficie().getComponente().getGraphics() != null)) {
-                this.getSuperficie().getComponente().setImagen(frameBuffer.getRendered());
-                this.getSuperficie().getComponente().repaint();
-                // logger.info("P10. Tiempo dibujado sobre superficie=" + getSubDelta());
+                // Dibuja sobre la superficie
+                if (renderReal
+                        && (this.getSuperficie() != null
+                                && this.getSuperficie().getComponente() != null
+                                && this.getSuperficie().getComponente().getGraphics() != null)) {
+                    this.getSuperficie().getComponente().setImagen(frameBuffer.getRendered());
+                    this.getSuperficie().getComponente().repaint();
+                    // logger.info("P10. Tiempo dibujado sobre superficie=" + getSubDelta());
+                }
             }
         }
     }
@@ -241,6 +253,8 @@ public class SoftwareRenderer extends RenderEngine {
      */
     protected void renderEntity(Entity entity, QMatriz4 matrizVista, QMatriz4 matrizVistaInvertidaBillboard,
             boolean transparentes) {
+
+        // logger.info("[+] Renderizando entidad : " + entity.getName());
         // La matriz vistaModelo es el resultado de multiplicar la matriz de vista por
         // la matriz del modelo
         // De esta forma es la matriz que se usa para transformar el modelo a las
@@ -272,7 +286,7 @@ public class SoftwareRenderer extends RenderEngine {
         matVistaModelo = matrizVista.mult(matrizModelo);
 
         // busca un shader personalizado
-        FragmentShaderComponent qshader = (FragmentShaderComponent) QUtilComponentes.getComponent(entity,
+        FragmentShaderComponent qshader = (FragmentShaderComponent) ComponentUtil.getComponent(entity,
                 FragmentShaderComponent.class);
         if (qshader != null && qshader.getShader() != null) {
             setShader(qshader.getShader());
@@ -282,64 +296,182 @@ public class SoftwareRenderer extends RenderEngine {
         getShader().setRender(this);
 
         // busca un vertexShader personalizado
-        VertexShaderComponent vertexShaderComponent = (VertexShaderComponent) QUtilComponentes.getComponent(entity,
+        VertexShaderComponent vertexShaderComponent = (VertexShaderComponent) ComponentUtil.getComponent(entity,
                 VertexShaderComponent.class);
         if (vertexShaderComponent != null && vertexShaderComponent.getShader() != null) {
             setVertexShader(vertexShaderComponent.getShader());
         } else {
             setVertexShader(defaultVertexShader);
         }
-        entity.getComponents()
-                .stream()
-                .filter(componente -> componente instanceof Mesh)
-                .parallel()
-                .forEach(componente -> {
-                    TempVars t = TempVars.get();
-                    try {
-                        Mesh mesh = (Mesh) componente;
-                        entity.actualizarRotacionBillboard(matrizVistaInvertidaBillboard);
-                        // vertices
-                        int nVertices = 0;
-                        t.bufferVertices1.init(mesh.vertices.length, mesh.primitivas.length);
-                        for (Vertex vertice : mesh.vertices) {
-                            t.bufferVertices1.setVertice(
-                                    vertexShader.apply(vertice, matVistaModelo), nVertices);
-                            nVertices++;
-                        }
-                        // rasterizacion
-                        // caras
-                        // for (QPrimitiva primitiva : ((Mesh) componente).primitivas) {
-                        List.of(((Mesh) componente).primitivas).stream()
-                                // .parallel()
-                                .forEach(primitiva -> {
-                                    if (primitiva.material == null
-                                            // q no tengra transparencia cuando tiene el tipo de material basico
-                                            || (primitiva.material instanceof QMaterialBas
-                                                    && transparentes == ((QMaterialBas) primitiva.material)
-                                                            .isTransparencia())) {
-                                        if (primitiva instanceof Poly) {
-                                            Poly poly = (Poly) primitiva;
-                                            // vuelve a calcular la normal y el centro, funciona para las
-                                            // animaciones, donde la transformacion de la normal no da los
-                                            // resultados esperados, porq no tenemos la matriz del hueso
-                                            poly.calculaNormalYCentro(t.bufferVertices1.getVerticesTransformados());
-                                            if (poly.isNormalInversa()) {
-                                                // invierto la normal en caso detener la marca de normal inversa
-                                                poly.getNormal().flip();
-                                                poly.getNormalCopy().flip();
-                                            }
-                                        }
-                                        poligonosDibujadosTemp++;
-                                        raster.raster(t.bufferVertices1, primitiva, opciones
-                                                .getTipoVista() == QOpcionesRenderer.VISTA_WIRE
-                                                || primitiva.geometria.tipo == Mesh.GEOMETRY_TYPE_WIRE);
-                                    }
-                                });
 
-                    } finally {
-                        t.release();
+        entity.actualizarRotacionBillboard(matrizVistaInvertidaBillboard);
+
+        try {
+            ParticleEmissor emisor = null;
+            // primero ejecuta los componentes y modificadores
+            Mesh mesh = ((Mesh) entity.getComponent(Mesh.class));
+            if (mesh != null) {
+
+                // actualizo la marca de tiempo, solo se usa para saber si se debe volver a
+                // calcular los modificadores
+                if (mesh.getTimeMark() == 0L) {
+                    mesh.setTimeMark(System.nanoTime());
+                }
+
+                Mesh tmpMesh = mesh.getCacheMesh();
+                if (tmpMesh == null || tmpMesh.getTimeMark() != mesh.getTimeMark()) {
+                    logger.info("clonando malla " + entity.getName());
+                    logger.info("nulo? " + (tmpMesh == null));
+                    logger.info("mesh.gettimeMark=" + mesh.getTimeMark());
+                    logger.info("tmpMeshtimeMark=" + (tmpMesh != null ? tmpMesh.getTimeMark() : "--"));
+                    tmpMesh = mesh.clone();// no destructivo, las modificaciones se realizan sobre la copia
+                }
+
+                for (EntityComponent component : entity.getComponents()) {
+                    if (component instanceof ModifierComponent) {
+                        ((ModifierComponent) component).apply(tmpMesh);
+                        // modifiedMesh.smooth();
+                        // modifiedMesh.computeNormals();
                     }
-                });
+                    if (component instanceof UpdatableComponent) {
+                        if (((UpdatableComponent) component).isRequierepdate())
+                            ((UpdatableComponent) component).update(this, scene);
+                        // particulas
+                    } else if (component instanceof ParticleEmissor) {
+                        emisor = (ParticleEmissor) component;
+                        emisor.emitir(EngineTime.deltaNano);
+                        for (Particle particula : emisor.getParticulasNuevas()) {
+                            scene.addEntity(particula.objeto);
+                        }
+                    }
+                    // for (Particle particula : emisor.getParticulasEliminadas()) {
+                    // escena.eliminarGeometria(particula.objeto);
+                    // particula.objeto.renderizar=false;
+                    // modificado = true;
+                    // }
+                    // agrego las particulas nueva y elimino las viejas
+                }
+
+                mesh.setCacheMesh(tmpMesh);
+                final Mesh modifiedMesh = tmpMesh;
+
+                // Mesh modifiedMesh = (Mesh) entity.getComponent(Mesh.class);
+
+                // entity.actualizarRotacionBillboard(matrizVistaInvertidaBillboard);
+                // vertices
+                // int nVertices = 0;
+                // t.bufferVertices1.init(mesh.vertices.length, mesh.primitivas.length);
+                // // calcula las transformaciones de los vértices
+                // for (Vertex vertice : mesh.vertices) {
+                // QVector3 vertexNormal = QVector3.empty();
+                // // recorremos todas las caras que tienen el vértice para calcular la normal
+                // t.bufferVertices1.setVertice(
+                // vertexShader.apply(vertice, vertexNormal, QColor.WHITE, matVistaModelo),
+                // nVertices);
+                // nVertices++;
+                // }
+
+                // rasterizacion caras
+                List.of(modifiedMesh.primitiveList).stream()
+                        .parallel()
+                        .forEach(primitive -> {
+                            if (primitive.material == null
+                                    // q no tengra transparencia cuando tiene el tipo de material basico
+                                    || (primitive.material instanceof QMaterialBas
+                                            && transparentes == ((QMaterialBas) primitive.material)
+                                                    .isTransparencia())) {
+
+                                // transformamos los vertices por cada poligono
+                                TempVars t = TempVars.get();
+                                try {
+                                    t.bufferVertices1.init(
+                                            modifiedMesh.vertexList.length,
+                                            modifiedMesh.normalList.length,
+                                            modifiedMesh.uvList.length);
+
+                                    // calcula las transformaciones de los vértices
+                                    // de 0 a n donde n es el numero de vertices del poligono o primitva (linea)
+                                    for (int polyVertexIndex = 0; polyVertexIndex < primitive.vertexIndexList.length; polyVertexIndex++) {
+
+                                        // TempVars t2 = TempVars.get();
+                                        // indice del vértice de la malla
+                                        int vertexIndex = primitive.vertexIndexList[polyVertexIndex];
+                                        int normalIndex = 0;
+                                        int uvIndex = 0;
+
+                                        if (primitive.normalIndexList.length > polyVertexIndex)
+                                            normalIndex = primitive.normalIndexList[polyVertexIndex];
+
+                                        if (primitive.uvIndexList.length > polyVertexIndex)
+                                            uvIndex = primitive.uvIndexList[polyVertexIndex];
+
+                                        // Vertex vertex = t2.vertex1;
+                                        // QVector3 vertexNormal = t2.vector3f1;
+                                        // QVector2 vertexUV = t2.vector2f1;
+                                        Vertex vertex = new Vertex();
+                                        QVector3 vertexNormal = new QVector3();
+                                        QVector2 vertexUV = new QVector2();
+
+                                        // el vertice que corresponde de la malla
+                                        // vertex.set(modifiedMesh.vertexList[vertexIndex]);
+                                        vertex = modifiedMesh.vertexList[vertexIndex];
+
+                                        // la normal que corresponde de la malla
+                                        if (modifiedMesh.normalList.length > normalIndex)
+                                            vertexNormal.set(modifiedMesh.normalList[normalIndex]);
+
+                                        // logger.info("uv index " + polyVertexIndex + " => " + uvIndex);
+                                        // la coordenada uv que corresponde de la malla
+                                        if (modifiedMesh.uvList.length > uvIndex)
+                                            vertexUV.set(modifiedMesh.uvList[uvIndex]);
+
+                                        // logger.info("uv => " + vertexUV.toString());
+
+                                        t.bufferVertices1.setVertex(
+                                                vertexShader.apply(vertex, vertexNormal, vertexUV, QColor.WHITE,
+                                                        matVistaModelo),
+                                                vertexIndex);
+                                        if (modifiedMesh.normalList.length > normalIndex)
+                                            t.bufferVertices1.setNormal(vertexNormal, normalIndex);
+                                        if (modifiedMesh.uvList.length > uvIndex)
+                                            t.bufferVertices1.setUV(vertexUV, uvIndex);
+                                        // t2.release();
+                                    }
+
+                                    if (primitive instanceof Poly) {
+                                        Poly poly = (Poly) primitive;
+                                        // vuelve a calcular la normal y el centro en función de los vértices
+                                        // transformados, funciona para las
+                                        // animaciones, donde la transformacion de la normal no da los
+                                        // resultados esperados, porq no tenemos la matriz del hueso
+                                        poly.computeNormalCenter(t.bufferVertices1.getVertexList());
+                                        if (poly.isNormalInversa()) {
+                                            // invierto la normal en caso detener la marca de normal inversa
+                                            poly.getNormal().flip();
+                                            poly.getNormalCopy().flip();
+                                        }
+                                    }
+
+                                    poligonosDibujadosTemp++;
+                                    raster.raster(t.bufferVertices1, primitive, opciones
+                                            .getTipoVista() == QOpcionesRenderer.VISTA_WIRE
+                                            || primitive.mesh.tipo == Mesh.GEOMETRY_TYPE_WIRE);
+                                } catch (Exception ex) {
+                                    logger.severe("[X] Error al dibujar entidad : " + entity.getName()
+                                            + "   -> " + ex.getLocalizedMessage());
+                                    ex.printStackTrace();
+                                } finally {
+                                    t.release();
+                                }
+                            }
+                        });
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            // t.release();
+        }
+
     }
 
     /**
@@ -473,7 +605,7 @@ public class SoftwareRenderer extends RenderEngine {
         try {
             litgths.clear();
             // for (Entity entity : escena.getListaEntidades()) {
-            escena.getEntities().stream().filter(entity -> entity.isToRender()).parallel()
+            scene.getEntities().stream().filter(entity -> entity.isToRender()).parallel()
                     .forEach(entity -> {
                         entity.getComponents().stream().parallel().forEach(componente -> {
                             if (componente instanceof QLigth) {
@@ -524,22 +656,22 @@ public class SoftwareRenderer extends RenderEngine {
                                         if (luz instanceof QDirectionalLigth) {
                                             if (QGlobal.SOMBRAS_DIRECCIONALES_CASCADA) {
                                                 proc = new QSombraDireccionalCascada(QGlobal.SOMBRAS_CASCADAS_TAMANIO,
-                                                        escena, (QDirectionalLigth) componente, camara,
+                                                        scene, (QDirectionalLigth) componente, camara,
                                                         luz.getResolucionMapaSombra(), luz.getResolucionMapaSombra());
                                             } else {
-                                                proc = new QSombraDireccional(escena, (QDirectionalLigth) componente,
+                                                proc = new QSombraDireccional(scene, (QDirectionalLigth) componente,
                                                         camara, luz.getResolucionMapaSombra(),
                                                         luz.getResolucionMapaSombra());
                                             }
                                             // logger.info("Creado pocesador de sombra Direccional con clave "
                                             // + entity.getName());
                                         } else if (luz instanceof QPointLigth) {
-                                            proc = new QSombraOmnidireccional(escena, (QPointLigth) componente, camara,
+                                            proc = new QSombraOmnidireccional(scene, (QPointLigth) componente, camara,
                                                     luz.getResolucionMapaSombra(), luz.getResolucionMapaSombra());
                                             // logger.info("Creado pocesador de sombra Omnidireccional con clave "
                                             // + entity.getName());
                                         } else if (luz instanceof QSpotLigth) {
-                                            proc = new QSombraCono(escena, (QSpotLigth) componente, camara,
+                                            proc = new QSombraCono(scene, (QSpotLigth) componente, camara,
                                                     luz.getResolucionMapaSombra(), luz.getResolucionMapaSombra());
                                             // logger.info("Creado pocesador de sombra Cónica con clave "
                                             // + entity.getName());
@@ -605,7 +737,7 @@ public class SoftwareRenderer extends RenderEngine {
             QVector2 ubicacionLuz = new QVector2();
             QVector3 tmp;
             // Selección de luces
-            for (Entity entity : escena.getEntities()) {
+            for (Entity entity : scene.getEntities()) {
                 if (entity.isToRender()) {
                     for (EntityComponent componente : entity.getComponents()) {
                         if (componente instanceof QLigth) {
@@ -672,11 +804,13 @@ public class SoftwareRenderer extends RenderEngine {
 
                 break;
             case 2:
-                raster = new Raster2(this);
+                // raster = new Raster2(this);
+                raster = new ParallelRaster(this);
                 break;
             case 1:
             default:
-                raster = new Raster(this);
+                // raster = new Raster(this);
+                raster = new ParallelRaster(this);
                 break;
         }
     }
@@ -704,7 +838,7 @@ public class SoftwareRenderer extends RenderEngine {
                 defaultShader = new QPhongProxyShader(this);
                 break;
             case 3:
-                defaultShader = new QTexturaProxyShader(this);
+                defaultShader = new QTextureProxyShader(this);
                 break;
             case 4:
                 defaultShader = new QLigthProxyShader(this);
@@ -746,12 +880,12 @@ public class SoftwareRenderer extends RenderEngine {
     }
 
     @Override
-    public void renderLine(QPrimitiva primitiva, Vertex... vertex) {
+    public void renderLine(Primitive primitiva, Vertex... vertex) {
         raster.rasterLine(primitiva, vertex);
     }
 
     @Override
-    public void render(QVertexBuffer bufferVertices, QPrimitiva primitiva, boolean wire) {
+    public void render(QVertexBuffer bufferVertices, Primitive primitiva, boolean wire) {
         raster.raster(bufferVertices, primitiva, wire);
     }
 

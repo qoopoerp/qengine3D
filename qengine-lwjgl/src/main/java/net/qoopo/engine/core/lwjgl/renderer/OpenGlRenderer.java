@@ -32,7 +32,7 @@ import java.nio.FloatBuffer;
 import org.lwjgl.system.MemoryUtil;
 
 import net.qoopo.engine.core.entity.Entity;
-import net.qoopo.engine.core.entity.component.mesh.primitive.QPrimitiva;
+import net.qoopo.engine.core.entity.component.mesh.primitive.Primitive;
 import net.qoopo.engine.core.entity.component.mesh.primitive.Vertex;
 import net.qoopo.engine.core.entity.component.transform.QVertexBuffer;
 import net.qoopo.engine.core.lwjgl.renderer.core.QGlVentana;
@@ -180,13 +180,13 @@ public class OpenGlRenderer extends RenderEngine {
     }
 
     @Override
-    public void renderLine(QPrimitiva primitiva, Vertex... vertex) {
+    public void renderLine(Primitive primitiva, Vertex... vertex) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'rasterLine'");
     }
 
     @Override
-    public void render(QVertexBuffer bufferVertices, QPrimitiva primitiva, boolean wire) {
+    public void render(QVertexBuffer bufferVertices, Primitive primitiva, boolean wire) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'raster'");
     }

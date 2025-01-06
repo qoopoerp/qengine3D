@@ -33,7 +33,7 @@ import net.qoopo.engine.core.renderer.RenderEngine;
 import net.qoopo.engine.core.scene.Scene;
 import net.qoopo.engine.core.texture.QTextura;
 import net.qoopo.engine.core.texture.util.MaterialUtil;
-import net.qoopo.engine.core.util.QUtilComponentes;
+import net.qoopo.engine.core.util.ComponentUtil;
 import net.qoopo.engine.terrain.HeightMapTerrain;
 import net.qoopo.engine3d.test.generaEjemplos.MakeTestScene;
 
@@ -93,7 +93,7 @@ public class EjemploVehiculoModelo extends MakeTestScene {
 
         // QColisionTerreno colision = new QColisionTerreno(terreno);
         // entidadTerreno.agregarComponente(colision);
-        QColisionMallaIndexada colision = new QColisionMallaIndexada(QUtilComponentes.getMesh(entidadTerreno));
+        QColisionMallaIndexada colision = new QColisionMallaIndexada(ComponentUtil.getMesh(entidadTerreno));
         QObjetoRigido terrenoRigidez = new QObjetoRigido(QObjetoDinamico.ESTATICO);
         terrenoRigidez.setFormaColision(colision);
         entidadTerreno.addComponent(terrenoRigidez);
@@ -113,7 +113,7 @@ public class EjemploVehiculoModelo extends MakeTestScene {
             carro = AssetManager.get().loadModel(new File(
                     "assets/models/obj/VEHICULOS/AUTOMOVILES/BAJA_CALIDAD/auto1/Car.obj"));
 
-            Mesh geom = QUtilComponentes.getMesh(carro);
+            Mesh geom = ComponentUtil.getMesh(carro);
             // carro.agregarComponente(geom);
 
             CollisionShape colision = new QColisionMallaConvexa(geom);

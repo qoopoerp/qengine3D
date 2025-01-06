@@ -138,14 +138,14 @@ public class QPBRShader extends FragmentShader {
         // usa el mapa de iluminacion con el ambiente
         if (material.getMapaEmisivo() != null && render.opciones.isMaterial()) {
             QColor colorEmisivo = material.getMapaEmisivo().get_QARGB(fragment.u, fragment.v);
-            iluminacion.setColorAmbiente(colorEmisivo.clone().add(render.getEscena().getAmbientColor()));
+            iluminacion.setColorAmbiente(colorEmisivo.clone().add(render.getScene().getAmbientColor()));
         } else {
             // si tiene factor de emision toma ese valor solamente
             if (material.getFactorEmision() > 0) {
                 color = colorBase.scale(material.getFactorEmision());
                 return;// no hago mas calculos
             } else {
-                iluminacion.setColorAmbiente(render.getEscena().getAmbientColor().clone());
+                iluminacion.setColorAmbiente(render.getScene().getAmbientColor().clone());
             }
         }
 
@@ -234,7 +234,7 @@ public class QPBRShader extends FragmentShader {
             if (render.opciones.isMaterial() && !render.getLitgths().isEmpty()) {
                 for (QLigth luz : render.getLitgths()) {
                     // si esta encendida
-                    if (luz != null && luz.entity.isToRender() && luz.isEnable()) {
+                    if (luz != null && luz.getEntity().isToRender() && luz.isEnable()) {
                         sombra = 1;
                         QProcesadorSombra proc = luz.getSombras();
                         if (proc != null && render.opciones.isSombras() && material.isSombrasRecibir()) {
@@ -245,7 +245,7 @@ public class QPBRShader extends FragmentShader {
                         float alfa = 0.0f;
                         if (luz instanceof QPointLigth || luz instanceof QSpotLigth) {
                             vectorLuz.set(fragment.ubicacion.getVector3().clone().subtract(
-                                    TransformationVectorUtil.transformarVector(QVector3.zero, luz.entity,
+                                    TransformationVectorUtil.transformarVector(QVector3.zero, luz.getEntity(),
                                             render.getCamara())));
                             // solo toma en cuenta a los puntos q estan en el area de afectacion
                             if (vectorLuz.length() > luz.radio) {

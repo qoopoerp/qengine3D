@@ -46,7 +46,7 @@ public class PnlColisionCompuesta extends javax.swing.JPanel {
         this.componente = componente;
 
         DefaultComboBoxModel modelo = new DefaultComboBoxModel<>();
-        for (EntityComponent comp : componente.entity.getComponents()) {
+        for (EntityComponent comp : componente.getEntity().getComponents()) {
             if (comp instanceof CollisionShape) {
                 lista.add((CollisionShape) comp);
                 if (comp instanceof QColisionCaja) {

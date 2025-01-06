@@ -44,7 +44,14 @@
 
         <dependency>
             <groupId>net.qoopo.qengine</groupId>
-            <artifactId>qengine-load-model</artifactId>
+            <artifactId>qengine-asset-model-load</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+
+
+        <dependency>
+            <groupId>net.qoopo.qengine</groupId>
+            <artifactId>qengine-asset-model-export</artifactId>
             <version>1.0.0</version>
         </dependency>
 
@@ -85,7 +92,7 @@
             <artifactId>qengine-physics</artifactId>
             <version>1.0.0</version>
         </dependency>
-        
+
         <dependency>
             <groupId>net.qoopo.qengine</groupId>
             <artifactId>qengine-water</artifactId>

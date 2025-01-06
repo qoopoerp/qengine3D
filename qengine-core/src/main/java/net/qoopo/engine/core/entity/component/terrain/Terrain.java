@@ -4,13 +4,18 @@ import java.util.logging.Logger;
 
 import lombok.Getter;
 import lombok.Setter;
+import net.qoopo.engine.core.entity.Entity;
 import net.qoopo.engine.core.entity.component.EntityComponent;
 import net.qoopo.engine.core.material.basico.QMaterialBas;
 import net.qoopo.engine.core.math.QVector3;
 
 @Getter
 @Setter
-public abstract class Terrain extends EntityComponent {
+public abstract class Terrain implements EntityComponent {
+
+    @Getter
+    @Setter
+    protected Entity entity;
 
     protected static Logger logger = Logger.getLogger("terrain");
 
@@ -26,7 +31,7 @@ public abstract class Terrain extends EntityComponent {
 
     protected int widthTiles = 0;
     protected int heightTiles = 0;
-    protected boolean smooth=true;
+    protected boolean smooth = true;
 
     public abstract void build();
 

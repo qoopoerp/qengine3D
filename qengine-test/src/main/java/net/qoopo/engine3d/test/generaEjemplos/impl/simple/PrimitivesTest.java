@@ -14,15 +14,14 @@ import net.qoopo.engine.core.entity.component.ligth.QPointLigth;
 import net.qoopo.engine.core.entity.component.ligth.QSpotLigth;
 import net.qoopo.engine.core.entity.component.mesh.Mesh;
 import net.qoopo.engine.core.entity.component.mesh.primitive.shape.Box;
-import net.qoopo.engine.core.entity.component.mesh.primitive.shape.Cylinder;
 import net.qoopo.engine.core.entity.component.mesh.primitive.shape.Cone;
+import net.qoopo.engine.core.entity.component.mesh.primitive.shape.Cylinder;
 import net.qoopo.engine.core.entity.component.mesh.primitive.shape.Sphere;
 import net.qoopo.engine.core.entity.component.mesh.primitive.shape.Torus;
 import net.qoopo.engine.core.math.QColor;
 import net.qoopo.engine.core.math.QVector3;
 import net.qoopo.engine.core.renderer.RenderEngine;
 import net.qoopo.engine.core.scene.Scene;
-import net.qoopo.engine.core.util.mesh.NormalUtil;
 import net.qoopo.engine3d.test.generaEjemplos.MakeTestScene;
 
 /**
@@ -46,13 +45,13 @@ public class PrimitivesTest extends MakeTestScene {
             cubGeometria.addVertex(1, -1, -1);
             cubGeometria.addVertex(-1, -1, -1);
             cubGeometria.addVertex(-1, -1, 1);
-            cubGeometria.addPoly(0, 1, 2, 3);
-            cubGeometria.addPoly(0, 4, 5, 1);
-            cubGeometria.addPoly(3, 2, 6, 7);
-            cubGeometria.addPoly(0, 3, 7, 4);
-            cubGeometria.addPoly(1, 5, 6, 2);
-            cubGeometria.addPoly(4, 7, 6, 5);
-            cubGeometria = NormalUtil.calcularNormales(cubGeometria);
+            cubGeometria.addPoly(new int[] { 0, 1, 2, 3 });
+            cubGeometria.addPoly(new int[] { 0, 4, 5, 1 });
+            cubGeometria.addPoly(new int[] { 3, 2, 6, 7 });
+            cubGeometria.addPoly(new int[] { 0, 3, 7, 4 });
+            cubGeometria.addPoly(new int[] { 1, 5, 6, 2 });
+            cubGeometria.addPoly(new int[] { 4, 7, 6, 5 });
+            cubGeometria.computeNormals();
 
             cube.addComponent(cubGeometria);
 

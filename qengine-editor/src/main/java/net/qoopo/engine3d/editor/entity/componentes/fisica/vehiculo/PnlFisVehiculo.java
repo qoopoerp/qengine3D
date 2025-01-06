@@ -20,7 +20,7 @@ import net.qoopo.engine.core.entity.component.physics.vehiculo.QRueda;
 import net.qoopo.engine.core.entity.component.physics.vehiculo.QVehiculo;
 import net.qoopo.engine.core.math.QVector3;
 import net.qoopo.engine.core.scene.Scene;
-import net.qoopo.engine.core.util.QUtilComponentes;
+import net.qoopo.engine.core.util.ComponentUtil;
 
 /**
  *
@@ -352,10 +352,10 @@ public class PnlFisVehiculo extends javax.swing.JPanel {
 
         Entity entidadRueda = mapa.get(cboRueda.getSelectedItem().toString());
         if (entidadRueda != null) {
-            Mesh geometria = QUtilComponentes.getMesh(entidadRueda);
-            AABB tmp = new AABB(geometria.vertices[0].clone(), geometria.vertices[0].clone());
+            Mesh geometria = ComponentUtil.getMesh(entidadRueda);
+            AABB tmp = new AABB(geometria.vertexList[0].clone(), geometria.vertexList[0].clone());
 
-            for (Vertex vertice : geometria.vertices) {
+            for (Vertex vertice : geometria.vertexList) {
                 if (vertice.location.x < tmp.aabMinimo.location.x) {
                     tmp.aabMinimo.location.x = vertice.location.x;
                 }

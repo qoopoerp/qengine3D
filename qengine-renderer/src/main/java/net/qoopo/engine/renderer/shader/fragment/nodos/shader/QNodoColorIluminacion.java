@@ -110,7 +110,7 @@ public class QNodoColorIluminacion extends ShaderNode {
         pixel.normal.normalize();
 
         // inicia con la luz ambiente ambiente
-        iluminacion.setColorAmbiente(render.getEscena().getAmbientColor().clone());
+        iluminacion.setColorAmbiente(render.getScene().getAmbientColor().clone());
 
         TempVars tv = TempVars.get();
         try {
@@ -122,7 +122,7 @@ public class QNodoColorIluminacion extends ShaderNode {
             if (render.opciones.isMaterial() && !render.getLitgths().isEmpty()) {
                 for (QLigth luz : render.getLitgths()) {
                     // si esta encendida
-                    if (luz != null && luz.entity.isToRender() && luz.isEnable()) {
+                    if (luz != null && luz.getEntity().isToRender() && luz.isEnable()) {
                         factorSombra = 1;
                         QProcesadorSombra proc = luz.getSombras();
                         if (proc != null && render.opciones.isSombras()) {
@@ -132,9 +132,9 @@ public class QNodoColorIluminacion extends ShaderNode {
                         }
 
                         if (luz instanceof QPointLigth || luz instanceof QSpotLigth) {
-                            vectorLuz.set(pixel.ubicacion.x - luz.entity.getTransformacion().getTraslacion().x,
-                                    pixel.ubicacion.y - luz.entity.getTransformacion().getTraslacion().y,
-                                    pixel.ubicacion.z - luz.entity.getTransformacion().getTraslacion().z);
+                            vectorLuz.set(pixel.ubicacion.x - luz.getEntity().getTransformacion().getTraslacion().x,
+                                    pixel.ubicacion.y - luz.getEntity().getTransformacion().getTraslacion().y,
+                                    pixel.ubicacion.z - luz.getEntity().getTransformacion().getTraslacion().z);
                             // solo toma en cuenta a los puntos q estan en el area de afectacion
                             if (vectorLuz.length() > luz.radio) {
                                 continue;

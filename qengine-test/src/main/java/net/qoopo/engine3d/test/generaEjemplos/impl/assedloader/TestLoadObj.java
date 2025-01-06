@@ -32,17 +32,21 @@ public class TestLoadObj extends MakeTestScene {
 
             // Cargador propio
             List<File> archivos = new ArrayList<>();
-            archivos.add(new File("assets/models/obj/bunny.obj"));
+            // archivos.add(new File("assets/models/obj/standford/bunny.obj"));
+            // archivos.add(new File("assets/models/obj/elephant.obj"));
+            // // archivos.add(new File("assets/models/obj/lion.obj"));
+            // archivos.add(new File("assets/models/obj/cyborg/cyborg.obj"));
+            archivos.add(new File("assets/models/obj/caja_madera/box.obj"));
 
-
+            int space = 2;
+            int sections = 3;
             for (int i = 0; i < archivos.size(); i++) {
                 try {
                     Entity entidad = loadModel.loadModel(new File(archivos.get(i).getAbsolutePath()));
-                    // entidad.move(i * 10, 0, 2);
-                    // entidad.scale(0.05f, 0.05f, 0.05f);
-                    // entidad.rotate(Math.toRadians(-90), 0, 0);
+                    entidad.move((i % sections) * space, 0, (i / sections) * space);
                     mundo.addEntity(entidad);
                 } catch (Exception e) {
+                    e.printStackTrace();
                 }
 
             }

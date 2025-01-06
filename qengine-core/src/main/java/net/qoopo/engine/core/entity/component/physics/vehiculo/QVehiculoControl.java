@@ -7,6 +7,9 @@ package net.qoopo.engine.core.entity.component.physics.vehiculo;
 
 import java.awt.event.KeyEvent;
 
+import lombok.Getter;
+import lombok.Setter;
+import net.qoopo.engine.core.entity.Entity;
 import net.qoopo.engine.core.entity.component.EntityComponent;
 import net.qoopo.engine.core.entity.component.gui.QTecladoReceptor;
 import net.qoopo.engine.core.input.QInputManager;
@@ -16,25 +19,32 @@ import net.qoopo.engine.core.math.QMath;
  *
  * @author alberto
  */
-public class QVehiculoControl extends EntityComponent {
+public class QVehiculoControl implements EntityComponent {
+
+    @Getter
+    @Setter
+    private Entity entity;
 
     private QVehiculo vehiculo;
 
-//    private float maxEngineForce = 5000.f;//this should be engine/velocity dependent
-    private float maxEngineForce = 1000.f;//this should be engine/velocity dependent
-//    private static float maxEngineForce = 100.f;//this should be engine/velocity dependent
-//    private static float maxEngineForce = 20.f;//this should be engine/velocity dependent
+    // private float maxEngineForce = 5000.f;//this should be engine/velocity
+    // dependent
+    private float maxEngineForce = 1000.f;// this should be engine/velocity dependent
+    // private static float maxEngineForce = 100.f;//this should be engine/velocity
+    // dependent
+    // private static float maxEngineForce = 20.f;//this should be engine/velocity
+    // dependent
     private float maxBreakingForce = 100.f;
-//    private float steeringIncrement = 0.04f;
-//    private float steeringClamp = 0.3f;
+    // private float steeringIncrement = 0.04f;
+    // private float steeringClamp = 0.3f;
     private float steeringIncrement = 0.5f;
     private float steeringClamp = (float) Math.toRadians(45);
 
     public QVehiculoControl(QVehiculo vehiculo) {
         this.vehiculo = vehiculo;
 
-        //crea controladres con teclado
-//        vehiculo.entity.agregarComponente(
+        // crea controladres con teclado
+        // vehiculo.entity.agregarComponente(
         QInputManager.addKeyboardListener(new QTecladoReceptor() {
             @Override
             public void keyPressed(KeyEvent evt) {
@@ -42,13 +52,15 @@ public class QVehiculoControl extends EntityComponent {
                     case KeyEvent.VK_SPACE:
                         vehiculo.setgBreakingForce(maxBreakingForce);
                         break;
-                    case KeyEvent.VK_NUMPAD8://adelanta
-                        vehiculo.setgEngineForce(QMath.clamp(vehiculo.getgEngineForce() + 400, -maxEngineForce, maxEngineForce));
-//                        System.out.println("acelerando " + vehiculo.getgEngineForce());
+                    case KeyEvent.VK_NUMPAD8:// adelanta
+                        vehiculo.setgEngineForce(
+                                QMath.clamp(vehiculo.getgEngineForce() + 400, -maxEngineForce, maxEngineForce));
+                        // System.out.println("acelerando " + vehiculo.getgEngineForce());
                         break;
-                    case KeyEvent.VK_NUMPAD5://retrocede
-                        vehiculo.setgEngineForce(QMath.clamp(vehiculo.getgEngineForce() - 400, -maxEngineForce, maxEngineForce));
-//                        System.out.println("retrocediento " + vehiculo.getgEngineForce());
+                    case KeyEvent.VK_NUMPAD5:// retrocede
+                        vehiculo.setgEngineForce(
+                                QMath.clamp(vehiculo.getgEngineForce() - 400, -maxEngineForce, maxEngineForce));
+                        // System.out.println("retrocediento " + vehiculo.getgEngineForce());
                         break;
                     case KeyEvent.VK_NUMPAD6:
                         girarDerecha();
@@ -71,25 +83,26 @@ public class QVehiculoControl extends EntityComponent {
                         vehiculo.setgBreakingForce(0);
                         break;
                     case KeyEvent.VK_NUMPAD6:
-//                        girarDerecha();
+                        // girarDerecha();
                         vehiculo.setgVehicleSteering(0);
                         break;
                     case KeyEvent.VK_NUMPAD4:
-//                        girarIzquierda();
+                        // girarIzquierda();
                         vehiculo.setgVehicleSteering(0);
                         break;
                 }
             }
-        }
-        );
+        });
     }
 
     public void girarIzquierda() {
-        vehiculo.setgVehicleSteering(QMath.clamp(vehiculo.getgVehicleSteering() + steeringIncrement, -steeringClamp, steeringClamp));
+        vehiculo.setgVehicleSteering(
+                QMath.clamp(vehiculo.getgVehicleSteering() + steeringIncrement, -steeringClamp, steeringClamp));
     }
 
     public void girarDerecha() {
-        vehiculo.setgVehicleSteering(QMath.clamp(vehiculo.getgVehicleSteering() - steeringIncrement, -steeringClamp, steeringClamp));
+        vehiculo.setgVehicleSteering(
+                QMath.clamp(vehiculo.getgVehicleSteering() - steeringIncrement, -steeringClamp, steeringClamp));
     }
 
     @Override

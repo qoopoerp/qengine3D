@@ -9,10 +9,12 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import net.qoopo.engine.core.entity.component.mesh.primitive.Shape;
+import net.qoopo.engine.core.entity.component.modifier.generate.InflateModifier;
+import net.qoopo.engine.core.entity.component.modifier.generate.SubdivisionModifier;
 import net.qoopo.engine.core.material.basico.QMaterialBas;
 import net.qoopo.engine.core.math.QMath;
 import net.qoopo.engine.core.math.QVector3;
-import net.qoopo.engine.core.texture.util.MaterialUtil;
+import net.qoopo.engine.core.util.array.IntArray;
 
 /**
  * Geoesfera o Icoesfera
@@ -61,13 +63,13 @@ public class GeoSphere extends Shape {
         // armarTriangulos();
         // paso 3. - realizar la division del icosaedro
         // dividirIcosaedro(divisiones);
-        calculateNormals();
-        dividir(divisiones);
-        inflate(radio);
-
-        // el objeto es suavizado
-        MaterialUtil.smooth(this, true);
-        MaterialUtil.applyMaterial(this, material);
+        computeNormals();
+        new SubdivisionModifier(SubdivisionModifier.TYPE_SIMPLE, divisiones).apply(this);
+        new InflateModifier(radio).apply(this);
+        // inflate(radio);
+        computeNormals();
+        smooth();
+        applyMaterial(material);
     }
 
     /**
@@ -86,11 +88,13 @@ public class GeoSphere extends Shape {
             float U = 186.0f / 2048.0f;
             float V = 186.0f / 2048.0f;
 
-            addVertex(0, 0, radio, U, 0);
+            addVertex(0, 0, radio);
+            addUV(U, 0);
             // inicializamos con 12 vertices (menos el primero ya agregado), luego
             // calculamos sus posiciones
             for (int i = 1; i <= 11; i++) {
                 addVertex(0, 0, 0);
+                addUV(0, 0);
             }
             z = radio * QMath.sin(V_ANGLE); // elevaton
             // calcula los 10 vertices, at 1st and 2nd rows
@@ -98,44 +102,43 @@ public class GeoSphere extends Shape {
                 i1 = i; // index for 1st row
                 i2 = (i + 5); // index for 2nd row
                 radio_Cos = radio * QMath.cos(V_ANGLE); // length on xy plane
-                vertices[i1].location.set(radio_Cos * QMath.cos(hAngle1), radio_Cos * QMath.sin(hAngle1), z, 1);
-                vertices[i2].location.set(radio_Cos * QMath.cos(hAngle2), radio_Cos * QMath.sin(hAngle2), -z, 1);
+                vertexList[i1].location.set(radio_Cos * QMath.cos(hAngle1), radio_Cos * QMath.sin(hAngle1), z, 1);
+                vertexList[i2].location.set(radio_Cos * QMath.cos(hAngle2), radio_Cos * QMath.sin(hAngle2), -z, 1);
                 // next horizontal angles
                 hAngle1 += H_ANGLE;
                 hAngle2 += H_ANGLE;
             } // the last bottom vertex at (0, 0, -r)
-            /// El ultimo vertice
-            vertices[11].location.set(0, 0, -radio, 1);
-            vertices[11].u = 10 * U;
-            vertices[11].v = 3 * V;
+              /// El ultimo vertice
+            vertexList[11].location.set(0, 0, -radio, 1);
+            uvList[11].setXY(10 * U, 3 * V);
             // las caras superiores
-            addPoly(0, 1, 2);
-            addPoly(0, 2, 3);
-            addPoly(0, 3, 4);
-            addPoly(0, 4, 5);
-            addPoly(0, 5, 1);
+            addPoly(IntArray.of(0, 1, 2));
+            addPoly(IntArray.of(0, 2, 3));
+            addPoly(IntArray.of(0, 3, 4));
+            addPoly(IntArray.of(0, 4, 5));
+            addPoly(IntArray.of(0, 5, 1));
             // las caras del centro
-            addPoly(1, 6, 2);
-            addPoly(2, 6, 7);
+            addPoly(IntArray.of(1, 6, 2));
+            addPoly(IntArray.of(2, 6, 7));
             //
-            addPoly(2, 7, 3);
-            addPoly(3, 7, 8);
+            addPoly(IntArray.of(2, 7, 3));
+            addPoly(IntArray.of(3, 7, 8));
             //
-            addPoly(3, 8, 4);
-            addPoly(4, 8, 9);
+            addPoly(IntArray.of(3, 8, 4));
+            addPoly(IntArray.of(4, 8, 9));
             //
-            addPoly(4, 9, 5);
-            addPoly(5, 9, 10);
+            addPoly(IntArray.of(4, 9, 5));
+            addPoly(IntArray.of(5, 9, 10));
             //
-            addPoly(5, 10, 1);
-            addPoly(1, 10, 6);
+            addPoly(IntArray.of(5, 10, 1));
+            addPoly(IntArray.of(1, 10, 6));
             //
             // las caras inferiores
-            addPoly(11, 7, 6);
-            addPoly(11, 8, 7);
-            addPoly(11, 9, 8);
-            addPoly(11, 10, 9);
-            addPoly(11, 6, 10);
+            addPoly(IntArray.of(11, 7, 6));
+            addPoly(IntArray.of(11, 8, 7));
+            addPoly(IntArray.of(11, 9, 8));
+            addPoly(IntArray.of(11, 10, 9));
+            addPoly(IntArray.of(11, 6, 10));
         } catch (Exception ex) {
             Logger.getLogger(GeoSphere.class.getName()).log(Level.SEVERE, null, ex);
         }

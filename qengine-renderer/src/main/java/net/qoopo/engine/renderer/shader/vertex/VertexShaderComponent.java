@@ -5,6 +5,9 @@
  */
 package net.qoopo.engine.renderer.shader.vertex;
 
+import lombok.Getter;
+import lombok.Setter;
+import net.qoopo.engine.core.entity.Entity;
 import net.qoopo.engine.core.entity.component.EntityComponent;
 
 /**
@@ -13,22 +16,26 @@ import net.qoopo.engine.core.entity.component.EntityComponent;
  *
  * @author alberto
  */
-public class VertexShaderComponent extends EntityComponent {
+public class VertexShaderComponent implements EntityComponent {
 
-    private VertexShader shader;
+    @Getter
+    @Setter
+    private Entity entity;
+
+    private DefaultVertexShader shader;
 
     public VertexShaderComponent() {
     }
 
-    public VertexShaderComponent(VertexShader shader) {
+    public VertexShaderComponent(DefaultVertexShader shader) {
         this.shader = shader;
     }
 
-    public VertexShader getShader() {
+    public DefaultVertexShader getShader() {
         return shader;
     }
 
-    public void setShader(VertexShader shader) {
+    public void setShader(DefaultVertexShader shader) {
         this.shader = shader;
     }
 

@@ -37,7 +37,7 @@ import com.bulletphysics.linearmath.Transform;
 import net.qoopo.engine.core.entity.Entity;
 import net.qoopo.engine.core.entity.component.EntityComponent;
 import net.qoopo.engine.core.entity.component.mesh.Mesh;
-import net.qoopo.engine.core.entity.component.physics.collision.listeners.QListenerColision;
+import net.qoopo.engine.core.entity.component.physics.collision.listeners.CollisionListener;
 import net.qoopo.engine.core.entity.component.physics.dinamica.QObjetoDinamico;
 import net.qoopo.engine.core.entity.component.physics.dinamica.QObjetoRigido;
 import net.qoopo.engine.core.entity.component.physics.restricciones.QRestriccion;
@@ -50,8 +50,8 @@ import net.qoopo.engine.core.entity.component.physics.vehiculo.QRueda;
 import net.qoopo.engine.core.entity.component.physics.vehiculo.QVehiculo;
 import net.qoopo.engine.core.physic.PhysicsEngine;
 import net.qoopo.engine.core.scene.Scene;
+import net.qoopo.engine.core.util.ComponentUtil;
 import net.qoopo.engine.core.util.QGlobal;
-import net.qoopo.engine.core.util.QUtilComponentes;
 import net.qoopo.engine.core.util.QVectMathUtil;
 
 /**
@@ -183,7 +183,7 @@ public class JBulletPhysicsEngine extends PhysicsEngine {
         actualizarUniversoQEngine();
         limpiarFuerzas();
         detectarColisiones();
-        logger.info("MF-->" + df.format(getFPS()) + " FPS");
+        // logger.info("MF-->" + df.format(getFPS()) + " FPS");
         tiempoPrevio = System.currentTimeMillis();
         return tiempoPrevio;
     }
@@ -247,8 +247,8 @@ public class JBulletPhysicsEngine extends PhysicsEngine {
                 if (objeto.isToRender()) {
                     for (EntityComponent componente : objeto.getComponents()) {
                         if (componente instanceof QRestriccion) {
-                            nombreA = ((QRestriccion) componente).getA().entity.getName();
-                            nombreB = ((QRestriccion) componente).getB().entity.getName();
+                            nombreA = ((QRestriccion) componente).getA().getEntity().getName();
+                            nombreB = ((QRestriccion) componente).getB().getEntity().getName();
                             idRes = nombreA + "x" + nombreB;
                             if (componente instanceof QRestriccionFija) {
 
@@ -258,11 +258,11 @@ public class JBulletPhysicsEngine extends PhysicsEngine {
                                             mapaRigidos.get(nombreA),
                                             mapaRigidos.get(nombreB),
                                             QVectMathUtil.convertirVector3f(
-                                                    ((QRestriccionPunto2Punto) componente).getA().entity
+                                                    ((QRestriccionPunto2Punto) componente).getA().getEntity()
                                                             .getMatrizTransformacion(QGlobal.tiempo)
                                                             .toTranslationVector()),
                                             QVectMathUtil.convertirVector3f(
-                                                    ((QRestriccionPunto2Punto) componente).getB().entity
+                                                    ((QRestriccionPunto2Punto) componente).getB().getEntity()
                                                             .getMatrizTransformacion(QGlobal.tiempo)
                                                             .toTranslationVector()));
                                     mundoDinamicoDiscreto.addConstraint(joint);
@@ -274,9 +274,9 @@ public class JBulletPhysicsEngine extends PhysicsEngine {
                                             mapaRigidos.get(nombreA),
                                             mapaRigidos.get(nombreB),
                                             QJBulletUtil.getTransformacion(
-                                                    ((QRestriccionBisagra) componente).getA().entity),
+                                                    ((QRestriccionBisagra) componente).getA().getEntity()),
                                             QJBulletUtil.getTransformacion(
-                                                    ((QRestriccionBisagra) componente).getB().entity));
+                                                    ((QRestriccionBisagra) componente).getB().getEntity()));
                                     mundoDinamicoDiscreto.addConstraint(joint);
                                     mapaRestricciones.put(idRes, 1);
                                 }
@@ -288,9 +288,9 @@ public class JBulletPhysicsEngine extends PhysicsEngine {
                                             mapaRigidos.get(nombreA),
                                             mapaRigidos.get(nombreB),
                                             QJBulletUtil.getTransformacion(
-                                                    ((QRestriccionGenerica6DOF) componente).getA().entity),
+                                                    ((QRestriccionGenerica6DOF) componente).getA().getEntity()),
                                             QJBulletUtil.getTransformacion(
-                                                    ((QRestriccionGenerica6DOF) componente).getB().entity),
+                                                    ((QRestriccionGenerica6DOF) componente).getB().getEntity()),
                                             ((QRestriccionGenerica6DOF) componente).isUsarReferenciaLinearA());
                                     // tomado del ejemplo de ragDoll
                                     Vector3f tmp = new Vector3f();
@@ -318,10 +318,10 @@ public class JBulletPhysicsEngine extends PhysicsEngine {
         try {
             for (Entity objeto : universo.getEntities()) {
                 if (objeto.isToRender()) {
-                    QObjetoRigido componenteFisico = QUtilComponentes.getFisicoRigido(objeto);
+                    QObjetoRigido componenteFisico = ComponentUtil.getFisicoRigido(objeto);
                     // componenteFisico.tieneColision = false;
                     if (componenteFisico != null && componenteFisico.formaColision == null) {
-                        Mesh geometria = QUtilComponentes.getMesh(objeto);
+                        Mesh geometria = ComponentUtil.getMesh(objeto);
                         if (geometria != null) {
                             System.out.println(" Se va a crear objeto de colision para " + objeto.getName());
                             componenteFisico.crearContenedorColision(geometria, objeto.getTransformacion());
@@ -346,7 +346,7 @@ public class JBulletPhysicsEngine extends PhysicsEngine {
             case QObjetoDinamico.ESTATICO:
 
                 RigidBody body = QJBulletUtil.crearRigido(rigido);
-                mapaRigidos.put(rigido.entity.getName(), body);
+                mapaRigidos.put(rigido.getEntity().getName(), body);
                 mundoDinamicoDiscreto.addRigidBody(body);
                 return body;
 
@@ -368,13 +368,13 @@ public class JBulletPhysicsEngine extends PhysicsEngine {
      */
     private void actualizarRigido(QObjetoRigido rigido) {
         try {
-            RigidBody body = mapaRigidos.get(rigido.entity.getName());
+            RigidBody body = mapaRigidos.get(rigido.getEntity().getName());
             if (body != null) {
                 // si es de eliminar, lo eliminamos y saltamos actualizaciones
-                if (rigido.entity.isToDelete()) {
-                    logger.info("QJBullet - Eliminando objeto rigido " + rigido.entity.getName());
+                if (rigido.getEntity().isToDelete()) {
+                    logger.info("QJBullet - Eliminando objeto rigido " + rigido.getEntity().getName());
                     mundoDinamicoDiscreto.removeRigidBody(body);
-                    mapaRigidos.remove(rigido.entity.getName());
+                    mapaRigidos.remove(rigido.getEntity().getName());
                 } else {
                     body.applyCentralImpulse(QVectMathUtil.convertirVector3f(rigido.fuerzaTotal));
                 }
@@ -400,7 +400,7 @@ public class JBulletPhysicsEngine extends PhysicsEngine {
             QVehiculo veh;
             for (Entity objeto : universo.getEntities()) {
                 if (objeto.isToRender()) {
-                    veh = QUtilComponentes.getVehiculo(objeto);
+                    veh = ComponentUtil.getVehiculo(objeto);
                     if (veh != null) {
                         RaycastVehicle vehiculo = mapaRayCastVehiculos.get(objeto.getName());
                         int c = 0;
@@ -479,14 +479,14 @@ public class JBulletPhysicsEngine extends PhysicsEngine {
                 Object objeto0 = body0.getUserPointer();
                 Object objeto1 = body1.getUserPointer();
                 if (objeto0 != null) {
-                    List<QListenerColision> lista = QUtilComponentes.getColisionListeners((Entity) objeto0);
-                    for (QListenerColision list : lista) {
+                    List<CollisionListener> lista = ComponentUtil.getColisionListeners((Entity) objeto0);
+                    for (CollisionListener list : lista) {
                         list.colision((Entity) objeto0, (Entity) objeto1);
                     }
                 }
                 if (objeto1 != null) {
-                    List<QListenerColision> lista = QUtilComponentes.getColisionListeners((Entity) objeto1);
-                    for (QListenerColision list : lista) {
+                    List<CollisionListener> lista = ComponentUtil.getColisionListeners((Entity) objeto1);
+                    for (CollisionListener list : lista) {
                         list.colision((Entity) objeto1, (Entity) objeto0);
                     }
                 }
@@ -518,7 +518,7 @@ public class JBulletPhysicsEngine extends PhysicsEngine {
             QObjetoRigido actual;
             for (Entity objeto : universo.getEntities()) {
                 if (objeto.isToRender()) {
-                    QObjetoRigido rigido = QUtilComponentes.getFisicoRigido(objeto);
+                    QObjetoRigido rigido = ComponentUtil.getFisicoRigido(objeto);
                     if (rigido != null) {
                         rigido.limpiarFuezas();
                     }

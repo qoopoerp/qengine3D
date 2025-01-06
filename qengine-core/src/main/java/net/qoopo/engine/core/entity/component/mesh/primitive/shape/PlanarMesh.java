@@ -12,8 +12,6 @@ import net.qoopo.engine.core.entity.component.mesh.Mesh;
 import net.qoopo.engine.core.entity.component.mesh.generator.height.HeightsGenerator;
 import net.qoopo.engine.core.entity.component.mesh.primitive.Shape;
 import net.qoopo.engine.core.material.basico.QMaterialBas;
-import net.qoopo.engine.core.texture.util.MaterialUtil;
-import net.qoopo.engine.core.util.mesh.NormalUtil;
 
 /**
  * Genera una malla en un plano que puede alterar sus vertices en función de un
@@ -141,31 +139,31 @@ public class PlanarMesh extends Shape {
     }
 
     public void reset() {
-        try {            
+        try {
             int i = 0;
             switch (eje) {
                 case EJE_Z:
-                     i = 0;
+                    i = 0;
                     for (float z = -largo / 2; z < largo / 2; z += delta2) {
                         for (float x = -ancho / 2; x < ancho / 2; x += delta) {
-                            vertices[i].location.set(x, 0, z, 1);
+                            vertexList[i].location.set(x, 0, z, 1);
                             i++;
                         }
                     }
 
                     break;
                 case EJE_Y:
-                     i = 0;
+                    i = 0;
                     for (float z = -largo / 2; z < largo / 2; z += delta2) {
                         for (float x = -ancho / 2; x < ancho / 2; x += delta) {
-                            vertices[i].location.set(x, z, 0, 1);
-                            
+                            vertexList[i].location.set(x, z, 0, 1);
+
                         }
                     }
                     break;
             }
         } finally {
-            NormalUtil.calcularNormales(this);
+            computeNormals();
             // QMaterialUtil.suavizar(this, true);
         }
     }
@@ -178,34 +176,32 @@ public class PlanarMesh extends Shape {
             switch (eje) {
                 case EJE_Z:
 
+                    addNormal(0, 1, 0);
                     for (float z = -largo / 2; z < largo / 2; z += delta2) {
                         for (float x = -ancho / 2; x < ancho / 2; x += delta) {
                             if (heightsGenerator != null) {
                                 height = heightsGenerator.getHeight(((float) x + ancho / 2) / ancho,
                                         ((float) z + largo / 2) / largo);
                             }
-                            this.addVertex(x,
-                                    height,
-                                    z,
-                                    // textures uv
-                                    ((float) x + ancho / 2) / ancho, 1.0f - ((float) z + largo / 2) / largo);
+                            this.addVertex(x, height, z);
+                            // textures uv
+                            addUV(((float) x + ancho / 2) / ancho, 1.0f - ((float) z + largo / 2) / largo);
 
                         }
                     }
                     break;
                 case EJE_Y:
 
+                    addNormal(0, 0, 1);
                     for (float z = -largo / 2; z < largo / 2; z += delta2) {
                         for (float x = -ancho / 2; x < ancho / 2; x += delta) {
                             if (heightsGenerator != null) {
                                 height = heightsGenerator.getHeight(((float) x + ancho / 2) / ancho,
                                         ((float) z + largo / 2) / largo);
                             }
-                            this.addVertex(x,
-                                    z,
-                                    height,
-                                    // textures uv
-                                    ((float) x + ancho / 2) / ancho, ((float) z + largo / 2) / largo);
+                            this.addVertex(x, z, height);
+                            // textures uv
+                            addUV(((float) x + ancho / 2) / ancho, ((float) z + largo / 2) / largo);
 
                         }
                     }
@@ -219,21 +215,36 @@ public class PlanarMesh extends Shape {
                 for (int i = 0; i < planosAncho - 1; i++) {
                     try {
                         this.addPoly(material,
-                                j * planosAncho + i,
-                                j * planosAncho + planosAncho + i,
-                                j * planosAncho + i + 1);
+                                new int[] {
+                                        j * planosAncho + i,
+                                        j * planosAncho + planosAncho + i,
+                                        j * planosAncho + i + 1
+
+                                }, new int[] { 0, 0, 0 },
+                                new int[] {
+                                        j * planosAncho + i,
+                                        j * planosAncho + planosAncho + i,
+                                        j * planosAncho + i + 1
+
+                                });
                         this.addPoly(material,
-                                j * planosAncho + i + 1,
-                                j * planosAncho + planosAncho + i,
-                                j * planosAncho + planosAncho + i + 1);
+                                new int[] {
+                                        j * planosAncho + i + 1,
+                                        j * planosAncho + planosAncho + i,
+                                        j * planosAncho + planosAncho + i + 1 },
+                                new int[] { 0, 0, 0 },
+                                new int[] {
+                                        j * planosAncho + i + 1,
+                                        j * planosAncho + planosAncho + i,
+                                        j * planosAncho + planosAncho + i + 1 });
                     } catch (Exception ex) {
                         Logger.getLogger(PlanarMesh.class.getName()).log(Level.SEVERE, null, ex);
                     }
                 }
             }
         } finally {
-            NormalUtil.calcularNormales(this);
-            MaterialUtil.smooth(this, true);
+            computeNormals();
+            smooth();
         }
     }
 

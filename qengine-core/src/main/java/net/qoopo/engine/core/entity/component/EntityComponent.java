@@ -23,10 +23,12 @@ import net.qoopo.engine.core.entity.Entity;
  * 
  * @author alberto
  */
-public abstract class EntityComponent implements Serializable {
+public interface EntityComponent extends Serializable {
 
-    public Entity entity;
+    public void setEntity(Entity entity);
 
-    public abstract void destruir();
+    public Entity getEntity();
+
+    public void destruir();
 
 }

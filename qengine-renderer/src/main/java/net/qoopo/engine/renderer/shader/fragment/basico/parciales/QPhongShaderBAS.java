@@ -48,7 +48,7 @@ public class QPhongShaderBAS extends FragmentShader {
         fragment.normal.normalize();
         QVector3 tmpPixelPos = QVector3.empty();
         // toma en cuenta la luz ambiente
-        iluminacion.setColorAmbiente(render.getEscena().getAmbientColor().clone());
+        iluminacion.setColorAmbiente(render.getScene().getAmbientColor().clone());
         iluminacion.setColorLuz(QColor.BLACK.clone());
         tmpPixelPos.set(fragment.ubicacion.getVector3());
         tmpPixelPos.normalize();

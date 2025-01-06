@@ -24,7 +24,7 @@ import net.qoopo.engine.core.math.QVector3;
 import net.qoopo.engine.core.texture.QTextura;
 import net.qoopo.engine.core.texture.util.MaterialUtil;
 import net.qoopo.engine.core.util.QGlobal;
-import net.qoopo.engine.core.util.QUtilComponentes;
+import net.qoopo.engine.core.util.ComponentUtil;
 import net.qoopo.engine.core.util.image.ImgReader;
 
 /**
@@ -130,7 +130,7 @@ public class QEmisorNieve extends ParticleEmissor {
         float maxMov = 0.00009f;
 
         for (Particle copo : this.particulas) {
-            QObjetoRigido rigido = QUtilComponentes.getFisicoRigido(copo.objeto);
+            QObjetoRigido rigido = ComponentUtil.getFisicoRigido(copo.objeto);
             rigido.agregarFuerzas(QVector3.of(
                     rnd.nextFloat() * (maxMov - miniMov) + miniMov,
                     rnd.nextFloat() * (maxMov - miniMov) + miniMov,

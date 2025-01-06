@@ -54,8 +54,8 @@ public class OpenALAudioEngine extends AudioEngine {
                 if (entity.isToRender()) {
                     for (EntityComponent componente : entity.getComponents()) {
                         if (componente instanceof SoundEmissorAL) {
-                            if (!manager.contieneSource(componente.entity.getName())) {
-                                manager.addSoundSource(componente.entity.getName(), (SoundEmissorAL) componente);
+                            if (!manager.contieneSource(componente.getEntity().getName())) {
+                                manager.addSoundSource(componente.getEntity().getName(), (SoundEmissorAL) componente);
                                 if (((SoundEmissorAL) componente).isReproducirAlInicio()) {
                                     ((SoundEmissorAL) componente).play();
                                 }

@@ -53,7 +53,7 @@ public class PnlFisicoRigido extends javax.swing.JPanel {
         this.txtDampAng.setText(String.valueOf(rigido.getAmortiguacion_rotacion()));
 
         DefaultComboBoxModel<String> modelo = new DefaultComboBoxModel<>();
-        for (EntityComponent comp : rigido.entity.getComponents()) {
+        for (EntityComponent comp : rigido.getEntity().getComponents()) {
             if (comp instanceof CollisionShape) {
                 listaColision.add((CollisionShape) comp);
                 if (comp instanceof QColisionCaja) {

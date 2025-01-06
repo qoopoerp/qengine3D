@@ -16,7 +16,7 @@ import net.qoopo.engine.core.entity.component.mesh.Mesh;
 import net.qoopo.engine.core.entity.component.mesh.primitive.Vertex;
 import net.qoopo.engine.core.entity.component.physics.collision.detector.shape.primitivas.AABB;
 import net.qoopo.engine.core.entity.component.physics.vehiculo.QVehiculoControl;
-import net.qoopo.engine.core.util.QUtilComponentes;
+import net.qoopo.engine.core.util.ComponentUtil;
 import net.qoopo.engine3d.editor.Principal;
 
 /**
@@ -131,10 +131,10 @@ public class PnlControlVehiculo extends javax.swing.JPanel {
 
         Entity entidadRueda = mapa.get(cboRueda.getSelectedItem().toString());
         if (entidadRueda != null) {
-            Mesh geometria = QUtilComponentes.getMesh(entidadRueda);
-            AABB tmp = new AABB(geometria.vertices[0].clone(), geometria.vertices[0].clone());
+            Mesh geometria = ComponentUtil.getMesh(entidadRueda);
+            AABB tmp = new AABB(geometria.vertexList[0].clone(), geometria.vertexList[0].clone());
 
-            for (Vertex vertice : geometria.vertices) {
+            for (Vertex vertice : geometria.vertexList) {
                 if (vertice.location.x < tmp.aabMinimo.location.x) {
                     tmp.aabMinimo.location.x = vertice.location.x;
                 }

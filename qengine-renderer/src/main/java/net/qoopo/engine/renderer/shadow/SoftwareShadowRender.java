@@ -67,7 +67,7 @@ public class SoftwareShadowRender extends SoftwareRenderer {
     private float factorAcne = 0.0f;
 
     public SoftwareShadowRender(int tipo, Scene escena, QLigth luz, int ancho, int alto) {
-        super(escena, "Sombra " + luz.entity.getName(), null, ancho, alto);
+        super(escena, "Sombra " + luz.getEntity().getName(), null, ancho, alto);
         this.tipo = tipo;
         this.luz = luz;
         this.opciones.setForzarResolucion(true);
@@ -207,7 +207,7 @@ public class SoftwareShadowRender extends SoftwareRenderer {
                 break;
             case SoftwareShadowRender.NO_DIRECCIONALES:
                 // LUCES NO DIRECCIONALES
-                camara.lookAt(luz.entity.getMatrizTransformacion(QGlobal.tiempo).toTranslationVector(),
+                camara.lookAt(luz.getEntity().getMatrizTransformacion(QGlobal.tiempo).toTranslationVector(),
                         normalDireccion, vArriba);
                 break;
         }
@@ -289,7 +289,7 @@ public class SoftwareShadowRender extends SoftwareRenderer {
             QMatriz4 matrizVista = camara.getMatrizTransformacion(QGlobal.tiempo).invert();
             QMatriz4 matrizVistaInvertidaBillboard = camara.getMatrizTransformacion(QGlobal.tiempo);
             // caras solidas
-            escena.getEntities().stream()
+            scene.getEntities().stream()
                     .filter(entity -> entity.isToRender())
                     .parallel()
                     .forEach(entity -> renderEntity(entity, matrizVista, matrizVistaInvertidaBillboard, false));

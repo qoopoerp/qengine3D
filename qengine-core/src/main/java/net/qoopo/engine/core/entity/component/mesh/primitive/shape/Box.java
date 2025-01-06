@@ -10,6 +10,7 @@ import java.util.logging.Logger;
 
 import net.qoopo.engine.core.entity.component.mesh.primitive.Shape;
 import net.qoopo.engine.core.material.basico.QMaterialBas;
+import net.qoopo.engine.core.util.array.IntArray;
 
 /**
  *
@@ -100,43 +101,54 @@ public class Box extends Shape {
 
             // vertices
             // cara frontal
-
-            this.addVertex(-ancho / 2, alto / 2, largo / 2, 0, 1); // 0
-            this.addVertex(ancho / 2, alto / 2, largo / 2, 1, 1); // 1
-            this.addVertex(ancho / 2, -alto / 2, largo / 2, 1, 0); // 2
-            this.addVertex(-ancho / 2, -alto / 2, largo / 2, 0, 0); // 3
+            this.addVertex(-ancho / 2, alto / 2, largo / 2); // 0
+            this.addVertex(ancho / 2, alto / 2, largo / 2); // 1
+            this.addVertex(ancho / 2, -alto / 2, largo / 2); // 2
+            this.addVertex(-ancho / 2, -alto / 2, largo / 2); // 3
             // cara trasera
-            this.addVertex(-ancho / 2, alto / 2, -largo / 2, 1, 0); // 4
-            this.addVertex(ancho / 2, alto / 2, -largo / 2, 0, 0); // 5
-            this.addVertex(ancho / 2, -alto / 2, -largo / 2, 0, 1); // 6
-            this.addVertex(-ancho / 2, -alto / 2, -largo / 2, 1, 1); // 7
+            this.addVertex(-ancho / 2, alto / 2, -largo / 2); // 4
+            this.addVertex(ancho / 2, alto / 2, -largo / 2); // 5
+            this.addVertex(ancho / 2, -alto / 2, -largo / 2); // 6
+            this.addVertex(-ancho / 2, -alto / 2, -largo / 2); // 7
+
+            this.addUV(0, 1);
+            this.addUV(1, 1);
+            this.addUV(0, 0);
+            this.addUV(1, 0);
+
+            this.addNormal(0, 1, 0); // up
+            this.addNormal(0, -1, 0); // down
+            this.addNormal(-1, 0, 0);// left
+            this.addNormal(1, 0, 0); // right
+            this.addNormal(0, 0, 1); // front
+            this.addNormal(0, 0, -1); // back
 
             // caras
             // cara frontal
-            this.addPoly(3, 1, 0);
-            this.addPoly(3, 2, 1);
+            this.addPoly(IntArray.of(3, 1, 0), IntArray.of(4, 4, 4), IntArray.of(2, 1, 0));
+            this.addPoly(IntArray.of(3, 2, 1), IntArray.of(4, 4, 4), IntArray.of(2, 3, 1));
 
             // cara trasera
-            this.addPoly(5, 7, 4);
-            this.addPoly(5, 6, 7);
+            this.addPoly(IntArray.of(5, 7, 4), IntArray.of(5, 5, 5), IntArray.of(2, 1, 0));
+            this.addPoly(IntArray.of(5, 6, 7), IntArray.of(5, 5, 5), IntArray.of(2, 3, 1));
 
-            // cara lateral
-            this.addPoly(2, 5, 1);
-            this.addPoly(2, 6, 5);
+            // cara lateral right
+            this.addPoly(IntArray.of(2, 5, 1), IntArray.of(3, 3, 3), IntArray.of(2, 1, 0));
+            this.addPoly(IntArray.of(2, 6, 5), IntArray.of(3, 3, 3), IntArray.of(2, 3, 1));
 
-            // cara lateral
-            this.addPoly(4, 3, 0);
-            this.addPoly(4, 7, 3);
+            // cara lateral left
+            this.addPoly(IntArray.of(4, 3, 0), IntArray.of(2, 2, 2), IntArray.of(2, 1, 0));
+            this.addPoly(IntArray.of(4, 7, 3), IntArray.of(2, 2, 2), IntArray.of(2, 3, 1));
 
             // cara superior
-            this.addPoly(0, 5, 4);
-            this.addPoly(0, 1, 5);
+            this.addPoly(IntArray.of(0, 5, 4), IntArray.of(0, 0, 0), IntArray.of(2, 1, 0));
+            this.addPoly(IntArray.of(0, 1, 5), IntArray.of(0, 0, 0), IntArray.of(2, 3, 1));
 
             // cara inferior
-            this.addPoly(6, 2, 3);
-            this.addPoly(6, 3, 7);
+            this.addPoly(IntArray.of(6, 2, 3), IntArray.of(1, 1, 1), IntArray.of(2, 1, 0));
+            this.addPoly(IntArray.of(6, 3, 7), IntArray.of(1, 1, 1), IntArray.of(2, 3, 1));
             applyMaterial(material);
-            calculateNormals();
+            // computeNormals();
         } catch (Exception ex) {
             Logger.getLogger(Box.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -151,19 +163,7 @@ public class Box extends Shape {
             deleteData();
 
             // Cubo con mapa UV en forma de skybox (14 vertices)
-            // ----------
-            // | |
-            // | UP |
-            // | |
-            // ----------------------------------------
-            // | | | | |
-            // | BACK | LEFT | FRONT | RIGHT |
-            // | | | | |
-            // ----------------------------------------
-            // | |
-            // | DOWN |
-            // | |
-            // ----------
+
             //
             //
             /// 0---------1
@@ -181,45 +181,96 @@ public class Box extends Shape {
             // 12-------13
             //
             // primer paso generar vertices
-            // primera linea
-            this.addVertex(ancho / 2, alto / 2, -largo / 2, 0.25f, 1.0f);
-            this.addVertex(ancho / 2, alto / 2, largo / 2, 0.5f, 1.0f);
-            // segunda linea
-            this.addVertex(ancho / 2, alto / 2, -largo / 2, 0.f, 0.666f);
-            this.addVertex(-ancho / 2, alto / 2, -largo / 2, 0.25f, 0.666f);
-            this.addVertex(-ancho / 2, alto / 2, largo / 2, 0.50f, 0.666f);
-            this.addVertex(ancho / 2, alto / 2, largo / 2, 0.75f, 0.666f);
-            this.addVertex(ancho / 2, alto / 2, -largo / 2, 1f, 0.666f);
-            // tercera linea
-            this.addVertex(ancho / 2, -alto / 2, -largo / 2, 0.f, 0.333f);
-            this.addVertex(-ancho / 2, -alto / 2, -largo / 2, 0.25f, 0.333f);
-            this.addVertex(-ancho / 2, -alto / 2, largo / 2, 0.50f, 0.333f);
-            this.addVertex(ancho / 2, -alto / 2, largo / 2, 0.75f, 0.333f);
-            this.addVertex(ancho / 2, -alto / 2, -largo / 2, 1f, 0.333f);
-            // cuarta linea
-            this.addVertex(ancho / 2, -alto / 2, -largo / 2, 0.25f, 0);
-            this.addVertex(ancho / 2, -alto / 2, largo / 2, 0.5f, 0);
+            // // primera linea
+            // this.addVertex(ancho / 2, alto / 2, -largo / 2, 0.25f, 1.0f);
+            // this.addVertex(ancho / 2, alto / 2, largo / 2, 0.5f, 1.0f);
+            // // segunda linea
+            // this.addVertex(ancho / 2, alto / 2, -largo / 2, 0.f, 0.666f);
+            // this.addVertex(-ancho / 2, alto / 2, -largo / 2, 0.25f, 0.666f);
+            // this.addVertex(-ancho / 2, alto / 2, largo / 2, 0.50f, 0.666f);
+            // this.addVertex(ancho / 2, alto / 2, largo / 2, 0.75f, 0.666f);
+            // this.addVertex(ancho / 2, alto / 2, -largo / 2, 1f, 0.666f);
+            // // tercera linea
+            // this.addVertex(ancho / 2, -alto / 2, -largo / 2, 0.f, 0.333f);
+            // this.addVertex(-ancho / 2, -alto / 2, -largo / 2, 0.25f, 0.333f);
+            // this.addVertex(-ancho / 2, -alto / 2, largo / 2, 0.50f, 0.333f);
+            // this.addVertex(ancho / 2, -alto / 2, largo / 2, 0.75f, 0.333f);
+            // this.addVertex(ancho / 2, -alto / 2, -largo / 2, 1f, 0.333f);
+            // // cuarta linea
+            // this.addVertex(ancho / 2, -alto / 2, -largo / 2, 0.25f, 0);
+            // this.addVertex(ancho / 2, -alto / 2, largo / 2, 0.5f, 0);
 
-            // segundo paso generar caras
+            // // segundo paso generar caras
+            // // cara superior
+            // this.addPoly(material, 1, 0, 3);
+            // this.addPoly(material, 3, 4, 1);
+            // // trasera
+            // this.addPoly(material, 3, 2, 7);
+            // this.addPoly(material, 7, 8, 3);
+            // // izquierda
+            // this.addPoly(material, 4, 3, 8);
+            // this.addPoly(material, 8, 9, 4);
+            // // frente
+            // this.addPoly(material, 5, 4, 9);
+            // this.addPoly(material, 9, 10, 5);
+            // // derecha
+            // this.addPoly(material, 6, 5, 10);
+            // this.addPoly(material, 10, 11, 6);
+            // // abajo
+            // this.addPoly(material, 9, 8, 12);
+            // this.addPoly(material, 12, 13, 9);
+
+            // vertices
+            // cara frontal
+            this.addVertex(-ancho / 2, alto / 2, largo / 2); // 0
+            this.addVertex(ancho / 2, alto / 2, largo / 2); // 1
+            this.addVertex(ancho / 2, -alto / 2, largo / 2); // 2
+            this.addVertex(-ancho / 2, -alto / 2, largo / 2); // 3
+            // cara trasera
+            this.addVertex(-ancho / 2, alto / 2, -largo / 2); // 4
+            this.addVertex(ancho / 2, alto / 2, -largo / 2); // 5
+            this.addVertex(ancho / 2, -alto / 2, -largo / 2); // 6
+            this.addVertex(-ancho / 2, -alto / 2, -largo / 2); // 7
+
+            this.addUV(0, 1);
+            this.addUV(1, 1);
+            this.addUV(0, 0);
+            this.addUV(1, 0);
+
+            this.addNormal(0, 1, 0); // up
+            this.addNormal(0, -1, 0); // down
+            this.addNormal(-1, 0, 0);// left
+            this.addNormal(1, 0, 0); // right
+            this.addNormal(0, 0, 1); // front
+            this.addNormal(0, 0, -1); // back
+
+            // caras
+            // cara frontal
+            this.addPoly(IntArray.of(3, 1, 0), IntArray.of(4, 4, 4), IntArray.of(2, 1, 0));
+            this.addPoly(IntArray.of(3, 2, 1), IntArray.of(4, 4, 4), IntArray.of(2, 3, 1));
+
+            // cara trasera
+            this.addPoly(IntArray.of(5, 7, 4), IntArray.of(5, 5, 5), IntArray.of(2, 1, 0));
+            this.addPoly(IntArray.of(5, 6, 7), IntArray.of(5, 5, 5), IntArray.of(2, 3, 1));
+
+            // cara lateral right
+            this.addPoly(IntArray.of(2, 5, 1), IntArray.of(3, 3, 3), IntArray.of(2, 1, 0));
+            this.addPoly(IntArray.of(2, 6, 5), IntArray.of(3, 3, 3), IntArray.of(2, 3, 1));
+
+            // cara lateral left
+            this.addPoly(IntArray.of(4, 3, 0), IntArray.of(2, 2, 2), IntArray.of(2, 1, 0));
+            this.addPoly(IntArray.of(4, 7, 3), IntArray.of(2, 2, 2), IntArray.of(2, 3, 1));
+
             // cara superior
-            this.addPoly(material, 1, 0, 3);
-            this.addPoly(material, 3, 4, 1);
-            // trasera
-            this.addPoly(material, 3, 2, 7);
-            this.addPoly(material, 7, 8, 3);
-            // izquierda
-            this.addPoly(material, 4, 3, 8);
-            this.addPoly(material, 8, 9, 4);
-            // frente
-            this.addPoly(material, 5, 4, 9);
-            this.addPoly(material, 9, 10, 5);
-            // derecha
-            this.addPoly(material, 6, 5, 10);
-            this.addPoly(material, 10, 11, 6);
-            // abajo
-            this.addPoly(material, 9, 8, 12);
-            this.addPoly(material, 12, 13, 9);
-            calculateNormals();
+            this.addPoly(IntArray.of(0, 5, 4), IntArray.of(0, 0, 0), IntArray.of(2, 1, 0));
+            this.addPoly(IntArray.of(0, 1, 5), IntArray.of(0, 0, 0), IntArray.of(2, 3, 1));
+
+            // cara inferior
+            this.addPoly(IntArray.of(6, 2, 3), IntArray.of(1, 1, 1), IntArray.of(2, 1, 0));
+            this.addPoly(IntArray.of(6, 3, 7), IntArray.of(1, 1, 1), IntArray.of(2, 3, 1));
+
+            // computeNormals();
+            applyMaterial(material);
         } catch (Exception ex) {
             Logger.getLogger(Box.class.getName()).log(Level.SEVERE, null, ex);
         }

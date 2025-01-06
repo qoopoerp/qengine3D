@@ -20,7 +20,7 @@ import net.qoopo.engine.core.renderer.RenderEngine;
 import net.qoopo.engine.core.scene.Scene;
 import net.qoopo.engine.core.texture.QTextura;
 import net.qoopo.engine.core.texture.util.MaterialUtil;
-import net.qoopo.engine.core.util.QUtilComponentes;
+import net.qoopo.engine.core.util.ComponentUtil;
 import net.qoopo.engine3d.test.generaEjemplos.MakeTestScene;
 
 /**
@@ -49,7 +49,7 @@ public class TestLoadSocuwan extends MakeTestScene {
                     Entity entidad = loadModel.loadModel(file);                
                     QTextura textura= AssetManager.get().loadTexture(file.getParentFile().getName(),new File(file.getParentFile(),"diffuse.png"));
                     QMaterialBas material= new QMaterialBas(textura);
-                    MaterialUtil.applyMaterial(QUtilComponentes.getMesh(entidad), material);
+                    MaterialUtil.applyMaterial(ComponentUtil.getMesh(entidad), material);
                     mundo.addEntity(entidad);
                 } catch (Exception e) {
                 }

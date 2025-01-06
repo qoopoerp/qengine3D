@@ -21,7 +21,6 @@ import net.qoopo.engine.core.material.basico.QMaterialBas;
 import net.qoopo.engine.core.renderer.RenderEngine;
 import net.qoopo.engine.core.scene.Scene;
 import net.qoopo.engine.core.texture.QTextura;
-import net.qoopo.engine.core.texture.util.MaterialUtil;
 import net.qoopo.engine3d.test.generaEjemplos.MakeTestScene;
 
 /**
@@ -47,17 +46,11 @@ public class TestLoadDae extends MakeTestScene {
             // cambio la textura de las geometria cargadas
             for (EntityComponent comp : entidad.getComponents()) {
                 if (comp instanceof Mesh) {
-                    MaterialUtil.applyMaterial((Mesh) comp, material);
-                    // for (QPrimitiva face : ((Mesh) comp).primitivas) {
-                    // if (face.material instanceof QMaterialBas) {
-                    // ((QMaterialBas) face.material).setMapaColor(texture);
-                    // }
-                    // }
+                    ((Mesh) comp).applyMaterial(material);
                 }
             }
             entidad.rotate(Math.toRadians(-90), 0, 0);
             entidad.move(-5, 0, 0);
-            // entidad.mover(i * 6, 0, j * 6);
             mundo.addEntity(entidad);
 
             List<File> archivos = new ArrayList<>();

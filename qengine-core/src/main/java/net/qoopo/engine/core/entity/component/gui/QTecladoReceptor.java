@@ -5,13 +5,20 @@
  */
 package net.qoopo.engine.core.entity.component.gui;
 
+import lombok.Getter;
+import lombok.Setter;
+import net.qoopo.engine.core.entity.Entity;
 import net.qoopo.engine.core.entity.component.EntityComponent;
 
 /**
  *
  * @author alberto
  */
-public abstract class QTecladoReceptor extends EntityComponent {
+public abstract class QTecladoReceptor implements EntityComponent {
+
+    @Getter
+    @Setter
+    protected Entity entity;
 
     public abstract void keyPressed(java.awt.event.KeyEvent evt);
 

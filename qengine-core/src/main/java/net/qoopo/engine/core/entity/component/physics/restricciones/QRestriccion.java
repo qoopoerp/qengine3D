@@ -5,6 +5,9 @@
  */
 package net.qoopo.engine.core.entity.component.physics.restricciones;
 
+import lombok.Getter;
+import lombok.Setter;
+import net.qoopo.engine.core.entity.Entity;
 import net.qoopo.engine.core.entity.component.EntityComponent;
 import net.qoopo.engine.core.entity.component.physics.dinamica.QObjetoRigido;
 
@@ -12,7 +15,11 @@ import net.qoopo.engine.core.entity.component.physics.dinamica.QObjetoRigido;
  *
  * @author alberto
  */
-public class QRestriccion extends EntityComponent {
+public class QRestriccion implements EntityComponent {
+
+    @Getter
+    @Setter
+    private Entity entity;
 
     protected QObjetoRigido a;
     protected QObjetoRigido b;

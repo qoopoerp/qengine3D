@@ -7,6 +7,9 @@ package net.qoopo.engine.core.entity.component.physics.collision;
 
 import java.util.List;
 
+import lombok.Getter;
+import lombok.Setter;
+import net.qoopo.engine.core.entity.Entity;
 import net.qoopo.engine.core.entity.component.EntityComponent;
 import net.qoopo.engine.core.entity.component.mesh.Mesh;
 import net.qoopo.engine.core.entity.component.mesh.primitive.Vertex;
@@ -20,7 +23,11 @@ import net.qoopo.engine.core.math.QVector3;
  *
  * @author alberto
  */
-public class QComponenteColision extends EntityComponent {
+public class QComponenteColision implements EntityComponent {
+
+    @Getter
+    @Setter
+    protected Entity entity;
 
     public static final int TIPO_CONTENEDOR_ESFERA = 1;
     public static final int TIPO_CONTENEDOR_AABB = 2;
@@ -73,7 +80,7 @@ public class QComponenteColision extends EntityComponent {
      * @param transformacion
      */
     public void crearAABB(Mesh geometria, QTransformacion transformacion) {
-        this.formaColision = new AABB(geometria.vertices[0].clone(), geometria.vertices[0].clone());
+        this.formaColision = new AABB(geometria.vertexList[0].clone(), geometria.vertexList[0].clone());
 
         AABB tmp = (AABB) formaColision;
         // this.formaColision = new AABB(this.vertices[0], this.vertices[0]);
@@ -81,7 +88,7 @@ public class QComponenteColision extends EntityComponent {
         // el siguiente metodo funciona para todas las formas
         // pero seria mejro que existan clases que sobrecarguen este metodo de acuerdo a
         // una geometria predefinida
-        for (Vertex vertice : geometria.vertices) {
+        for (Vertex vertice : geometria.vertexList) {
             if (vertice.location.x < tmp.aabMinimo.location.x) {
                 tmp.aabMinimo.location.x = vertice.location.x;
             }

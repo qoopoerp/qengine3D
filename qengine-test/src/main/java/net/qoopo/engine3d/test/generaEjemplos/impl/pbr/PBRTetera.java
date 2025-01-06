@@ -9,7 +9,7 @@ import java.io.File;
 
 import net.qoopo.engine.core.assets.AssetManager;
 import net.qoopo.engine.core.entity.Entity;
-import net.qoopo.engine.core.entity.component.cubemap.QCubeMap;
+import net.qoopo.engine.core.entity.component.cubemap.CubeMap;
 import net.qoopo.engine.core.entity.component.mesh.primitive.shape.Teapot;
 import net.qoopo.engine.core.material.basico.QMaterialBas;
 import net.qoopo.engine.core.renderer.RenderEngine;
@@ -51,11 +51,11 @@ public class PBRTetera extends MakeTestScene {
         objeto.addComponent(MaterialUtil.applyMaterial(new Teapot(), material));
         mundo.addEntity(objeto);
         // -------------------------------------
-        QCubeMap mapa = new QCubeMap(QGlobal.MAPA_CUPO_RESOLUCION);
+        CubeMap mapa = new CubeMap(QGlobal.MAPA_CUPO_RESOLUCION);
         material.setMapaEntorno(new QProcesadorSimple(mapa.getTexturaEntorno()));
-        material.setTipoMapaEntorno(QCubeMap.FORMATO_MAPA_CUBO);
+        material.setTipoMapaEntorno(CubeMap.FORMATO_MAPA_CUBO);
         objeto.addComponent(mapa);
-        mapa.aplicar(QCubeMap.FORMATO_MAPA_CUBO, 0.8f, 1.45f);
+        mapa.aplicar(CubeMap.FORMATO_MAPA_CUBO, 0.8f, 1.45f);
 
     }
 

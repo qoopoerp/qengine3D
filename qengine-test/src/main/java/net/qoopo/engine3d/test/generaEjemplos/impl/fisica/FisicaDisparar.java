@@ -11,7 +11,7 @@ import net.qoopo.engine.core.entity.Entity;
 import net.qoopo.engine.core.entity.component.mesh.primitive.shape.Sphere;
 import net.qoopo.engine.core.entity.component.physics.collision.detector.CollisionShape;
 import net.qoopo.engine.core.entity.component.physics.collision.detector.shape.primitivas.QColisionEsfera;
-import net.qoopo.engine.core.entity.component.physics.collision.listeners.QListenerColision;
+import net.qoopo.engine.core.entity.component.physics.collision.listeners.CollisionListener;
 import net.qoopo.engine.core.entity.component.physics.dinamica.QObjetoDinamico;
 import net.qoopo.engine.core.entity.component.physics.dinamica.QObjetoRigido;
 import net.qoopo.engine.core.material.basico.QMaterialBas;
@@ -21,7 +21,7 @@ import net.qoopo.engine.core.renderer.RenderEngine;
 import net.qoopo.engine.core.scene.Scene;
 import net.qoopo.engine.core.texture.util.MaterialUtil;
 import net.qoopo.engine.core.util.QGlobal;
-import net.qoopo.engine.core.util.QUtilComponentes;
+import net.qoopo.engine.core.util.ComponentUtil;
 import net.qoopo.engine3d.test.generaEjemplos.MakeTestScene;
 
 /**
@@ -98,7 +98,7 @@ public class FisicaDisparar extends MakeTestScene {
                         render.getCamara().getTransformacion().getTraslacion().y,
                         render.getCamara().getTransformacion().getTraslacion().z);
 
-                nuevoBalon.addComponent(new QListenerColision() {
+                nuevoBalon.addComponent(new CollisionListener() {
                     @Override
                     public void colision(Entity ob1, Entity ob2) {
                         System.out.println("HAY COLISION !!!!  se hará una explosión");
@@ -111,7 +111,7 @@ public class FisicaDisparar extends MakeTestScene {
                         QVector3 posB = ob2.getMatrizTransformacion(QGlobal.tiempo).toTranslationVector();
                         QVector3 direccion = posB.add(posA.multiply(-1));
                         direccion.normalize();
-                        QObjetoRigido rig = QUtilComponentes.getFisicoRigido(ob2);
+                        QObjetoRigido rig = ComponentUtil.getFisicoRigido(ob2);
                         rig.agregarFuerzas(direccion.multiply(30));
 
                         // busca todas las entidades cercanas para aplicarle la fuerza de colision

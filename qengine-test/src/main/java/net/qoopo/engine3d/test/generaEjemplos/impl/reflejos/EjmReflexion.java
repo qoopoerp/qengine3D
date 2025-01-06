@@ -6,7 +6,7 @@
 package net.qoopo.engine3d.test.generaEjemplos.impl.reflejos;
 
 import net.qoopo.engine.core.entity.Entity;
-import net.qoopo.engine.core.entity.component.cubemap.QCubeMap;
+import net.qoopo.engine.core.entity.component.cubemap.CubeMap;
 import net.qoopo.engine.core.entity.component.mesh.Mesh;
 import net.qoopo.engine.core.entity.component.mesh.primitive.shape.Suzane;
 import net.qoopo.engine.core.entity.component.mesh.primitive.shape.Teapot;
@@ -38,15 +38,15 @@ public class EjmReflexion extends MakeTestScene {
 
     private Entity crear(String nombre, Mesh malla) {
         Entity objeto = new Entity(nombre);
-        QCubeMap mapa = new QCubeMap();
+        CubeMap mapa = new CubeMap();
         QMaterialBas material = new QMaterialBas(nombre);
         material.setColorBase(QColor.WHITE);
         material.setMetalico(1f);
         material.setMapaEntorno(new QProcesadorSimple(mapa.getTexturaEntorno()));
-        material.setTipoMapaEntorno(QCubeMap.FORMATO_MAPA_CUBO);
+        material.setTipoMapaEntorno(CubeMap.FORMATO_MAPA_CUBO);
         objeto.addComponent(MaterialUtil.applyMaterial(malla, material));
         objeto.addComponent(mapa);
-        mapa.aplicar(QCubeMap.FORMATO_MAPA_CUBO, 1f, 0);
+        mapa.aplicar(CubeMap.FORMATO_MAPA_CUBO, 1f, 0);
         return objeto;
     }
 

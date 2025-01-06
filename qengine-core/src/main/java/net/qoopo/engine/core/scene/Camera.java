@@ -9,7 +9,7 @@ import net.qoopo.engine.core.assets.model.ModelLoader;
 import net.qoopo.engine.core.assets.model.waveobject.LoadModelObj;
 import net.qoopo.engine.core.entity.Entity;
 import net.qoopo.engine.core.entity.component.mesh.Mesh;
-import net.qoopo.engine.core.entity.component.mesh.primitive.QPrimitiva;
+import net.qoopo.engine.core.entity.component.mesh.primitive.Primitive;
 import net.qoopo.engine.core.entity.component.mesh.primitive.Vertex;
 import net.qoopo.engine.core.material.basico.QMaterialBas;
 import net.qoopo.engine.core.math.QColor;
@@ -17,7 +17,7 @@ import net.qoopo.engine.core.math.QMatriz4;
 import net.qoopo.engine.core.math.QVector2;
 import net.qoopo.engine.core.math.QVector3;
 import net.qoopo.engine.core.math.QVector4;
-import net.qoopo.engine.core.util.QUtilComponentes;
+import net.qoopo.engine.core.util.ComponentUtil;
 import net.qoopo.engine.core.util.TempVars;
 
 /**
@@ -101,7 +101,7 @@ public class Camera extends Entity {
         ModelLoader loadModel = new LoadModelObj();
         Entity ent = loadModel.loadModel(Camera.class.getResourceAsStream("/models/camera/camera.obj"));
         for (Entity child : ent.getChilds()) {
-            addComponent(QUtilComponentes.getMesh(child));
+            addComponent(ComponentUtil.getMesh(child));
         }
 
         // public static final Mesh GEOMETRIA_CAM = QUtilComponentes.getMesh(
@@ -155,7 +155,7 @@ public class Camera extends Entity {
      * @param v2
      * @return
      */
-    public float obtenerClipedVerticeAlfa(QVector3 v1, QVector3 v2) {
+    public float getClipedVerticeAlfa(QVector3 v1, QVector3 v2) {
         float alfa = 0.0f;
         // for (int i = 0; i < 2; i++) { //solo far plane y near plane
         for (int i = 0; i < 6; i++) {
@@ -337,24 +337,24 @@ public class Camera extends Entity {
     private void construirGeometria(QVector3[] esquinas) {
         try {
             GEOMETRIA_FRUSTUM.destroy();
-            GEOMETRIA_FRUSTUM.vertices = new Vertex[0];
-            GEOMETRIA_FRUSTUM.primitivas = new QPrimitiva[0];
+            GEOMETRIA_FRUSTUM.vertexList = new Vertex[0];
+            GEOMETRIA_FRUSTUM.primitiveList = new Primitive[0];
             for (QVector3 vector : esquinas) {
                 GEOMETRIA_FRUSTUM.addVertex(vector);
             }
 
             // cercano
-            GEOMETRIA_FRUSTUM.addPoly(MATERIAL, 4, 6, 7, 5);
+            GEOMETRIA_FRUSTUM.addPoly(MATERIAL, new int[] { 4, 6, 7, 5 });
             // lejano
-            GEOMETRIA_FRUSTUM.addPoly(MATERIAL, 1, 3, 2, 0);
+            GEOMETRIA_FRUSTUM.addPoly(MATERIAL, new int[] { 1, 3, 2, 0 });
             // superior
-            GEOMETRIA_FRUSTUM.addPoly(MATERIAL, 0, 4, 5, 1);
+            GEOMETRIA_FRUSTUM.addPoly(MATERIAL, new int[] { 0, 4, 5, 1 });
             // inferior
-            GEOMETRIA_FRUSTUM.addPoly(MATERIAL, 2, 3, 7, 6);
+            GEOMETRIA_FRUSTUM.addPoly(MATERIAL, new int[] { 2, 3, 7, 6 });
             // derecha
-            GEOMETRIA_FRUSTUM.addPoly(MATERIAL, 7, 3, 1, 5);
+            GEOMETRIA_FRUSTUM.addPoly(MATERIAL, new int[] { 7, 3, 1, 5 });
             // izquierda
-            GEOMETRIA_FRUSTUM.addPoly(MATERIAL, 0, 2, 6, 4);
+            GEOMETRIA_FRUSTUM.addPoly(MATERIAL, new int[] { 0, 2, 6, 4 });
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -447,10 +447,10 @@ public class Camera extends Entity {
      *
      * @param posicion
      * @param objetivo
-     * @param vectorArriba
+     * @param up
      */
-    public void lookAtTarget(QVector3 posicion, QVector3 objetivo, QVector3 vectorArriba) {
-        lookAt(posicion.clone(), posicion.clone().subtract(objetivo), vectorArriba);
+    public void lookAtTarget(QVector3 posicion, QVector3 objetivo, QVector3 up) {
+        lookAt(posicion.clone(), posicion.clone().subtract(objetivo), up);
     }
 
     /**
@@ -458,11 +458,11 @@ public class Camera extends Entity {
      *
      * @param posicion
      * @param direccion
-     * @param vectorArriba
+     * @param up
      */
-    public void lookAt(QVector3 posicion, QVector3 direccion, QVector3 vectorArriba) {
+    public void lookAt(QVector3 posicion, QVector3 direccion, QVector3 up) {
         transformacion.getTraslacion().set(posicion);
-        transformacion.getRotacion().getCuaternion().lookAt(direccion, vectorArriba);
+        transformacion.getRotacion().getCuaternion().lookAt(direccion, up);
         transformacion.getRotacion().actualizarAngulos();
         updateCamera();
     }

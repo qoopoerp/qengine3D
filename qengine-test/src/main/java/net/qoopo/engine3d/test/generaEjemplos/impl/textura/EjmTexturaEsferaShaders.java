@@ -15,11 +15,10 @@ import net.qoopo.engine.core.renderer.RenderEngine;
 import net.qoopo.engine.core.scene.Scene;
 import net.qoopo.engine.core.texture.procesador.QProcesadorSimple;
 import net.qoopo.engine.core.texture.util.MaterialUtil;
-import net.qoopo.engine.core.util.QGlobal;
 import net.qoopo.engine.renderer.shader.fragment.FragmentShaderComponent;
 import net.qoopo.engine.renderer.shader.fragment.basico.parciales.QFlatShaderBAS;
 import net.qoopo.engine.renderer.shader.fragment.basico.parciales.QSimpleShaderBAS;
-import net.qoopo.engine.renderer.shader.fragment.basico.parciales.QTexturaShaderBAS;
+import net.qoopo.engine.renderer.shader.fragment.basico.parciales.QTextureShaderBAS;
 import net.qoopo.engine3d.test.generaEjemplos.MakeTestScene;
 
 /**
@@ -56,7 +55,7 @@ public class EjmTexturaEsferaShaders extends MakeTestScene {
         Entity esfera4 = new Entity("Esfera4");
         esfera4.move(5, -5, 5);
         esfera4.addComponent(MaterialUtil.applyMaterial(new Sphere(2.5f, 36), mat1));
-        esfera4.addComponent(new FragmentShaderComponent(new QTexturaShaderBAS(null)));
+        esfera4.addComponent(new FragmentShaderComponent(new QTextureShaderBAS(null)));
         mundo.addEntity(esfera4);
     }
 

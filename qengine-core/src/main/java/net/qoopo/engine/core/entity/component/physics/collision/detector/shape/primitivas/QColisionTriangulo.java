@@ -24,9 +24,9 @@ public class QColisionTriangulo extends CollisionShape {
     }
 
     public QColisionTriangulo(Triangle triangulo) {
-        p1 = QVector3.of(triangulo.vertices[0]);
-        p2 = QVector3.of(triangulo.vertices[1]);
-        p3 = QVector3.of(triangulo.vertices[2]);
+        p1 = QVector3.of(triangulo.vertexList[0]);
+        p2 = QVector3.of(triangulo.vertexList[1]);
+        p3 = QVector3.of(triangulo.vertexList[2]);
     }
 
     public QColisionTriangulo(QVector3 p1, QVector3 p2, QVector3 p3) {

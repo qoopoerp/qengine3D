@@ -18,7 +18,7 @@ import net.qoopo.engine.core.math.QColor;
 import net.qoopo.engine.core.renderer.RenderEngine;
 import net.qoopo.engine.core.scene.Scene;
 import net.qoopo.engine.core.util.QGlobal;
-import net.qoopo.engine.core.util.QUtilComponentes;
+import net.qoopo.engine.core.util.ComponentUtil;
 import net.qoopo.engine.core.util.mesh.NormalUtil;
 import net.qoopo.engine3d.test.generaEjemplos.MakeTestScene;
 
@@ -42,7 +42,7 @@ public class SombrasOmniDireccional2 extends MakeTestScene {
                 try {
                         Entity calabaza = new Entity("Jack");
                         calabaza.addComponent(
-                                        QUtilComponentes.getMesh(AssetManager.get().loadModel(new File("assets/"
+                                        ComponentUtil.getMesh(AssetManager.get().loadModel(new File("assets/"
                                                         + "models/obj/VARIOS/CabezaHallowenCalabaza/Cabeza2.obj"))));
                         calabaza.scale(2, 2, 2);
                         // calabaza.mover(2f, -2f, -2f);

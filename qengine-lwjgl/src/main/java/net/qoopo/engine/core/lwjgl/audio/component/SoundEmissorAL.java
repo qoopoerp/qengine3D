@@ -20,10 +20,17 @@ import static org.lwjgl.openal.AL10.alSourcef;
 import static org.lwjgl.openal.AL10.alSourcei;
 //import static org.lwjgl.openal.AL10.*;
 
+import lombok.Getter;
+import lombok.Setter;
+import net.qoopo.engine.core.entity.Entity;
 import net.qoopo.engine.core.entity.component.EntityComponent;
 import net.qoopo.engine.core.math.QVector3;
 
-public class SoundEmissorAL extends EntityComponent {
+public class SoundEmissorAL implements EntityComponent {
+
+    @Getter
+    @Setter
+    private Entity entity;
 
     private final int sourceId;
     private boolean reproducirAlInicio = false;
