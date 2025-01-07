@@ -64,9 +64,9 @@ public class PnlColisionCompuesta extends javax.swing.JPanel {
                 } else if (comp instanceof QColisionTerreno) {
                     modelo.addElement("Terreno");
                 } else if (comp instanceof QColisionMallaConvexa) {
-                    modelo.addElement("Convexa " + ((QColisionMallaConvexa) comp).getMalla().nombre);
+                    modelo.addElement("Convexa " + ((QColisionMallaConvexa) comp).getMalla().name);
                 } else if (comp instanceof QColisionMallaIndexada) {
-                    modelo.addElement("Indexada " + ((QColisionMallaIndexada) comp).getMalla().nombre);
+                    modelo.addElement("Indexada " + ((QColisionMallaIndexada) comp).getMalla().name);
                 } else if (comp instanceof QColisionCompuesta) {
                     modelo.addElement("Compuesta ");
                 } else if (comp instanceof AABB) {
@@ -329,10 +329,10 @@ public class PnlColisionCompuesta extends javax.swing.JPanel {
                         modeloLista.addElement("Terreno");
                     } else if (hijo.getForma() instanceof QColisionMallaConvexa) {
                         modeloLista
-                                .addElement("Convexa " + ((QColisionMallaConvexa) hijo.getForma()).getMalla().nombre);
+                                .addElement("Convexa " + ((QColisionMallaConvexa) hijo.getForma()).getMalla().name);
                     } else if (hijo.getForma() instanceof QColisionMallaIndexada) {
                         modeloLista
-                                .addElement("Indexada " + ((QColisionMallaIndexada) hijo.getForma()).getMalla().nombre);
+                                .addElement("Indexada " + ((QColisionMallaIndexada) hijo.getForma()).getMalla().name);
                     } else if (hijo.getForma() instanceof QColisionCompuesta) {
                         modeloLista.addElement("Compuesta ");
                     } else if (hijo.getForma() instanceof AABB) {

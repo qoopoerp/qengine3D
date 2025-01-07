@@ -12,11 +12,10 @@ import net.qoopo.engine.core.assets.AssetManager;
 import net.qoopo.engine.core.assets.audio.AudioBuffer;
 import net.qoopo.engine.core.entity.Entity;
 import net.qoopo.engine.core.entity.component.animation.AnimationComponent;
+import net.qoopo.engine.core.entity.component.animation.AnimationStorageComponent;
 import net.qoopo.engine.core.entity.component.ia.acciones.QAccion;
 import net.qoopo.engine.core.lwjgl.audio.component.SoundEmissorAL;
-import net.qoopo.engine.core.util.QGlobal;
 import net.qoopo.engine.core.util.ComponentUtil;
-import net.qoopo.engine3d.core.util.SerializarUtil;
 
 /**
  *
@@ -50,15 +49,18 @@ public class QDoomMonster {
             monstruo.addComponent(emisorAudio);
 
             // animacion idle
-            monstruo.addComponent(ComponentUtil.getAlmacenAnimaciones(monstruo).getAnimacion("idle1"));
+            monstruo.addComponent(
+                    ((AnimationStorageComponent) ComponentUtil.getComponent(monstruo, AnimationStorageComponent.class))
+                            .get("idle1"));
 
             QAccion accionIdle = new QAccion("Idle") {
                 @Override
                 public void ejecutar(Object... parametros) {
 
                     // configura la animacion de caminar
-                    ComponentUtil.eliminarComponenteAnimacion(monstruo);
-                    AnimationComponent anim = ComponentUtil.getAlmacenAnimaciones(monstruo).getAnimacion("idle1");
+                    ComponentUtil.removeComponents(monstruo, AnimationComponent.class);
+                    AnimationComponent anim = ((AnimationStorageComponent) ComponentUtil.getComponent(monstruo,
+                            AnimationStorageComponent.class)).get("idle1");
                     monstruo.addComponent(anim);
 
                     try {
@@ -80,8 +82,9 @@ public class QDoomMonster {
                 public void ejecutar(Object... parametros) {
 
                     // configura la animacion de caminar
-                    ComponentUtil.eliminarComponenteAnimacion(monstruo);
-                    AnimationComponent anim = ComponentUtil.getAlmacenAnimaciones(monstruo).getAnimacion("walk1");
+                    ComponentUtil.removeComponents(monstruo, AnimationComponent.class);
+                    AnimationComponent anim = ((AnimationStorageComponent) ComponentUtil.getComponent(monstruo,
+                            AnimationStorageComponent.class)).get("walk1");
                     // le quito el loop
                     anim.reiniciar();
                     anim.setLoop(false);
@@ -108,9 +111,10 @@ public class QDoomMonster {
                 @Override
                 public void ejecutar(Object... parametros) {
                     // configura la animacion de caminar
-                    ComponentUtil.eliminarComponenteAnimacion(monstruo);
+                    ComponentUtil.removeComponents(monstruo, AnimationComponent.class);
 
-                    AnimationComponent anim = ComponentUtil.getAlmacenAnimaciones(monstruo).getAnimacion("melee1");
+                    AnimationComponent anim = ((AnimationStorageComponent) ComponentUtil.getComponent(monstruo,
+                            AnimationStorageComponent.class)).get("melee1");
                     // le quito el loop
                     anim.reiniciar();
                     anim.setLoop(false);
@@ -189,15 +193,17 @@ public class QDoomMonster {
             monstruo.addComponent(emisorAudio);
 
             // animacion idle
-            monstruo.addComponent(ComponentUtil.getAlmacenAnimaciones(monstruo).getAnimacion("idle02"));
+            monstruo.addComponent(((AnimationStorageComponent) ComponentUtil.getComponent(monstruo,
+                    AnimationStorageComponent.class)).get("idle02"));
 
             QAccion accionIdle = new QAccion("caminar") {
                 @Override
                 public void ejecutar(Object... parametros) {
 
                     // configura la animacion de caminar
-                    ComponentUtil.eliminarComponenteAnimacion(monstruo);
-                    AnimationComponent anim = ComponentUtil.getAlmacenAnimaciones(monstruo).getAnimacion("idle02");
+                    ComponentUtil.removeComponents(monstruo, AnimationComponent.class);
+                    AnimationComponent anim = ((AnimationStorageComponent) ComponentUtil.getComponent(monstruo,
+                            AnimationStorageComponent.class)).get("idle02");
                     monstruo.addComponent(anim);
 
                     try {
@@ -213,9 +219,10 @@ public class QDoomMonster {
                 @Override
                 public void ejecutar(Object... parametros) {
                     // configura la animacion de caminar
-                    ComponentUtil.eliminarComponenteAnimacion(monstruo);
+                    ComponentUtil.removeComponents(monstruo, AnimationComponent.class);
 
-                    AnimationComponent anim = ComponentUtil.getAlmacenAnimaciones(monstruo).getAnimacion("attack02");
+                    AnimationComponent anim = ((AnimationStorageComponent) ComponentUtil.getComponent(monstruo,
+                            AnimationStorageComponent.class)).get("attack02");
                     // le quito el loop
                     anim.reiniciar();
                     anim.setLoop(false);

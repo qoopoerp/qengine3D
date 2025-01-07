@@ -10,7 +10,7 @@ import java.util.List;
 
 import net.qoopo.engine.core.renderer.post.flujos.QRenderEfectos;
 import net.qoopo.engine.core.renderer.post.procesos.QPostProceso;
-import net.qoopo.engine.core.texture.QTextura;
+import net.qoopo.engine.core.texture.Texture;
 
 /**
  * Realiza una lista de efectos en el orden establecido No puede ejecutar
@@ -26,7 +26,7 @@ public class QEfectoLista extends QRenderEfectos {
     }
 
     @Override
-    public QTextura ejecutar(QTextura buffer) {//
+    public Texture ejecutar(Texture buffer) {//
         try {
             procesos.get(0).procesar(buffer);
             for (int i = 1; i < procesos.size(); i++) {

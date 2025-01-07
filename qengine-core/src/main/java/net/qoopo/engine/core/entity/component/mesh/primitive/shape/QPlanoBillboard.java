@@ -9,7 +9,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import net.qoopo.engine.core.entity.component.mesh.primitive.Shape;
-import net.qoopo.engine.core.material.basico.QMaterialBas;
+import net.qoopo.engine.core.material.basico.Material;
 import net.qoopo.engine.core.texture.util.MaterialUtil;
 import net.qoopo.engine.core.util.mesh.NormalUtil;
 
@@ -25,10 +25,10 @@ public class QPlanoBillboard extends Shape {
     private float ancho;
 
     public QPlanoBillboard(float alto, float ancho) {
-        nombre = "Plano";
+        name = "Plano";
         this.alto = alto;
         this.ancho = ancho;
-        material = new QMaterialBas("Plano");
+        material = new Material("Plano");
         build();
     }
 

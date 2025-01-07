@@ -7,7 +7,7 @@ package net.qoopo.engine.core.renderer.post.procesos.color;
 
 import net.qoopo.engine.core.renderer.post.procesos.QPostProceso;
 import net.qoopo.engine.core.renderer.post.procesos.blur.QProcesadorBlur;
-import net.qoopo.engine.core.texture.QTextura;
+import net.qoopo.engine.core.texture.Texture;
 
 /**
  * Realiza una modificación del color final de la imagen realzando el contraste
@@ -22,7 +22,7 @@ public class QProcesadorBloom extends QPostProceso {
     private QProcesadorContraste contraste = null;
 
     public QProcesadorBloom(int ancho, int alto) {
-        this.bufferSalida = new QTextura(ancho, alto);
+        this.bufferSalida = new Texture(ancho, alto);
         this.blur = new QProcesadorBlur(ancho, alto, 10);
         this.brillo = new QProcesadorBrillo(ancho, alto, 0.85f);
         this.combina = new QProcesadorCombina(ancho, alto);
@@ -30,7 +30,7 @@ public class QProcesadorBloom extends QPostProceso {
     }
 
     public QProcesadorBloom(int ancho, int alto, float brillo) {
-        this.bufferSalida = new QTextura(ancho, alto);
+        this.bufferSalida = new Texture(ancho, alto);
         this.blur = new QProcesadorBlur(ancho, alto, 10);
         this.brillo = new QProcesadorBrillo(ancho, alto, brillo);
         this.combina = new QProcesadorCombina(ancho, alto);
@@ -38,9 +38,9 @@ public class QProcesadorBloom extends QPostProceso {
     }
 
     @Override
-    public void procesar(QTextura... buffer) {
+    public void procesar(Texture... buffer) {
         try {
-            QTextura textura = buffer[0];
+            Texture textura = buffer[0];
             brillo.procesar(textura);
             blur.procesar(brillo.getBufferSalida());
             combina.procesar(textura, blur.getBufferSalida());

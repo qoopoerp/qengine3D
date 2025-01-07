@@ -9,7 +9,7 @@ import java.awt.image.BufferedImage;
 
 import net.qoopo.engine.core.math.QColor;
 import net.qoopo.engine.core.renderer.post.procesos.QPostProceso;
-import net.qoopo.engine.core.texture.QTextura;
+import net.qoopo.engine.core.texture.Texture;
 
 /**
  * Realiza una modificación del color final de la imagen realzando el contraste
@@ -61,9 +61,9 @@ public class QProcesadorBlur extends QPostProceso {
     }
 
     @Override
-    public void procesar(QTextura... buffer) {
+    public void procesar(Texture... buffer) {
         try {
-            bufferSalida = new QTextura();
+            bufferSalida = new Texture();
             bufferSalida.loadTexture(buffer[0].getImagen());
             if (usarEscala) {
                 ancho = (int) (bufferSalida.getAncho() * ESCALA);
@@ -78,9 +78,9 @@ public class QProcesadorBlur extends QPostProceso {
     }
 
     // https://stackoverflow.com/questions/43743998/how-to-make-smooth-blur-effect-in-java
-    public static QTextura transpuestodHBlur(QTextura textura, int ancho, int alto) {
+    public static Texture transpuestodHBlur(Texture textura, int ancho, int alto) {
         // Resultado es transpuesot, asi que el ancho/alto estan cambiados
-        QTextura salida = new QTextura(alto, ancho);
+        Texture salida = new Texture(alto, ancho);
         QColor pixel = new QColor();
         // horizontal blur, transpose result
         for (int y = 0; y < textura.getAlto(); y++) {

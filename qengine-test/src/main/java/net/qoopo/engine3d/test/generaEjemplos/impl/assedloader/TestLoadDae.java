@@ -17,10 +17,10 @@ import net.qoopo.engine.core.entity.Entity;
 import net.qoopo.engine.core.entity.component.EntityComponent;
 import net.qoopo.engine.core.entity.component.mesh.Mesh;
 import net.qoopo.engine.core.load.collada.thinmatrix.LoadModelDae;
-import net.qoopo.engine.core.material.basico.QMaterialBas;
+import net.qoopo.engine.core.material.basico.Material;
 import net.qoopo.engine.core.renderer.RenderEngine;
 import net.qoopo.engine.core.scene.Scene;
-import net.qoopo.engine.core.texture.QTextura;
+import net.qoopo.engine.core.texture.Texture;
 import net.qoopo.engine3d.test.generaEjemplos.MakeTestScene;
 
 /**
@@ -35,9 +35,9 @@ public class TestLoadDae extends MakeTestScene {
 
             ModelLoader loadModel = new LoadModelDae();
 
-            QTextura texture = AssetManager.get().loadTexture("difusa",
+            Texture texture = AssetManager.get().loadTexture("difusa",
                     new File("assets/models/collada/vaquero_tuto/diffuse.png"));
-            QMaterialBas material = new QMaterialBas(texture);
+            Material material = new Material(texture);
 
             File archivo = new File("assets/models/collada/vaquero_tuto/model.dae");
 

@@ -12,11 +12,11 @@ import javax.imageio.ImageIO;
 import net.qoopo.engine.core.entity.Entity;
 import net.qoopo.engine.core.entity.component.mesh.primitive.shape.Plane;
 import net.qoopo.engine.core.entity.component.mesh.primitive.shape.QPlanoBillboard;
-import net.qoopo.engine.core.material.basico.QMaterialBas;
+import net.qoopo.engine.core.material.basico.Material;
 import net.qoopo.engine.core.math.QColor;
 import net.qoopo.engine.core.renderer.RenderEngine;
 import net.qoopo.engine.core.scene.Scene;
-import net.qoopo.engine.core.texture.QTextura;
+import net.qoopo.engine.core.texture.Texture;
 import net.qoopo.engine.core.texture.procesador.QProcesadorAtlasSecuencial;
 import net.qoopo.engine.core.texture.util.MaterialUtil;
 import net.qoopo.engine.core.util.QGlobal;
@@ -28,15 +28,15 @@ import net.qoopo.engine3d.test.generaEjemplos.MakeTestScene;
  */
 public class EjmTexturaTransparente extends MakeTestScene {
 
-    private QMaterialBas crearMaterial() {
-        QMaterialBas material = null;
+    private Material crearMaterial() {
+        Material material = null;
         try {
             QColor colorTransparencia = QColor.BLACK;
-            material = new QMaterialBas();
+            material = new Material();
             QProcesadorAtlasSecuencial proc = new QProcesadorAtlasSecuencial(
                     // new QTextura(ImageIO.read(new
                     // File("assets/"+"textures/humo/smoke_atlas_1.png"))),
-                    new QTextura(ImageIO.read(new File("assets/textures/fuego/fire-texture-atlas_2.png"))),
+                    new Texture(ImageIO.read(new File("assets/textures/fuego/fire-texture-atlas_2.png"))),
                     8, 4, 10);
             material.setMapaColor(proc);
             material.setColorTransparente(colorTransparencia);
@@ -52,7 +52,7 @@ public class EjmTexturaTransparente extends MakeTestScene {
     public void make(Scene mundo) {
         this.scene = mundo;
 
-        QMaterialBas mat = crearMaterial();
+        Material mat = crearMaterial();
 
         Entity plano1 = new Entity("Plano");
         plano1.setBillboard(true);

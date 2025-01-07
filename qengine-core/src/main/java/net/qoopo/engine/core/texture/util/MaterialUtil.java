@@ -10,7 +10,7 @@ import net.qoopo.engine.core.entity.component.mesh.primitive.Poly;
 import net.qoopo.engine.core.entity.component.mesh.primitive.Primitive;
 import net.qoopo.engine.core.entity.component.mesh.primitive.Shape;
 import net.qoopo.engine.core.material.AbstractMaterial;
-import net.qoopo.engine.core.material.basico.QMaterialBas;
+import net.qoopo.engine.core.material.basico.Material;
 import net.qoopo.engine.core.math.QColor;
 
 /**
@@ -47,12 +47,12 @@ public class MaterialUtil {
 
     public static Mesh applyColor(Mesh objeto, float alpha, QColor colorDifuso, QColor colorEspecular,
             float factorEmisionLuz, int specularExponent) {
-        QMaterialBas material = null;
+        Material material = null;
         try {
-            material = new QMaterialBas();
+            material = new Material();
             material.setTransAlfa(alpha);
-            material.setColorBase(colorDifuso);
-            // material.setColorEspecular(colorEspecular);
+            material.setColor(colorDifuso);
+            material.setColorEspecular(colorEspecular);
             material.setFactorEmision(factorEmisionLuz);
             material.setSpecularExponent(specularExponent);
         } catch (Exception e) {
@@ -63,12 +63,12 @@ public class MaterialUtil {
 
     public static Mesh applyColor(Mesh objeto, float alpha, float r, float g, float b, float rS, float gS, float bS,
             float factorEmisionLuz, int specularExponent) {
-        QMaterialBas material = null;
+        Material material = null;
         try {
-            material = new QMaterialBas();
+            material = new Material();
             material.setTransAlfa(alpha);
-            material.setColorBase(new QColor(1, r, g, b));
-            // material.setColorEspecular(new QColor(1, rS, gS, bS));
+            material.setColor(new QColor(1, r, g, b));
+            material.setColorEspecular(new QColor(1, rS, gS, bS));
             material.setFactorEmision(factorEmisionLuz);
             material.setSpecularExponent(specularExponent);
         } catch (Exception e) {
@@ -79,13 +79,13 @@ public class MaterialUtil {
 
     public static Mesh applyColor(Mesh objeto, float alpha, float r, float g, float b, float rS, float gS, float bS,
             int specularExponent) {
-        QMaterialBas material = null;
+        Material material = null;
         try {
-            material = new QMaterialBas();
+            material = new Material();
             material.setTransAlfa(alpha);
             material.setTransparencia(alpha < 1.0f);
-            material.setColorBase(new QColor(1, r, g, b));
-            // material.setColorEspecular(new QColor(1, rS, gS, bS));
+            material.setColor(new QColor(1, r, g, b));
+            material.setColorEspecular(new QColor(1, rS, gS, bS));
             material.setSpecularExponent(specularExponent);
         } catch (Exception e) {
             e.printStackTrace();

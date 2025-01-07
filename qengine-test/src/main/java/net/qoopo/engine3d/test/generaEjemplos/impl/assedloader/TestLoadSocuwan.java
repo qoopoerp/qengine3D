@@ -15,10 +15,10 @@ import net.qoopo.engine.core.assets.AssetManager;
 import net.qoopo.engine.core.assets.model.ModelLoader;
 import net.qoopo.engine.core.assets.model.waveobject.LoadModelObj;
 import net.qoopo.engine.core.entity.Entity;
-import net.qoopo.engine.core.material.basico.QMaterialBas;
+import net.qoopo.engine.core.material.basico.Material;
 import net.qoopo.engine.core.renderer.RenderEngine;
 import net.qoopo.engine.core.scene.Scene;
-import net.qoopo.engine.core.texture.QTextura;
+import net.qoopo.engine.core.texture.Texture;
 import net.qoopo.engine.core.texture.util.MaterialUtil;
 import net.qoopo.engine.core.util.ComponentUtil;
 import net.qoopo.engine3d.test.generaEjemplos.MakeTestScene;
@@ -47,8 +47,8 @@ public class TestLoadSocuwan extends MakeTestScene {
             for (File file:archivos) {
                 try {                    
                     Entity entidad = loadModel.loadModel(file);                
-                    QTextura textura= AssetManager.get().loadTexture(file.getParentFile().getName(),new File(file.getParentFile(),"diffuse.png"));
-                    QMaterialBas material= new QMaterialBas(textura);
+                    Texture textura= AssetManager.get().loadTexture(file.getParentFile().getName(),new File(file.getParentFile(),"diffuse.png"));
+                    Material material= new Material(textura);
                     MaterialUtil.applyMaterial(ComponentUtil.getMesh(entidad), material);
                     mundo.addEntity(entidad);
                 } catch (Exception e) {

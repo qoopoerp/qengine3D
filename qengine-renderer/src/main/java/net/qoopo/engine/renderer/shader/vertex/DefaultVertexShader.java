@@ -33,12 +33,7 @@ public class DefaultVertexShader implements VertexShader {
      */
     public Vertex apply(Vertex vertex, QVector3 normal, QVector2 uv, QColor color, QMatriz4 matrizVistaModelo) {
         Vertex nuevo = new Vertex();
-        // nuevo.u = vertex.u;
-        // nuevo.v = vertex.v;
         TempVars tmp = TempVars.get();
-        // tmp.vector4f1-- posicion
-        // tmp.vector4f2 --normal
-        // tmp.vector4f3 --normal (entrada para multiplicar)
         try {
             // Pasos
             // 1.En caso de existir un esqueleto, Modificar la posición del vértice de
@@ -56,7 +51,7 @@ public class DefaultVertexShader implements VertexShader {
                 for (int i = 0; i < vertex.getListaHuesos().length; i++) {
                     peso = vertex.getListaHuesosPesos()[i];
                     hueso = vertex.getListaHuesos()[i];
-                    matrizTransformacionHueso = hueso.getMatrizTransformacionHueso(QGlobal.tiempo);
+                    matrizTransformacionHueso = hueso.getMatrizTransformacionHueso(QGlobal.time);
                     tmp.vector4f1.add(matrizTransformacionHueso.mult(vertex.location).multiply(peso));
                     // la normal
                     tmp.vector4f3.set(normal, 0);

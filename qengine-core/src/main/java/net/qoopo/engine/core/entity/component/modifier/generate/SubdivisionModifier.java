@@ -34,7 +34,9 @@ public class SubdivisionModifier implements ModifierComponent {
     private int type = TYPE_SIMPLE;
     private int times = 1;
 
-    private Mesh cachedMesh = null;
+    private Long timeMark = -1L;
+
+    private boolean changed;
 
     public SubdivisionModifier(int type) {
         this.type = type;
@@ -45,6 +47,10 @@ public class SubdivisionModifier implements ModifierComponent {
         this.times = times;
     }
 
+    public void changed() {
+        this.changed = true;
+    }
+
     @Override
     public void destruir() {
 
@@ -52,11 +58,11 @@ public class SubdivisionModifier implements ModifierComponent {
 
     @Override
     public void apply(Mesh mesh) {
-        if (mesh != null
-                && (cachedMesh == null || (cachedMesh != null && cachedMesh.getTimeMark() != mesh.getTimeMark()))) {
+        if (mesh != null && timeMark != mesh.getTimeMark()) {
             subdivisionSurface(mesh, times);
             mesh.computeNormals();
-            cachedMesh = mesh;
+            timeMark = mesh.getTimeMark();
+            changed=false;
         }
     }
 
@@ -556,11 +562,11 @@ public class SubdivisionModifier implements ModifierComponent {
             }
         }
         // if (repetir) {
-        //     // cambiamos la dimension de los vertices para eliminar la ultima posicion
-        //     // System.out.println("Eliminando vertices.. actual:" + i + " quedan " +
-        //     // (vertices.length - 1));
-        //     mesh.vertexList = Arrays.copyOf(mesh.vertexList, mesh.vertexList.length - 1);
-        //     cleanDuplicateVertex(mesh);
+        // // cambiamos la dimension de los vertices para eliminar la ultima posicion
+        // // System.out.println("Eliminando vertices.. actual:" + i + " quedan " +
+        // // (vertices.length - 1));
+        // mesh.vertexList = Arrays.copyOf(mesh.vertexList, mesh.vertexList.length - 1);
+        // cleanDuplicateVertex(mesh);
         // }
         return mesh;
     }

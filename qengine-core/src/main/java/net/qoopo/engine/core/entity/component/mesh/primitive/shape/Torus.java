@@ -7,11 +7,9 @@ package net.qoopo.engine.core.entity.component.mesh.primitive.shape;
 
 import lombok.Getter;
 import lombok.Setter;
-import net.qoopo.engine.core.entity.component.mesh.generator.MeshGenerator;
 import net.qoopo.engine.core.entity.component.mesh.primitive.Shape;
-import net.qoopo.engine.core.entity.component.mesh.primitive.Vertex;
-import net.qoopo.engine.core.material.basico.QMaterialBas;
-import net.qoopo.engine.core.math.QVector3;
+import net.qoopo.engine.core.material.basico.Material;
+import net.qoopo.engine.core.util.array.IntArray;
 
 /**
  * http://www.songho.ca/opengl/gl_torus.html
@@ -22,215 +20,123 @@ import net.qoopo.engine.core.math.QVector3;
 @Setter
 public class Torus extends Shape {
 
-    private float radio1;
-    private float radio2;
-    private int horizontalSectors = 36;
-    private int verticalSectors = 18;
+    private float majorRadius;
+    private float minorRadius;
+    private int sectorCount = 48;
+    private int sideCount = 12;
 
     public Torus() {
-        nombre = "Toro";
-        radio1 = 1;
-        radio2 = 0.5f;
-        horizontalSectors = 36;
-        verticalSectors = 18;
-        material = new QMaterialBas("Toro");
+        name = "Toro";
+        majorRadius = 1;
+        minorRadius = 0.5f;
+
+        material = new Material("Toro");
         build();
     }
 
-    public Torus(float radio1, float radio2) {
-        nombre = "Toro";
-        this.radio1 = radio1;
-        this.radio2 = radio2;
-        horizontalSectors = 36;
-        verticalSectors = 18;
-        material = new QMaterialBas("Toro");
+    public Torus(float majorRadius, float minorRadius) {
+        name = "Toro";
+        this.majorRadius = majorRadius;
+        this.minorRadius = minorRadius;
+        material = new Material("Toro");
         build();
     }
 
-    public Torus(float radio1, float radio2, int secciones) {
-        nombre = "Toro";
-        this.radio1 = radio1;
-        this.radio2 = radio2;
-        this.horizontalSectors = secciones;
-        verticalSectors = secciones;
-        material = new QMaterialBas("Toro");
+    public Torus(float majorRadius, float minorRadius, int sectorCount) {
+        name = "Toro";
+        this.majorRadius = majorRadius;
+        this.minorRadius = minorRadius;
+        this.sideCount = sectorCount;
+        this.sectorCount = sectorCount;
+        material = new Material("Toro");
         build();
     }
 
-    public Torus(float radio1, float radio2, int secciones, int secciones2) {
-        // super(QMalla.EJE_Y, false, 2 * QMath.PI, 2 * QMath.PI,secciones, secciones2);
-        nombre = "Toro";
-        this.radio1 = radio1;
-        this.radio2 = radio2;
-        this.horizontalSectors = secciones;
-        this.verticalSectors = secciones2;
-        material = new QMaterialBas("Toro");
+    public Torus(float majorRadius, float minorRadius, int sectorCount, int sideCount) {
+        // super(QMalla.EJE_Y, false, 2 * QMath.PI, 2 * QMath.PI,sideCount,
+        // sectorCount);
+        name = "Toro";
+        this.majorRadius = majorRadius;
+        this.minorRadius = minorRadius;
+        this.sideCount = sideCount;
+        this.sectorCount = sectorCount;
+        material = new Material("Toro");
         build();
     }
 
+    @Override
     public void build() {
         deleteData();
+        try {
 
-        // primero el circulo
-        Vertex inicial = this.addVertex(0, radio2, 0); // primer vertice
-        addUV(0, 1);
+            float x, y, z, xy; // vertex position
+            float nx, ny, nz; // normal
+            float lengthInv = 1.0f / minorRadius; // to normalize normals
+            float s, t;
 
-        QVector3 vector = QVector3.of(inicial.location.x, inicial.location.y, inicial.location.z);
-        float angulo = 360.0f / verticalSectors;
-        QVector3 tmp = vector;
-        // se crean las secciones menos la ultima
-        for (int i = 1; i < verticalSectors; i++) {
-            tmp = tmp.rotateZ((float) Math.toRadians(angulo));
-            this.addVertex(tmp.x, tmp.y, tmp.z);
-            addUV(0, 1.0f - (1.0f / verticalSectors * (i - 1)));
+            float sectorStep = 2.0f * (float) Math.PI / sectorCount;
+            float sideStep = 2.0f * (float) Math.PI / sideCount;
+            float sectorAngle, sideAngle;
+
+            for (int i = 0; i <= sideCount; ++i) {
+                // start the tube side from the inside where sideAngle = pi
+                sideAngle = (float) Math.PI - i * sideStep; // starting from pi to -pi
+                xy = minorRadius * (float) Math.cos(sideAngle); // r * cos(u)
+                z = minorRadius * (float) Math.sin(sideAngle); // r * sin(u)
+
+                // add (sectorCount+1) vertices per side
+                // the first and last vertices have same position and normal,
+                // but different tex coords
+                for (int j = 0; j <= sectorCount; ++j) {
+                    sectorAngle = j * sectorStep; // starting from 0 to 2pi
+
+                    // tmp x and y to compute normal vector
+                    x = xy * (float) Math.cos(sectorAngle);
+                    y = xy * (float) Math.sin(sectorAngle);
+
+                    // add normalized vertex normal first
+                    nx = x * lengthInv;
+                    ny = y * lengthInv;
+                    nz = z * lengthInv;
+                    addNormal(nx, ny, nz);
+
+                    // shift x & y, and vertex position
+                    x += majorRadius * (float) Math.cos(sectorAngle); // (R + r * cos(u)) * cos(v)
+                    y += majorRadius * (float) Math.sin(sectorAngle); // (R + r * cos(u)) * sin(v)
+                    addVertex(x, y, z);
+
+                    // vertex tex coord between [0, 1]
+                    s = (float) j / sectorCount;
+                    t = (float) i / sideCount;
+                    addUV(s, t);
+                }
+            }
+
+            // faces
+
+            // indices
+            // k1--k1+1
+            // | / |
+            // | / |
+            // k2--k2+1
+            int k1, k2;
+            for (int i = 0; i < sideCount; ++i) {
+                k1 = i * (sectorCount + 1); // beginning of current side
+                k2 = k1 + sectorCount + 1; // beginning of next side
+
+                for (int j = 0; j < sectorCount; ++j, ++k1, ++k2) {
+                    // 2 triangles per sector
+                    addPoly(IntArray.of(k1, k2, k1 + 1)); // k1---k2---k1+1
+                    addPoly(IntArray.of(k1 + 1, k2, k2 + 1)); // k1+1---k2---k2+1
+                }
+            }
+
+            computeNormals();
+            smooth();
+            applyMaterial(material);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-
-        // para la ultima seccion se debe unir con los primeros puntos
-        // this.addVertex(inicial.x, inicial.y, inicial.z);
-        // luego movemos los puntos al radio 1
-        for (Vertex vertice : this.vertexList) {
-            vertice.location.x -= radio1;
-        }
-
-        MeshGenerator.generateRevolutionMesh(this, horizontalSectors, true, true, false, false);
-        computeNormals();
-        smooth();
-        applyMaterial(material);
-
     }
-    // @Override
-    // public void construir() {
-    // eliminarDatos();
-    //
-    //// QMaterialBas material = new QMaterialBas("Toro_material ");
-    //// int numVertices = (secciones + 1) * (secciones + 1);
-    //// int numIndices = 2 * secciones * secciones*3;
-    //// float[] vertices = new float[numVertices * 3];
-    //// float[] normals = new float[numVertices * 3];
-    //// int[] indices = new int[numIndices];
-    // for (int j = 0; j <= secciones; ++j) {
-    // float largeRadiusAngle = (float) (2.0f * Math.PI * j / secciones);
-    //
-    // for (int i = 0; i <= secciones; ++i) {
-    // float smallRadiusAngle = (float) (2.0f * Math.PI * i / secciones);
-    // float xNorm = (radio2 * (float) Math.sin(smallRadiusAngle)) * (float)
-    // Math.sin(largeRadiusAngle);
-    // float x = (radio1 + radio2 * (float) Math.sin(smallRadiusAngle)) * (float)
-    // Math.sin(largeRadiusAngle);
-    // float yNorm = (radio2 * (float) Math.sin(smallRadiusAngle)) * (float)
-    // Math.cos(largeRadiusAngle);
-    // float y = (radio1 + radio2 * (float) Math.sin(smallRadiusAngle)) * (float)
-    // Math.cos(largeRadiusAngle);
-    // float zNorm = radio2 * (float) Math.cos(smallRadiusAngle);
-    // float z = zNorm;
-    //// normals[vertIndex] = xNorm * normLen;
-    //// vertices[vertIndex++] = x;
-    //// normals[vertIndex] = yNorm * normLen;
-    //// vertices[vertIndex++] = y;
-    //// normals[vertIndex] = zNorm * normLen;
-    //// vertices[vertIndex++] = z;
-    // this.addVertex(x, y, z);
-    //
-    // if (i > 0 && j > 0) {
-    // int a = (secciones + 1) * j + i;
-    // int b = (secciones + 1) * j + i - 1;
-    // int c = (secciones + 1) * (j - 1) + i - 1;
-    // int d = (secciones + 1) * (j - 1) + i;
-    //
-    //// indices[index++] = a;
-    //// indices[index++] = c;
-    //// indices[index++] = b;
-    // this.addPoly(a, c, b);
-    //// indices[index++] = a;
-    //// indices[index++] = d;
-    //// indices[index++] = c;
-    // this.addPoly(a, d, c);
-    // }
-    // }
-    // }
-    //
-    // QUtilNormales.calcularNormales(this);
-    // //el objeto es suavizado
-    //
-    // QMaterialUtil.suavizar(this, true);
-    // QMaterialUtil.aplicarMaterial(this, material);
-    //
-    // }
-    //
-    // @Override
-    // public void construir() {
-    // eliminarDatos();
-    //
-    // super.setAncho(secciones);
-    // super.setLargo(secciones2);
-    // super.construir();
-    //
-    // //transforms the grid domain into a tube
-    // for (QVertice vertice : vertices) {
-    // calculateTube(vertice, radio2);
-    // }
-    //// for (int i = 0; i < transformables.size(); i++) {
-    //// Triangle tri = (Triangle) transformables.get(i);
-    //// calculateTube(tri.v1, radio2);
-    //// calculateTube(tri.v2, radio2);
-    //// calculateTube(tri.v3, radio2);
-    //// }
-    //
-    // //translates the tube domain by r1
-    //// this.translate(new Vertex(radio1, 0, 0));
-    // for (QVertice vertice : vertices) {
-    // vertice.ubicacion.x += radio1;
-    // }
-    //
-    // //transforms the tube into a torus
-    //// for (int j = 0; j < transformables.size(); j++) {
-    //// Triangle tri = (Triangle) transformables.get(j);
-    //// calculateTorus(tri.v1);
-    //// calculateTorus(tri.v2);
-    //// calculateTorus(tri.v3);
-    //// }
-    // for (QVertice vertice : vertices) {
-    // calculateTorus(vertice);
-    // }
-    //
-    // //translates the tube domain by r1
-    //// this.translate(new Vertex(radio1, 0, 0));
-    // for (QVertice vertice : vertices) {
-    // vertice.ubicacion.x -= radio1;
-    // }
-    //
-    // QUtilNormales.calcularNormales(this);
-    // //el objeto es suavizado
-    //
-    // QMaterialUtil.suavizar(this, true);
-    // QMaterialUtil.aplicarMaterial(this, material);
-    //
-    // }
-
-    // /**
-    // * Calculates the firts phase of torus creation, that of a tube It
-    // * transforms only the x and z coordinates with the circle equation creating
-    // * a tube in the y direction
-    // *
-    // * @param v vertex to be transformed
-    // * @param r2 secondary radius
-    // */
-    // private void calculateTube(QVertice v, float r2) {
-    // v.ubicacion.z = r2 * QMath.sin(v.ubicacion.x);
-    // v.ubicacion.x = r2 * QMath.cos(v.ubicacion.x);
-    // }
-    //
-    // /**
-    // * transforms the tube vertexes into a torus by applying this time the
-    // * circle equation only to the x and y coordinates
-    // *
-    // * @param v vertex to be transformed
-    // */
-    // private void calculateTorus(QVertice v) {
-    // float x;
-    // x = v.ubicacion.x;
-    // v.ubicacion.x = x * QMath.cos(v.ubicacion.y);
-    // v.ubicacion.y = x * QMath.sin(v.ubicacion.y);
-    // }
 
 }

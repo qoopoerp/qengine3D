@@ -15,7 +15,7 @@ import net.qoopo.engine.core.entity.component.mesh.Mesh;
 import net.qoopo.engine.core.entity.component.mesh.generator.height.HeightMapGenerator;
 import net.qoopo.engine.core.entity.component.mesh.primitive.shape.PlanarMesh;
 import net.qoopo.engine.core.entity.component.terrain.Terrain;
-import net.qoopo.engine.core.material.basico.QMaterialBas;
+import net.qoopo.engine.core.material.basico.Material;
 import net.qoopo.engine.core.math.QColor;
 import net.qoopo.engine.core.texture.util.MaterialUtil;
 import net.qoopo.engine.core.util.image.ImgReader;
@@ -33,7 +33,7 @@ public class HeightMapTerrain extends Terrain {
     protected float tileSize;
     protected int offset;
     private HeightMapGenerator heightsGenerator;
-    protected QMaterialBas materialTerreno;
+    protected Material materialTerreno;
     private BufferedImage imagen;
     protected float minY;
     protected float maxY;
@@ -43,7 +43,7 @@ public class HeightMapTerrain extends Terrain {
     }
 
     public HeightMapTerrain(BufferedImage imagen, float tileSize, float minY, float maxY,
-            int offset, QMaterialBas material, boolean smooth) {
+            int offset, Material material, boolean smooth) {
         this.imagen = imagen;
         heightsGenerator = new HeightMapGenerator(imagen, minY, maxY);
         this.tileSize = tileSize;
@@ -56,7 +56,7 @@ public class HeightMapTerrain extends Terrain {
     }
 
     public HeightMapTerrain(File heigthMap, float tileSize, float minY, float maxY,
-            int offset, QMaterialBas material, boolean smooth) {
+            int offset, Material material, boolean smooth) {
         try {
             imagen = ImgReader.read(heigthMap);
         } catch (IOException ex) {
@@ -78,12 +78,12 @@ public class HeightMapTerrain extends Terrain {
         }
 
         Mesh mesh = new Mesh();
-        mesh.nombre = "Terreno";
+        mesh.name = "Terreno";
 
         if (materialTerreno != null) {
             this.material = materialTerreno;
         } else {
-            material.setColorBase(new QColor(1, 139f / 255f, 99f / 255f, 55f / 255f));
+            material.setColor(new QColor(1, 139f / 255f, 99f / 255f, 55f / 255f));
             material.setSpecularExponent(10000);
         }
 
@@ -127,7 +127,7 @@ public class HeightMapTerrain extends Terrain {
     // if (materialTerreno != null) {
     // this.material = materialTerreno;
     // } else {
-    // material.setColorBase(new QColor(1, 139f / 255f, 99f / 255f, 55f / 255f));
+    // material.setColor(new QColor(1, 139f / 255f, 99f / 255f, 55f / 255f));
     // material.setSpecularExponent(10000);
     // }
 

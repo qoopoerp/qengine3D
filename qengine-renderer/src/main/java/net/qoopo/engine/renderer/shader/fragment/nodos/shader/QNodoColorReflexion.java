@@ -14,8 +14,8 @@ import net.qoopo.engine.core.material.node.core.perifericos.QPerProcesadorTextur
 import net.qoopo.engine.core.math.QColor;
 import net.qoopo.engine.core.math.QMath;
 import net.qoopo.engine.core.renderer.RenderEngine;
-import net.qoopo.engine.core.texture.QTexturaUtil;
-import net.qoopo.engine.core.texture.procesador.QProcesadorTextura;
+import net.qoopo.engine.core.texture.Texture;
+import net.qoopo.engine.core.texture.TextureUtil;
 import net.qoopo.engine.core.util.QGlobal;
 import net.qoopo.engine.core.util.TempVars;
 import net.qoopo.engine.renderer.util.TransformationVectorUtil;
@@ -48,7 +48,7 @@ public class QNodoColorReflexion extends ShaderNode {
         salidas.add(saColor);
     }
 
-    public QNodoColorReflexion(QProcesadorTextura textura) {
+    public QNodoColorReflexion(Texture textura) {
         enTextura = new QPerProcesadorTextura(textura);
         enNormal = new QPerColor(QColor.BLACK);
         saColor = new QPerColor(QColor.WHITE);
@@ -105,16 +105,17 @@ public class QNodoColorReflexion extends ShaderNode {
                 // volvemos a calcularla en las coordenadas del mundo
                 // tm.vector3f1.set(currentPixel.ubicacion.getVector3());
                 tm.vector3f1.set(TransformationVectorUtil.transformarVector(
-                        TransformationVectorUtil.transformarVectorInversa(pixel.ubicacion, pixel.entity, render.getCamara()),
+                        TransformationVectorUtil.transformarVectorInversa(pixel.ubicacion, pixel.entity,
+                                render.getCamara()),
                         pixel.entity).getVector3());
                 // ahora restamos la posicion de la camara a la posicion del mundo
-                tm.vector3f1.subtract(render.getCamara().getMatrizTransformacion(QGlobal.tiempo).toTranslationVector());
+                tm.vector3f1.subtract(render.getCamara().getMatrizTransformacion(QGlobal.time).toTranslationVector());
                 tm.vector3f1.normalize();
                 // ************************************************************
                 // ****** REFLEXION
                 // ************************************************************
                 tm.vector3f3.set(QMath.reflejarVector(tm.vector3f1, tm.vector3f2));
-                color = QTexturaUtil.getColorMapaEntorno(tm.vector3f3, enTextura.getProcesadorTextura(),
+                color = TextureUtil.getColorMapaEntorno(tm.vector3f3, enTextura.getProcesadorTextura(),
                         tipoMapaEntorno);
             } catch (Exception e) {
                 // System.out.println("error reflexion " + e.getMessage());

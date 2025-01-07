@@ -12,7 +12,7 @@ import lombok.Getter;
 import lombok.Setter;
 import net.qoopo.engine.core.entity.component.mesh.primitive.Vertex;
 import net.qoopo.engine.core.entity.component.mesh.primitive.Shape;
-import net.qoopo.engine.core.material.basico.QMaterialBas;
+import net.qoopo.engine.core.material.basico.Material;
 import net.qoopo.engine.core.math.QVector3;
 
 /**
@@ -34,8 +34,8 @@ public class Prism extends Shape {
     protected int seccionesVerticales = 1;
 
     public Prism() {
-        material = new QMaterialBas("Prisma");
-        nombre = "Prisma";
+        material = new Material("Prisma");
+        name = "Prisma";
         radioSuperior = 1;
         radioInferior = 1;
         alto = 1;
@@ -44,8 +44,8 @@ public class Prism extends Shape {
     }
 
     public Prism(float alto, float radio) {
-        material = new QMaterialBas("Prisma");
-        nombre = "Prisma";
+        material = new Material("Prisma");
+        name = "Prisma";
         radioSuperior = radio;
         radioInferior = radio;
         this.alto = alto;
@@ -54,8 +54,8 @@ public class Prism extends Shape {
     }
 
     public Prism(float alto, float radio, int secciones) {
-        material = new QMaterialBas("Prisma");
-        nombre = "Cilindro";
+        material = new Material("Prisma");
+        name = "Cilindro";
         radioSuperior = radio;
         radioInferior = radio;
         this.alto = alto;
@@ -64,8 +64,8 @@ public class Prism extends Shape {
     }
 
     public Prism(float alto, float radio, int secciones, int seccionesVerticales) {
-        material = new QMaterialBas("Prisma");
-        nombre = "Prisma";
+        material = new Material("Prisma");
+        name = "Prisma";
         radioSuperior = radio;
         radioInferior = radio;
         this.alto = alto;
@@ -75,8 +75,8 @@ public class Prism extends Shape {
     }
 
     public Prism(float alto, float radio, float radioInferior, int secciones, int seccionesVerticales) {
-        material = new QMaterialBas("Prisma");
-        nombre = "Prisma";
+        material = new Material("Prisma");
+        name = "Prisma";
         radioSuperior = radio;
         this.radioInferior = radioInferior;
         this.alto = alto;

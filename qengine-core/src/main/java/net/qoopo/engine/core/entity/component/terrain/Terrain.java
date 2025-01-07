@@ -6,7 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 import net.qoopo.engine.core.entity.Entity;
 import net.qoopo.engine.core.entity.component.EntityComponent;
-import net.qoopo.engine.core.material.basico.QMaterialBas;
+import net.qoopo.engine.core.material.basico.Material;
 import net.qoopo.engine.core.math.QVector3;
 
 @Getter
@@ -19,7 +19,7 @@ public abstract class Terrain implements EntityComponent {
 
     protected static Logger logger = Logger.getLogger("terrain");
 
-    protected QMaterialBas material = new QMaterialBas("terreno");
+    protected Material material = new Material("terreno");
 
     // arreglo que tiene la altura, para averigurar la altura en tiempo de ejecucion
     protected float[][] heights;

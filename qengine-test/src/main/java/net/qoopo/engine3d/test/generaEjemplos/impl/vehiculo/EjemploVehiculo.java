@@ -25,12 +25,12 @@ import net.qoopo.engine.core.entity.component.physics.vehiculo.QRueda;
 import net.qoopo.engine.core.entity.component.physics.vehiculo.QVehiculo;
 import net.qoopo.engine.core.entity.component.physics.vehiculo.QVehiculoControl;
 import net.qoopo.engine.core.entity.component.terrain.Terrain;
-import net.qoopo.engine.core.material.basico.QMaterialBas;
+import net.qoopo.engine.core.material.basico.Material;
 import net.qoopo.engine.core.math.QColor;
 import net.qoopo.engine.core.math.QVector3;
 import net.qoopo.engine.core.renderer.RenderEngine;
 import net.qoopo.engine.core.scene.Scene;
-import net.qoopo.engine.core.texture.QTextura;
+import net.qoopo.engine.core.texture.Texture;
 import net.qoopo.engine.core.texture.util.MaterialUtil;
 import net.qoopo.engine.core.util.ComponentUtil;
 import net.qoopo.engine.terrain.HeightMapTerrain;
@@ -73,9 +73,9 @@ public class EjemploVehiculo extends MakeTestScene {
 
         Entity entidadTerreno = new Entity("Terreno");
 
-        QTextura terrainTexture = AssetManager.get().loadTexture("terreno",
+        Texture terrainTexture = AssetManager.get().loadTexture("terreno",
                 "assets/textures/terrain/rocky_terrain/rocky_terrain_02_diff_4k.jpg");
-        QMaterialBas materialTerrain = new QMaterialBas(terrainTexture);
+        Material materialTerrain = new Material(terrainTexture);
         materialTerrain.setMapaNormal(AssetManager.get().loadTexture("terreno_normal",
                 "assets/textures/terrain/rocky_terrain/rocky_terrain_02_nor_gl_4k.png"));
         materialTerrain.setMapaEspecular(AssetManager.get().loadTexture("terreno_normal",
@@ -104,8 +104,8 @@ public class EjemploVehiculo extends MakeTestScene {
         float alturaLlantaConexion = 0.25f;
         float px = 0.5f;
         float pz = 0.8f;
-        QMaterialBas material = new QMaterialBas("Vehículo");
-        material.setColorBase(QColor.BLUE);
+        Material material = new Material("Vehículo");
+        material.setColor(QColor.BLUE);
 
         Entity carro = new Entity();
         Box geom = new Box(0.5f, 1, 2);
@@ -128,8 +128,8 @@ public class EjemploVehiculo extends MakeTestScene {
         carro.addComponent(vehiculo);
 
         // ruedas
-        QMaterialBas materialRueda = new QMaterialBas("Rueda");
-        materialRueda.setColorBase(QColor.DARK_GRAY);
+        Material materialRueda = new Material("Rueda");
+        materialRueda.setColor(QColor.DARK_GRAY);
 
         CylinderX forma = new CylinderX(0.1f, 0.25f);
         MaterialUtil.applyMaterial(forma, materialRueda);

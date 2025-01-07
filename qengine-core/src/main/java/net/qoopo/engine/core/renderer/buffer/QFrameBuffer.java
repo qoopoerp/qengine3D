@@ -10,7 +10,7 @@ import java.util.Arrays;
 
 import net.qoopo.engine.core.entity.component.mesh.primitive.Fragment;
 import net.qoopo.engine.core.math.QColor;
-import net.qoopo.engine.core.texture.QTextura;
+import net.qoopo.engine.core.texture.Texture;
 
 /**
  * Framebuffer Utiliza una textura como buffer de color
@@ -25,19 +25,19 @@ public class QFrameBuffer {
     // no tiene información de color
     protected final Fragment[][] pixelBuffer;
     // este buffer es el de color que se llena despues de procesar los pixeles
-    private QTextura bufferColor;
+    private Texture bufferColor;
     // buffer de profundidad
     protected float[][] zBuffer;
     private float minimo = 0, maximo = 0;
     private int ancho, alto;
     // esta textura si es diferente de nulo, dibujamos sobre ella tambien
-    protected QTextura textura;
+    protected Texture textura;
 
-    public QFrameBuffer(int ancho, int alto, QTextura texturaSalida) {
+    public QFrameBuffer(int ancho, int alto, Texture texturaSalida) {
         this.ancho = ancho;
         this.alto = alto;
         zBuffer = new float[ancho][alto];
-        bufferColor = new QTextura(ancho, alto);
+        bufferColor = new Texture(ancho, alto);
         pixelBuffer = new Fragment[ancho][alto];
         for (Fragment[] row : pixelBuffer) {
             for (int i = 0; i < row.length; i++) {
@@ -75,14 +75,14 @@ public class QFrameBuffer {
     /**
      * Limpia el buffer de profundidad
      */
-    public void limpiarZBuffer() {
+    public void cleanZBuffer() {
         for (float[] row : zBuffer) {
             Arrays.fill(row, Float.NEGATIVE_INFINITY);
         }
     }
 
     public void clean() {
-        limpiarZBuffer();
+        cleanZBuffer();
         for (Fragment[] row : pixelBuffer) {
             for (int i = 0; i < row.length; i++) {
                 row[i].setDibujar(false);
@@ -191,11 +191,11 @@ public class QFrameBuffer {
         }
     }
 
-    public QTextura getTextura() {
+    public Texture getTextura() {
         return textura;
     }
 
-    public void setTextura(QTextura textura) {
+    public void setTextura(Texture textura) {
         this.textura = textura;
     }
 
@@ -252,11 +252,11 @@ public class QFrameBuffer {
         return nuevo;
     }
 
-    public QTextura getBufferColor() {
+    public Texture getBufferColor() {
         return bufferColor;
     }
 
-    public void setBufferColor(QTextura bufferColor) {
+    public void setBufferColor(Texture bufferColor) {
         this.bufferColor = bufferColor;
     }
 

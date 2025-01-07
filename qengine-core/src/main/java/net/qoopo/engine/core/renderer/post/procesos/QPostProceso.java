@@ -5,7 +5,7 @@
  */
 package net.qoopo.engine.core.renderer.post.procesos;
 
-import net.qoopo.engine.core.texture.QTextura;
+import net.qoopo.engine.core.texture.Texture;
 
 /**
  * Permite la modificación de la imagen generada por el render
@@ -14,15 +14,15 @@ import net.qoopo.engine.core.texture.QTextura;
  */
 public abstract class QPostProceso {
 
-    protected QTextura bufferSalida;
+    protected Texture bufferSalida;
 
-    public abstract void procesar(QTextura... buffer);
+    public abstract void procesar(Texture... buffer);
 
-    public QTextura getBufferSalida() {
+    public Texture getBufferSalida() {
         return bufferSalida;
     }
 
-    public void setBufferSalida(QTextura bufferSalida) {
+    public void setBufferSalida(Texture bufferSalida) {
         this.bufferSalida = bufferSalida;
     }
 

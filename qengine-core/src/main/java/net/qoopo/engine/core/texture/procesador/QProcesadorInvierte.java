@@ -9,57 +9,57 @@ import java.awt.Dimension;
 import java.awt.image.BufferedImage;
 
 import net.qoopo.engine.core.math.QColor;
-import net.qoopo.engine.core.texture.QTextura;
+import net.qoopo.engine.core.texture.Texture;
 
 /**
  * Este procesador es un proxy simple sin aplicar ningun proceso
  *
  * @author alberto
  */
-public class QProcesadorInvierte extends QProcesadorTextura {
+public class QProcesadorInvierte extends Texture {
 
-    private QTextura textura;
+    private Texture textura;
 
-    public QProcesadorInvierte(QTextura textura) {
+    public QProcesadorInvierte(Texture textura) {
         this.textura = textura;
     }
 
-    public QTextura getTextura() {
+    public Texture getTextura() {
         return textura;
     }
 
-    public void setTextura(QTextura textura) {
+    public void setTextura(Texture textura) {
         this.textura = textura;
     }
 
     @Override
-    public int get_ARGB(float x, float y) {
+    public int getARGB(float x, float y) {
         // return textura.getARGB(x, y);
         return QColor.toQARGB(textura.getARGB(x, y)).invert().toARGB();
     }
 
     @Override
-    public QColor get_QARGB(float x, float y) {
+    public QColor getQColor(float x, float y) {
         return textura.getQColor(x, y).invert();
     }
 
-    @Override
-    public float getNormalX(float x, float y) {
-        return 1.0f - textura.getNormalX(x, y);
-    }
+    // @Override
+    // public float getNormalX(float x, float y) {
+    // return 1.0f - textura.getNormalX(x, y);
+    // }
+
+    // @Override
+    // public float getNormalY(float x, float y) {
+    // return 1.0f - textura.getNormalY(x, y);
+    // }
+
+    // @Override
+    // public float getNormalZ(float x, float y) {
+    // return 1.0f - textura.getNormalZ(x, y);
+    // }
 
     @Override
-    public float getNormalY(float x, float y) {
-        return 1.0f - textura.getNormalY(x, y);
-    }
-
-    @Override
-    public float getNormalZ(float x, float y) {
-        return 1.0f - textura.getNormalZ(x, y);
-    }
-
-    @Override
-    public BufferedImage getTexture(Dimension size) {
+    public BufferedImage getImagen(Dimension size) {
         return textura.getImagen(size);
     }
 
@@ -68,7 +68,7 @@ public class QProcesadorInvierte extends QProcesadorTextura {
     }
 
     @Override
-    public BufferedImage getTexture() {
+    public BufferedImage getImagen() {
         return textura.getImagen();
     }
 

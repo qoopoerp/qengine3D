@@ -11,18 +11,16 @@ import net.qoopo.engine.core.assets.AssetManager;
 import net.qoopo.engine.core.entity.Entity;
 import net.qoopo.engine.core.entity.component.ligth.QPointLigth;
 import net.qoopo.engine.core.entity.component.mesh.primitive.shape.Box;
-import net.qoopo.engine.core.entity.component.mesh.primitive.shape.Sphere;
 import net.qoopo.engine.core.entity.component.mesh.primitive.shape.PlanarMesh;
+import net.qoopo.engine.core.entity.component.mesh.primitive.shape.Sphere;
 import net.qoopo.engine.core.entity.component.mesh.primitive.shape.Teapot;
 import net.qoopo.engine.core.entity.component.mesh.primitive.shape.Torus;
 import net.qoopo.engine.core.entity.component.mesh.util.QUnidadMedida;
-import net.qoopo.engine.core.material.basico.QMaterialBas;
+import net.qoopo.engine.core.material.basico.Material;
 import net.qoopo.engine.core.math.QColor;
 import net.qoopo.engine.core.renderer.RenderEngine;
 import net.qoopo.engine.core.scene.Scene;
-import net.qoopo.engine.core.texture.procesador.QProcesadorSimple;
 import net.qoopo.engine.core.texture.util.MaterialUtil;
-import net.qoopo.engine.core.util.QGlobal;
 import net.qoopo.engine.core.util.mesh.NormalUtil;
 import net.qoopo.engine3d.test.generaEjemplos.MakeTestScene;
 
@@ -67,20 +65,20 @@ public class SombrasOmniDireccional extends MakeTestScene {
 
                 Entity cuboEntidad = new Entity("cubo");
                 cuboEntidad.move(-3, 1, 0);
-                QMaterialBas mat1 = new QMaterialBas();
-                mat1.setMapaColor(new QProcesadorSimple(AssetManager.get().loadTexture("difusa",
-                                new File("assets/textures/testNormal/cajaColor.jpg"))));
-                mat1.setMapaNormal(new QProcesadorSimple(AssetManager.get().loadTexture("normal",
-                                new File("assets/textures/testNormal/cajaNormal.jpg"))));
+                Material mat1 = new Material();
+                mat1.setMapaColor(AssetManager.get().loadTexture("difusa",
+                                new File("assets/textures/testNormal/cajaColor.jpg")));
+                mat1.setMapaNormal(AssetManager.get().loadTexture("normal",
+                                new File("assets/textures/testNormal/cajaNormal.jpg")));
 
                 cuboEntidad.addComponent(MaterialUtil.applyMaterial(new Box(2), mat1));
                 mundo.addEntity(cuboEntidad);
 
                 Entity cuboEntidad2 = new Entity("cubo 2");
                 cuboEntidad2.move(0, 2, -2);
-                QMaterialBas mat2 = new QMaterialBas();
-                mat2.setMapaColor(new QProcesadorSimple(AssetManager.get().loadTexture("difusa2",
-                                new File("assets/textures/fuego/fuego4.png"))));
+                Material mat2 = new Material();
+                mat2.setMapaColor(AssetManager.get().loadTexture("difusa2",
+                                new File("assets/textures/fuego/fuego4.png")));
                 cuboEntidad2.addComponent(MaterialUtil.applyMaterial(new Box(2), mat2));
 
                 mundo.addEntity(cuboEntidad2);

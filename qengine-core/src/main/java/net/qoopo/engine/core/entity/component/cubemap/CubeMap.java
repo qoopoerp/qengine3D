@@ -19,7 +19,7 @@ import net.qoopo.engine.core.entity.component.EntityComponent;
 import net.qoopo.engine.core.entity.component.UpdatableComponent;
 import net.qoopo.engine.core.entity.component.mesh.Mesh;
 import net.qoopo.engine.core.entity.component.mesh.primitive.Primitive;
-import net.qoopo.engine.core.material.basico.QMaterialBas;
+import net.qoopo.engine.core.material.basico.Material;
 import net.qoopo.engine.core.math.QMath;
 import net.qoopo.engine.core.math.QVector3;
 import net.qoopo.engine.core.renderer.RenderEngine;
@@ -27,9 +27,7 @@ import net.qoopo.engine.core.renderer.post.procesos.blur.QProcesadorBlur;
 import net.qoopo.engine.core.renderer.post.procesos.color.QProcesadorBloom;
 import net.qoopo.engine.core.scene.Camera;
 import net.qoopo.engine.core.scene.Scene;
-import net.qoopo.engine.core.texture.QTextura;
-import net.qoopo.engine.core.texture.procesador.QProcesadorSimple;
-import net.qoopo.engine.core.texture.procesador.QProcesadorTextura;
+import net.qoopo.engine.core.texture.Texture;
 import net.qoopo.engine.core.util.QGlobal;
 
 /**
@@ -57,17 +55,17 @@ public class CubeMap implements EntityComponent, UpdatableComponent {
      */
     transient private RenderEngine render;
     private QVector3[] direcciones;
-    private QTextura[] textures;
+    private Texture[] textures;
     private QVector3[] direccionesArriba;
 
     private int tipoSalida = FORMATO_MAPA_CUBO;
     // private int tipoSalida = FORMATO_MAPA_HDRI;
-    private QProcesadorTextura procEntorno;
-    private QProcesadorSimple procIrradiacion;
-    private QTextura texturaEntorno;// esta textura es la union de las 6 textures renderizadas en el formato de
-                                    // cubemap o HDRI
-    private QTextura texturaIrradiacion;// esta textura es la textura de salida despues de un proceso de blur, se usa
-                                        // como textur ade irradiacion
+    // private Texture procEntorno;
+    private Texture procIrradiacion;
+    private Texture texturaEntorno;// esta textura es la union de las 6 textures renderizadas en el formato de
+                                   // cubemap o HDRI
+    private Texture texturaIrradiacion;// esta textura es la textura de salida despues de un proceso de blur, se usa
+                                       // como textur ade irradiacion
 
     public String[] nombres = { "Arriba", "Abajo", "Frente", "Atras", "Izquierda", "Derecha" };
 
@@ -105,9 +103,9 @@ public class CubeMap implements EntityComponent, UpdatableComponent {
         direccionesArriba[4] = QVector3.of(0, 1, 0); // izquierda
         direccionesArriba[5] = QVector3.of(0, 1, 0); // derecha
 
-        textures = new QTextura[6];
+        textures = new Texture[6];
         for (int i = 0; i < 6; i++) {
-            textures[i] = new QTextura();
+            textures[i] = new Texture();
             textures[i].setSignoX(-1);// es reflejo
         }
 
@@ -122,12 +120,11 @@ public class CubeMap implements EntityComponent, UpdatableComponent {
         // render.cambiarShader(4);//el shader de textura con iluminacion
         // render.cambiarShader(5);//el shader con sombras
         // render.cambiarShader(6);//el shader full
-        texturaEntorno = new QTextura();
-        texturaIrradiacion = new QTextura();
+        texturaEntorno = new Texture();
+        texturaIrradiacion = new Texture();
         // procEntorno = new QProcesadorMipMap(texturaEntorno, 5,
         // QProcesadorMipMap.TIPO_BLUR);
-        procEntorno = new QProcesadorSimple(texturaEntorno);
-        procIrradiacion = new QProcesadorSimple(texturaIrradiacion);
+
         build(resolution);
     }
 
@@ -142,23 +139,20 @@ public class CubeMap implements EntityComponent, UpdatableComponent {
      * @param negativoX
      * @param negativoZ
      */
-    public CubeMap(int tipo, QTextura positivoX, QTextura positivoY, QTextura positivoZ, QTextura negativoX,
-            QTextura negativoY, QTextura negativoZ) {
+    public CubeMap(int tipo, Texture positivoX, Texture positivoY, Texture positivoZ, Texture negativoX,
+            Texture negativoY, Texture negativoZ) {
         this.size = positivoX.getAncho();
         direcciones = new QVector3[6];
-        textures = new QTextura[6];
+        textures = new Texture[6];
         textures[0] = positivoY;
         textures[1] = negativoY;
         textures[2] = positivoZ;
         textures[3] = negativoZ;
         textures[4] = negativoX;
         textures[5] = positivoX;
-        texturaEntorno = new QTextura();
-        texturaIrradiacion = new QTextura();
-        // procEntorno = new QProcesadorMipMap(texturaEntorno, 5,
-        // QProcesadorMipMap.TIPO_BLUR);
-        procEntorno = new QProcesadorSimple(texturaEntorno);
-        procIrradiacion = new QProcesadorSimple(texturaIrradiacion);
+        texturaEntorno = new Texture();
+        texturaIrradiacion = new Texture();
+
         dimensionLado = null;
         dinamico = false;
         tipoSalida = tipo;
@@ -189,16 +183,16 @@ public class CubeMap implements EntityComponent, UpdatableComponent {
         setTipoSalida(tipo);
         setFactorReflexion(factorMetalico);
         setIndiceRefraccion(indiceRefraccion);
-        List<QMaterialBas> lst = new ArrayList<>();
+        List<Material> lst = new ArrayList<>();
         // ahora recorro todos los materiales del objeto y le agrego la textura de
         // reflexion
         if (entity.getComponents() != null && !entity.getComponents().isEmpty()) {
             for (EntityComponent componente : entity.getComponents()) {
                 if (componente instanceof Mesh) {
                     for (Primitive poligono : ((Mesh) componente).primitiveList) {
-                        if (poligono.material instanceof QMaterialBas) {
-                            if (!lst.contains((QMaterialBas) poligono.material)) {
-                                lst.add((QMaterialBas) poligono.material);
+                        if (poligono.material instanceof Material) {
+                            if (!lst.contains((Material) poligono.material)) {
+                                lst.add((Material) poligono.material);
                             }
                         }
                     }
@@ -206,9 +200,9 @@ public class CubeMap implements EntityComponent, UpdatableComponent {
             }
         }
         if (!lst.isEmpty()) {
-            for (QMaterialBas mat : lst) {
-                mat.setMapaEntorno(procEntorno);
-                mat.setMapaIrradiacion(procIrradiacion);
+            for (Material mat : lst) {
+                mat.setMapaEntorno(texturaEntorno);
+                mat.setMapaIrradiacion(texturaIrradiacion);
                 mat.setMetalico(factorMetalico);
                 mat.setIndiceRefraccion(indiceRefraccion);
                 mat.setReflexion(factorMetalico > 0.0f);
@@ -258,7 +252,7 @@ public class CubeMap implements EntityComponent, UpdatableComponent {
                 render.setScene(mainRender.getScene());
                 // seteo para q no se dibuje a la entity
                 entity.setToRender(false);
-                actualizarMapa(entity.getMatrizTransformacion(QGlobal.tiempo).toTranslationVector());
+                actualizarMapa(entity.getMatrizTransformacion(QGlobal.time).toTranslationVector());
                 actualizar = false;
             } finally {
                 // seteo para q se dibuje la entity en los demas renderes
@@ -442,15 +436,15 @@ public class CubeMap implements EntityComponent, UpdatableComponent {
         return salida;
     }
 
-    public QTextura[] getTexturas() {
+    public Texture[] getTexturas() {
         return textures;
     }
 
-    public QTextura getTextura(int i) {
+    public Texture getTextura(int i) {
         return textures[i];
     }
 
-    public QTextura getTexturaEntorno() {
+    public Texture getTexturaEntorno() {
         return texturaEntorno;
     }
 
@@ -501,23 +495,12 @@ public class CubeMap implements EntityComponent, UpdatableComponent {
         this.size = tamanio;
     }
 
-    public QTextura getTexturaIrradiacion() {
+    public Texture getTexturaIrradiacion() {
         return texturaIrradiacion;
     }
 
-    public void setTexturaIrradiacion(QTextura texturaIrradiacion) {
+    public void setTexturaIrradiacion(Texture texturaIrradiacion) {
         this.texturaIrradiacion = texturaIrradiacion;
-    }
-
-    // public QProcesadorMipMap getProcEntorno() {
-    // return procEntorno;
-    // }
-
-    // public void setProcEntorno(QProcesadorMipMap procEntorno) {
-    // this.procEntorno = procEntorno;
-    // }
-    public QProcesadorSimple getProcIrradiacion() {
-        return procIrradiacion;
     }
 
     // public void setProcIrradiacion(QProcesadorSimple procIrradiacion) {

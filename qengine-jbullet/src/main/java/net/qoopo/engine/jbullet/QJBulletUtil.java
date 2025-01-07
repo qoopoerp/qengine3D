@@ -381,7 +381,7 @@ public class QJBulletUtil {
             // connectionPointCS0.set(CUBE_HALF_EXTENTS - (0.3f * rueda.getAncho()),
             // connectionHeight, 2f * CUBE_HALF_EXTENTS - rueda.getRadio());
             connectionPointCS0.set(QVectMathUtil.convertirVector3f(
-                    rueda.getEntidadRueda().getMatrizTransformacion(QGlobal.tiempo).toTranslationVector()));
+                    rueda.getEntidadRueda().getMatrizTransformacion(QGlobal.time).toTranslationVector()));
             WheelInfo info = vehiculo.addWheel(connectionPointCS0, wheelDirectionCS0, wheelAxleCS,
                     rueda.getSuspensionRestLength(), rueda.getRadio(), tuning, isFrontWheel);
             info.suspensionStiffness = rueda.getSuspensionStiffness();

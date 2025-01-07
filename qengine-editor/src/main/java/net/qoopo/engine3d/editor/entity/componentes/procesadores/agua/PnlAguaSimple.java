@@ -11,10 +11,10 @@ import java.util.List;
 import net.qoopo.engine.core.entity.component.EntityComponent;
 import net.qoopo.engine.core.entity.component.mesh.Mesh;
 import net.qoopo.engine.core.entity.component.mesh.primitive.Primitive;
+import net.qoopo.engine.core.entity.component.water.Water;
 import net.qoopo.engine.core.entity.component.water.WaterDuDv;
-import net.qoopo.engine.core.material.basico.QMaterialBas;
+import net.qoopo.engine.core.material.basico.Material;
 import net.qoopo.engine.core.math.QColor;
-import net.qoopo.engine.core.texture.procesador.QProcesadorSimple;
 import net.qoopo.engine.core.texture.util.MaterialUtil;
 import net.qoopo.engine.core.util.ComponentUtil;
 
@@ -119,10 +119,10 @@ public class PnlAguaSimple extends javax.swing.JPanel {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnAgregaAguaActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btnAgregaAguaActionPerformed
-        QMaterialBas material = new QMaterialBas("Lago");
+        Material material = new Material("Lago");
         material.setTransparencia(true);
         material.setTransAlfa(0.4f);// 40% ( transparencia del 60%)
-        material.setColorBase(new QColor(1, 0, 0, 0.7f));
+        material.setColor(new QColor(1, 0, 0, 0.7f));
         material.setSpecularExponent(64);
         // material.setDifusaProyectada(true); //el mapa de reflexion es proyectado
 
@@ -137,7 +137,7 @@ public class PnlAguaSimple extends javax.swing.JPanel {
         // "textures/agua/matchingNormalMap.png");
         // mapaNormal.setMuestrasU(10);
         // mapaNormal.setMuestrasV(10);
-        // material.setMapaNormal(new QProcesadorSimple(mapaNormal));
+        // material.setMapaNormal(mapaNormal);
         // } catch (Exception e) {
         // }
         agua.setWidth(Integer.parseInt(txtAguaAncho.getText()));
@@ -147,10 +147,10 @@ public class PnlAguaSimple extends javax.swing.JPanel {
         // puedo agregar la razon que sea necesaria no afectara a la textura de
         // reflexixon porq esta calcula las coordenadas UV en tiempo de renderizado
 
-        material.setMapaNormal(new QProcesadorSimple(agua.getTextNormal()));
+        material.setMapaNormal(agua.getTextNormal());
         material.setMapaColor(agua.getOutputTexture());
 
-        List<QMaterialBas> lst = new ArrayList<>();
+        List<Material> lst = new ArrayList<>();
         // ahora recorro todos los materiales del objeto y le agrego la textura de
         // reflexion
         for (EntityComponent componente : agua.getEntity().getComponents()) {
@@ -162,24 +162,24 @@ public class PnlAguaSimple extends javax.swing.JPanel {
     }// GEN-LAST:event_btnAgregaAguaActionPerformed
 
     private void btnQuitarAguaActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btnQuitarAguaActionPerformed
-        ComponentUtil.eliminarComponenteAguaSimple(agua.getEntity());
+        ComponentUtil.removeComponents(agua.getEntity(), Water.class);
 
-        List<QMaterialBas> lst = new ArrayList<>();
+        List<Material> lst = new ArrayList<>();
         // ahora recorro todos los materiales del objeto y le quito la textura de
         // reflexion
         for (EntityComponent componente : agua.getEntity().getComponents()) {
             if (componente instanceof Mesh) {
                 for (Primitive poligono : ((Mesh) componente).primitiveList) {
-                    if (poligono.material instanceof QMaterialBas) {
-                        if (!lst.contains((QMaterialBas) poligono.material)) {
-                            lst.add((QMaterialBas) poligono.material);
+                    if (poligono.material instanceof Material) {
+                        if (!lst.contains((Material) poligono.material)) {
+                            lst.add((Material) poligono.material);
                         }
                     }
                 }
             }
         }
 
-        for (QMaterialBas mat : lst) {
+        for (Material mat : lst) {
             mat.clearColorMap();
         }
 

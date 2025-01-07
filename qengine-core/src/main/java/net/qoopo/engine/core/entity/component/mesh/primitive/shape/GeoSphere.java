@@ -11,7 +11,7 @@ import java.util.logging.Logger;
 import net.qoopo.engine.core.entity.component.mesh.primitive.Shape;
 import net.qoopo.engine.core.entity.component.modifier.generate.InflateModifier;
 import net.qoopo.engine.core.entity.component.modifier.generate.SubdivisionModifier;
-import net.qoopo.engine.core.material.basico.QMaterialBas;
+import net.qoopo.engine.core.material.basico.Material;
 import net.qoopo.engine.core.math.QMath;
 import net.qoopo.engine.core.math.QVector3;
 import net.qoopo.engine.core.util.array.IntArray;
@@ -30,22 +30,22 @@ public class GeoSphere extends Shape {
     private static final float V_ANGLE = QMath.atan(1.0f / 2); // elevation = 26.565 degree
 
     public GeoSphere() {
-        nombre = "Esfera";
-        material = new QMaterialBas("Esfera");
+        name = "Esfera";
+        material = new Material("Esfera");
         radio = 1;
         build();
     }
 
     public GeoSphere(float radio) {
-        nombre = "Esfera";
-        material = new QMaterialBas("Esfera");
+        name = "Esfera";
+        material = new Material("Esfera");
         this.radio = radio;
         build();
     }
 
     public GeoSphere(float radio, int divisiones) {
-        nombre = "Esfera";
-        material = new QMaterialBas("Esfera");
+        name = "Esfera";
+        material = new Material("Esfera");
         this.radio = radio;
         this.divisiones = divisiones;
         build();

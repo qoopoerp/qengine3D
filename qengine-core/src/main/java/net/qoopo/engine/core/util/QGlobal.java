@@ -15,7 +15,7 @@ public class QGlobal {
 
     public static String version = "V.0.0.1 alpha";
 
-    public static long tiempo = 0;
+    public static long time = 0;
 
     public static final float MOTOR_RENDER_FPS = 60f;
 

@@ -9,7 +9,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import net.qoopo.engine.core.entity.component.mesh.primitive.Shape;
-import net.qoopo.engine.core.material.basico.QMaterialBas;
+import net.qoopo.engine.core.material.basico.Material;
 
 /**
  * Crea un Plano
@@ -22,10 +22,10 @@ public class Plane extends Shape {
     private float ancho;
 
     public Plane(float alto, float ancho) {
-        nombre = "Plano";
+        name = "Plano";
         this.alto = alto;
         this.ancho = ancho;
-        material = new QMaterialBas("Plano");
+        material = new Material("Plano");
         build();
     }
 

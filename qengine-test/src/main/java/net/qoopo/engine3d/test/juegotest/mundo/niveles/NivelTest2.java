@@ -22,13 +22,12 @@ import net.qoopo.engine.core.entity.component.physics.dinamica.QObjetoDinamico;
 import net.qoopo.engine.core.entity.component.physics.dinamica.QObjetoRigido;
 import net.qoopo.engine.core.entity.component.terrain.Terrain;
 import net.qoopo.engine.core.entity.component.water.WaterDuDv;
-import net.qoopo.engine.core.material.basico.QMaterialBas;
+import net.qoopo.engine.core.material.basico.Material;
 import net.qoopo.engine.core.math.QColor;
 import net.qoopo.engine.core.math.QVector3;
 import net.qoopo.engine.core.scene.QEscenario;
 import net.qoopo.engine.core.scene.Scene;
-import net.qoopo.engine.core.texture.QTextura;
-import net.qoopo.engine.core.texture.procesador.QProcesadorSimple;
+import net.qoopo.engine.core.texture.Texture;
 import net.qoopo.engine.core.texture.util.MaterialUtil;
 import net.qoopo.engine.core.util.ComponentUtil;
 import net.qoopo.engine.terrain.HeightMapTerrain;
@@ -303,9 +302,9 @@ public class NivelTest2 extends QEscenario {
 
         Entity entidadTerreno = new Entity("Terreno");
 
-        QTextura terrainTexture = AssetManager.get().loadTexture("terreno",
+        Texture terrainTexture = AssetManager.get().loadTexture("terreno",
                 "assets/textures/terrain/rocky_terrain/rocky_terrain_02_diff_4k.jpg");
-        QMaterialBas materialTerrain = new QMaterialBas(terrainTexture);
+        Material materialTerrain = new Material(terrainTexture);
         materialTerrain.setMapaNormal(AssetManager.get().loadTexture("terreno_normal",
                 "assets/textures/terrain/rocky_terrain/rocky_terrain_02_nor_gl_4k.png"));
         materialTerrain.setMapaEspecular(AssetManager.get().loadTexture("terreno_normal",
@@ -331,19 +330,11 @@ public class NivelTest2 extends QEscenario {
     private void crearLago1(Scene universo) {
         // CREACION DEL LAGO
         // Lago
-        QMaterialBas material = new QMaterialBas("Lago");
+        Material material = new Material("Lago");
         material.setTransAlfa(0.4f);// 40% ( transparencia del 60%)
-        material.setColorBase(new QColor(1, 0.f, 0.f, 0.7f));
+        material.setColor(new QColor(1, 0.f, 0.f, 0.7f));
         material.setSpecularExponent(64);
 
-        // QTextura mapaNormal = null;
-        //
-        // try {
-        // mapaNormal = QGestorRecursos.getTextura("lagoNormal");
-        // material.setMapaNormal(new QProcesadorSimple(mapaNormal));
-        // } catch (Exception e) {
-        // e.printStackTrace();
-        // }
         Entity agua = new Entity("Agua");
 
         // puedo agregar la razon que sea necesaria no afectara a la textura de
@@ -351,7 +342,7 @@ public class NivelTest2 extends QEscenario {
         agua.addComponent(MaterialUtil.applyMaterial(new Plane(150, 150), material));
         WaterDuDv procesador = new WaterDuDv(universo, anchoReflejo, altoReflejo);
         agua.addComponent(procesador);
-        material.setMapaNormal(new QProcesadorSimple(procesador.getTextNormal()));
+        material.setMapaNormal(procesador.getTextNormal());
         material.setMapaColor(procesador.getOutputTexture());
         agua.move(120, 0.1f, -120);
         agua.rotate((float) Math.toRadians(90), 0, 0);
@@ -361,20 +352,12 @@ public class NivelTest2 extends QEscenario {
     private void crearLago2(Scene universo) {
         // CREACION DEL LAGO
         // Lago
-        QMaterialBas material = new QMaterialBas("Lago");
+        Material material = new Material("Lago");
 
         material.setTransAlfa(0.7f);// 70% ( transparencia del 60%)
-        material.setColorBase(new QColor(1, 0.f, 0.f, 0.7f));
+        material.setColor(new QColor(1, 0.f, 0.f, 0.7f));
         material.setSpecularExponent(64);
 
-        // QTextura mapaNormal = null;
-        //
-        // try {
-        // mapaNormal = QGestorRecursos.getTextura("lagoNormal");
-        // material.setMapaNormal(new QProcesadorSimple(mapaNormal));
-        // } catch (Exception e) {
-        // e.printStackTrace();
-        // }
         Entity agua = new Entity("Agua");
 
         // puedo agregar la razon que sea necesaria no afectara a la textura de
@@ -382,7 +365,7 @@ public class NivelTest2 extends QEscenario {
         agua.addComponent(MaterialUtil.applyMaterial(new Plane(150, 150), material));
         WaterDuDv procesador = new WaterDuDv(universo, anchoReflejo, altoReflejo);
         agua.addComponent(procesador);
-        material.setMapaNormal(new QProcesadorSimple(procesador.getTextNormal()));
+        material.setMapaNormal(procesador.getTextNormal());
         material.setMapaColor(procesador.getOutputTexture());
         agua.move(-90, -1, 120);
         agua.scale(2, 1.3f, 1);
@@ -426,9 +409,9 @@ public class NivelTest2 extends QEscenario {
         sol.addComponent(solLuz);
         universo.addEntity(sol);
 
-        QTextura cieloDia = AssetManager.get().loadTexture("dia",
+        Texture cieloDia = AssetManager.get().loadTexture("dia",
                 "assets/textures/cielo/esfericos/cielo_dia.jpg");
-        QTextura cieloNoche = AssetManager.get().loadTexture("noche",
+        Texture cieloNoche = AssetManager.get().loadTexture("noche",
                 "assets/textures/cielo/esfericos/cielo_noche.png");
         // QTextura cieloNoche = QGestorRecursos.loadTexture("noche",
         // "res/textures/cielo/esfericos/cielo_noche_2.jpg");

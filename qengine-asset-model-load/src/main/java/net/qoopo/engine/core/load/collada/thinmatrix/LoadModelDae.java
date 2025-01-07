@@ -18,7 +18,7 @@ import net.qoopo.engine.core.assets.model.ModelLoader;
 import net.qoopo.engine.core.entity.Entity;
 import net.qoopo.engine.core.entity.component.animation.AnimationComponent;
 import net.qoopo.engine.core.entity.component.animation.Bone;
-import net.qoopo.engine.core.entity.component.animation.QCompAlmacenAnimaciones;
+import net.qoopo.engine.core.entity.component.animation.AnimationStorageComponent;
 import net.qoopo.engine.core.entity.component.animation.Skeleton;
 import net.qoopo.engine.core.entity.component.mesh.Mesh;
 import net.qoopo.engine.core.entity.component.mesh.primitive.Vertex;
@@ -31,7 +31,7 @@ import net.qoopo.engine.core.load.collada.thinmatrix.data.KeyFrameData;
 import net.qoopo.engine.core.load.collada.thinmatrix.data.MeshData;
 import net.qoopo.engine.core.load.collada.thinmatrix.data.SkeletonData;
 import net.qoopo.engine.core.load.collada.thinmatrix.loader.ColladaLoader;
-import net.qoopo.engine.core.material.basico.QMaterialBas;
+import net.qoopo.engine.core.material.basico.Material;
 import net.qoopo.engine.core.math.QMatriz4;
 import net.qoopo.engine.core.util.QJOMLUtil;
 
@@ -60,18 +60,14 @@ public class LoadModelDae implements ModelLoader {
             // Animacion
             AnimationData dataAnimacion = ColladaLoader.loadColladaAnimation(file);
             AnimationComponent animacionPose = AnimationComponent.crearAnimacionPose(esqueleto);
-            AnimationComponent animacion = crearAnimacion(dataAnimacion, esqueleto);
-            QCompAlmacenAnimaciones almacen = new QCompAlmacenAnimaciones();
-            almacen.agregarAnimacion("Animación", animacion);
-            almacen.agregarAnimacion("Pose", animacionPose);
+            AnimationComponent animacion = loadAnimation(dataAnimacion, esqueleto);
+            AnimationStorageComponent almacen = new AnimationStorageComponent();
+            almacen.add("animation", animacion);
+            almacen.add("Pose", animacionPose);
             entity.addComponent(almacen);
             entity.addComponent(animacion);
             // Geometria
             entity.addComponent(loadMesh(modelo.getMeshData(), esqueleto));
-            // System.out.println("Entidad Cargada COLLADA");
-            // System.out.println("================================");
-            // Entity.imprimirArbolEntidad(entity, "");
-
             return entity;
         } catch (Exception e) {
 
@@ -80,25 +76,25 @@ public class LoadModelDae implements ModelLoader {
         return null;
     }
 
-    private static AnimationComponent crearAnimacion(AnimationData dataAnimacion, Skeleton esqueleto) {
+    private static AnimationComponent loadAnimation(AnimationData dataAnimacion, Skeleton esqueleto) {
         AnimationComponent animacion = new AnimationComponent(dataAnimacion.lengthSeconds);
-        animacion.setNombre("Animación");
+        animacion.setNombre("animation");
         animacion.setLoop(true);
         for (KeyFrameData frameData : dataAnimacion.keyFrames) {
-            AnimationFrame frame = processAnimationFrame(frameData, esqueleto);
+            AnimationFrame frame = loadAnimationFrame(frameData, esqueleto);
             animacion.addFrame(frame);
         }
         return animacion;
     }
 
     /**
-     * Crea un fram de animación a partir del keyFrame Data
+     * Crea un fram de animation a partir del keyFrame Data
      *
      * @param frameData
      * @param esqueleto
      * @return
      */
-    private static AnimationFrame processAnimationFrame(KeyFrameData frameData, Skeleton esqueleto) {
+    private static AnimationFrame loadAnimationFrame(KeyFrameData frameData, Skeleton esqueleto) {
         AnimationFrame qFrame = new AnimationFrame(frameData.time);
         Bone hueso;
         QTransformacion transformacion;
@@ -110,7 +106,7 @@ public class LoadModelDae implements ModelLoader {
                 transformacion.desdeMatrix(mat4);
                 qFrame.agregarPar(new AnimationPair(hueso, transformacion));
             } else {
-                System.out.println("No se encontro el hueso " + joinTransFormData.jointNameId + " para la animación");
+                System.out.println("No se encontro el hueso " + joinTransFormData.jointNameId + " para la animation");
             }
         }
         return qFrame;
@@ -158,7 +154,7 @@ public class LoadModelDae implements ModelLoader {
     }
 
     public static Mesh loadMesh(MeshData data, Skeleton esqueleto) {
-        QMaterialBas material = new QMaterialBas("default");
+        Material material = new Material("default");
         Mesh mesh = new Mesh();
 
         int verticesReales = data.getVertexCount();

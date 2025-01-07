@@ -13,7 +13,7 @@ import net.qoopo.engine.core.material.node.core.perifericos.QPerColor;
 import net.qoopo.engine.core.material.node.core.perifericos.QPerImagen;
 import net.qoopo.engine.core.math.QColor;
 import net.qoopo.engine.core.renderer.RenderEngine;
-import net.qoopo.engine.core.texture.procesador.QProcesadorTextura;
+import net.qoopo.engine.core.texture.Texture;
 
 /**
  *
@@ -24,7 +24,7 @@ public class QNodoColorTextura extends ShaderNode {
     private QPerColor saColor;
     private QPerImagen enImagen;
 
-    public QNodoColorTextura(QProcesadorTextura textura) {
+    public QNodoColorTextura(Texture textura) {
         enImagen = new QPerImagen(textura);
         enImagen.setNodo(this);
         saColor = new QPerColor(QColor.WHITE);
@@ -38,7 +38,7 @@ public class QNodoColorTextura extends ShaderNode {
     @Override
     public void procesar(RenderEngine render, Fragment pixel) {
         if (render.opciones.isMaterial()) {
-            saColor.setColor(enImagen.getTextura().get_QARGB(pixel.u, pixel.v));
+            saColor.setColor(enImagen.getTextura().getQColor(pixel.u, pixel.v));
         }
     }
 

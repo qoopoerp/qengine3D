@@ -9,7 +9,7 @@ import lombok.Getter;
 import lombok.Setter;
 import net.qoopo.engine.core.entity.component.modifier.generate.InflateModifier;
 import net.qoopo.engine.core.entity.component.modifier.generate.SubdivisionModifier;
-import net.qoopo.engine.core.material.basico.QMaterialBas;
+import net.qoopo.engine.core.material.basico.Material;
 
 /**
  * Crea una esfera a partir de un cubo
@@ -25,14 +25,14 @@ public class SphereBox extends Box {
 
     public SphereBox() {
         super(0.5f);
-        material = new QMaterialBas("CuboEsfera");
+        material = new Material("CuboEsfera");
         build();
     }
 
     public SphereBox(float radio) {
         super(radio);
         this.radio = radio;
-        material = new QMaterialBas("CuboEsfera");
+        material = new Material("CuboEsfera");
         build();
     }
 
@@ -40,7 +40,7 @@ public class SphereBox extends Box {
         super(radio);
         this.radio = radio;
         this.divisiones = divisiones;
-        material = new QMaterialBas("CuboEsfera");
+        material = new Material("CuboEsfera");
         build();
     }
 

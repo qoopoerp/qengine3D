@@ -8,7 +8,8 @@ package net.qoopo.engine.core.entity.component.mesh.primitive.shape;
 import net.qoopo.engine.core.entity.component.mesh.generator.MeshGenerator;
 import net.qoopo.engine.core.entity.component.mesh.primitive.Poly;
 import net.qoopo.engine.core.entity.component.mesh.primitive.Shape;
-import net.qoopo.engine.core.material.basico.QMaterialBas;
+import net.qoopo.engine.core.entity.component.modifier.generate.RevolutionModifier;
+import net.qoopo.engine.core.material.basico.Material;
 
 /**
  *
@@ -21,8 +22,8 @@ public class Cone extends Shape {
     private int secciones;
 
     public Cone() {
-        material = new QMaterialBas("Cono");
-        nombre = "Cono";
+        material = new Material("Cono");
+        name = "Cono";
         radio = 1;
         alto = 1;
         secciones = 36;
@@ -30,8 +31,8 @@ public class Cone extends Shape {
     }
 
     public Cone(float alto, float radio) {
-        nombre = "Cono";
-        material = new QMaterialBas("Cono");
+        name = "Cono";
+        material = new Material("Cono");
         this.radio = radio;
         this.alto = alto;
         secciones = 36;
@@ -39,8 +40,8 @@ public class Cone extends Shape {
     }
 
     public Cone(float alto, float radio, int secciones) {
-        nombre = "Cono";
-        material = new QMaterialBas("Cono");
+        name = "Cono";
+        material = new Material("Cono");
         this.radio = radio;
         this.alto = alto;
         this.secciones = secciones;
@@ -54,9 +55,8 @@ public class Cone extends Shape {
         this.addVertex(0, alto / 2, 0);
         this.addVertex(radio, -alto / 2, 0);
         this.addVertex(0, -alto / 2, 0);
-        // generar uv
-
-        MeshGenerator.generateRevolutionMesh(this, secciones);
+        // MeshGenerator.generateRevolutionMesh(this, secciones);
+        new RevolutionModifier(secciones).apply(this);
         for (int i = 0; i < this.primitiveList.length; i += 2) {
             ((Poly) primitiveList[i]).setSmooth(true);
         }

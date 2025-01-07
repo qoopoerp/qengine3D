@@ -7,7 +7,7 @@ package net.qoopo.engine.core.renderer.post.flujos.basicos;
 
 import net.qoopo.engine.core.renderer.post.flujos.QRenderEfectos;
 import net.qoopo.engine.core.renderer.post.procesos.blur.QProcesadorBlur;
-import net.qoopo.engine.core.texture.QTextura;
+import net.qoopo.engine.core.texture.Texture;
 
 /**
  *
@@ -26,7 +26,7 @@ public class QEfectoBlur extends QRenderEfectos {
     }
 
     @Override
-    public QTextura ejecutar(QTextura buffer) {
+    public Texture ejecutar(Texture buffer) {
         try {
             filtro.procesar(buffer);
             return filtro.getBufferSalida();

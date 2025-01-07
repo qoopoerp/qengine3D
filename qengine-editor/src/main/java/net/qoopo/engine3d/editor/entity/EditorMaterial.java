@@ -28,11 +28,12 @@ import net.qoopo.engine.core.assets.AssetManager;
 import net.qoopo.engine.core.entity.Entity;
 import net.qoopo.engine.core.entity.component.cubemap.CubeMap;
 import net.qoopo.engine.core.entity.component.ligth.QDirectionalLigth;
+import net.qoopo.engine.core.entity.component.mesh.Mesh;
 import net.qoopo.engine.core.entity.component.mesh.primitive.shape.Box;
-import net.qoopo.engine.core.entity.component.mesh.primitive.shape.Sphere;
 import net.qoopo.engine.core.entity.component.mesh.primitive.shape.Plane;
+import net.qoopo.engine.core.entity.component.mesh.primitive.shape.Sphere;
 import net.qoopo.engine.core.entity.component.mesh.primitive.shape.Teapot;
-import net.qoopo.engine.core.material.basico.QMaterialBas;
+import net.qoopo.engine.core.material.basico.Material;
 import net.qoopo.engine.core.math.QColor;
 import net.qoopo.engine.core.math.QVector3;
 import net.qoopo.engine.core.renderer.RenderEngine;
@@ -40,11 +41,9 @@ import net.qoopo.engine.core.renderer.superficie.QJPanel;
 import net.qoopo.engine.core.renderer.superficie.Superficie;
 import net.qoopo.engine.core.scene.Camera;
 import net.qoopo.engine.core.scene.Scene;
-import net.qoopo.engine.core.texture.QTextura;
+import net.qoopo.engine.core.texture.Texture;
 import net.qoopo.engine.core.texture.procesador.QProcesadorMipMap;
-import net.qoopo.engine.core.texture.procesador.QProcesadorSimple;
 import net.qoopo.engine.core.texture.util.MaterialUtil;
-import net.qoopo.engine.core.util.QGlobal;
 import net.qoopo.engine.core.util.ComponentUtil;
 import net.qoopo.engine.core.util.mesh.NormalUtil;
 import net.qoopo.engine3d.editor.Principal;
@@ -56,7 +55,7 @@ import net.qoopo.engine3d.editor.util.ImagePreviewPanel;
  */
 public class EditorMaterial extends javax.swing.JPanel {
 
-    private QMaterialBas activeMaterial;
+    private Material activeMaterial;
     private RenderEngine renderVistaPrevia;
     private Entity fondoVistaPrevia = null;
     private Entity entidadVistaPrevia = new Entity("MaterialTest");
@@ -101,7 +100,7 @@ public class EditorMaterial extends javax.swing.JPanel {
         spnFactorEmision.setModel(new SpinnerNumberModel(0, 0, 1, .05));
     }
 
-    public EditorMaterial(QMaterialBas activeMaterial) {
+    public EditorMaterial(Material activeMaterial) {
         this();
         this.activeMaterial = activeMaterial;
         populateMaterialControl(activeMaterial);
@@ -114,7 +113,7 @@ public class EditorMaterial extends javax.swing.JPanel {
 
     private void iniciarVistaPrevia() {
         try {
-            Scene escena = new Scene();
+            Scene scene = new Scene();
             // QEscena.INSTANCIA = null;// no lo vinculo a la instancia global
 
             pnlVistaPrevia.setLayout(new BorderLayout());
@@ -123,7 +122,7 @@ public class EditorMaterial extends javax.swing.JPanel {
 
             // renderVistaPrevia = new QRender(escena, "Vista Previa", new Superficie(pnl),
             // 0, 0);
-            renderVistaPrevia = AssetManager.get().getRendererFactory().createRenderEngine(escena, "Vista Previa",
+            renderVistaPrevia = AssetManager.get().getRendererFactory().createRenderEngine(scene, "Vista Previa",
                     new Superficie(pnl), 0, 0);
             Camera camara = new Camera("Material");
             camara.lookAtTarget(QVector3.of(1.2f, 1.2f, 1.2f), QVector3.of(0, 0, 0), QVector3.of(0, 1, 0));
@@ -134,7 +133,7 @@ public class EditorMaterial extends javax.swing.JPanel {
             luz.addComponent(new QDirectionalLigth(QVector3.of(-1f, -0.5f, -1.5f)));
 
             fondoVistaPrevia = crearFondoCuadros();
-            entidadVistaPrevia = crearTestEsfera(new QMaterialBas(QColor.LIGHT_GRAY, 50));
+            entidadVistaPrevia = crearTestEsfera(new Material(QColor.LIGHT_GRAY, 50));
             renderVistaPrevia.getScene().addEntity(fondoVistaPrevia);
             renderVistaPrevia.getScene().addEntity(entidadVistaPrevia);
             renderVistaPrevia.getScene().addEntity(luz);
@@ -150,7 +149,7 @@ public class EditorMaterial extends javax.swing.JPanel {
         }
     }
 
-    public void populateMaterialControl(QMaterialBas material) {
+    public void populateMaterialControl(Material material) {
         objectLock = true;
         try {
             this.activeMaterial = material;
@@ -161,7 +160,7 @@ public class EditorMaterial extends javax.swing.JPanel {
             renderVistaPrevia.getScene().eliminarEntidadSindestruir(entidadVistaPrevia);
             entidadVistaPrevia = crearTestCubo(material);
             renderVistaPrevia.getScene().addEntity(entidadVistaPrevia);
-            pnlDiffuseColor.setBackground(material.getColorBase().getColor());
+            pnlDiffuseColor.setBackground(material.getColor().getColor());
             // pnlSpecularColor.setBackground(material.getColorEspecular().getColor());
             if (material.getColorTransparente() != null) {
                 pnlAlphaColor.setBackground(material.getColorTransparente().getColor());
@@ -172,7 +171,8 @@ public class EditorMaterial extends javax.swing.JPanel {
             sldAlpha.setValue((int) (material.getTransAlfa() * sldAlpha.getMaximum()));
             sldMetalico.setValue((int) (material.getMetalico() * sldMetalico.getMaximum()));
             sldRugosidad.setValue((int) (material.getRugosidad() * sldRugosidad.getMaximum()));
-            sldEspecularidad.setValue((int) (material.getEspecular() * sldEspecularidad.getMaximum()));
+            // sldEspecularidad.setValue((int) (material.getEspecular() *
+            // sldEspecularidad.getMaximum()));
 
             mapaDifuso = new BufferedImage(pnlDifuso.getWidth(), pnlDifuso.getHeight(), BufferedImage.TYPE_INT_ARGB);
             mapaNormal = new BufferedImage(pnlNormalMap.getWidth(), pnlNormalMap.getHeight(),
@@ -194,49 +194,49 @@ public class EditorMaterial extends javax.swing.JPanel {
                     BufferedImage.TYPE_INT_ARGB);
 
             if (material.getMapaColor() != null) {
-                mapaDifuso.getGraphics().drawImage(material.getMapaColor().getTexture(pnlDifuso.getSize()), 0, 0,
+                mapaDifuso.getGraphics().drawImage(material.getMapaColor().getImagen(pnlDifuso.getSize()), 0, 0,
                         pnlDifuso);
             }
 
             if (material.getMapaEspecular() != null) {
-                mapaEspecular.getGraphics().drawImage(material.getMapaEspecular().getTexture(pnlEspecularMap.getSize()),
+                mapaEspecular.getGraphics().drawImage(material.getMapaEspecular().getImagen(pnlEspecularMap.getSize()),
                         0, 0, pnlEspecularMap);
             }
 
             if (material.getMapaEmisivo() != null) {
-                mapaEmision.getGraphics().drawImage(material.getMapaEmisivo().getTexture(pnlEmisivoMap.getSize()), 0, 0,
+                mapaEmision.getGraphics().drawImage(material.getMapaEmisivo().getImagen(pnlEmisivoMap.getSize()), 0, 0,
                         pnlEmisivoMap);
             }
 
             if (material.getMapaNormal() != null) {
-                mapaNormal.getGraphics().drawImage(material.getMapaNormal().getTexture(pnlNormalMap.getSize()), 0, 0,
+                mapaNormal.getGraphics().drawImage(material.getMapaNormal().getImagen(pnlNormalMap.getSize()), 0, 0,
                         pnlNormalMap);
             }
             if (material.getMapaDesplazamiento() != null) {
                 mapaDesplazamiento.getGraphics()
-                        .drawImage(material.getMapaDesplazamiento().getTexture(pnlDispMap.getSize()), 0, 0, pnlDispMap);
+                        .drawImage(material.getMapaDesplazamiento().getImagen(pnlDispMap.getSize()), 0, 0, pnlDispMap);
             }
             if (material.getMapaEntorno() != null) {
-                mapaEntorno.getGraphics().drawImage(material.getMapaEntorno().getTexture(pnlEntornoMap.getSize()), 0, 0,
+                mapaEntorno.getGraphics().drawImage(material.getMapaEntorno().getImagen(pnlEntornoMap.getSize()), 0, 0,
                         pnlEntornoMap);
             }
             if (material.getMapaTransparencia() != null) {
-                mapaAlpha.getGraphics().drawImage(material.getMapaTransparencia().getTexture(pnlAlphaMap.getSize()), 0,
+                mapaAlpha.getGraphics().drawImage(material.getMapaTransparencia().getImagen(pnlAlphaMap.getSize()), 0,
                         0, pnlAlphaMap);
             }
             if (material.getMapaSAO() != null) {
-                mapaAO.getGraphics().drawImage(material.getMapaSAO().getTexture(pnlAOMap.getSize()), 0, 0, pnlAOMap);
+                mapaAO.getGraphics().drawImage(material.getMapaSAO().getImagen(pnlAOMap.getSize()), 0, 0, pnlAOMap);
             }
             if (material.getMapaRugosidad() != null) {
-                mapaRugosidad.getGraphics().drawImage(material.getMapaRugosidad().getTexture(pnlRugMap.getSize()), 0, 0,
+                mapaRugosidad.getGraphics().drawImage(material.getMapaRugosidad().getImagen(pnlRugMap.getSize()), 0, 0,
                         pnlRugMap);
             }
             if (material.getMapaMetalico() != null) {
-                mapaMetalico.getGraphics().drawImage(material.getMapaMetalico().getTexture(pnlMetalMap.getSize()), 0, 0,
+                mapaMetalico.getGraphics().drawImage(material.getMapaMetalico().getImagen(pnlMetalMap.getSize()), 0, 0,
                         pnlMetalMap);
             }
             if (material.getMapaIrradiacion() != null) {
-                mapaIrradiacion.getGraphics().drawImage(material.getMapaIrradiacion().getTexture(pnlIrrMap.getSize()),
+                mapaIrradiacion.getGraphics().drawImage(material.getMapaIrradiacion().getImagen(pnlIrrMap.getSize()),
                         0, 0, pnlIrrMap);
             }
             pnlDifuso.paint(pnlDifuso.getGraphics());
@@ -250,7 +250,7 @@ public class EditorMaterial extends javax.swing.JPanel {
             pnlRugMap.paint(pnlRugMap.getGraphics());
             pnlMetalMap.paint(pnlMetalMap.getGraphics());
             pnlIrrMap.paint(pnlIrrMap.getGraphics());
-            spnNormalAmount.setValue(material.getFactorNormal());
+            // spnNormalAmount.setValue(material.getFactorNormal());
             spnFactorRefraccion.setValue(material.getIndiceRefraccion());
             spnFactorEmision.setValue(material.getFactorEmision());
             chkTransparencia.setSelected(material.isTransparencia());
@@ -268,8 +268,8 @@ public class EditorMaterial extends javax.swing.JPanel {
     private Entity crearFondoCuadros() {
         try {
             Entity entidad = new Entity("Fondo");
-            QTextura text = new QTextura(ImageIO.read(Principal.class.getResourceAsStream("/fondo.jpg")));
-            QMaterialBas matFondo = new QMaterialBas(text, 50);
+            Texture text = new Texture(ImageIO.read(Principal.class.getResourceAsStream("/fondo.jpg")));
+            Material matFondo = new Material(text, 50);
             entidad.addComponent(
                     NormalUtil.invertirNormales(MaterialUtil.applyMaterial(new Box(10f), matFondo)));
             entidad.move(3, 3, 3);
@@ -280,8 +280,8 @@ public class EditorMaterial extends javax.swing.JPanel {
         return null;
     }
 
-    private Entity crearTestPlano(QMaterialBas material) {
-        ComponentUtil.eliminarComponenteGeometria(entidadVistaPrevia);
+    private Entity crearTestPlano(Material material) {
+        ComponentUtil.removeComponents(entidadVistaPrevia, Mesh.class);
         entidadVistaPrevia.addComponent(MaterialUtil.applyMaterial(new Plane(2.0f, 2.0f), material));
         entidadVistaPrevia.rotate(Math.toRadians(45), Math.toRadians(45), 0);
         // entidadVistaPrevia.transformacion.getRotacion().getCuaternion().lookAt(QVector3.unitario_xyz,
@@ -291,8 +291,8 @@ public class EditorMaterial extends javax.swing.JPanel {
         return entidadVistaPrevia;
     }
 
-    private Entity crearTestCubo(QMaterialBas material) {
-        ComponentUtil.eliminarComponenteGeometria(entidadVistaPrevia);
+    private Entity crearTestCubo(Material material) {
+        ComponentUtil.removeComponents(entidadVistaPrevia, Mesh.class);
         entidadVistaPrevia.addComponent(MaterialUtil.applyMaterial(new Box(1.0f), material));
         entidadVistaPrevia.getTransformacion().getRotacion().getCuaternion().set(0, 0, 0, 1);
         entidadVistaPrevia.getTransformacion().getRotacion().actualizarAngulos();
@@ -300,8 +300,8 @@ public class EditorMaterial extends javax.swing.JPanel {
         return entidadVistaPrevia;
     }
 
-    private Entity crearTestEsfera(QMaterialBas material) {
-        ComponentUtil.eliminarComponenteGeometria(entidadVistaPrevia);
+    private Entity crearTestEsfera(Material material) {
+        ComponentUtil.removeComponents(entidadVistaPrevia, Mesh.class);
         entidadVistaPrevia.addComponent(MaterialUtil.applyMaterial(new Sphere(.5f), material));
         entidadVistaPrevia.getTransformacion().getRotacion().getCuaternion().set(0, 0, 0, 1);
         entidadVistaPrevia.getTransformacion().getRotacion().actualizarAngulos();
@@ -309,8 +309,8 @@ public class EditorMaterial extends javax.swing.JPanel {
         return entidadVistaPrevia;
     }
 
-    private Entity crearTetera(QMaterialBas material) {
-        ComponentUtil.eliminarComponenteGeometria(entidadVistaPrevia);
+    private Entity crearTetera(Material material) {
+        ComponentUtil.removeComponents(entidadVistaPrevia, Mesh.class);
         entidadVistaPrevia.addComponent(MaterialUtil.applyMaterial(new Teapot(), material));
         entidadVistaPrevia.getTransformacion().getRotacion().getCuaternion().set(0, 0, 0, 1);
         entidadVistaPrevia.getTransformacion().getRotacion().actualizarAngulos();
@@ -320,7 +320,7 @@ public class EditorMaterial extends javax.swing.JPanel {
 
     private void applyMaterialControl() {
         if (!objectLock) {
-            activeMaterial.setColorBase(new QColor(1, (float) pnlDiffuseColor.getBackground().getRed() / 255.0f,
+            activeMaterial.setColor(new QColor(1, (float) pnlDiffuseColor.getBackground().getRed() / 255.0f,
                     (float) pnlDiffuseColor.getBackground().getGreen() / 255.0f,
                     (float) pnlDiffuseColor.getBackground().getBlue() / 255.0f));
 
@@ -334,14 +334,16 @@ public class EditorMaterial extends javax.swing.JPanel {
 
             activeMaterial.setSpecularExponent((int) getFloatFromSpinner(spnSpecExp));
             activeMaterial.setTransAlfa((float) sldAlpha.getValue() / sldAlpha.getMaximum());
-            activeMaterial.setFactorNormal(getFloatFromSpinner(spnNormalAmount));
+            // activeMaterial.setFactorNormal(getFloatFromSpinner(spnNormalAmount));
             activeMaterial.setRugosidad((float) sldRugosidad.getValue() / sldRugosidad.getMaximum());
             activeMaterial.setMetalico((float) sldMetalico.getValue() / sldMetalico.getMaximum());
-            activeMaterial.setEspecular((float) sldEspecularidad.getValue() / sldEspecularidad.getMaximum());
+            // activeMaterial.setEspecular((float) sldEspecularidad.getValue() /
+            // sldEspecularidad.getMaximum());
 
             sldRugosidad.setToolTipText("Rugosidad (" + activeMaterial.getRugosidad() + "):");
             sldMetalico.setToolTipText("Metalico (" + activeMaterial.getMetalico() + "):");
-            sldEspecularidad.setToolTipText("Especularidad (" + activeMaterial.getEspecular() + "):");
+            // sldEspecularidad.setToolTipText("Especularidad (" +
+            // activeMaterial.getEspecular() + "):");
 
             // activeMaterial.setFactorReflexion(getFloatFromSpinner(spnFactorReflexion));
             activeMaterial.setIndiceRefraccion(getFloatFromSpinner(spnFactorRefraccion));
@@ -2512,8 +2514,7 @@ public class EditorMaterial extends javax.swing.JPanel {
                     new FileNameExtensionFilter("Archivos soportados", "png", "jpg", "jpeg", "bmp", "gif"));
             if (chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
                 try {
-                    activeMaterial.setMapaMetalico(
-                            new QProcesadorSimple(new QTextura(ImageIO.read(chooser.getSelectedFile()))));
+                    activeMaterial.setMapaMetalico(new Texture(ImageIO.read(chooser.getSelectedFile())));
                     populateMaterialControl(activeMaterial);
                 } catch (IOException ex) {
                     Logger.getLogger(Principal.class.getName()).log(Level.SEVERE, null, ex);
@@ -2556,8 +2557,7 @@ public class EditorMaterial extends javax.swing.JPanel {
             if (chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
 
                 try {
-                    activeMaterial.setMapaRugosidad(
-                            new QProcesadorSimple(new QTextura(ImageIO.read(chooser.getSelectedFile()))));
+                    activeMaterial.setMapaRugosidad(new Texture(ImageIO.read(chooser.getSelectedFile())));
                     populateMaterialControl(activeMaterial);
                     // if (activeMaterial.getMapaDifusa() != null) {
                     //
@@ -2589,8 +2589,7 @@ public class EditorMaterial extends javax.swing.JPanel {
                     new FileNameExtensionFilter("Archivos soportados", "png", "jpg", "jpeg", "bmp", "gif"));
             if (chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
                 try {
-                    activeMaterial
-                            .setMapaSAO(new QProcesadorSimple(new QTextura(ImageIO.read(chooser.getSelectedFile()))));
+                    activeMaterial.setMapaSAO(new Texture(ImageIO.read(chooser.getSelectedFile())));
                     populateMaterialControl(activeMaterial);
                 } catch (IOException ex) {
                     Logger.getLogger(Principal.class.getName()).log(Level.SEVERE, null, ex);
@@ -2697,14 +2696,14 @@ public class EditorMaterial extends javax.swing.JPanel {
             // "Positivo Y", "Positivo X", "Positivo Z",
             // "Negativo Y", "Negativo X", "Negativo Z"
             // };
-            QTextura[] textures = new QTextura[6];
+            Texture[] textures = new Texture[6];
             int c = 0;
             for (int i = 0; i < 6; i++) {
 
                 if (chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
                     try {
                         c++;
-                        textures[i] = new QTextura(ImageIO.read(chooser.getSelectedFile()));
+                        textures[i] = new Texture(ImageIO.read(chooser.getSelectedFile()));
                     } catch (IOException ex) {
                         Logger.getLogger(Principal.class.getName()).log(Level.SEVERE, null, ex);
                     }
@@ -2720,8 +2719,7 @@ public class EditorMaterial extends javax.swing.JPanel {
                         textures[4],
                         textures[5]);
 
-                activeMaterial.setMapaColor(new QProcesadorSimple(tmp.getTexturaEntorno()));
-
+                activeMaterial.setMapaColor(tmp.getTexturaEntorno());
                 populateMaterialControl(activeMaterial);
                 tmp.destruir();
                 tmp = null;
@@ -2736,13 +2734,13 @@ public class EditorMaterial extends javax.swing.JPanel {
 
             JOptionPane.showMessageDialog(this, "Debe ingresar las imágenes en este orden: +X, +Y, +Z, -X,-Y, -Z",
                     "Ingreso de textura", 0);
-            QTextura[] textures = new QTextura[6];
+            Texture[] textures = new Texture[6];
             int c = 0;
             for (int i = 0; i < 6; i++) {
                 if (chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
                     try {
                         c++;
-                        textures[i] = new QTextura(ImageIO.read(chooser.getSelectedFile()));
+                        textures[i] = new Texture(ImageIO.read(chooser.getSelectedFile()));
                     } catch (Exception ex) {
                     }
                 }
@@ -2759,8 +2757,6 @@ public class EditorMaterial extends javax.swing.JPanel {
 
                 activeMaterial
                         .setMapaEntorno(new QProcesadorMipMap(tmp.getTexturaEntorno(), 5, QProcesadorMipMap.TIPO_BLUR));
-                // activeMaterial.setMapaEntorno(new
-                // QProcesadorSimple(tmp.getTexturaEntorno()));
                 activeMaterial.setTipoMapaEntorno(CubeMap.FORMATO_MAPA_CUBO);// mapa cubico
                 populateMaterialControl(activeMaterial);
                 tmp.destruir();
@@ -2775,10 +2771,8 @@ public class EditorMaterial extends javax.swing.JPanel {
             chooser.setFileFilter(
                     new FileNameExtensionFilter("Archivos soportados", "png", "jpg", "jpeg", "bmp", "gif"));
             if (chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
-
                 try {
-                    activeMaterial.setMapaDesplazamiento(
-                            new QProcesadorSimple(new QTextura(ImageIO.read(chooser.getSelectedFile()))));
+                    activeMaterial.setMapaDesplazamiento(new Texture(ImageIO.read(chooser.getSelectedFile())));
                     populateMaterialControl(activeMaterial);
 
                 } catch (IOException ex) {
@@ -2808,8 +2802,7 @@ public class EditorMaterial extends javax.swing.JPanel {
                     new FileNameExtensionFilter("Archivos soportados", "png", "jpg", "jpeg", "bmp", "gif"));
             if (chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
                 try {
-                    activeMaterial.setMapaTransparencia(
-                            new QProcesadorSimple(new QTextura(ImageIO.read(chooser.getSelectedFile()))));
+                    activeMaterial.setMapaTransparencia(new Texture(ImageIO.read(chooser.getSelectedFile())));
                     populateMaterialControl(activeMaterial);
                 } catch (IOException ex) {
                     Logger.getLogger(Principal.class.getName()).log(Level.SEVERE, null, ex);
@@ -2874,9 +2867,7 @@ public class EditorMaterial extends javax.swing.JPanel {
             if (chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
                 try {
                     activeMaterial.setMapaEntorno(new QProcesadorMipMap(
-                            new QTextura(ImageIO.read(chooser.getSelectedFile())), 5, QProcesadorMipMap.TIPO_BLUR));
-                    // activeMaterial.setMapaEntorno(new QProcesadorSimple(new
-                    // QTextura(ImageIO.read(chooser.getSelectedFile()))));
+                            new Texture(ImageIO.read(chooser.getSelectedFile())), 5, QProcesadorMipMap.TIPO_BLUR));
                     activeMaterial.setTipoMapaEntorno(2);// por default HDRI
                     populateMaterialControl(activeMaterial);
                 } catch (IOException ex) {
@@ -2929,8 +2920,7 @@ public class EditorMaterial extends javax.swing.JPanel {
             if (chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
 
                 try {
-                    activeMaterial.setMapaEmisivo(
-                            new QProcesadorSimple(new QTextura(ImageIO.read(chooser.getSelectedFile()))));
+                    activeMaterial.setMapaEmisivo(new Texture(ImageIO.read(chooser.getSelectedFile())));
                     populateMaterialControl(activeMaterial);
                     // if (activeMaterial.getMapaDifusa() != null) {
                     //
@@ -2952,8 +2942,7 @@ public class EditorMaterial extends javax.swing.JPanel {
             if (chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
 
                 try {
-                    activeMaterial.setMapaEspecular(
-                            new QProcesadorSimple(new QTextura(ImageIO.read(chooser.getSelectedFile()))));
+                    activeMaterial.setMapaEspecular(new Texture(ImageIO.read(chooser.getSelectedFile())));
                     populateMaterialControl(activeMaterial);
                     // if (activeMaterial.getMapaDifusa() != null) {
                     //
@@ -2983,8 +2972,7 @@ public class EditorMaterial extends javax.swing.JPanel {
             if (chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
 
                 try {
-                    activeMaterial.setMapaNormal(
-                            new QProcesadorSimple(new QTextura(ImageIO.read(chooser.getSelectedFile()))));
+                    activeMaterial.setMapaNormal(new Texture(ImageIO.read(chooser.getSelectedFile())));
                     populateMaterialControl(activeMaterial);
                     // if (activeMaterial.getMapaDifusa() != null) {
                     //
@@ -3009,7 +2997,7 @@ public class EditorMaterial extends javax.swing.JPanel {
 
                 try {
                     activeMaterial
-                            .setMapaColor(new QProcesadorSimple(new QTextura(ImageIO.read(chooser.getSelectedFile()))));
+                            .setMapaColor(new Texture(ImageIO.read(chooser.getSelectedFile())));
                     populateMaterialControl(activeMaterial);
                     // if (activeMaterial.getMapaDifusa() != null) {
                     //
@@ -3055,8 +3043,7 @@ public class EditorMaterial extends javax.swing.JPanel {
                     new FileNameExtensionFilter("Archivos soportados", "png", "jpg", "jpeg", "bmp", "gif"));
             if (chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
                 try {
-                    activeMaterial.setMapaIrradiacion(
-                            new QProcesadorSimple(new QTextura(ImageIO.read(chooser.getSelectedFile()))));
+                    activeMaterial.setMapaIrradiacion(new Texture(ImageIO.read(chooser.getSelectedFile())));
                     populateMaterialControl(activeMaterial);
                 } catch (IOException ex) {
                     Logger.getLogger(Principal.class.getName()).log(Level.SEVERE, null, ex);
@@ -3072,13 +3059,13 @@ public class EditorMaterial extends javax.swing.JPanel {
 
             JOptionPane.showMessageDialog(this, "Debe ingresar las imágenes en este orden: +X, +Y, +Z, -X,-Y, -Z",
                     "Ingreso de textura", 0);
-            QTextura[] textures = new QTextura[6];
+            Texture[] textures = new Texture[6];
             int c = 0;
             for (int i = 0; i < 6; i++) {
                 if (chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
                     try {
                         c++;
-                        textures[i] = new QTextura(ImageIO.read(chooser.getSelectedFile()));
+                        textures[i] = new Texture(ImageIO.read(chooser.getSelectedFile()));
                     } catch (Exception ex) {
                     }
                 }
@@ -3093,7 +3080,7 @@ public class EditorMaterial extends javax.swing.JPanel {
                         textures[4],
                         textures[5]);
 
-                activeMaterial.setMapaIrradiacion(new QProcesadorSimple(tmp.getTexturaEntorno()));
+                activeMaterial.setMapaIrradiacion(tmp.getTexturaEntorno());
                 activeMaterial.setTipoMapaEntorno(CubeMap.FORMATO_MAPA_CUBO);// mapa cubico
                 populateMaterialControl(activeMaterial);
                 tmp.destruir();

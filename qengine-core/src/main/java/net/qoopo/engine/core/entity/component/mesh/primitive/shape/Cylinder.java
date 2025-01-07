@@ -5,7 +5,7 @@
  */
 package net.qoopo.engine.core.entity.component.mesh.primitive.shape;
 
-import net.qoopo.engine.core.material.basico.QMaterialBas;
+import net.qoopo.engine.core.material.basico.Material;
 
 /**
  *
@@ -18,8 +18,8 @@ public class Cylinder extends Prism {
     private int secciones;
 
     public Cylinder() {
-        material = new QMaterialBas("Cilindro");
-        nombre = "Cilindro";
+        material = new Material("Cilindro");
+        name = "Cilindro";
         radio = 1;
         alto = 1;
         secciones = 36;
@@ -27,8 +27,8 @@ public class Cylinder extends Prism {
     }
 
     public Cylinder(float alto, float radio) {
-        material = new QMaterialBas("Cilindro");
-        nombre = "Cilindro";
+        material = new Material("Cilindro");
+        name = "Cilindro";
         this.radio = radio;
         this.alto = alto;
         secciones = 36;
@@ -36,8 +36,8 @@ public class Cylinder extends Prism {
     }
 
     public Cylinder(float alto, float radio, int secciones) {
-        material = new QMaterialBas("Cilindro");
-        nombre = "Cilindro";
+        material = new Material("Cilindro");
+        name = "Cilindro";
         this.radio = radio;
         this.alto = alto;
         this.secciones = secciones;

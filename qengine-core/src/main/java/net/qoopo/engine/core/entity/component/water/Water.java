@@ -15,7 +15,7 @@ import net.qoopo.engine.core.entity.component.UpdatableComponent;
 import net.qoopo.engine.core.entity.component.mesh.primitive.Shape;
 import net.qoopo.engine.core.entity.component.terrain.Terrain;
 import net.qoopo.engine.core.entity.component.water.texture.WaterTextureProcessor;
-import net.qoopo.engine.core.material.basico.QMaterialBas;
+import net.qoopo.engine.core.material.basico.Material;
 import net.qoopo.engine.core.math.QMath;
 import net.qoopo.engine.core.math.QVector3;
 import net.qoopo.engine.core.renderer.RenderEngine;
@@ -23,7 +23,7 @@ import net.qoopo.engine.core.renderer.buffer.QFrameBuffer;
 import net.qoopo.engine.core.scene.Camera;
 import net.qoopo.engine.core.scene.QClipPane;
 import net.qoopo.engine.core.scene.Scene;
-import net.qoopo.engine.core.texture.QTextura;
+import net.qoopo.engine.core.texture.Texture;
 
 /**
  * Procesador para simular agua modificando la textura de un Plano.
@@ -55,8 +55,8 @@ public abstract class Water implements EntityComponent, UpdatableComponent {
                                                          // refracción
     protected QFrameBuffer frameReflexion;
     protected QFrameBuffer frameRefraccion;
-    protected QTextura textReflexion;
-    protected QTextura textRefraccion;
+    protected Texture textReflexion;
+    protected Texture textRefraccion;
 
     // sera usada para simular movimiento de agua con el tiempo agregando un offset
     // a las textures
@@ -73,7 +73,7 @@ public abstract class Water implements EntityComponent, UpdatableComponent {
     protected Scene scene;
 
     protected Shape mesh;
-    protected QMaterialBas material;
+    protected Material material;
 
     // Si se adjunta un terreno al que el agua pertenece se puede realizar más
     // efectos en función de la profundidad por ejemplo
@@ -87,9 +87,9 @@ public abstract class Water implements EntityComponent, UpdatableComponent {
 
         try {
 
-            this.textReflexion = new QTextura();
+            this.textReflexion = new Texture();
             this.textReflexion.setSignoY(-1);
-            this.textRefraccion = new QTextura();
+            this.textRefraccion = new Texture();
 
             if (enableReflection || enableRefraction) {
                 frameReflexion = new QFrameBuffer(width / 4, height / 4, textReflexion);

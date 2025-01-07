@@ -11,7 +11,7 @@ import net.qoopo.engine.core.assets.AssetManager;
 import net.qoopo.engine.core.entity.Entity;
 import net.qoopo.engine.core.entity.component.mesh.Mesh;
 import net.qoopo.engine.core.entity.component.mesh.primitive.shape.Sphere;
-import net.qoopo.engine.core.material.basico.QMaterialBas;
+import net.qoopo.engine.core.material.basico.Material;
 import net.qoopo.engine.core.math.QVector3;
 import net.qoopo.engine.core.renderer.RenderEngine;
 import net.qoopo.engine.core.scene.Scene;
@@ -30,10 +30,10 @@ public class EjmTexturaSistemaSolar extends MakeTestScene {
                 this.scene = mundo;
 
                 Entity sky = new Entity("universe");
-                Mesh universeGeometry = MaterialUtil.applyMaterial(new Sphere(20, 36), new QMaterialBas(
+                Mesh universeGeometry = MaterialUtil.applyMaterial(new Sphere(20, 36), new Material(
                                 AssetManager.get().loadTexture("sol", new File(
                                                 "assets/textures/solar_system/2k_stars_milky_way.jpg"))));
-                ((QMaterialBas) universeGeometry.primitiveList[0].material).setFactorEmision(1.0f);
+                ((Material) universeGeometry.primitiveList[0].material).setFactorEmision(1.0f);
                 NormalUtil.invertirNormales(universeGeometry);
                 sky.addComponent(universeGeometry);
                 sky.move(QVector3.zero);
@@ -41,23 +41,23 @@ public class EjmTexturaSistemaSolar extends MakeTestScene {
                 mundo.addEntity(sky);
 
                 Entity sol = new Entity("Sol");
-                Mesh geomeSol = MaterialUtil.applyMaterial(new Sphere(2, 36), new QMaterialBas(
+                Mesh geomeSol = MaterialUtil.applyMaterial(new Sphere(2, 36), new Material(
                                 AssetManager.get().loadTexture("sol",
                                                 new File("assets/textures/solar_system/2k_sun.jpg"))));
-                ((QMaterialBas) geomeSol.primitiveList[0].material).setFactorEmision(1.0f);
+                ((Material) geomeSol.primitiveList[0].material).setFactorEmision(1.0f);
                 sol.addComponent(geomeSol);
                 sol.move(QVector3.zero);
                 mundo.addEntity(sol);
 
                 Entity mercurio = new Entity("Mercurio");
                 mercurio.addComponent(MaterialUtil.applyMaterial(new Sphere(0.1f, 36),
-                                new QMaterialBas(AssetManager.get().loadTexture("mercurio",
+                                new Material(AssetManager.get().loadTexture("mercurio",
                                                 new File("assets/textures/solar_system/2k_mercury.jpg")))));
                 mercurio.move(QVector3.of(4, 0, 0));
                 mundo.addEntity(mercurio);
 
                 Entity venus = new Entity("Venus");
-                venus.addComponent(MaterialUtil.applyMaterial(new Sphere(0.15f, 36), new QMaterialBas(AssetManager
+                venus.addComponent(MaterialUtil.applyMaterial(new Sphere(0.15f, 36), new Material(AssetManager
                                 .get()
                                 .loadTexture("venus", new File(
                                                 "assets/textures/solar_system/2k_venus_surface.jpg")))));
@@ -65,7 +65,7 @@ public class EjmTexturaSistemaSolar extends MakeTestScene {
                 mundo.addEntity(venus);
 
                 Entity tierra = new Entity("Tierra");
-                tierra.addComponent(MaterialUtil.applyMaterial(new Sphere(0.2f, 36), new QMaterialBas(AssetManager
+                tierra.addComponent(MaterialUtil.applyMaterial(new Sphere(0.2f, 36), new Material(AssetManager
                                 .get()
                                 .loadTexture("venus", new File(
                                                 "assets/textures/solar_system/2k_earth_daymap.jpg")))));
@@ -73,7 +73,7 @@ public class EjmTexturaSistemaSolar extends MakeTestScene {
                 mundo.addEntity(tierra);
 
                 Entity luna = new Entity("Luna");
-                luna.addComponent(MaterialUtil.applyMaterial(new Sphere(0.02f, 36), new QMaterialBas(AssetManager
+                luna.addComponent(MaterialUtil.applyMaterial(new Sphere(0.02f, 36), new Material(AssetManager
                                 .get()
                                 .loadTexture("venus",
                                                 new File("assets/textures/solar_system/2k_moon.jpg")))));
@@ -81,7 +81,7 @@ public class EjmTexturaSistemaSolar extends MakeTestScene {
                 mundo.addEntity(luna);
 
                 Entity marte = new Entity("Marte");
-                marte.addComponent(MaterialUtil.applyMaterial(new Sphere(0.18f, 36), new QMaterialBas(AssetManager
+                marte.addComponent(MaterialUtil.applyMaterial(new Sphere(0.18f, 36), new Material(AssetManager
                                 .get()
                                 .loadTexture("venus",
                                                 new File("assets/textures/solar_system/2k_mars.jpg")))));
@@ -89,7 +89,7 @@ public class EjmTexturaSistemaSolar extends MakeTestScene {
                 mundo.addEntity(marte);
 
                 Entity jupiter = new Entity("Júpiter");
-                jupiter.addComponent(MaterialUtil.applyMaterial(new Sphere(0.5f, 36), new QMaterialBas(AssetManager
+                jupiter.addComponent(MaterialUtil.applyMaterial(new Sphere(0.5f, 36), new Material(AssetManager
                                 .get()
                                 .loadTexture("venus",
                                                 new File("assets/textures/solar_system/2k_jupiter.jpg")))));
@@ -97,7 +97,7 @@ public class EjmTexturaSistemaSolar extends MakeTestScene {
                 mundo.addEntity(jupiter);
 
                 Entity saturno = new Entity("Saturno");
-                saturno.addComponent(MaterialUtil.applyMaterial(new Sphere(0.4f, 36), new QMaterialBas(AssetManager
+                saturno.addComponent(MaterialUtil.applyMaterial(new Sphere(0.4f, 36), new Material(AssetManager
                                 .get()
                                 .loadTexture("venus",
                                                 new File("assets/textures/solar_system/2k_saturn.jpg")))));
@@ -105,7 +105,7 @@ public class EjmTexturaSistemaSolar extends MakeTestScene {
                 mundo.addEntity(saturno);
 
                 Entity urano = new Entity("Urano");
-                urano.addComponent(MaterialUtil.applyMaterial(new Sphere(0.3f, 36), new QMaterialBas(AssetManager
+                urano.addComponent(MaterialUtil.applyMaterial(new Sphere(0.3f, 36), new Material(AssetManager
                                 .get()
                                 .loadTexture("venus",
                                                 new File("assets/textures/solar_system/2k_uranus.jpg")))));
@@ -114,7 +114,7 @@ public class EjmTexturaSistemaSolar extends MakeTestScene {
 
                 Entity neptuno = new Entity("Neptuno");
                 neptuno.addComponent(
-                                MaterialUtil.applyMaterial(new Sphere(0.25f, 36), new QMaterialBas(AssetManager
+                                MaterialUtil.applyMaterial(new Sphere(0.25f, 36), new Material(AssetManager
                                                 .get()
                                                 .loadTexture("venus", new File("assets/"
                                                                 + "textures/solar_system/2k_neptune.jpg")))));
@@ -122,7 +122,7 @@ public class EjmTexturaSistemaSolar extends MakeTestScene {
                 mundo.addEntity(neptuno);
 
                 Entity pluton = new Entity("Plutón");
-                pluton.addComponent(MaterialUtil.applyMaterial(new Sphere(0.05f, 36), new QMaterialBas(AssetManager
+                pluton.addComponent(MaterialUtil.applyMaterial(new Sphere(0.05f, 36), new Material(AssetManager
                                 .get()
                                 .loadTexture("venus", new File(
                                                 "assets/textures/solar_system/2k_stars_milky_way.jpg")))));

@@ -7,7 +7,7 @@ package net.qoopo.engine3d.test.generaEjemplos.impl.pbr;
 
 import net.qoopo.engine.core.entity.Entity;
 import net.qoopo.engine.core.entity.component.mesh.primitive.shape.Sphere;
-import net.qoopo.engine.core.material.basico.QMaterialBas;
+import net.qoopo.engine.core.material.basico.Material;
 import net.qoopo.engine.core.math.QColor;
 import net.qoopo.engine.core.math.QMath;
 import net.qoopo.engine.core.renderer.RenderEngine;
@@ -34,8 +34,8 @@ public class EjemploPBR extends MakeTestScene {
 
         for (int row = 0; row <=nrRows; ++row) {
             for (int col = 0; col <=nrColumns; ++col) {
-                QMaterialBas material = new QMaterialBas("PBR");
-                material.setColorBase(QColor.RED);
+                Material material = new Material("PBR");
+                material.setColor(QColor.RED);
                 material.setRugosidad(QMath.clamp((float)col / (float) nrColumns, 0.05f, 1.0f));
                 material.setMetalico((float) row / (float) nrRows);
                 Entity objeto = new Entity("PBR");

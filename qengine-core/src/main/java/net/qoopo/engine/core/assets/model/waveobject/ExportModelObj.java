@@ -17,8 +17,7 @@ import net.qoopo.engine.core.entity.component.mesh.Mesh;
 import net.qoopo.engine.core.entity.component.mesh.primitive.Poly;
 import net.qoopo.engine.core.entity.component.mesh.primitive.Primitive;
 import net.qoopo.engine.core.entity.component.mesh.primitive.Vertex;
-import net.qoopo.engine.core.material.basico.QMaterialBas;
-import net.qoopo.engine.core.math.QColor;
+import net.qoopo.engine.core.material.basico.Material;
 import net.qoopo.engine.core.math.QVector2;
 import net.qoopo.engine.core.math.QVector3;
 import net.qoopo.engine.core.util.QGlobal;
@@ -170,7 +169,7 @@ public class ExportModelObj implements ModelExporter {
         BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(output));
         try {
 
-            ArrayList<QMaterialBas> materiales = new ArrayList<>();
+            ArrayList<Material> materiales = new ArrayList<>();
             getMaterials(entity, materiales);
             // extraemos los materiales
 
@@ -183,7 +182,7 @@ public class ExportModelObj implements ModelExporter {
             writer.write("# QEngine " + QGlobal.version + " MTL File");
             writer.newLine();
 
-            for (QMaterialBas material : materiales) {
+            for (Material material : materiales) {
                 /**
                  * newmtl Material
                  * Ns 323.999994
@@ -197,10 +196,14 @@ public class ExportModelObj implements ModelExporter {
                  */
                 writer.write("newmtl " + material.getNombre());
                 writer.newLine();
-                writer.write("Kd " + String.format("%.3f %.3f %.3f", material.getColorBase().r,
-                        material.getColorBase().g, material.getColorBase().b));
+                writer.write("Kd " + String.format("%.3f %.3f %.3f", material.getColor().r,
+                        material.getColor().g, material.getColor().b));
                 writer.newLine();
-                writer.write("Ks " + String.format("%.3f %.3f %.3f", QColor.WHITE.r, QColor.WHITE.g, QColor.WHITE.b));
+                // writer.write("Ks " + String.format("%.3f %.3f %.3f", QColor.WHITE.r,
+                // QColor.WHITE.g, QColor.WHITE.b));
+                writer.write("Kd " + String.format("%.3f %.3f %.3f", material.getColorEspecular().r,
+                        material.getColorEspecular().g,
+                        material.getColorEspecular().b));
                 writer.newLine();
                 writer.write("Ns " + String.format("%d", material.getSpecularExponent()));
                 writer.newLine();
@@ -208,31 +211,31 @@ public class ExportModelObj implements ModelExporter {
                 writer.newLine();
                 // mapas
                 if (material.getMapaColor() != null) {
-                    ImageIO.write(material.getMapaColor().getTexture(), "jpg",
+                    ImageIO.write(material.getMapaColor().getImagen(), "jpg",
                             new File(parentFolder, material.getNombre() + "_kd.jpg"));
                     writer.write("map_kd " + material.getNombre() + "_kd.jpg");
                     writer.newLine();
                 }
                 if (material.getMapaNormal() != null) {
-                    ImageIO.write(material.getMapaNormal().getTexture(), "jpg",
+                    ImageIO.write(material.getMapaNormal().getImagen(), "jpg",
                             new File(parentFolder, material.getNombre() + "_normal.jpg"));
                     writer.write("map_Bump " + material.getNombre() + "_normal.jpg");
                     writer.newLine();
                 }
                 if (material.getMapaRugosidad() != null) {
-                    ImageIO.write(material.getMapaRugosidad().getTexture(), "jpg",
+                    ImageIO.write(material.getMapaRugosidad().getImagen(), "jpg",
                             new File(parentFolder, material.getNombre() + "_ns.jpg"));
                     writer.write("map_Ns " + material.getNombre() + "_ns.jpg");
                     writer.newLine();
                 }
                 if (material.getMapaMetalico() != null) {
-                    ImageIO.write(material.getMapaMetalico().getTexture(), "jpg",
+                    ImageIO.write(material.getMapaMetalico().getImagen(), "jpg",
                             new File(parentFolder, material.getNombre() + "_refl.jpg"));
                     writer.write("refl " + material.getNombre() + "_refl.jpg");
                     writer.newLine();
                 }
                 if (material.getMapaTransparencia() != null) {
-                    ImageIO.write(material.getMapaMetalico().getTexture(), "jpg",
+                    ImageIO.write(material.getMapaMetalico().getImagen(), "jpg",
                             new File(parentFolder, material.getNombre() + "_d.jpg"));
                     writer.write("map_d " + material.getNombre() + "_d.jpg");
                     writer.newLine();
@@ -252,14 +255,14 @@ public class ExportModelObj implements ModelExporter {
         }
     }
 
-    private void getMaterials(Entity entity, ArrayList<QMaterialBas> materialList) {
+    private void getMaterials(Entity entity, ArrayList<Material> materialList) {
         for (EntityComponent component : entity.getComponents()) {
             // Exporta las mallas
             if (component instanceof Mesh) {
                 Mesh mesh = (Mesh) component;
                 for (Primitive poly : mesh.primitiveList) {
-                    if (poly.material instanceof QMaterialBas) {
-                        QMaterialBas material = (QMaterialBas) poly.material;
+                    if (poly.material instanceof Material) {
+                        Material material = (Material) poly.material;
                         if (!materialList.contains(material))
                             materialList.add(material);
                     }

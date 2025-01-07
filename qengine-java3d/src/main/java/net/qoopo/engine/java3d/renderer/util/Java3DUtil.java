@@ -47,7 +47,6 @@ import net.qoopo.engine.core.entity.component.mesh.Mesh;
 import net.qoopo.engine.core.entity.component.mesh.primitive.Poly;
 import net.qoopo.engine.core.entity.component.mesh.primitive.Primitive;
 import net.qoopo.engine.core.entity.component.mesh.primitive.Vertex;
-import net.qoopo.engine.core.material.basico.QMaterialBas;
 import net.qoopo.engine.core.math.QRotacion;
 import net.qoopo.engine.core.math.QVector2;
 import net.qoopo.engine.core.math.QVector3;
@@ -273,7 +272,8 @@ public class Java3DUtil {
             switch (objeto.primitiveList[0].vertexIndexList.length) {
                 case 4:
                     // si son cuadrados
-                    if (((QMaterialBas) objeto.primitiveList[0].material).getMapaColor() != null) {
+                    if (((net.qoopo.engine.core.material.basico.Material) objeto.primitiveList[0].material)
+                            .getMapaColor() != null) {
                         listaGeometria = new QuadArray(objeto.primitiveList.length * 4,
                                 QuadArray.COORDINATES | QuadArray.NORMALS | QuadArray.TEXTURE_COORDINATE_2);
                     } else {
@@ -283,7 +283,8 @@ public class Java3DUtil {
                     break;
                 case 3:
                     // si son triangulos
-                    if (((QMaterialBas) objeto.primitiveList[0].material).getMapaColor() != null) {
+                    if (((net.qoopo.engine.core.material.basico.Material) objeto.primitiveList[0].material)
+                            .getMapaColor() != null) {
                         listaGeometria = new TriangleArray(objeto.primitiveList.length * 3,
                                 TriangleArray.COORDINATES | TriangleArray.NORMALS | TriangleArray.TEXTURE_COORDINATE_2);
                     } else {
@@ -292,7 +293,7 @@ public class Java3DUtil {
                     }
                     break;
                 default:
-                    logger.info("Objeto " + objeto.nombre + ". La geometría no es de triangulos ni cuadrados. Tiene "
+                    logger.info("Objeto " + objeto.name + ". La geometría no es de triangulos ni cuadrados. Tiene "
                             + objeto.primitiveList[0].vertexIndexList.length + " lados");
                     return null;// no construimos nada
             }
@@ -307,7 +308,7 @@ public class Java3DUtil {
                             listaGeometria.setNormal(contVertices, listaNormales.get(indiceVertice));
                             contVertices++;
                         } else {
-                            System.out.println("Objeto " + objeto.nombre
+                            System.out.println("Objeto " + objeto.name
                                     + " se intenta agrera un vertice de poligono indice=" + contVertices);
                             System.out.println("solo hay " + listaGeometria.getVertexCount());
                         }
@@ -352,17 +353,20 @@ public class Java3DUtil {
             apariencia.setCapability(Appearance.ALLOW_TRANSPARENCY_ATTRIBUTES_WRITE);
 
             Color3f color = new Color3f(
-                    ((QMaterialBas) objeto.primitiveList[0].material).getColorBase().r,
-                    ((QMaterialBas) objeto.primitiveList[0].material).getColorBase().g,
-                    ((QMaterialBas) objeto.primitiveList[0].material).getColorBase().b);
+                    ((net.qoopo.engine.core.material.basico.Material) objeto.primitiveList[0].material).getColor().r,
+                    ((net.qoopo.engine.core.material.basico.Material) objeto.primitiveList[0].material).getColor().g,
+                    ((net.qoopo.engine.core.material.basico.Material) objeto.primitiveList[0].material).getColor().b);
 
             Color3f colorEmisivo = new Color3f(
-                    ((QMaterialBas) objeto.primitiveList[0].material).getColorBase().r
-                            * ((QMaterialBas) objeto.primitiveList[0].material).getFactorEmision(),
-                    ((QMaterialBas) objeto.primitiveList[0].material).getColorBase().g
-                            * ((QMaterialBas) objeto.primitiveList[0].material).getFactorEmision(),
-                    ((QMaterialBas) objeto.primitiveList[0].material).getColorBase().b
-                            * ((QMaterialBas) objeto.primitiveList[0].material).getFactorEmision());
+                    ((net.qoopo.engine.core.material.basico.Material) objeto.primitiveList[0].material).getColor().r
+                            * ((net.qoopo.engine.core.material.basico.Material) objeto.primitiveList[0].material)
+                                    .getFactorEmision(),
+                    ((net.qoopo.engine.core.material.basico.Material) objeto.primitiveList[0].material).getColor().g
+                            * ((net.qoopo.engine.core.material.basico.Material) objeto.primitiveList[0].material)
+                                    .getFactorEmision(),
+                    ((net.qoopo.engine.core.material.basico.Material) objeto.primitiveList[0].material).getColor().b
+                            * ((net.qoopo.engine.core.material.basico.Material) objeto.primitiveList[0].material)
+                                    .getFactorEmision());
 
             // Color3f colorEspecular = new Color3f(
             // ((QMaterialBas) objeto.primitivas[0].material).getColorEspecular().r,
@@ -374,19 +378,23 @@ public class Java3DUtil {
                     1.0f);
 
             // hasta ahora se asume que toda la geometria tiene una sola textura
-            if (((QMaterialBas) objeto.primitiveList[0].material).getMapaColor() != null) {
+            if (((net.qoopo.engine.core.material.basico.Material) objeto.primitiveList[0].material)
+                    .getMapaColor() != null) {
                 // si hay textura
                 // TextureLoader loader = new TextureLoader("img/text1.jpg", "INTENSITY", new
                 // Container());
                 try {
                     Texture texture;
-                    if (((QMaterialBas) objeto.primitiveList[0].material).getMapaColor().objetoJava3D == null) {
+                    if (((net.qoopo.engine.core.material.basico.Material) objeto.primitiveList[0].material)
+                            .getMapaColor().objetoJava3D == null) {
                         TextureLoader loader = new TextureLoader(
-                                ((QMaterialBas) objeto.primitiveList[0].material).getMapaColor().getTexture());
+                                ((net.qoopo.engine.core.material.basico.Material) objeto.primitiveList[0].material)
+                                        .getMapaColor().getImagen());
                         texture = loader.getTexture();
-                        ((QMaterialBas) objeto.primitiveList[0].material).getMapaColor().objetoJava3D = texture;
+                        ((net.qoopo.engine.core.material.basico.Material) objeto.primitiveList[0].material)
+                                .getMapaColor().objetoJava3D = texture;
                     } else {
-                        texture = (Texture) ((QMaterialBas) objeto.primitiveList[0].material)
+                        texture = (Texture) ((net.qoopo.engine.core.material.basico.Material) objeto.primitiveList[0].material)
                                 .getMapaColor().objetoJava3D;
                     }
                     // estos atributos permite que la textura sea iluminada
@@ -411,14 +419,16 @@ public class Java3DUtil {
                     texture.setBoundaryModeT(Texture.WRAP);
                     // texture.setBoundaryColor(new Color4f(0.0f, 1.0f, 0.0f, 0.0f));
                     Material material = new Material(color, colorEmisivo, color, colorEspecular,
-                            ((QMaterialBas) objeto.primitiveList[0].material).getSpecularExponent());
+                            ((net.qoopo.engine.core.material.basico.Material) objeto.primitiveList[0].material)
+                                    .getSpecularExponent());
 
                     apariencia.setTextureAttributes(texAttr);
                     apariencia.setMaterial(material);
                     apariencia.setTexture(texture);
                 }
                 Material material = new Material(color, colorEmisivo, color, colorEspecular,
-                        ((QMaterialBas) objeto.primitiveList[0].material).getSpecularExponent());
+                        ((net.qoopo.engine.core.material.basico.Material) objeto.primitiveList[0].material)
+                                .getSpecularExponent());
                 apariencia.setMaterial(material);
             } else {
                 // si no hay textura
@@ -429,7 +439,8 @@ public class Java3DUtil {
                 texture.setBoundaryModeT(Texture.WRAP);
                 // texture.setBoundaryColor(new Color4f(0.0f, 1.0f, 0.0f, 0.0f));
                 Material material = new Material(color, colorEmisivo, color, colorEspecular,
-                        ((QMaterialBas) objeto.primitiveList[0].material).getSpecularExponent());
+                        ((net.qoopo.engine.core.material.basico.Material) objeto.primitiveList[0].material)
+                                .getSpecularExponent());
 
                 apariencia.setTextureAttributes(texAttr);
                 apariencia.setMaterial(material);
@@ -439,7 +450,9 @@ public class Java3DUtil {
             // transparencia
             TransparencyAttributes t_attr = new TransparencyAttributes();
             t_attr.setTransparencyMode(TransparencyAttributes.BLENDED);
-            t_attr.setTransparency(1.0f - ((QMaterialBas) objeto.primitiveList[0].material).getTransAlfa());
+            t_attr.setTransparency(
+                    1.0f - ((net.qoopo.engine.core.material.basico.Material) objeto.primitiveList[0].material)
+                            .getTransAlfa());
 
             apariencia.setTransparencyAttributes(t_attr);
 

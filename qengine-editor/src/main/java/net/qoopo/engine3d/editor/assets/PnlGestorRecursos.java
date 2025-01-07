@@ -20,8 +20,8 @@ import net.qoopo.engine.core.assets.AssetManager;
 import net.qoopo.engine.core.entity.Entity;
 import net.qoopo.engine.core.entity.component.mesh.Mesh;
 import net.qoopo.engine.core.lwjgl.audio.component.AudioBufferAL;
-import net.qoopo.engine.core.material.basico.QMaterialBas;
-import net.qoopo.engine.core.texture.QTextura;
+import net.qoopo.engine.core.material.basico.Material;
+import net.qoopo.engine.core.texture.Texture;
 import net.qoopo.engine3d.editor.util.QArbolWrapper;
 import net.qoopo.engine3d.editor.util.Util;
 
@@ -61,10 +61,10 @@ public class PnlGestorRecursos extends javax.swing.JPanel {
             if (objeto instanceof Entity) {
                 ent.add(new DefaultMutableTreeNode(new QArbolWrapper(((Entity) objeto).getName(), objeto)));
             } else if (objeto instanceof Mesh) {
-                geom.add(new DefaultMutableTreeNode(new QArbolWrapper(((Mesh) objeto).nombre, objeto)));
-            } else if (objeto instanceof QMaterialBas) {
-                mats.add(new DefaultMutableTreeNode(new QArbolWrapper(((QMaterialBas) objeto).getNombre(), objeto)));
-            } else if (objeto instanceof QTextura) {
+                geom.add(new DefaultMutableTreeNode(new QArbolWrapper(((Mesh) objeto).name, objeto)));
+            } else if (objeto instanceof Material) {
+                mats.add(new DefaultMutableTreeNode(new QArbolWrapper(((Material) objeto).getNombre(), objeto)));
+            } else if (objeto instanceof Texture) {
                 text.add(new DefaultMutableTreeNode(new QArbolWrapper("Textura", objeto)));
             } else if (objeto instanceof AudioBufferAL) {
                 audi.add(new DefaultMutableTreeNode(new QArbolWrapper("Buffer", objeto)));
@@ -122,11 +122,11 @@ public class PnlGestorRecursos extends javax.swing.JPanel {
 //                        icon = Util.cargarIcono16("/cube.png");
                     } else if (wraper.getObjeto() instanceof Mesh) {
                         icon = Util.cargarIcono16("/teapot_16.png");
-                    } else if (wraper.getObjeto() instanceof QMaterialBas) {
+                    } else if (wraper.getObjeto() instanceof Material) {
                         icon = Util.cargarIcono16("/text_quad_16.png");
                     } else if (wraper.getObjeto() instanceof Entity) {
                         icon = Util.cargarIcono16("/cube.png");
-                    } else if (wraper.getObjeto() instanceof QTextura) {
+                    } else if (wraper.getObjeto() instanceof Texture) {
                         icon = Util.cargarIcono16("/text_16.png");
                     } else if (wraper.getObjeto() instanceof AudioBufferAL) {
                         icon = Util.cargarIcono16("/sound_on_16.png");

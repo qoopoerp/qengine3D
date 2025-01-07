@@ -14,7 +14,7 @@ import net.qoopo.engine.core.entity.component.physics.collision.detector.shape.p
 import net.qoopo.engine.core.entity.component.physics.collision.listeners.CollisionListener;
 import net.qoopo.engine.core.entity.component.physics.dinamica.QObjetoDinamico;
 import net.qoopo.engine.core.entity.component.physics.dinamica.QObjetoRigido;
-import net.qoopo.engine.core.material.basico.QMaterialBas;
+import net.qoopo.engine.core.material.basico.Material;
 import net.qoopo.engine.core.math.QColor;
 import net.qoopo.engine.core.math.QVector3;
 import net.qoopo.engine.core.renderer.RenderEngine;
@@ -30,16 +30,16 @@ import net.qoopo.engine3d.test.generaEjemplos.MakeTestScene;
  */
 public class FisicaDisparar extends MakeTestScene {
 
-    private static QMaterialBas materialBalas;
-    private static QMaterialBas materialBombas;
+    private static Material materialBalas;
+    private static Material materialBombas;
 
     @Override
     public void make(Scene mundo) {
         this.scene = mundo;
-        materialBalas = new QMaterialBas("bala");
-        materialBalas.setColorBase(new QColor(Color.BLUE));
-        materialBombas = new QMaterialBas("bomba");
-        materialBombas.setColorBase(QColor.YELLOW);
+        materialBalas = new Material("bala");
+        materialBalas.setColor(new QColor(Color.BLUE));
+        materialBombas = new Material("bomba");
+        materialBombas.setColor(QColor.YELLOW);
     }
 
     @Override
@@ -107,11 +107,11 @@ public class FisicaDisparar extends MakeTestScene {
 
                         // obtengo la posicion de las 2 entidades y luego agrego un impulso con un
                         // vector igual a la diferencia del 2 con el primero
-                        QVector3 posA = ob1.getMatrizTransformacion(QGlobal.tiempo).toTranslationVector();
-                        QVector3 posB = ob2.getMatrizTransformacion(QGlobal.tiempo).toTranslationVector();
+                        QVector3 posA = ob1.getMatrizTransformacion(QGlobal.time).toTranslationVector();
+                        QVector3 posB = ob2.getMatrizTransformacion(QGlobal.time).toTranslationVector();
                         QVector3 direccion = posB.add(posA.multiply(-1));
                         direccion.normalize();
-                        QObjetoRigido rig = ComponentUtil.getFisicoRigido(ob2);
+                        QObjetoRigido rig = (QObjetoRigido) ComponentUtil.getComponent(ob2, QObjetoRigido.class);
                         rig.agregarFuerzas(direccion.multiply(30));
 
                         // busca todas las entidades cercanas para aplicarle la fuerza de colision

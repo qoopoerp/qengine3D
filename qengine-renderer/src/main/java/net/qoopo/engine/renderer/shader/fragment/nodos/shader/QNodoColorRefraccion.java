@@ -14,8 +14,8 @@ import net.qoopo.engine.core.material.node.core.perifericos.QPerProcesadorTextur
 import net.qoopo.engine.core.math.QColor;
 import net.qoopo.engine.core.math.QMath;
 import net.qoopo.engine.core.renderer.RenderEngine;
-import net.qoopo.engine.core.texture.QTexturaUtil;
-import net.qoopo.engine.core.texture.procesador.QProcesadorTextura;
+import net.qoopo.engine.core.texture.Texture;
+import net.qoopo.engine.core.texture.TextureUtil;
 import net.qoopo.engine.core.util.QGlobal;
 import net.qoopo.engine.core.util.TempVars;
 import net.qoopo.engine.renderer.util.TransformationVectorUtil;
@@ -47,7 +47,7 @@ public class QNodoColorRefraccion extends ShaderNode {
         salidas.add(saColor);
     }
 
-    public QNodoColorRefraccion(QProcesadorTextura textura, float indiceRefraccion) {
+    public QNodoColorRefraccion(Texture textura, float indiceRefraccion) {
         enTextura = new QPerProcesadorTextura(textura);
         enNormal = new QPerColor(QColor.BLACK);
         saColor = new QPerColor(QColor.WHITE);
@@ -107,10 +107,11 @@ public class QNodoColorRefraccion extends ShaderNode {
                 // volvemos a calcularla en las coordenadas del mundo
                 // tm.vector3f1.set(currentPixel.ubicacion.getVector3());
                 tm.vector3f1.set(TransformationVectorUtil.transformarVector(
-                        TransformationVectorUtil.transformarVectorInversa(pixel.ubicacion, pixel.entity, render.getCamara()),
+                        TransformationVectorUtil.transformarVectorInversa(pixel.ubicacion, pixel.entity,
+                                render.getCamara()),
                         pixel.entity).getVector3());
                 // ahora restamos la posicion de la camara a la posicion del mundo
-                tm.vector3f1.subtract(render.getCamara().getMatrizTransformacion(QGlobal.tiempo).toTranslationVector());
+                tm.vector3f1.subtract(render.getCamara().getMatrizTransformacion(QGlobal.time).toTranslationVector());
                 tm.vector3f1.normalize();
 
                 // ***********************************************************
@@ -120,7 +121,7 @@ public class QNodoColorRefraccion extends ShaderNode {
                                                                                                        // aire sobre
                                                                                                        // indice del
                                                                                                        // material
-                color = QTexturaUtil.getColorMapaEntorno(tm.vector3f4, enTextura.getProcesadorTextura(),
+                color = TextureUtil.getColorMapaEntorno(tm.vector3f4, enTextura.getProcesadorTextura(),
                         tipoMapaEntorno);
             } catch (Exception e) {
                 // System.out.println("error reflexion " + e.getMessage());

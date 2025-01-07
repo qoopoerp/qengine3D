@@ -15,10 +15,10 @@ import net.qoopo.engine.core.entity.component.physics.collision.detector.shape.m
 import net.qoopo.engine.core.entity.component.physics.dinamica.QObjetoDinamico;
 import net.qoopo.engine.core.entity.component.physics.dinamica.QObjetoRigido;
 import net.qoopo.engine.core.entity.component.terrain.Terrain;
-import net.qoopo.engine.core.material.basico.QMaterialBas;
+import net.qoopo.engine.core.material.basico.Material;
 import net.qoopo.engine.core.scene.QEscenario;
 import net.qoopo.engine.core.scene.Scene;
-import net.qoopo.engine.core.texture.QTextura;
+import net.qoopo.engine.core.texture.Texture;
 import net.qoopo.engine.core.util.ComponentUtil;
 import net.qoopo.engine.terrain.HeightMapTerrain;
 import net.qoopo.engine3d.test.juegotest.monstruos.QDoomMonster;
@@ -134,9 +134,9 @@ public class DoomTest extends QEscenario {
 
         Entity entidadTerreno = new Entity("Terreno");
 
-        QTextura terrainTexture = AssetManager.get().loadTexture("terreno",
+        Texture terrainTexture = AssetManager.get().loadTexture("terreno",
                 "assets/textures/terrain/rocky_terrain/rocky_terrain_02_diff_4k.jpg");
-        QMaterialBas materialTerrain = new QMaterialBas(terrainTexture);
+        Material materialTerrain = new Material(terrainTexture);
         materialTerrain.setMapaNormal(AssetManager.get().loadTexture("terreno_normal",
                 "assets/textures/terrain/rocky_terrain/rocky_terrain_02_nor_gl_4k.png"));
         materialTerrain.setMapaEspecular(AssetManager.get().loadTexture("terreno_normal",

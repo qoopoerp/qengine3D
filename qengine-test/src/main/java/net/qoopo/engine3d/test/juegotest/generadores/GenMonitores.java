@@ -5,16 +5,11 @@
  */
 package net.qoopo.engine3d.test.juegotest.generadores;
 
-import java.io.File;
-
-import javax.imageio.ImageIO;
-
 import net.qoopo.engine.core.entity.Entity;
 import net.qoopo.engine.core.entity.component.mesh.primitive.shape.Plane;
-import net.qoopo.engine.core.material.basico.QMaterialBas;
+import net.qoopo.engine.core.material.basico.Material;
 import net.qoopo.engine.core.math.QColor;
-import net.qoopo.engine.core.texture.QTextura;
-import net.qoopo.engine.core.texture.procesador.QProcesadorSimple;
+import net.qoopo.engine.core.texture.Texture;
 import net.qoopo.engine.core.texture.util.MaterialUtil;
 
 /**
@@ -23,12 +18,12 @@ import net.qoopo.engine.core.texture.util.MaterialUtil;
  */
 public class GenMonitores {
 
-    public static Entity crearMonitorTipo1(QTextura textura) {
+    public static Entity crearMonitorTipo1(Texture textura) {
         Entity monitor = new Entity("Monitor");
-        QTextura textMonitor = null;
-        QMaterialBas materialCarcasa = new QMaterialBas();
-        // materialCarcasa.setColorBase(new QColor(1, 0.5f, 0.5f, 0.5f));
-        materialCarcasa.setColorBase(QColor.YELLOW);
+        Texture textMonitor = null;
+        Material materialCarcasa = new Material();
+        // materialCarcasa.setColor(new QColor(1, 0.5f, 0.5f, 0.5f));
+        materialCarcasa.setColor(QColor.YELLOW);
         // try {
         // textMonitor = new QTextura(
         // ImageIO.read(new
@@ -41,10 +36,10 @@ public class GenMonitores {
                 MaterialUtil.applyMaterial(new Plane(3 * 600 / 800 + 0.2f, 3 + 0.1f), materialCarcasa));
 
         Entity pantalla = new Entity("pantalla");
-        QMaterialBas pantallMat = new QMaterialBas();
-        pantallMat.setMapaColor(new QProcesadorSimple(textura));
-        // pantallMat.setColorBase(new QColor(1, 0.2f, 0.2f, 0.2f));
-        pantallMat.setColorBase(QColor.BROWN);
+        Material pantallMat = new Material();
+        pantallMat.setMapaColor(textura);
+        // pantallMat.setColor(new QColor(1, 0.2f, 0.2f, 0.2f));
+        pantallMat.setColor(QColor.BROWN);
         pantalla.addComponent(MaterialUtil.applyMaterial(new Plane(3 * 600 / 800, 3), pantallMat));
         pantalla.move(0, 0.02f, 0);
         monitor.addChild(pantalla);

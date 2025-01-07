@@ -1,6 +1,7 @@
 package net.qoopo.engine.core.lwjgl.asset;
 
 import static org.lwjgl.assimp.Assimp.AI_MATKEY_COLOR_DIFFUSE;
+import static org.lwjgl.assimp.Assimp.AI_MATKEY_COLOR_SPECULAR;
 import static org.lwjgl.assimp.Assimp.aiImportFile;
 import static org.lwjgl.assimp.Assimp.aiTextureType_NONE;
 
@@ -46,8 +47,8 @@ import net.qoopo.engine.core.assets.model.ModelLoader;
 import net.qoopo.engine.core.entity.Entity;
 import net.qoopo.engine.core.entity.component.EntityComponent;
 import net.qoopo.engine.core.entity.component.animation.AnimationComponent;
+import net.qoopo.engine.core.entity.component.animation.AnimationStorageComponent;
 import net.qoopo.engine.core.entity.component.animation.Bone;
-import net.qoopo.engine.core.entity.component.animation.QCompAlmacenAnimaciones;
 import net.qoopo.engine.core.entity.component.animation.Skeleton;
 import net.qoopo.engine.core.entity.component.ligth.QDirectionalLigth;
 import net.qoopo.engine.core.entity.component.ligth.QLigth;
@@ -61,16 +62,15 @@ import net.qoopo.engine.core.entity.component.physics.dinamica.QObjetoDinamico;
 import net.qoopo.engine.core.entity.component.physics.dinamica.QObjetoRigido;
 import net.qoopo.engine.core.entity.component.transform.QTransformacion;
 import net.qoopo.engine.core.material.AbstractMaterial;
-import net.qoopo.engine.core.material.basico.QMaterialBas;
+import net.qoopo.engine.core.material.basico.Material;
 import net.qoopo.engine.core.math.Cuaternion;
 import net.qoopo.engine.core.math.QColor;
 import net.qoopo.engine.core.math.QMatriz4;
 import net.qoopo.engine.core.math.QRotacion;
 import net.qoopo.engine.core.math.QVector3;
 import net.qoopo.engine.core.scene.Camera;
-import net.qoopo.engine.core.texture.QTextura;
+import net.qoopo.engine.core.texture.Texture;
 import net.qoopo.engine.core.texture.procesador.QProcesadorInvierte;
-import net.qoopo.engine.core.texture.procesador.QProcesadorSimple;
 import net.qoopo.engine.core.util.mesh.NormalUtil;
 
 /**
@@ -171,7 +171,7 @@ public class AssimpModelLoader implements ModelLoader {
             // indice = aiMaterials.get(i);
             indice = i;
             AIMaterial aiMaterial = AIMaterial.create(aiMaterials.get(i));
-            mapaMateriales.put(indice, procesarMaterial(aiMaterial, texturesDir));
+            mapaMateriales.put(indice, loadMaterial(aiMaterial, texturesDir));
         }
         PointerBuffer aiMeshes = aiScene.mMeshes();
         // PointerBuffer aiCameras = aiScene.mCameras();
@@ -313,7 +313,7 @@ public class AssimpModelLoader implements ModelLoader {
      * @param nodoRaiz
      * @return
      */
-    private Skeleton crearEsqueleto(List<AssimpBone> boneList, Node nodoRaiz) {
+    private Skeleton loadSkeleton(List<AssimpBone> boneList, Node nodoRaiz) {
         Skeleton esqueleto = new Skeleton();
         esqueleto.setHuesos(new ArrayList<>());
         // debemos ordenar la lista para agregar primero los nodos que tienen menos
@@ -412,7 +412,7 @@ public class AssimpModelLoader implements ModelLoader {
             for (int i = 0; i < numMallas; i++) {
                 AIMesh aiMesh = AIMesh.create(aiMeshes.get(aiMeshesLocal.get(i)));
                 // ****************** MALLA ********************************
-                Mesh malla = procesarMalla(aiMesh, mapaMateriales, boneList);
+                Mesh malla = loadMesh(aiMesh, mapaMateriales, boneList);
                 entity.addComponent(malla);
                 // ****************** OBJETOS DE COLISION ********************************
                 // agrega componentes fisicos para cada malla
@@ -426,7 +426,7 @@ public class AssimpModelLoader implements ModelLoader {
         // ****************** ESQUELETO ********************************
         if (!boneList.isEmpty()) {
             // System.out.println("Lista de huesos encontrados " + boneList.size());
-            esqueleto = crearEsqueleto(boneList, nodoRaiz);
+            esqueleto = loadSkeleton(boneList, nodoRaiz);
             entity.addComponent(esqueleto);
 
             // como ya tengo el esqueleto, recorro los vertices para apuntar los huesos de
@@ -446,7 +446,7 @@ public class AssimpModelLoader implements ModelLoader {
         }
         // if (esqueleto != null) {
         // ****************** ANIMACIONES ********************************
-        QCompAlmacenAnimaciones almacen = procesarAnimaciones(aiScene, esqueleto, entity);
+        AnimationStorageComponent almacen = loadAnimations(aiScene, esqueleto, entity);
         if (almacen != null) {
             entity.addComponent(almacen);
             // le setea la primera animacion para q se ejecute
@@ -524,9 +524,9 @@ public class AssimpModelLoader implements ModelLoader {
      * @param esqueleto
      * @return
      */
-    private QCompAlmacenAnimaciones procesarAnimaciones(AIScene aiScene, Skeleton esqueleto, Entity objeto) {
+    private AnimationStorageComponent loadAnimations(AIScene aiScene, Skeleton esqueleto, Entity objeto) {
 
-        QCompAlmacenAnimaciones almacen = new QCompAlmacenAnimaciones();
+        AnimationStorageComponent almacen = new AnimationStorageComponent();
         boolean satisfactorio = false;
 
         // agrega una animacion Pose con las transformaciones originales
@@ -556,9 +556,9 @@ public class AssimpModelLoader implements ModelLoader {
             int numChanels = aiAnimation.mNumChannels();
             PointerBuffer aiChannels = aiAnimation.mChannels();
 
-            AnimationComponent animacion = new AnimationComponent(duracion);
-            animacion.setNombre(nombreAnimacion);
-            animacion.setLoop(true);
+            AnimationComponent animation = new AnimationComponent(duracion);
+            animation.setNombre(nombreAnimacion);
+            animation.setLoop(true);
 
             // las animaciones vienen separadas por canales
             // cada canal maneja por separado un hueso
@@ -595,9 +595,9 @@ public class AssimpModelLoader implements ModelLoader {
                     }
                 }
                 frame.setMarcaTiempo(tiempo);// actualiza el tiempo que fue inicializado en 0.00f
-                animacion.addFrame(frame);
+                animation.addFrame(frame);
             }
-            almacen.agregarAnimacion(animacion.getNombre(), animacion);
+            almacen.add(animation.getNombre(), animation);
         }
         if (satisfactorio) {
             return almacen;
@@ -688,20 +688,20 @@ public class AssimpModelLoader implements ModelLoader {
      * @param boneList
      * @return
      */
-    private Mesh procesarMalla(AIMesh aiMesh, Map<Integer, AbstractMaterial> mapaMateriales,
+    private Mesh loadMesh(AIMesh aiMesh, Map<Integer, AbstractMaterial> mapaMateriales,
             List<AssimpBone> boneList) {
         System.out.println("  Procesando malla:" + aiMesh.mName().dataString());
         Mesh malla = new Mesh();
-        malla.nombre = aiMesh.mName().dataString();
+        malla.name = aiMesh.mName().dataString();
         AbstractMaterial material;
         int materialIdx = aiMesh.mMaterialIndex();
         if (mapaMateriales.containsKey(materialIdx)) {
             material = mapaMateriales.get(materialIdx);
         } else {
-            material = new QMaterialBas();
+            material = new Material();
         }
-        procesarVertices(aiMesh, malla);
-        procesarPoligonos(aiMesh, malla, material);
+        loadVertices(aiMesh, malla);
+        loadFaces(aiMesh, malla, material);
         procesarBones(aiMesh, malla, boneList);
         NormalUtil.computeNormals(malla);
         return malla;
@@ -800,7 +800,7 @@ public class AssimpModelLoader implements ModelLoader {
         return result;
     }
 
-    protected void procesarVertices(AIMesh aiMesh, Mesh malla) {
+    protected void loadVertices(AIMesh aiMesh, Mesh malla) {
         AIVector3D.Buffer aiVertices = aiMesh.mVertices();
         AIVector3D aiVertex = null;
         AIVector3D textCoord = null;
@@ -817,7 +817,7 @@ public class AssimpModelLoader implements ModelLoader {
         }
     }
 
-    protected void procesarPoligonos(AIMesh aiMesh, Mesh malla, AbstractMaterial material) {
+    protected void loadFaces(AIMesh aiMesh, Mesh malla, AbstractMaterial material) {
         int numFaces = aiMesh.mNumFaces();
         AIFace.Buffer aiFaces = aiMesh.mFaces();
         for (int i = 0; i < numFaces; i++) {
@@ -841,8 +841,8 @@ public class AssimpModelLoader implements ModelLoader {
      * @param texturesDir
      * @return
      */
-    protected QTextura cargaTextura(AIMaterial aiMaterial, int tipo, String texturesDir) {
-        QTextura textura = null;
+    protected Texture loadTexture(AIMaterial aiMaterial, int tipo, String texturesDir) {
+        Texture textura = null;
         AIString path = AIString.calloc();
         Assimp.aiGetMaterialTexture(aiMaterial, tipo, 0, path, (IntBuffer) null, null, null, null, null, null);
         String txtPath = path.dataString();
@@ -882,35 +882,35 @@ public class AssimpModelLoader implements ModelLoader {
      * @return
      * @throws Exception
      */
-    protected AbstractMaterial procesarMaterial(AIMaterial aiMaterial, String texturesDir) throws Exception {
+    protected AbstractMaterial loadMaterial(AIMaterial aiMaterial, String texturesDir) throws Exception {
         AIColor4D colour = AIColor4D.create();
 
-        QTextura texturaColor = null;
-        QTextura texturaNormal = null;
-        QTextura texturaEmisivo = null;
-        QTextura texturaTransparencia = null;
-        QTextura texturaEspecular = null;
-        QTextura texturaMetalica = null;
-        QTextura texturaRugosidad = null;
+        Texture texturaColor = null;
+        Texture texturaNormal = null;
+        Texture texturaEmisivo = null;
+        Texture texturaTransparencia = null;
+        Texture texturaEspecular = null;
+        Texture texturaMetalica = null;
+        Texture texturaRugosidad = null;
 
         // textura difusa
-        texturaColor = cargaTextura(aiMaterial, Assimp.aiTextureType_DIFFUSE, texturesDir);
+        texturaColor = loadTexture(aiMaterial, Assimp.aiTextureType_DIFFUSE, texturesDir);
         // textura normal
-        texturaNormal = cargaTextura(aiMaterial, Assimp.aiTextureType_NORMALS, texturesDir);
+        texturaNormal = loadTexture(aiMaterial, Assimp.aiTextureType_NORMALS, texturesDir);
         // textura emisiva/lightmap
-        texturaEmisivo = cargaTextura(aiMaterial, Assimp.aiTextureType_EMISSIVE, texturesDir);
+        texturaEmisivo = loadTexture(aiMaterial, Assimp.aiTextureType_EMISSIVE, texturesDir);
         if (texturaEmisivo == null) {
-            texturaEmisivo = cargaTextura(aiMaterial, Assimp.aiTextureType_LIGHTMAP, texturesDir);
+            texturaEmisivo = loadTexture(aiMaterial, Assimp.aiTextureType_LIGHTMAP, texturesDir);
         }
 
         // textura transparencia
-        texturaTransparencia = cargaTextura(aiMaterial, Assimp.aiTextureType_OPACITY, texturesDir);
+        texturaTransparencia = loadTexture(aiMaterial, Assimp.aiTextureType_OPACITY, texturesDir);
         // textura especular
-        texturaEspecular = cargaTextura(aiMaterial, Assimp.aiTextureType_SPECULAR, texturesDir);
+        texturaEspecular = loadTexture(aiMaterial, Assimp.aiTextureType_SPECULAR, texturesDir);
         // textura metalica
-        texturaMetalica = cargaTextura(aiMaterial, Assimp.aiTextureType_REFLECTION, texturesDir);
+        texturaMetalica = loadTexture(aiMaterial, Assimp.aiTextureType_REFLECTION, texturesDir);
         // textura de brillo (lo transofrma a rugosidad invirtiendolo)
-        texturaRugosidad = cargaTextura(aiMaterial, Assimp.aiTextureType_SHININESS, texturesDir);
+        texturaRugosidad = loadTexture(aiMaterial, Assimp.aiTextureType_SHININESS, texturesDir);
 
         int result = 0;
         // QColor ambient = QColor.WHITE;
@@ -926,15 +926,15 @@ public class AssimpModelLoader implements ModelLoader {
             diffuse = new QColor(colour.a(), colour.r(), colour.g(), colour.b());
         }
 
-        // QColor specular = QColor.WHITE;
-        // result = Assimp.aiGetMaterialColor(aiMaterial, AI_MATKEY_COLOR_SPECULAR,
-        // aiTextureType_NONE, 0, colour);
-        // if (result == 0) {
-        // specular = new QColor(colour.a(), colour.r(), colour.g(), colour.b());
-        // }
-        QMaterialBas material = new QMaterialBas();
-        material.setColorBase(diffuse);
-        // material.setColorEspecular(specular);
+        QColor specular = QColor.WHITE;
+        result = Assimp.aiGetMaterialColor(aiMaterial, AI_MATKEY_COLOR_SPECULAR, aiTextureType_NONE, 0, colour);
+        if (result == 0) {
+            specular = new QColor(colour.a(), colour.r(), colour.g(), colour.b());
+        }
+        
+        Material material = new Material();
+        material.setColor(diffuse);
+        material.setColorEspecular(specular);
 
         if (texturaColor != null) {
             material.setMapaColor(texturaColor);

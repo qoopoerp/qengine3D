@@ -21,9 +21,11 @@ public class InflateModifier implements ModifierComponent {
 
     private Entity entity;
 
-    private Mesh cachedMesh = null;
+    private Long timeMark=-1L;
 
     private float radio = 1.f;
+
+    private boolean changed;
 
     public InflateModifier(float radio) {
         this.radio = radio;
@@ -36,12 +38,16 @@ public class InflateModifier implements ModifierComponent {
 
     @Override
     public void apply(Mesh mesh) {
-        if (mesh != null
-                && (cachedMesh == null || (cachedMesh != null && cachedMesh.getTimeMark() != mesh.getTimeMark()))) {
+        if (mesh != null && timeMark != mesh.getTimeMark()) {
             inflate(radio, mesh);
             mesh.computeNormals();
-            cachedMesh = mesh;
+            timeMark = mesh.getTimeMark();
+            changed=false;
         }
+    }
+
+    public void changed() {
+        this.changed = true;
     }
 
     /**

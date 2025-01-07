@@ -15,7 +15,7 @@ import net.qoopo.engine.core.entity.component.mesh.Mesh;
 import net.qoopo.engine.core.entity.component.mesh.primitive.Primitive;
 import net.qoopo.engine.core.entity.component.mesh.primitive.Shape;
 import net.qoopo.engine.core.entity.component.mesh.primitive.Vertex;
-import net.qoopo.engine.core.material.basico.QMaterialBas;
+import net.qoopo.engine.core.material.basico.Material;
 import net.qoopo.engine.core.math.QVector2;
 import net.qoopo.engine.core.math.QVector3;
 import net.qoopo.engine.core.util.ComponentUtil;
@@ -27,8 +27,8 @@ import net.qoopo.engine.core.util.ComponentUtil;
 public class Suzane extends Shape {
 
     public Suzane() {
-        material = new QMaterialBas("Suzane");
-        nombre = "Suzane";
+        material = new Material("Suzane");
+        name = "Suzane";
         build();
     }
 

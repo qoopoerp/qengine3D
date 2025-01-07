@@ -21,13 +21,13 @@ public class PnlToro extends javax.swing.JPanel {
     public PnlToro(Torus toro) {
         initComponents();
         this.toro = toro;
-        txtRadio1.setText(String.valueOf(toro.getRadio1()));
-        txtRadio2.setText(String.valueOf(toro.getRadio2()));
+        txtRadio1.setText(String.valueOf(toro.getMajorRadius()));
+        txtRadio2.setText(String.valueOf(toro.getMinorRadius()));
     }
 
     private void aplicarCambios() {
-        toro.setRadio1(Float.parseFloat(txtRadio1.getText()));
-        toro.setRadio2(Float.parseFloat(txtRadio2.getText()));
+        toro.setMajorRadius(Float.parseFloat(txtRadio1.getText()));
+        toro.setMinorRadius(Float.parseFloat(txtRadio2.getText()));
         toro.build();
     }
 

@@ -16,10 +16,10 @@ import net.qoopo.engine.core.entity.component.particles.Particle;
 import net.qoopo.engine.core.entity.component.particles.ParticleEmissor;
 import net.qoopo.engine.core.entity.component.physics.collision.detector.shape.primitivas.AABB;
 import net.qoopo.engine.core.material.AbstractMaterial;
-import net.qoopo.engine.core.material.basico.QMaterialBas;
+import net.qoopo.engine.core.material.basico.Material;
 import net.qoopo.engine.core.math.QColor;
 import net.qoopo.engine.core.math.QVector3;
-import net.qoopo.engine.core.texture.QTextura;
+import net.qoopo.engine.core.texture.Texture;
 import net.qoopo.engine.core.texture.procesador.QProcesadorAtlasSecuencial;
 import net.qoopo.engine.core.texture.util.MaterialUtil;
 import net.qoopo.engine.core.util.QGlobal;
@@ -32,7 +32,7 @@ public class QEmisorHumo extends ParticleEmissor {
 
 //    private QMaterial material = null;
     int maximoLuces = 3;
-    private QTextura textura;
+    private Texture textura;
     float intencidadLuz = 0.12f;
     int actualLuz = 0;
     private Mesh geometria = new QPlanoBillboard(0.25f, 0.25f);
@@ -51,10 +51,10 @@ public class QEmisorHumo extends ParticleEmissor {
     }
 
     private AbstractMaterial crearMaterial() {
-        QMaterialBas material = null;
+        Material material = null;
         try {
 
-            material = new QMaterialBas();
+            material = new Material();
             QProcesadorAtlasSecuencial proc = new QProcesadorAtlasSecuencial(textura, 4, 4, 100);
             material.setMapaColor(proc);
             material.setColorTransparente(QColor.BLACK);
@@ -162,7 +162,7 @@ public class QEmisorHumo extends ParticleEmissor {
             //modifico transparencia
             for (EntityComponent componente : particula.objeto.getComponents()) {
                 if (componente instanceof Mesh) {
-                    ((QMaterialBas) ((Mesh) componente).primitiveList[0].material).setTransAlfa(d - 0.5f);//para que nunca sea 100 visible, se agrega mas transparencia al ser humo
+                    ((Material) ((Mesh) componente).primitiveList[0].material).setTransAlfa(d - 0.5f);//para que nunca sea 100 visible, se agrega mas transparencia al ser humo
                 }
             }
         }

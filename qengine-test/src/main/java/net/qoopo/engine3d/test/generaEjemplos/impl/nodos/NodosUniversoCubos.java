@@ -17,9 +17,7 @@ import net.qoopo.engine.core.material.node.core.QNodoEnlace;
 import net.qoopo.engine.core.material.node.core.output.MaterialOutputNode;
 import net.qoopo.engine.core.renderer.RenderEngine;
 import net.qoopo.engine.core.scene.Scene;
-import net.qoopo.engine.core.texture.procesador.QProcesadorSimple;
 import net.qoopo.engine.core.texture.util.MaterialUtil;
-import net.qoopo.engine.core.util.QGlobal;
 import net.qoopo.engine.renderer.shader.fragment.nodos.shader.QNodoColorIluminacion;
 import net.qoopo.engine.renderer.shader.fragment.nodos.shader.QNodoColorTextura;
 import net.qoopo.engine3d.test.generaEjemplos.MakeTestScene;
@@ -42,8 +40,8 @@ public class NodosUniversoCubos extends MakeTestScene {
             // int colorTransparencia = -1;
             material = new MaterialNode();
 
-            QNodoColorTextura nodoTextura = new QNodoColorTextura(new QProcesadorSimple(
-                    AssetManager.get().loadTexture("difusa", new File("assets/textures/Skybox_example.png"))));
+            QNodoColorTextura nodoTextura = new QNodoColorTextura(
+                    AssetManager.get().loadTexture("difusa", new File("assets/textures/Skybox_example.png")));
             QNodoColorIluminacion nodoDifuso = new QNodoColorIluminacion();
             // al instanciar el enlace, este se agrega a los perifericos
             QNodoEnlace enlace = new QNodoEnlace(nodoTextura.getSaColor(), nodoDifuso.getEnColor());

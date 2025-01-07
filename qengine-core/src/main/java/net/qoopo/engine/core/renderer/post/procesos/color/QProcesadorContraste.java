@@ -7,7 +7,7 @@ package net.qoopo.engine.core.renderer.post.procesos.color;
 
 import net.qoopo.engine.core.math.QColor;
 import net.qoopo.engine.core.renderer.post.procesos.QPostProceso;
-import net.qoopo.engine.core.texture.QTextura;
+import net.qoopo.engine.core.texture.Texture;
 
 /**
  * Realiza una modificación del color final de la imagen realzando el contraste
@@ -20,14 +20,14 @@ public class QProcesadorContraste extends QPostProceso {
 
     public QProcesadorContraste(int ancho, int alto, float factor) {
         this.factor = factor;
-        bufferSalida = new QTextura(ancho, alto);
+        bufferSalida = new Texture(ancho, alto);
     }
 
     @Override
-    public void procesar(QTextura... buffer) {
+    public void procesar(Texture... buffer) {
         QColor color;
         try {
-            for (QTextura fBuffer : buffer) {
+            for (Texture fBuffer : buffer) {
                 for (int x = 0; x < fBuffer.getAncho(); x++) {
                     for (int y = 0; y < fBuffer.getAlto(); y++) {
                         color = fBuffer.getColor(x, y);

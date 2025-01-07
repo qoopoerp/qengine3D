@@ -11,11 +11,11 @@ import net.qoopo.engine.core.assets.AssetManager;
 import net.qoopo.engine.core.entity.Entity;
 import net.qoopo.engine.core.entity.component.cubemap.CubeMap;
 import net.qoopo.engine.core.entity.component.mesh.primitive.shape.Sphere;
-import net.qoopo.engine.core.material.basico.QMaterialBas;
+import net.qoopo.engine.core.material.basico.Material;
 import net.qoopo.engine.core.math.QColor;
 import net.qoopo.engine.core.renderer.RenderEngine;
 import net.qoopo.engine.core.scene.Scene;
-import net.qoopo.engine.core.texture.QTextura;
+import net.qoopo.engine.core.texture.Texture;
 import net.qoopo.engine.core.texture.util.MaterialUtil;
 import net.qoopo.engine.core.util.QGlobal;
 import net.qoopo.engine3d.test.generaEjemplos.MakeTestScene;
@@ -34,13 +34,13 @@ public class EjemploPBRTextura extends MakeTestScene {
         this.scene = escena;
 
         // ------------------------------------
-        QTextura albedo = AssetManager.get().loadTexture("difusa",
+        Texture albedo = AssetManager.get().loadTexture("difusa",
                 new File("assets/textures/pbr/metal/used-stainless-steel/albedo.png"));
-        QTextura normal = AssetManager.get().loadTexture("normal",
+        Texture normal = AssetManager.get().loadTexture("normal",
                 new File("assets/textures/pbr/metal/used-stainless-steel/normal.png"));
-        QTextura rugoso = AssetManager.get().loadTexture("rugoso",
+        Texture rugoso = AssetManager.get().loadTexture("rugoso",
                 new File("assets/textures/pbr/metal/used-stainless-steel/roughness.png"));
-        QTextura metalico = AssetManager.get().loadTexture("metalico",
+        Texture metalico = AssetManager.get().loadTexture("metalico",
                 new File("assets/textures/pbr/metal/used-stainless-steel/metallic.png"));
 
         int nrRows = 7;
@@ -56,13 +56,13 @@ public class EjemploPBRTextura extends MakeTestScene {
 
         for (int row = 0; row < nrRows; ++row) {
             for (int col = 0; col < nrColumns; ++col) {
-                QMaterialBas material = new QMaterialBas("pbr");
-                material.setColorBase(QColor.RED);
+                Material material = new Material("pbr");
+                material.setColor(QColor.RED);
                 material.setMapaColor(albedo);
                 material.setMapaNormal(normal);
                 material.setMapaRugosidad(rugoso);
                 material.setMapaMetalico(metalico);
-                material.setMapaEntorno(cubeMap.getProcEntorno());
+                material.setMapaEntorno(cubeMap.getTexturaEntorno());
                 material.setMapaIrradiacion(cubeMap.getProcIrradiacion());
 
                 material.setReflexion(true); // usada en el renderizador estandard

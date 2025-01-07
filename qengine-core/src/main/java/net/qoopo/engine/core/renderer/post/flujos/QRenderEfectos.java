@@ -5,7 +5,7 @@
  */
 package net.qoopo.engine.core.renderer.post.flujos;
 
-import net.qoopo.engine.core.texture.QTextura;
+import net.qoopo.engine.core.texture.Texture;
 
 /**
  *
@@ -13,5 +13,5 @@ import net.qoopo.engine.core.texture.QTextura;
  */
 public abstract class QRenderEfectos {
 
-    public abstract QTextura ejecutar(QTextura buffer);
+    public abstract Texture ejecutar(Texture buffer);
 }

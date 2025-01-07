@@ -29,7 +29,7 @@ import net.qoopo.engine.core.assets.AssetManager;
 import net.qoopo.engine.core.entity.Entity;
 import net.qoopo.engine.core.entity.component.EntityComponent;
 import net.qoopo.engine.core.entity.component.animation.AnimationComponent;
-import net.qoopo.engine.core.entity.component.animation.QCompAlmacenAnimaciones;
+import net.qoopo.engine.core.entity.component.animation.AnimationStorageComponent;
 import net.qoopo.engine.core.entity.component.animation.Skeleton;
 import net.qoopo.engine.core.entity.component.cubemap.CubeMap;
 import net.qoopo.engine.core.entity.component.ligth.QDirectionalLigth;
@@ -53,10 +53,11 @@ import net.qoopo.engine.core.entity.component.mesh.primitive.shape.Sphere;
 import net.qoopo.engine.core.entity.component.mesh.primitive.shape.SphereBox;
 import net.qoopo.engine.core.entity.component.mesh.primitive.shape.Torus;
 import net.qoopo.engine.core.entity.component.modifier.ModifierComponent;
+import net.qoopo.engine.core.entity.component.modifier.deform.RotationModifier;
 import net.qoopo.engine.core.entity.component.modifier.generate.InflateModifier;
 import net.qoopo.engine.core.entity.component.modifier.generate.SubdivisionModifier;
 import net.qoopo.engine.core.entity.component.movement.JumpComponent;
-import net.qoopo.engine.core.entity.component.movement.RotationComponent;
+import net.qoopo.engine.core.entity.component.movement.RotationEntityComponent;
 import net.qoopo.engine.core.entity.component.particles.ParticleEmissor;
 import net.qoopo.engine.core.entity.component.physics.collision.QComponenteColision;
 import net.qoopo.engine.core.entity.component.physics.collision.detector.CollisionShape;
@@ -86,7 +87,7 @@ import net.qoopo.engine.core.entity.component.water.WaterDuDv;
 import net.qoopo.engine.core.lwjgl.audio.component.SoundEmissorAL;
 import net.qoopo.engine.core.lwjgl.audio.component.SoundListenerAL;
 import net.qoopo.engine.core.material.AbstractMaterial;
-import net.qoopo.engine.core.material.basico.QMaterialBas;
+import net.qoopo.engine.core.material.basico.Material;
 import net.qoopo.engine.core.material.node.MaterialNode;
 import net.qoopo.engine.core.math.QColor;
 import net.qoopo.engine.core.math.QVector3;
@@ -95,7 +96,7 @@ import net.qoopo.engine.core.renderer.superficie.QJPanel;
 import net.qoopo.engine.core.renderer.superficie.Superficie;
 import net.qoopo.engine.core.scene.Camera;
 import net.qoopo.engine.core.scene.Scene;
-import net.qoopo.engine.core.texture.QTextura;
+import net.qoopo.engine.core.texture.Texture;
 import net.qoopo.engine.core.texture.util.MaterialUtil;
 import net.qoopo.engine.core.util.ComponentUtil;
 import net.qoopo.engine.core.util.QGlobal;
@@ -143,7 +144,10 @@ import net.qoopo.engine3d.editor.entity.componentes.geometria.PnlPrisma;
 import net.qoopo.engine3d.editor.entity.componentes.geometria.PnlToro;
 import net.qoopo.engine3d.editor.entity.componentes.luces.PnlLuz;
 import net.qoopo.engine3d.editor.entity.componentes.modifiers.PnlInflate;
+import net.qoopo.engine3d.editor.entity.componentes.modifiers.PnlRotationModifier;
 import net.qoopo.engine3d.editor.entity.componentes.modifiers.PnlSubdivision;
+import net.qoopo.engine3d.editor.entity.componentes.movimiento.PnlJumpingComponent;
+import net.qoopo.engine3d.editor.entity.componentes.movimiento.PnlRotationComponent;
 import net.qoopo.engine3d.editor.entity.componentes.procesadores.agua.PnlAguaSimple;
 import net.qoopo.engine3d.editor.entity.componentes.procesadores.espejo.PnlEspejo;
 import net.qoopo.engine3d.editor.entity.componentes.terreno.PnlTerreno;
@@ -309,7 +313,7 @@ public class EditorEntidad extends javax.swing.JPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
 
-                QVehiculo vehi = ComponentUtil.getVehiculo(entity);
+                QVehiculo vehi = (QVehiculo) ComponentUtil.getComponent(entity, QVehiculo.class);
                 if (vehi != null) {
                     entity.addComponent(new QVehiculoControl(vehi));
                     editarEntidad(entity);
@@ -397,7 +401,7 @@ public class EditorEntidad extends javax.swing.JPanel {
         itmColisionTerreno.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                Terrain terr = ComponentUtil.getTerreno(entity);
+                Terrain terr = (Terrain) ComponentUtil.getComponent(entity, Terrain.class);
                 if (terr != null) {
                     entity.addComponent(new QColisionTerreno(terr));
                     editarEntidad(entity);
@@ -465,9 +469,9 @@ public class EditorEntidad extends javax.swing.JPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 // valida si existe un componente de colisión
-                CollisionShape col = ComponentUtil.getColision(entity);
+                CollisionShape col = (CollisionShape) ComponentUtil.getComponent(entity, CollisionShape.class);
                 if (col != null) {
-                    QObjetoRigido comp = ComponentUtil.getFisicoRigido(entity);
+                    QObjetoRigido comp = (QObjetoRigido) ComponentUtil.getComponent(entity, QObjetoRigido.class);
                     if (comp == null) {
                         entity.addComponent(new QObjetoRigido(QObjetoDinamico.DINAMICO, 1.0f));
                         editarEntidad(entity);
@@ -486,7 +490,7 @@ public class EditorEntidad extends javax.swing.JPanel {
         itmVehiculo.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                QObjetoRigido rigido = ComponentUtil.getFisicoRigido(entity);
+                QObjetoRigido rigido = (QObjetoRigido) ComponentUtil.getComponent(entity, QObjetoRigido.class);
                 if (rigido != null) {
                     entity.addComponent(new QVehiculo(rigido));
                     editarEntidad(entity);
@@ -507,7 +511,7 @@ public class EditorEntidad extends javax.swing.JPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 // valida si existe un componente rigido
-                QObjetoRigido comp = ComponentUtil.getFisicoRigido(entity);
+                QObjetoRigido comp = (QObjetoRigido) ComponentUtil.getComponent(entity, QObjetoRigido.class);
                 if (comp != null) {
                     entity.addComponent(new QRestriccionFija(comp));
                     editarEntidad(entity);
@@ -524,7 +528,7 @@ public class EditorEntidad extends javax.swing.JPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 // valida si existe un componente rigido
-                QObjetoRigido comp = ComponentUtil.getFisicoRigido(entity);
+                QObjetoRigido comp = (QObjetoRigido) ComponentUtil.getComponent(entity, QObjetoRigido.class);
                 if (comp != null) {
                     entity.addComponent(new QRestriccionPunto2Punto(comp));
                     editarEntidad(entity);
@@ -540,7 +544,7 @@ public class EditorEntidad extends javax.swing.JPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 // valida si existe un componente rigido
-                QObjetoRigido comp = ComponentUtil.getFisicoRigido(entity);
+                QObjetoRigido comp = (QObjetoRigido) ComponentUtil.getComponent(entity, QObjetoRigido.class);
                 if (comp != null) {
                     entity.addComponent(new QRestriccionBisagra(comp));
                     editarEntidad(entity);
@@ -556,7 +560,7 @@ public class EditorEntidad extends javax.swing.JPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 // valida si existe un componente rigido
-                QObjetoRigido comp = ComponentUtil.getFisicoRigido(entity);
+                QObjetoRigido comp = (QObjetoRigido) ComponentUtil.getComponent(entity, QObjetoRigido.class);
                 if (comp != null) {
                     entity.addComponent(new QRestriccionBisagra(comp));
                     editarEntidad(entity);
@@ -572,7 +576,7 @@ public class EditorEntidad extends javax.swing.JPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 // valida si existe un componente rigido
-                QObjetoRigido comp = ComponentUtil.getFisicoRigido(entity);
+                QObjetoRigido comp = (QObjetoRigido) ComponentUtil.getComponent(entity, QObjetoRigido.class);
                 if (comp != null) {
                     entity.addComponent(new QRestriccionGenerica6DOF(comp));
                     editarEntidad(entity);
@@ -592,7 +596,7 @@ public class EditorEntidad extends javax.swing.JPanel {
         itmRotacioncomponent.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                entity.addComponent(new RotationComponent());
+                entity.addComponent(new RotationEntityComponent());
                 editarEntidad(entity);
             }
         });
@@ -632,6 +636,17 @@ public class EditorEntidad extends javax.swing.JPanel {
             }
         });
         mnuModifiers.add(itmInflateModifier);
+
+        JMenuItem itmRotationMeshModifier = GuiUTIL.crearMenuItem("Rotar Malla", "", Util.cargarIcono16("/cube_16.png"),
+                false);
+        itmRotationMeshModifier.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                entity.addComponent(new RotationModifier());
+                editarEntidad(entity);
+            }
+        });
+        mnuModifiers.add(itmRotationMeshModifier);
 
         // --------agrega al popup menu
         mnuComponentes.add(mnuGeometria);
@@ -693,8 +708,8 @@ public class EditorEntidad extends javax.swing.JPanel {
     private Entity crearFondoCuadros() {
         try {
             Entity entFondo = new Entity("Fondo");
-            QTextura text = new QTextura(ImageIO.read(Principal.class.getResourceAsStream("/fondo.jpg")));
-            AbstractMaterial matFondo = new QMaterialBas(text, 50);
+            Texture text = new Texture(ImageIO.read(Principal.class.getResourceAsStream("/fondo.jpg")));
+            AbstractMaterial matFondo = new Material(text, 50);
             entFondo.addComponent(
                     NormalUtil.invertirNormales(MaterialUtil.applyMaterial(new Box(10f), matFondo)));
             entFondo.move(3, 3, 3);
@@ -772,7 +787,7 @@ public class EditorEntidad extends javax.swing.JPanel {
             } else if (componente instanceof Mesh) {
                 pnlMaterialEdit.setVisible(true);
                 desplegarListaMateriales((Mesh) componente);
-                modelGeometrias.addElement(((Mesh) componente).nombre);
+                modelGeometrias.addElement(((Mesh) componente).name);
                 listaGeometrias.add((Mesh) componente);
                 if (componente instanceof SphereBox) {
                     pnlListaComponentes.add(new PnlCuboEsfera((SphereBox) componente));
@@ -801,7 +816,7 @@ public class EditorEntidad extends javax.swing.JPanel {
                 } else {
                     JPanel pnBar2 = new JPanel();
                     pnBar2.setLayout(new GridLayout(1, 1));
-                    pnBar2.add(GuiUTIL.crearJLabel("Geometría:" + ((Mesh) componente).nombre,
+                    pnBar2.add(GuiUTIL.crearJLabel("Geometría:" + ((Mesh) componente).name,
                             Util.cargarIcono16("/cube_16.png")));
                     pnBar2.setPreferredSize(dimensionLabel);
                     pnBar2.setMaximumSize(dimensionLabel);
@@ -819,8 +834,8 @@ public class EditorEntidad extends javax.swing.JPanel {
                 pnTotales.setMaximumSize(dimensionLabel);
                 pnlListaComponentes.add(pnTotales);
 
-            } else if (componente instanceof QCompAlmacenAnimaciones) {
-                pnlListaComponentes.add(new PnlAlamacenAnimacion((QCompAlmacenAnimaciones) componente));
+            } else if (componente instanceof AnimationStorageComponent) {
+                pnlListaComponentes.add(new PnlAlamacenAnimacion((AnimationStorageComponent) componente));
             } else if (componente instanceof AnimationComponent) {
                 JPanel pnBar2 = new JPanel();
                 pnBar2.setLayout(new GridLayout(1, 1));
@@ -888,12 +903,19 @@ public class EditorEntidad extends javax.swing.JPanel {
                 pnlListaComponentes.add(new PnlSubdivision((SubdivisionModifier) componente));
             } else if (componente instanceof InflateModifier) {
                 pnlListaComponentes.add(new PnlInflate((InflateModifier) componente));
+            } else if (componente instanceof RotationModifier) {
+                pnlListaComponentes.add(new PnlRotationModifier((RotationModifier) componente));
+                // Movimiento
+            } else if (componente instanceof RotationEntityComponent) {
+                pnlListaComponentes.add(new PnlRotationComponent((RotationEntityComponent) componente));
+            } else if (componente instanceof JumpComponent) {
+                pnlListaComponentes.add(new PnlJumpingComponent((JumpComponent) componente));
             } else {
                 JPanel pnBar2 = new JPanel();
                 pnBar2.setLayout(new GridLayout(1, 1));
                 pnBar2.add(GuiUTIL.crearJLabel(
                         "Desconocido " + componente.getClass().getName()
-                                .substring(componente.getClass().getName().lastIndexOf(".")),
+                                .substring(componente.getClass().getName().lastIndexOf(".") + 1),
                         componente.getClass().getCanonicalName(),
                         Util.cargarIcono16("/cube.png")));
                 pnBar2.setPreferredSize(dimensionLabel);
@@ -960,7 +982,7 @@ public class EditorEntidad extends javax.swing.JPanel {
         for (Primitive face : object.primitiveList) {
             if (!editingMaterial.contains(face.material)) {
                 editingMaterial.add(face.material);
-                if (face.material instanceof QMaterialBas) {
+                if (face.material instanceof Material) {
                     model.addElement("(BAS) " + face.material.getNombre());
                 } else if (face.material instanceof MaterialNode) {
                     model.addElement("(Nodo) " + face.material.getNombre());
@@ -1550,8 +1572,8 @@ public class EditorEntidad extends javax.swing.JPanel {
         if (lstMaterials.getSelectedIndex() >= 0) {
             activeMaterial = editingMaterial.get(lstMaterials.getSelectedIndex());
             // pnlMaterialControl.setVisible(true);
-            if (activeMaterial instanceof QMaterialBas) {
-                pnlEditorMaterial.populateMaterialControl((QMaterialBas) activeMaterial);
+            if (activeMaterial instanceof Material) {
+                pnlEditorMaterial.populateMaterialControl((Material) activeMaterial);
             } else {
                 // aca va la edicion del material pbr
             }
@@ -1661,7 +1683,7 @@ public class EditorEntidad extends javax.swing.JPanel {
     }// GEN-LAST:event_chkCaraSuaveActionPerformed
 
     private void btnNuevoMatBASActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btnNuevoMatBASActionPerformed
-        QMaterialBas nuevoMat = new QMaterialBas();
+        Material nuevoMat = new Material();
         editingMaterial.add(nuevoMat);
         DefaultListModel tmp = (DefaultListModel) lstMaterials.getModel();
         tmp.addElement("(BAS) " + nuevoMat.getNombre());

@@ -15,7 +15,7 @@ import net.qoopo.engine.core.assets.model.ModelLoader;
 import net.qoopo.engine.core.entity.Entity;
 import net.qoopo.engine.core.entity.component.animation.AnimationComponent;
 import net.qoopo.engine.core.entity.component.animation.Bone;
-import net.qoopo.engine.core.entity.component.animation.QCompAlmacenAnimaciones;
+import net.qoopo.engine.core.entity.component.animation.AnimationStorageComponent;
 import net.qoopo.engine.core.entity.component.animation.Skeleton;
 import net.qoopo.engine.core.entity.component.mesh.Mesh;
 import net.qoopo.engine.core.entity.component.mesh.primitive.Vertex;
@@ -32,12 +32,11 @@ import net.qoopo.engine.core.load.md5.util.MD5JointInfo;
 import net.qoopo.engine.core.load.md5.util.MD5Mesh;
 import net.qoopo.engine.core.load.md5.util.MD5Model;
 import net.qoopo.engine.core.load.md5.util.MD5Utils;
-import net.qoopo.engine.core.material.basico.QMaterialBas;
+import net.qoopo.engine.core.material.basico.Material;
 import net.qoopo.engine.core.math.Cuaternion;
 import net.qoopo.engine.core.math.QColor;
 import net.qoopo.engine.core.math.QRotacion;
 import net.qoopo.engine.core.math.QVector3;
-import net.qoopo.engine.core.texture.QTextura;
 import net.qoopo.engine.core.texture.util.MaterialUtil;
 import net.qoopo.engine.core.util.QJOMLUtil;
 import net.qoopo.engine.core.util.Utils;
@@ -97,12 +96,12 @@ public class LoadModelMd5 implements ModelLoader {
 
         // geometria
         for (MD5Mesh md5Mesh : md5Model.getMeshes()) {
-            Mesh geometria = generarGeometria(md5Mesh, esqueleto);
-            loadTextures(geometria, md5Mesh, defaultColour, rutaTrabajo);
-            entity.addComponent(geometria);
+            Mesh mesh = generarGeometria(md5Mesh, esqueleto);
+            loadTextures(mesh, md5Mesh, defaultColour, rutaTrabajo);
+            entity.addComponent(mesh);
             // ****************** OBJETOS DE COLISION ********************************
             // agrega componentes fisicos para cada malla
-            CollisionShape colision = new QColisionMallaConvexa(geometria);
+            CollisionShape colision = new QColisionMallaConvexa(mesh);
             entity.addComponent(colision);
             QObjetoRigido rigido = new QObjetoRigido(QObjetoDinamico.ESTATICO, 0);
             rigido.setFormaColision(colision);
@@ -110,23 +109,23 @@ public class LoadModelMd5 implements ModelLoader {
         }
 
         // animaciones
-        QCompAlmacenAnimaciones almacen = new QCompAlmacenAnimaciones();
+        AnimationStorageComponent almacen = new AnimationStorageComponent();
         // agrego a la entity el almacen de animaciones
         entity.addComponent(almacen);
-        almacen.agregarAnimacion("Pose_Inicial", AnimationComponent.crearAnimacionPose(esqueleto));
+        almacen.add("Pose_Inicial", AnimationComponent.crearAnimacionPose(esqueleto));
         if (animModels != null && !animModels.isEmpty()) {
             for (MD5AnimModel animModel : animModels) {
-                AnimationComponent animacion = crearAnimacion(md5Model, animModel, esqueleto);
-                almacen.agregarAnimacion(animModel.getNombre(), animacion);
+                AnimationComponent animacion = loadAnimation(md5Model, animModel, esqueleto);
+                almacen.add(animModel.getNombre(), animacion);
             }
 
             // entity.agregarComponente(almacen.getAnimacion("Pose"));
-            if (almacen.getAnimacion(md5Model.getNombre()) != null) {
+            if (almacen.get(md5Model.getNombre()) != null) {
                 // le setea la animacion con el mismo nombre del archivo para que se ejecute
-                entity.addComponent(almacen.getAnimacion(md5Model.getNombre()));
+                entity.addComponent(almacen.get(md5Model.getNombre()));
             } else {
                 // le setea la primera animacion para q se ejecute
-                entity.addComponent(almacen.getAnimacion(animModels.get(0).getNombre()));
+                entity.addComponent(almacen.get(animModels.get(0).getNombre()));
             }
 
         }
@@ -179,14 +178,13 @@ public class LoadModelMd5 implements ModelLoader {
         List<MD5Mesh.MD5Vertex> vertices = md5Mesh.getVertices();
         List<MD5Mesh.MD5Weight> weights = md5Mesh.getWeights();
 
-        Mesh geometria = new Mesh();
+        Mesh mesh = new Mesh();
 
         for (MD5Mesh.MD5Vertex vertex : vertices) {
             QVector3 posicionVertice = QVector3.empty();
             int pesoInicial = vertex.getStartWeight();
             int numeroPesos = vertex.getWeightCount();
             Bone[] huesos = new Bone[numeroPesos];
-            // QVector3[] pesosPosiciones = new QVector3[numeroPesos];
             float[] pesos = new float[numeroPesos];
             int[] huesosIds = new int[numeroPesos];
             int c = 0;
@@ -221,8 +219,8 @@ public class LoadModelMd5 implements ModelLoader {
                         .mult(QJOMLUtil.convertirQVector3(weight.getPosition())).multiply(weight.getBias()));
                 c++;
             }
-            Vertex vertice = geometria.addVertex(posicionVertice.x, posicionVertice.y, posicionVertice.z);
-            geometria.addUV(vertex.getTextCoords().x, 1.0f - vertex.getTextCoords().y);
+            Vertex vertice = mesh.addVertex(posicionVertice.x, posicionVertice.y, posicionVertice.z);
+            mesh.addUV(vertex.getTextCoords().x, 1.0f - vertex.getTextCoords().y);
             vertice.setListaHuesos(huesos);
             vertice.setListaHuesosPesos(pesos);
             vertice.setListaHuesosIds(huesosIds);
@@ -230,17 +228,16 @@ public class LoadModelMd5 implements ModelLoader {
         }
 
         for (MD5Mesh.MD5Triangle tri : md5Mesh.getTriangles()) {
-            geometria.addPoly(
+            mesh.addPoly(
                     new int[] { tri.getVertex0(), tri.getVertex2(), tri.getVertex1() }, // vertices
                     new int[] { tri.getVertex0(), tri.getVertex2(), tri.getVertex1() }, // normales
                     new int[] { tri.getVertex0(), tri.getVertex2(), tri.getVertex1() }// coordenadas UV
             );
         }
 
-        geometria.computeNormals();
-        geometria.smooth();
-        // geometria = QUtilNormales.invertirNormales(geometria);
-        return geometria;
+        mesh.computeNormals();
+        mesh.smooth();
+        return mesh;
     }
 
     private static String getTexturePath(String texturePath, File rutaTrabajo) {
@@ -287,41 +284,36 @@ public class LoadModelMd5 implements ModelLoader {
         try {
             if (texturePath != null && texturePath.length() > 0) {
                 if (new File(texturePath).exists()) {
-                    QTextura textura = AssetManager.get().loadTexture(texturePath, texturePath);
-                    // QProcesadorTextura textura = new QProcesadorSimple(text);
-                    QMaterialBas material = new QMaterialBas(textura);
+                    Material material = new Material();
+                    material.setMapaColor(AssetManager.get().loadTexture(texturePath, texturePath));
 
                     // Handle other Maps;
                     int pos = texturePath.lastIndexOf(".");
                     if (pos > 0) {
                         String basePath = texturePath.substring(0, pos);
                         String extension = texturePath.substring(pos, texturePath.length());
-
                         // normal
                         String normalMapFileName = basePath + NORMAL_FILE_SUFFIX + extension;
                         // System.out.println("el archivo de normal deberia ser:" + normalMapFileName);
                         if (Utils.existsResourceFile(normalMapFileName)) {
-                            QTextura normalMap = AssetManager.get().loadTexture(normalMapFileName, normalMapFileName);
-                            material.setMapaNormal(normalMap);
+                            material.setMapaNormal(
+                                    AssetManager.get().loadTexture(normalMapFileName, normalMapFileName));
                         } else {
                             normalMapFileName = basePath + NORMAL_FILE_SUFFIX_2 + extension;
                             // System.out.println("el archivo de normal deberia ser:" + normalMapFileName);
                             if (Utils.existsResourceFile(normalMapFileName)) {
-                                QTextura normalMap = AssetManager.get().loadTexture(normalMapFileName,
-                                        normalMapFileName);
-                                material.setMapaNormal(normalMap);
+                                material.setMapaNormal(
+                                        AssetManager.get().loadTexture(normalMapFileName, normalMapFileName));
                             }
                         }
                         String specularMapFileName = basePath + SPECULAR_FILE_SUFFIX + extension;
                         // System.out.println("el archivo de normal deberia ser:" + normalMapFileName);
                         if (Utils.existsResourceFile(specularMapFileName)) {
-                            QTextura specularMap = AssetManager.get().loadTexture(specularMapFileName,
-                                    specularMapFileName);
-                            material.setMapaEspecular(specularMap);
+                            material.setMapaEspecular(
+                                    AssetManager.get().loadTexture(specularMapFileName, specularMapFileName));
                         }
                     }
                     mesh.applyMaterial(material);
-
                 } else {
                     // mesh.setMaterial(new Material(defaultColour, 1));
                     MaterialUtil.applyColor(mesh, 1, defaultColour, QColor.WHITE, 0, 64);
@@ -332,7 +324,7 @@ public class LoadModelMd5 implements ModelLoader {
         }
     }
 
-    private static AnimationComponent crearAnimacion(MD5Model md5Model, MD5AnimModel animModel,
+    private static AnimationComponent loadAnimation(MD5Model md5Model, MD5AnimModel animModel,
             Skeleton esqueleto) {
 
         float duracionFrames = 1.0f / animModel.getHeader().getFrameRate();
@@ -347,17 +339,14 @@ public class LoadModelMd5 implements ModelLoader {
         // System.out.println("Animación:" + animModel.getNombre());
         // System.out.println("FrameRate=" + animModel.getHeader().getFrameRate());
         // System.out.println("Duracion de la animacion=" + duracionAnimacion);
-        // QComponenteAnimacion animacion = new QComponenteAnimacion();
         AnimationComponent animacion = new AnimationComponent(duracionAnimacion);
         animacion.setNombre(animModel.getNombre());
         animacion.setLoop(true);
-        // animacion.setLoop(false);
 
         List<MD5Frame> frames = animModel.getFrames();
-
         float segundos = 0.0f;
         for (MD5Frame md5Frame : frames) {
-            AnimationFrame frame = processAnimationFrame(md5Model, animModel, md5Frame, esqueleto, segundos);
+            AnimationFrame frame = loadAnimationFrame(md5Model, animModel, md5Frame, esqueleto, segundos);
             segundos += duracionFrames;
             animacion.addFrame(frame);
         }
@@ -373,7 +362,7 @@ public class LoadModelMd5 implements ModelLoader {
      * @param tiempo
      * @return
      */
-    private static AnimationFrame processAnimationFrame(MD5Model md5Model, MD5AnimModel animModel, MD5Frame frame,
+    private static AnimationFrame loadAnimationFrame(MD5Model md5Model, MD5AnimModel animModel, MD5Frame frame,
             Skeleton esqueleto, float tiempo) {
         // crea un frame para el tipo de animacion por frames
         // QAnimacionFrame qFrame = new QAnimacionFrame(QAnimacionFrame.TIPO_FINITA, 1);

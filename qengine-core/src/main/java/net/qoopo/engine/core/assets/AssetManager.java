@@ -20,7 +20,7 @@ import net.qoopo.engine.core.assets.audio.AudioLoader;
 import net.qoopo.engine.core.assets.model.ModelLoader;
 import net.qoopo.engine.core.entity.Entity;
 import net.qoopo.engine.core.renderer.RendererFactory;
-import net.qoopo.engine.core.texture.QTextura;
+import net.qoopo.engine.core.texture.Texture;
 import net.qoopo.engine.core.util.image.ImgReader;
 
 /**
@@ -54,9 +54,9 @@ public class AssetManager implements Serializable {
                 if (objeto instanceof AudioBuffer) {
                     logger.info(" Liberando recurso de audio..");
                     ((AudioBuffer) objeto).cleanup();
-                } else if (objeto instanceof QTextura) {
+                } else if (objeto instanceof Texture) {
                     logger.info(" Liberando recurso de textura..");
-                    ((QTextura) objeto).destruir();
+                    ((Texture) objeto).destruir();
                 } else if (objeto instanceof Entity) {
                     logger.info(" Liberando recurso de textura..");
                     ((Entity) objeto).destruir();
@@ -77,12 +77,12 @@ public class AssetManager implements Serializable {
         return mapa.get(clave);
     }
 
-    public QTextura loadTexture(String clave, String file) {
+    public Texture loadTexture(String clave, String file) {
         return loadTexture(clave, new File(file));
     }
 
-    public QTextura getTextura(String clave) {
-        return (QTextura) getRecurso(clave);
+    public Texture getTextura(String clave) {
+        return (Texture) getRecurso(clave);
     }
 
     public AudioBuffer getAudio(String clave) {
@@ -106,9 +106,9 @@ public class AssetManager implements Serializable {
         return bufferAudio;
     }
 
-    public QTextura loadTexture(String clave, File file) {
+    public Texture loadTexture(String clave, File file) {
         try {
-            QTextura text = new QTextura();
+            Texture text = new Texture();
             logger.info("  Cargando textura " + file.getName());
             text.loadTexture(ImgReader.read(file));
             agregarRecurso(clave, text);

@@ -8,8 +8,8 @@ package net.qoopo.engine3d.core.sky;
 import net.qoopo.engine.core.entity.Entity;
 import net.qoopo.engine.core.entity.component.mesh.Mesh;
 import net.qoopo.engine.core.entity.component.mesh.primitive.shape.Sphere;
-import net.qoopo.engine.core.material.basico.QMaterialBas;
-import net.qoopo.engine.core.texture.QTextura;
+import net.qoopo.engine.core.material.basico.Material;
+import net.qoopo.engine.core.texture.Texture;
 import net.qoopo.engine.core.texture.procesador.QProcesadorMix;
 import net.qoopo.engine.core.texture.util.MaterialUtil;
 import net.qoopo.engine.core.util.mesh.NormalUtil;
@@ -20,12 +20,12 @@ import net.qoopo.engine.core.util.mesh.NormalUtil;
  */
 public class SphereCielo extends QCielo {
 
-    private QTextura texturaDia;
-    private QTextura texturaNoche;
+    private Texture texturaDia;
+    private Texture texturaNoche;
     private float radio;
     private QProcesadorMix procesadorTextura;
 
-    public SphereCielo(QTextura texturaDia, QTextura texturaNoche, float radio) {
+    public SphereCielo(Texture texturaDia, Texture texturaNoche, float radio) {
         this.texturaDia = texturaDia;
         this.texturaNoche = texturaNoche;
         this.radio = radio;
@@ -37,7 +37,7 @@ public class SphereCielo extends QCielo {
         Mesh cieloG = new Sphere(radio, 32);
 //        QGeometria cieloG = new Sphere(radio, 8);
 //        QGeometria cieloG = new Sphere(radio, 4);
-        QMaterialBas material = new QMaterialBas();
+        Material material = new Material();
         material.setFactorEmision(1);//finge emision de luz para no ser afectado por las luces
         procesadorTextura = new QProcesadorMix(texturaDia, texturaNoche);
         procesadorTextura.setRazon(0);
@@ -61,19 +61,19 @@ public class SphereCielo extends QCielo {
 
     }
 
-    public QTextura getTexturaDia() {
+    public Texture getTexturaDia() {
         return texturaDia;
     }
 
-    public void setTexturaDia(QTextura texturaDia) {
+    public void setTexturaDia(Texture texturaDia) {
         this.texturaDia = texturaDia;
     }
 
-    public QTextura getTexturaNoche() {
+    public Texture getTexturaNoche() {
         return texturaNoche;
     }
 
-    public void setTexturaNoche(QTextura texturaNoche) {
+    public void setTexturaNoche(Texture texturaNoche) {
         this.texturaNoche = texturaNoche;
     }
 

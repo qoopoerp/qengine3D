@@ -8,7 +8,7 @@ package net.qoopo.engine.core.entity.component.mesh.primitive.shape.wire;
 import net.qoopo.engine.core.entity.component.mesh.Mesh;
 import net.qoopo.engine.core.entity.component.mesh.primitive.Shape;
 import net.qoopo.engine.core.entity.component.mesh.primitive.Vertex;
-import net.qoopo.engine.core.material.basico.QMaterialBas;
+import net.qoopo.engine.core.material.basico.Material;
 
 /**
  *
@@ -21,12 +21,12 @@ public class QEspiral extends Shape {
     private float nSegmentos;// el numero de segmentos
 
     public QEspiral(float radio, float largo, float nSegmentos) {
-        nombre = "Espiral";
-        material = new QMaterialBas("Espiral");
+        name = "Espiral";
+        material = new Material("Espiral");
         this.radio = radio;
         this.largo = largo;
         this.nSegmentos = nSegmentos;
-        tipo = Mesh.GEOMETRY_TYPE_WIRE;
+        type = Mesh.GEOMETRY_TYPE_WIRE;
         build();
     }
 

@@ -7,7 +7,7 @@ package net.qoopo.engine.core.renderer.post.procesos.color;
 
 import net.qoopo.engine.core.math.QColor;
 import net.qoopo.engine.core.renderer.post.procesos.QPostProceso;
-import net.qoopo.engine.core.texture.QTextura;
+import net.qoopo.engine.core.texture.Texture;
 
 /**
  * Realiza una modificación del color final de la imagen realzando el contraste
@@ -17,16 +17,16 @@ import net.qoopo.engine.core.texture.QTextura;
 public class QProcesadorCombina extends QPostProceso {
 
     public QProcesadorCombina(int ancho, int alto) {
-        bufferSalida = new QTextura(ancho, alto);
+        bufferSalida = new Texture(ancho, alto);
     }
 
     @Override
-    public void procesar(QTextura... buffer) {
+    public void procesar(Texture... buffer) {
         QColor color;
         QColor color2;
         QColor color3;
-        QTextura textura1 = buffer[0];
-        QTextura textura2 = buffer[1];
+        Texture textura1 = buffer[0];
+        Texture textura2 = buffer[1];
         try {
             for (int x = 0; x < textura1.getAncho(); x++) {
                 for (int y = 0; y < textura1.getAlto(); y++) {

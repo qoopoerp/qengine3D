@@ -51,8 +51,8 @@ public class TransformationVectorUtil {
      * @return
      */
     public static QVector3 transformarVector(QVector3 vector, Entity entity, Camera camara) {
-        QMatriz4 matVistaModelo = camara.getMatrizTransformacion(QGlobal.tiempo).invert()
-                .mult(entity != null ? entity.getMatrizTransformacion(QGlobal.tiempo) : QMatriz4.IDENTITY);
+        QMatriz4 matVistaModelo = camara.getMatrizTransformacion(QGlobal.time).invert()
+                .mult(entity != null ? entity.getMatrizTransformacion(QGlobal.time) : QMatriz4.IDENTITY);
         return matVistaModelo.mult(vector);
     }
 
@@ -65,8 +65,8 @@ public class TransformationVectorUtil {
      * @return
      */
     public static QVector4 transformarVector(QVector4 vector, Entity entity, Camera camara) {
-        QMatriz4 matVistaModelo = camara.getMatrizTransformacion(QGlobal.tiempo).invert()
-                .mult(entity != null ? entity.getMatrizTransformacion(QGlobal.tiempo) : QMatriz4.IDENTITY);
+        QMatriz4 matVistaModelo = camara.getMatrizTransformacion(QGlobal.time).invert()
+                .mult(entity != null ? entity.getMatrizTransformacion(QGlobal.time) : QMatriz4.IDENTITY);
         return matVistaModelo.mult(vector);
     }
 
@@ -80,7 +80,7 @@ public class TransformationVectorUtil {
      * @return
      */
     public static QVector3 transformarVector(QVector3 vector, Entity entity) {
-        QMatriz4 matModelo = entity != null ? entity.getMatrizTransformacion(QGlobal.tiempo) : QMatriz4.IDENTITY;
+        QMatriz4 matModelo = entity != null ? entity.getMatrizTransformacion(QGlobal.time) : QMatriz4.IDENTITY;
         return matModelo.mult(vector);
     }
 
@@ -94,7 +94,7 @@ public class TransformationVectorUtil {
      * @return
      */
     public static QVector4 transformarVector(QVector4 vector, Entity entity) {
-        QMatriz4 matModelo = entity != null ? entity.getMatrizTransformacion(QGlobal.tiempo) : QMatriz4.IDENTITY;
+        QMatriz4 matModelo = entity != null ? entity.getMatrizTransformacion(QGlobal.time) : QMatriz4.IDENTITY;
         return matModelo.mult(vector);
     }
 
@@ -107,8 +107,8 @@ public class TransformationVectorUtil {
      * @return
      */
     public static QVector3 transformarVectorInversa(QVector3 vector, Entity entity, Camera camara) {
-        QMatriz4 matVistaModelo = camara.getMatrizTransformacion(QGlobal.tiempo).invert()
-                .mult(entity != null ? entity.getMatrizTransformacion(QGlobal.tiempo) : QMatriz4.IDENTITY);
+        QMatriz4 matVistaModelo = camara.getMatrizTransformacion(QGlobal.time).invert()
+                .mult(entity != null ? entity.getMatrizTransformacion(QGlobal.time) : QMatriz4.IDENTITY);
         return matVistaModelo.invert().mult(vector);
     }
 
@@ -121,8 +121,8 @@ public class TransformationVectorUtil {
      * @return
      */
     public static QVector4 transformarVectorInversa(QVector4 vector, Entity entity, Camera camara) {
-        QMatriz4 matVistaModelo = camara.getMatrizTransformacion(QGlobal.tiempo).invert()
-                .mult(entity != null ? entity.getMatrizTransformacion(QGlobal.tiempo) : QMatriz4.IDENTITY);
+        QMatriz4 matVistaModelo = camara.getMatrizTransformacion(QGlobal.time).invert()
+                .mult(entity != null ? entity.getMatrizTransformacion(QGlobal.time) : QMatriz4.IDENTITY);
         return matVistaModelo.invert().mult(vector);
     }
 
@@ -135,16 +135,16 @@ public class TransformationVectorUtil {
      * @return
      */
     public static QVector3 transformarVectorNormal(QVector3 vector, Entity entity, Camera camara) {
-        QMatriz4 matrizVista = camara.getMatrizTransformacion(QGlobal.tiempo).invert();
+        QMatriz4 matrizVista = camara.getMatrizTransformacion(QGlobal.time).invert();
         QMatriz4 matVistaModelo = matrizVista
-                .mult(entity != null ? entity.getMatrizTransformacion(QGlobal.tiempo) : QMatriz4.IDENTITY);
+                .mult(entity != null ? entity.getMatrizTransformacion(QGlobal.time) : QMatriz4.IDENTITY);
         return TransformationVectorUtil.transformarVectorNormal(vector, matVistaModelo);
     }
 
     public static QVector3 transformarVectorNormalInversa(QVector3 vector, Entity entity, Camera camara) {
-        QMatriz4 matrizVista = camara.getMatrizTransformacion(QGlobal.tiempo).invert();
+        QMatriz4 matrizVista = camara.getMatrizTransformacion(QGlobal.time).invert();
         QMatriz4 matVistaModelo = matrizVista
-                .mult(entity != null ? entity.getMatrizTransformacion(QGlobal.tiempo) : QMatriz4.IDENTITY);
+                .mult(entity != null ? entity.getMatrizTransformacion(QGlobal.time) : QMatriz4.IDENTITY);
         return TransformationVectorUtil.transformarVectorNormal(vector, matVistaModelo.invert());
     }
 

@@ -16,9 +16,9 @@ import net.qoopo.engine.core.entity.component.mesh.primitive.shape.Cone;
 import net.qoopo.engine.core.entity.component.mesh.primitive.shape.Plane;
 import net.qoopo.engine.core.entity.component.particles.humo.QEmisorHumo;
 import net.qoopo.engine.core.entity.component.physics.collision.detector.shape.primitivas.AABB;
-import net.qoopo.engine.core.material.basico.QMaterialBas;
+import net.qoopo.engine.core.material.basico.Material;
 import net.qoopo.engine.core.math.QColor;
-import net.qoopo.engine.core.texture.QTextura;
+import net.qoopo.engine.core.texture.Texture;
 import net.qoopo.engine.core.texture.util.MaterialUtil;
 import net.qoopo.engine.core.util.QGlobal;
 
@@ -29,11 +29,11 @@ import net.qoopo.engine.core.util.QGlobal;
  */
 public class GeneradorCasas {
 
-    private static final QTextura TEXT_MURO = AssetManager.get().loadTexture("muro",
+    private static final Texture TEXT_MURO = AssetManager.get().loadTexture("muro",
             "assets/textures/muro/muro2.jpg");
 
     // private static QGeometria
-    private static QMaterialBas materialPisos = new QMaterialBas(TEXT_MURO, 0);
+    private static Material materialPisos = new Material(TEXT_MURO, 0);
     private static Mesh pisoG = MaterialUtil.applyMaterial(new Box(2.5f, 5f, 5f), materialPisos);
     private static Mesh ventanaG = MaterialUtil.applyColor(new Plane(0.5f, 0.75f), 0.8f, 1, 1, 0, 1, 1, 1, 1, 64);
     private static Mesh puertaG = MaterialUtil.applyColor(new Plane(1f, 0.5f), 1f, QColor.GREEN, QColor.WHITE, 0,

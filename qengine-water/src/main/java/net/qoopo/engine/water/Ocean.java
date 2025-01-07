@@ -2,7 +2,7 @@ package net.qoopo.engine.water;
 
 import net.qoopo.engine.core.entity.component.mesh.primitive.shape.PlanarMesh;
 import net.qoopo.engine.core.entity.component.water.Water;
-import net.qoopo.engine.core.material.basico.QMaterialBas;
+import net.qoopo.engine.core.material.basico.Material;
 import net.qoopo.engine.core.math.QColor;
 import net.qoopo.engine.core.renderer.RenderEngine;
 import net.qoopo.engine.core.scene.Scene;
@@ -44,8 +44,8 @@ public class Ocean extends Water {
         // enableRefraction = false;
         super.build();
         // Material
-        material = new QMaterialBas("water");
-        material.setColorBase(new QColor(1, 0, 0, 0.7f));
+        material = new Material("water");
+        material.setColor(new QColor(1, 0, 0, 0.7f));
         material.setSpecularExponent(64);
         // material.setMapaNormal(getTextNormal());
         material.setMapaColor(getOutputTexture());

@@ -8,14 +8,15 @@ package net.qoopo.engine.renderer.raster;
 import java.util.logging.Logger;
 
 import net.qoopo.engine.core.entity.component.mesh.Mesh;
+import net.qoopo.engine.core.entity.component.mesh.primitive.Fragment;
 import net.qoopo.engine.core.entity.component.mesh.primitive.Line;
 import net.qoopo.engine.core.entity.component.mesh.primitive.Poly;
 import net.qoopo.engine.core.entity.component.mesh.primitive.Primitive;
+import net.qoopo.engine.core.entity.component.mesh.primitive.QVertexBuffer;
 import net.qoopo.engine.core.entity.component.mesh.primitive.Vertex;
-import net.qoopo.engine.core.entity.component.transform.QVertexBuffer;
-import net.qoopo.engine.core.material.basico.QMaterialBas;
-import net.qoopo.engine.core.material.node.MaterialNode;
+import net.qoopo.engine.core.material.basico.Material;
 import net.qoopo.engine.core.math.QMath;
+import net.qoopo.engine.core.math.QMatriz4;
 import net.qoopo.engine.core.math.QVector2;
 import net.qoopo.engine.core.math.QVector3;
 import net.qoopo.engine.core.math.QVector4;
@@ -28,8 +29,7 @@ import net.qoopo.engine.renderer.SoftwareRenderer;
 import net.qoopo.engine.renderer.util.TransformationVectorUtil;
 
 /**
- * Realiza la rasterización de los polígonos version 2. Aun tiene fallas en el
- * mapeo de textures por la perspectiva
+ * Realiza la rasterización de los polígonos version
  *
  * @author alberto
  */
@@ -51,7 +51,7 @@ public class ParallelRaster implements AbstractRaster {
      * @param p2
      */
     @Override
-    public void rasterLine(Primitive primitiva, Vertex... vertex) {
+    public void rasterLine(QMatriz4 matViewModel, Primitive primitiva, Vertex... vertex) {
         int[] indices = new int[vertex.length];
         QVector3[] normales = new QVector3[vertex.length];
         QVector2[] uvList = new QVector2[vertex.length];
@@ -68,10 +68,7 @@ public class ParallelRaster implements AbstractRaster {
         for (int i = 0; i < clippedData.getVertexList().size() - 1; i++) {
             QVector2[] screenPojected = projectVertices(clippedData.getVertexList().get(i),
                     clippedData.getVertexList().get(i + 1));
-
-            lineaBresenham(QVector3.empty(),
-                    QVector3.empty(),
-                    primitiva,
+            lineaBresenham(QVector3.empty(), QVector3.empty(), matViewModel, primitiva,
                     (int) screenPojected[0].x,
                     (int) screenPojected[0].y,
                     (int) screenPojected[1].x,
@@ -92,17 +89,17 @@ public class ParallelRaster implements AbstractRaster {
      *
      */
     @Override
-    public void raster(QVertexBuffer vertexBuffer, Primitive primitiva, boolean wire) {
+    public void raster(QMatriz4 matViewModel, QVertexBuffer vertexBuffer, Primitive primitiva, boolean wire) {
         if (primitiva instanceof Poly) {
             if (wire) {
-                rasterWirePolygon(vertexBuffer, (Poly) primitiva);
+                rasterWirePolygon(matViewModel, vertexBuffer, (Poly) primitiva);
             } else {
-                rasterFullPolygon(vertexBuffer, (Poly) primitiva);
+                rasterFullPolygon(matViewModel, vertexBuffer, (Poly) primitiva);
             }
         } else if (primitiva instanceof Line) {
             Vertex p1 = vertexBuffer.getVertexList()[primitiva.vertexIndexList[0]];
             Vertex p2 = vertexBuffer.getVertexList()[primitiva.vertexIndexList[1]];
-            rasterLine(primitiva, p1, p2);
+            rasterLine(matViewModel, primitiva, p1, p2);
         }
     }
 
@@ -113,7 +110,7 @@ public class ParallelRaster implements AbstractRaster {
      * @param poligono
      *
      */
-    protected void rasterWirePolygon(QVertexBuffer vertexBuffer, Poly poligono) {
+    protected void rasterWirePolygon(QMatriz4 matViewModel, QVertexBuffer vertexBuffer, Poly poligono) {
         try {
             Vertex v1;
             Vertex v2;
@@ -154,9 +151,9 @@ public class ParallelRaster implements AbstractRaster {
                         continue;
                     }
 
-                    rasterLine(poligono, v1, v2);
-                    rasterLine(poligono, v1, v3);
-                    rasterLine(poligono, v2, v3);
+                    rasterLine(matViewModel, poligono, v1, v2);
+                    rasterLine(matViewModel, poligono, v1, v3);
+                    rasterLine(matViewModel, poligono, v2, v3);
                 }
             }
             // }
@@ -172,7 +169,7 @@ public class ParallelRaster implements AbstractRaster {
      * @param siempreTop
      * @param dibujar    . SI es true, llama al método procesarPixel del shader
      */
-    private void rasterFullPolygon(QVertexBuffer vertexBuffer, Poly poly) {
+    private void rasterFullPolygon(QMatriz4 matViewModel, QVertexBuffer vertexBuffer, Poly poly) {
         try {
             if (poly.vertexIndexList.length >= 3) {
                 QVector3 toCenter = poly.getCenterCopy().location.getVector3();
@@ -180,39 +177,12 @@ public class ParallelRaster implements AbstractRaster {
                 // si el objeto es tipo wire se dibuja igual sus caras traseras
                 // si el objeto tiene transparencia (con material básico) igual dibuja sus caras
                 // traseras
-                if ((!(poly.material instanceof QMaterialBas) || ((poly.material instanceof QMaterialBas)
-                        && !((QMaterialBas) poly.material).isTransparencia()))
+                if ((!(poly.material instanceof Material) || ((poly.material instanceof Material)
+                        && !((Material) poly.material).isTransparencia()))
                         && !render.opciones.isDibujarCarasTraseras() && toCenter.dot(poly.getNormalCopy()) > 0) {
                     render.poligonosDibujadosTemp--;
                     return; // salta el dibujo de caras traseras
                 }
-
-                // {
-                // // Vertex v1 = clippedData.getVertexList().get(0);
-                // // Vertex v2 = clippedData.getVertexList().get(i);
-                // // Vertex v3 = clippedData.getVertexList().get(i + 1);
-
-                // // QVector3 v1Normal = clippedData.getNormalList().get(0);
-                // // QVector3 v2Normal = clippedData.getNormalList().get(i);
-                // // QVector3 v3Normal = clippedData.getNormalList().get(i + 1);
-
-                // QVector2 v1UV = vertexBuffer.getUvList()[poly.uvIndexList[0]];
-                // QVector2 v2UV = vertexBuffer.getUvList()[poly.uvIndexList[1]];
-                // QVector2 v3UV = vertexBuffer.getUvList()[poly.uvIndexList[2]];
-
-                // // logger.info("rasterizando triangulo (previo)");
-                // // logger.info("V 1: " + v1.toString());
-                // // logger.info("V 2: " + v2.toString());
-                // // logger.info("V 3: " + v3.toString());
-
-                // // logger.info("Normal 1: " + v1Normal.toString());
-                // // logger.info("Normal 2: " + v2Normal.toString());
-                // // logger.info("Normal 3: " + v3Normal.toString());
-
-                // logger.info("UV 1: " + v1UV.toString());
-                // logger.info("UV 2: " + v2UV.toString());
-                // logger.info("UV 3: " + v3UV.toString());
-                // }
 
                 ClippedData clippedData = AbstractRaster.clipping(render.getCamara(),
                         poly.vertexIndexList,
@@ -234,16 +204,16 @@ public class ParallelRaster implements AbstractRaster {
                     QVector3 v2Normal = clippedData.getNormalList().get(i);
                     QVector3 v3Normal = clippedData.getNormalList().get(i + 1);
 
-                    QVector2 v1UV = clippedData.getUvList().get(0);
-                    QVector2 v2UV = clippedData.getUvList().get(i);
-                    QVector2 v3UV = clippedData.getUvList().get(i + 1);
+                    QVector2 v1uv = clippedData.getUvList().get(0);
+                    QVector2 v2uv = clippedData.getUvList().get(i);
+                    QVector2 v3uv = clippedData.getUvList().get(i + 1);
 
                     // si el triangulo no esta en el campo de vision, pasamos y no dibujamos
                     if (!render.getCamara().isVisible(v1) && !render.getCamara().isVisible(v2)
                             && !render.getCamara().isVisible(v3)) {
                         continue;
                     }
-                    rasterTriangle(v1, v2, v3, v1Normal, v2Normal, v3Normal, v1UV, v2UV, v3UV, poly);
+                    rasterTriangle(matViewModel, v1, v2, v3, v1Normal, v2Normal, v3Normal, v1uv, v2uv, v3uv, poly);
                 }
             }
         } catch (Exception e) {
@@ -251,25 +221,21 @@ public class ParallelRaster implements AbstractRaster {
         }
     }
 
-    private void rasterTriangle(Vertex v1, Vertex v2, Vertex v3, QVector3 v1Normal, QVector3 v2Normal,
+    private void rasterTriangle(QMatriz4 matViewModel, Vertex v1, Vertex v2, Vertex v3, QVector3 v1Normal,
+            QVector3 v2Normal,
             QVector3 v3Normal,
-            QVector2 v1UV,
-            QVector2 v2UV,
-            QVector2 v3UV,
+            QVector2 v1uv,
+            QVector2 v2uv,
+            QVector2 v3uv,
             Poly poly) {
 
-        // logger.info("rasterizando triangulo");
-        // logger.info("V 1: " + v1.toString());
-        // logger.info("V 2: " + v2.toString());
-        // logger.info("V 3: " + v3.toString());
+        // Calcula los vectores arriba y derecha (tangente y bitangente ) del tirnagulo
+        // para su uso en el noralmapping
+        // en el fragmentShader
+        QVector3 up = QVector3.empty();
+        QVector3 rigth = QVector3.empty();
 
-        // logger.info("Normal 1: " + v1Normal.toString());
-        // logger.info("Normal 2: " + v2Normal.toString());
-        // logger.info("Normal 3: " + v3Normal.toString());
-
-        // logger.info("UV 1: " + v1UV.toString());
-        // logger.info("UV 2: " + v2UV.toString());
-        // logger.info("UV 3: " + v3UV.toString());
+        calculateUpRight(up, rigth, v1, v2, v3, v1uv, v2uv, v3uv);
 
         // obtenemos los puntos proyectados en la pantalla
         QVector2[] screenPojected = projectVertices(v1, v2, v3, v3); // se coloca el v3 en cuarto lugar para tener 4
@@ -277,10 +243,7 @@ public class ParallelRaster implements AbstractRaster {
 
         Vertex[] vertexList = { v1, v2, v3 };
         QVector3[] normalList = { v1Normal, v2Normal, v3Normal };
-        QVector2[] uvList = { v1UV, v2UV, v3UV };
-
-        QVector3 up = QVector3.empty();
-        QVector3 right = QVector3.empty();
+        QVector2[] uvList = { v1uv, v2uv, v3uv };
 
         // valido si el punto proyectado esta dentro del rango de vision de la Camara
         if ((screenPojected[0].x < 0 && screenPojected[1].x < 0 && screenPojected[2].x < 0)
@@ -293,20 +256,6 @@ public class ParallelRaster implements AbstractRaster {
                         && screenPojected[2].y > render.getFrameBuffer().getAlto())) {
             render.poligonosDibujados--;
             return;
-        }
-
-        // mapeo normal para materiales básicos
-        if ((poly.material instanceof QMaterialBas
-                && ((QMaterialBas) poly.material).getMapaNormal() != null) // || (primitiva.material
-                                                                           // instanceof QMaterialBas &&
-                                                                           // ((QMaterialBas)
-                                                                           // primitiva.material).getMapaDesplazamiento()
-                                                                           // != null)
-        ) {
-            calcularArriba(up, v1, v2, v3, v1UV, v2UV, v3UV);
-            calcularDerecha(right, v1, v2, v3, v1UV, v2UV, v3UV);
-            up.normalize();
-            right.normalize();
         }
 
         int temp;
@@ -335,11 +284,13 @@ public class ParallelRaster implements AbstractRaster {
 
         if (screenPojected[order[1]].y == screenPojected[order[2]].y) {
             // this->scanBottomFlatTriangle(v1, v2, v3);
-            scanBottomFlatTriangle(up, right, poly, order[0], order[1], order[2], screenPojected, vertexList,
+            scanBottomFlatTriangle(up, rigth, matViewModel, poly, order[0], order[1], order[2], screenPojected,
+                    vertexList,
                     normalList, uvList);
         } else if (screenPojected[order[0]].y == screenPojected[order[1]].y) {
             // this->scanTopFlatTriangle(v1, v2, v3);
-            scanTopFlatTriangle(up, right, poly, order[0], order[1], order[2], screenPojected, vertexList, normalList,
+            scanTopFlatTriangle(up, rigth, matViewModel, poly, order[0], order[1], order[2], screenPojected, vertexList,
+                    normalList,
                     uvList);
         } else {
             // En este caso vamos a dividir el triángulo en dos
@@ -350,9 +301,9 @@ public class ParallelRaster implements AbstractRaster {
             try {
 
                 // el nuevo vertice a crear
-                Vertex v4 = tvars.vertex1;
-                QVector3 v4Normal = tvars.vector3f1;
-                QVector2 v4UV = tvars.vector2f1;
+                Vertex v4 = new Vertex();// tvars.vertex1;
+                QVector3 v4Normal = new QVector3(); // tvars.vector3f1;
+                QVector2 v4UV = new QVector2();// tvars.vector2f1;
 
                 QVector2 screenProjectedV4 = new QVector2();
                 screenProjectedV4.setXY(
@@ -361,7 +312,7 @@ public class ParallelRaster implements AbstractRaster {
                                 * (screenPojected[order[2]].x - screenPojected[order[0]].x)),
                         screenPojected[order[1]].y);
 
-                QVector3 bar = tvars.vector3f2;
+                QVector3 bar = tvars.vector3f9;
                 // Hallamos las coordenadas baricéntricas del punto v4 respecto al triángulo pa,
                 // pb, pc
                 QMath.getBarycentricCoordinates(bar, screenProjectedV4.x, screenProjectedV4.y, screenPojected[order[0]],
@@ -404,13 +355,13 @@ public class ParallelRaster implements AbstractRaster {
                         + bar.z * normalList[order[2]].z;
 
                 screenPojected[3] = screenProjectedV4;
-                scanBottomFlatTriangle(up, right, poly, order[0], order[1], 3, screenPojected,
+                scanBottomFlatTriangle(up, rigth, matViewModel, poly, order[0], order[1], 3, screenPojected,
                         VertexArray.of(v1, v2, v3, v4), Vector3Array.of(v1Normal, v2Normal, v3Normal, v4Normal),
-                        Vector2Array.of(v1UV, v2UV, v3UV, v4UV));
+                        Vector2Array.of(v1uv, v2uv, v3uv, v4UV));
                 // this->scanBottomFlatTriangle(v1, v2, v4);
-                scanTopFlatTriangle(up, right, poly, order[1], 3, order[2], screenPojected,
+                scanTopFlatTriangle(up, rigth, matViewModel, poly, order[1], 3, order[2], screenPojected,
                         VertexArray.of(v1, v2, v3, v4), Vector3Array.of(v1Normal, v2Normal, v3Normal, v4Normal),
-                        Vector2Array.of(v1UV, v2UV, v3UV, v4UV));
+                        Vector2Array.of(v1uv, v2uv, v3uv, v4UV));
                 // this->scanTopFlatTriangle(v4, v2, v3);
             } catch (Exception e) {
                 e.printStackTrace();
@@ -429,7 +380,8 @@ public class ParallelRaster implements AbstractRaster {
      * @param i2       Indice del punto 2
      * @param i3       Indice del punto 3
      */
-    private void scanBottomFlatTriangle(QVector3 up, QVector3 right, Poly poligono, int i1, int i2, int i3,
+    private void scanBottomFlatTriangle(QVector3 up, QVector3 rigth, QMatriz4 matViewModel, Poly poligono, int i1,
+            int i2, int i3,
             QVector2[] screenPojected,
             Vertex[] vertexList, QVector3[] normalList, QVector2[] uvList) {
         QVector2 pa = screenPojected[i1];
@@ -443,8 +395,8 @@ public class ParallelRaster implements AbstractRaster {
         float curx2 = pa.x;
 
         for (int scanlineY = (int) pa.y; scanlineY <= pb.y; scanlineY++) {
-            scanLine(up, right, poligono, curx1, curx2, scanlineY, i1, i2, i3, screenPojected, vertexList, normalList,
-                    uvList);
+            scanLine(up, rigth, matViewModel, poligono, curx1, curx2, scanlineY, i1, i2, i3, screenPojected, vertexList,
+                    normalList, uvList);
             curx1 += invslope1;
             curx2 += invslope2;
         }
@@ -459,7 +411,8 @@ public class ParallelRaster implements AbstractRaster {
      * @param i2       Indice del punto 2
      * @param i3       Indice del punto 3
      */
-    private void scanTopFlatTriangle(QVector3 up, QVector3 right, Poly poligono, int i1, int i2, int i3,
+    private void scanTopFlatTriangle(QVector3 up, QVector3 rigth, QMatriz4 matViewModel, Poly poligono, int i1, int i2,
+            int i3,
             QVector2[] screenPojected,
             Vertex[] vertexList, QVector3[] normalList, QVector2[] uvList) {
         QVector2 pa = screenPojected[i1];
@@ -473,8 +426,8 @@ public class ParallelRaster implements AbstractRaster {
         float curx2 = pc.x;
 
         for (int scanlineY = (int) pc.y; scanlineY > pa.y; scanlineY--) {
-            scanLine(up, right, poligono, curx1, curx2, scanlineY, i1, i2, i3, screenPojected, vertexList, normalList,
-                    uvList);
+            scanLine(up, rigth, matViewModel, poligono, curx1, curx2, scanlineY, i1, i2, i3, screenPojected, vertexList,
+                    normalList, uvList);
             curx1 -= invslope1;
             curx2 -= invslope2;
         }
@@ -491,8 +444,8 @@ public class ParallelRaster implements AbstractRaster {
      * @param i2
      * @param i3
      */
-    private void scanLine(QVector3 up, QVector3 right, Poly poligono, float startX, float endX, int y, int i1, int i2,
-            int i3,
+    private void scanLine(QVector3 up, QVector3 rigth, QMatriz4 matViewModel, Poly poligono, float startX, float endX,
+            int y, int i1, int i2, int i3,
             QVector2[] screenPojected, Vertex[] vertexList, QVector3[] normalList, QVector2[] uvList) {
         if (startX == endX) {
             return;
@@ -520,15 +473,15 @@ public class ParallelRaster implements AbstractRaster {
             startX = endX;
             endX = tmp;
         }
-        TempVars t = TempVars.get();
-        Vertex currentVertex = t.vertex3;
-        QVector2 currentUV = t.vector2f3;
-        QVector3 currentNormal = t.vector3f3;
+        TempVars tempVar = TempVars.get();
+        Vertex currentVertex = new Vertex();// t.vertex3;
+        QVector2 currentUV = new QVector2();// t.vector2f3;
+        QVector3 currentNormal = new QVector3();// t.vector3f3;
         try {
             for (int x = (int) startX; x < endX; x++) {
                 if (x >= 0 && y >= 0 && render.getFrameBuffer().getAncho() > x
                         && render.getFrameBuffer().getAlto() > y) {
-                    QVector3 bar = t.vector3f1;
+                    QVector3 bar = tempVar.vector3f8;
                     // Hallamos las coordenadas baricéntricas del punto v4 respecto al triángulo pa,
                     // pb, pc
                     QMath.getBarycentricCoordinates(bar, x, y, pa, pb, pc);
@@ -573,18 +526,88 @@ public class ParallelRaster implements AbstractRaster {
                     currentNormal.y = bar.x * normalVA.y + bar.y * normalVB.y + bar.z * normalVC.y;
                     currentNormal.z = bar.x * normalVA.z + bar.y * normalVB.z + bar.z * normalVC.z;
                     currentNormal.normalize();
-                    prepareFragment(up, right, poligono, currentVertex, currentNormal, currentUV, x, y);
+                    prepareFragment(up, rigth, matViewModel, poligono, currentVertex, currentNormal, currentUV, x, y);
                 }
             }
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
-            t.release();
+            tempVar.release();
         }
     }
 
-    protected void computeCurrentVertex(QVector3 up, QVector3 right, Vertex v1, Vertex v2, QVector3 v1Normal,
-            QVector3 v2Normal, QVector2 v1UV, QVector2 v2UV, float alpha, Primitive poly,
+    /**
+     * Algoritmo para pintar una linea
+     *
+     * @param primitiva
+     * @param x0
+     * @param y0
+     * @param x1
+     * @param y1
+     */
+    public void lineaBresenham(QVector3 up, QVector3 rigth, QMatriz4 matViewModel, Primitive primitiva, int x0, int y0,
+            int x1, int y1,
+            Vertex[] vt, QVector3[] normals, QVector2[] uv) {
+        int x, y, dx, dy, p, incE, incNE, stepx, stepy;
+        dx = (x1 - x0);
+        dy = (y1 - y0);
+        /* determinar que punto usar para empezar, cual para terminar */
+        if (dy < 0) {
+            dy = -dy;
+            stepy = -1;
+        } else {
+            stepy = 1;
+        }
+        if (dx < 0) {
+            dx = -dx;
+            stepx = -1;
+        } else {
+            stepx = 1;
+        }
+        x = x0;
+        y = y0;
+
+        computeCurrentVertex(up, rigth, matViewModel, vt[0], vt[1], normals[0], normals[1], uv[0], uv[1], 0, primitiva,
+                x, y);
+
+        /* se cicla hasta llegar al extremo de la línea */
+        if (dx > dy) {
+            p = 2 * dy - dx;
+            incE = 2 * dy;
+            incNE = 2 * (dy - dx);
+            while (x != x1) {
+                x = x + stepx;
+                if (p < 0) {
+                    p = p + incE;
+                } else {
+                    y = y + stepy;
+                    p = p + incNE;
+                }
+                computeCurrentVertex(up, rigth, matViewModel, vt[0], vt[1], normals[0], normals[1], uv[0], uv[1],
+                        (float) x / (float) dx,
+                        primitiva, x, y);
+            }
+        } else {
+            p = 2 * dx - dy;
+            incE = 2 * dx;
+            incNE = 2 * (dx - dy);
+            while (y != y1) {
+                y = y + stepy;
+                if (p < 0) {
+                    p = p + incE;
+                } else {
+                    x = x + stepx;
+                    p = p + incNE;
+                }
+                computeCurrentVertex(up, rigth, matViewModel, vt[0], vt[1], normals[0], normals[1], uv[0], uv[1],
+                        (float) x / (float) dx, primitiva, x, y);
+            }
+        }
+    }
+
+    protected void computeCurrentVertex(QVector3 up, QVector3 rigth, QMatriz4 matViewModel, Vertex v1, Vertex v2,
+            QVector3 v1Normal,
+            QVector3 v2Normal, QVector2 v1uv, QVector2 v2uv, float alpha, Primitive poly,
             int x, int y) {
         // solo interpolamos z para validar profundidad
         float zVertex = QMath.interpolateLinear(alpha, v1.location.z, v2.location.z);
@@ -595,8 +618,8 @@ public class ParallelRaster implements AbstractRaster {
                 QVector2 currentUV = new QVector2();
                 QMath.interpolateLinear(currentVertex, alpha, v1, v2);
                 QMath.interpolateLinear(currentNormal, alpha, v1Normal, v2Normal);
-                QMath.interpolateLinear(currentUV, alpha, v1UV, v2UV);
-                prepareFragment(up, right, poly, currentVertex, currentNormal, currentUV, x, y);
+                QMath.interpolateLinear(currentUV, alpha, v1uv, v2uv);
+                prepareFragment(up, rigth, matViewModel, poly, currentVertex, currentNormal, currentUV, x, y);
             }
         } catch (Exception e) {
 
@@ -623,7 +646,8 @@ public class ParallelRaster implements AbstractRaster {
      * @param x
      * @param y
      */
-    protected void prepareFragment(QVector3 up, QVector3 right, Primitive poly, Vertex currentVertex,
+    protected void prepareFragment(QVector3 up, QVector3 rigth, QMatriz4 matViewModel, Primitive poly,
+            Vertex currentVertex,
             QVector3 currentNormal, QVector2 currentUV, int x, int y) {
         if (x > 0 && x < render.getFrameBuffer().getAncho() && y > 0 && y < render.getFrameBuffer().getAlto()) {
             if (validateZBuffer(x, y, currentVertex.location.z)) {
@@ -633,50 +657,11 @@ public class ParallelRaster implements AbstractRaster {
                 // interpolada
 
                 if (poly instanceof Poly) {
-                    if (poly.mesh.tipo == Mesh.GEOMETRY_TYPE_WIRE
+                    if (poly.mesh.type == Mesh.GEOMETRY_TYPE_WIRE
                             || !(((Poly) poly).isSmooth()
                                     && (render.opciones.getTipoVista() >= QOpcionesRenderer.VISTA_PHONG)
                                     || render.opciones.isForzarSuavizado())) {
                         currentNormal.set(((Poly) poly).getNormalCopy());
-                    }
-                }
-
-                if (render.opciones.isMaterial()) {
-                    // Mapa de normales
-                    if (poly.material != null
-                            && (poly.material instanceof QMaterialBas
-                                    && ((QMaterialBas) poly.material).getMapaNormal() != null) // si tiene material
-                                                                                               // basico y tiene mapa
-                                                                                               // normal
-                            && render.opciones.isNormalMapping()) {
-                        QMaterialBas material = (QMaterialBas) poly.material;
-
-                        QVector3 currentUp = QVector3.empty();
-                        QVector3 currentRight = QVector3.empty();
-
-                        currentUp.set(up);
-                        currentRight.set(right);
-                        // usando el metodo arriba e izquierda
-                        currentUp.multiply(
-                                (material.getMapaNormal().getNormalY(currentUV.x, currentUV.y) * 2 - 1)
-                                        * material.getFactorNormal());
-                        currentRight
-                                .multiply(
-                                        (material.getMapaNormal().getNormalX(currentUV.x, currentUV.y) * 2 - 1)
-                                                * material.getFactorNormal());
-                        // continua ejecucion normal
-                        currentNormal
-                                .multiply(
-                                        material.getMapaNormal().getNormalZ(currentUV.x, currentUV.y) * 2 - 1);
-                        currentNormal.add(currentUp, currentRight);
-                        currentNormal.normalize();
-                    }
-
-                    // si tiene material y tiene mapa normal
-                    if (poly.material != null && (poly.material instanceof MaterialNode)
-                            && render.opciones.isNormalMapping()) {
-                        currentVertex.up.set(up);
-                        currentVertex.right.set(right);
                     }
                 }
 
@@ -694,21 +679,24 @@ public class ParallelRaster implements AbstractRaster {
                 } catch (Exception e) {
                 }
 
-                if (render.getFrameBuffer().getPixel(x, y) != null) {
-                    render.getFrameBuffer().getPixel(x, y).setDibujar(true);
-                    render.getFrameBuffer().getPixel(x, y).ubicacion.set(currentVertex.location);
-                    render.getFrameBuffer().getPixel(x, y).normal.set(currentNormal);
-                    render.getFrameBuffer().getPixel(x, y).material = poly.material;
-                    render.getFrameBuffer().getPixel(x, y).primitiva = poly;
-                    render.getFrameBuffer().getPixel(x, y).u = currentUV.x;
-                    render.getFrameBuffer().getPixel(x, y).v = currentUV.y;
-                    render.getFrameBuffer().getPixel(x, y).entity = poly.mesh.getEntity();
-                    render.getFrameBuffer().getPixel(x, y).up.set(currentVertex.up);
-                    render.getFrameBuffer().getPixel(x, y).right.set(currentVertex.right);
+                Fragment fragment = render.getFrameBuffer().getPixel(x, y);
+                if (fragment != null) {
+
+                    fragment.setDibujar(true);
+                    fragment.ubicacion.set(currentVertex.location);
+                    fragment.normal.set(currentNormal);
+                    fragment.material = poly.material;
+                    fragment.primitiva = poly;
+                    fragment.u = currentUV.x;
+                    fragment.v = currentUV.y;
+                    fragment.entity = poly.mesh.getEntity();
+                    // fragment.matViewModel = matViewModel;
+                    fragment.up.set(up);
+                    fragment.right.set(rigth);
 
                     if (!render.opciones.isDefferedShadding())
                         render.getFrameBuffer().setQColor(x, y,
-                                render.getShader().shadeFragment(render.getFrameBuffer().getPixel(x, y), x, y));
+                                render.getShader().shadeFragment(fragment, x, y));
                 }
 
                 // actualiza el zBuffer
@@ -717,107 +705,34 @@ public class ParallelRaster implements AbstractRaster {
         }
     }
 
-    protected void calcularArriba(QVector3 upVector, Vertex v1, Vertex v2, Vertex v3, QVector2 v1UV, QVector2 v2UV,
-            QVector2 v3UV) {
-        float coefficient1, coefficient2;
-        if (v1UV.x == v2UV.x) {
-            coefficient1 = 0;
-            coefficient2 = 1.0f / (v1UV.y - v2UV.y);
-        } else if (v1UV.x == v3UV.x) {
-            coefficient1 = 1.0f / (v1UV.y - v3UV.y);
-            coefficient2 = 0;
-        } else {
-            coefficient1 = 1.0f / ((v1UV.y - v3UV.y) - (v1UV.x - v3UV.x) * (v1UV.y - v2UV.y) / (v1UV.x - v2UV.y));
-            coefficient2 = (-coefficient1 * (v1UV.x - v3UV.x)) / (v1UV.x - v2UV.x);
-        }
-        upVector.x = coefficient1 * (v1.location.x - v3.location.x) + coefficient2 * (v1.location.x - v2.location.x);
-        upVector.y = coefficient1 * (v1.location.y - v3.location.y) + coefficient2 * (v1.location.y - v2.location.y);
-        upVector.z = coefficient1 * (v1.location.z - v3.location.z) + coefficient2 * (v1.location.z - v2.location.z);
+    protected void calculateUpRight(QVector3 Tangent, QVector3 Bitangent, Vertex v0, Vertex v1, Vertex v2,
+            QVector2 v0uv, QVector2 v1uv,
+            QVector2 v2uv) {
+
+        QVector3 Edge1 = v1.location.getVector3().subtract(v0.location.getVector3()); // v1.m_pos - v0.m_pos;
+        QVector3 Edge2 = v2.location.getVector3().subtract(v0.location.getVector3()); // v2.m_pos - v0.m_pos;
+
+        float DeltaU1 = v1uv.x - v0uv.x;
+        float DeltaV1 = v1uv.y - v0uv.y;
+        float DeltaU2 = v2uv.x - v0uv.x;
+        float DeltaV2 = v2uv.y - v0uv.y;
+
+        float f = 1.0f / (DeltaU1 * DeltaV2 - DeltaU2 * DeltaV1);
+
+        Tangent.x = f * (DeltaV2 * Edge1.x - DeltaV1 * Edge2.x);
+        Tangent.y = f * (DeltaV2 * Edge1.y - DeltaV1 * Edge2.y);
+        Tangent.z = f * (DeltaV2 * Edge1.z - DeltaV1 * Edge2.z);
+
+        Bitangent.x = f * (-DeltaU2 * Edge1.x + DeltaU1 * Edge2.x);
+        Bitangent.y = f * (-DeltaU2 * Edge1.y + DeltaU1 * Edge2.y);
+        Bitangent.z = f * (-DeltaU2 * Edge1.z + DeltaU1 * Edge2.z);
+
+        // v0.m_tangent += Tangent;
+        // v1.m_tangent += Tangent;
+        // v2.m_tangent += Tangent;
+
     }
 
-    protected void calcularDerecha(QVector3 rightVector, Vertex v1, Vertex v2, Vertex v3, QVector2 v1UV, QVector2 v2UV,
-            QVector2 v3UV) {
-        float coefficient1, coefficient2;
-        if (v1UV.x == v2UV.x) {
-            coefficient1 = 0;
-            coefficient2 = 1.0f / (v1UV.x - v2UV.x);
-        } else if (v1UV.y == v3UV.y) {
-            coefficient1 = 1.0f / (v1UV.x - v3UV.x);
-            coefficient2 = 0;
-        } else {
-            coefficient1 = 1.0f / ((v1UV.x - v3UV.x) - (v1UV.y - v3UV.y) * (v1UV.x - v2UV.x) / (v1UV.y - v2UV.y));
-            coefficient2 = (-coefficient1 * (v1UV.y - v3UV.y)) / (v1UV.y - v2UV.y);
-        }
-        rightVector.x = coefficient1 * (v1.location.x - v3.location.x) + coefficient2 * (v1.location.x - v2.location.x);
-        rightVector.y = coefficient1 * (v1.location.y - v3.location.y) + coefficient2 * (v1.location.y - v2.location.y);
-        rightVector.z = coefficient1 * (v1.location.z - v3.location.z) + coefficient2 * (v1.location.z - v2.location.z);
-    }
-
-    /**
-     * Algoritmo para pintar una linea
-     *
-     * @param primitiva
-     * @param x0
-     * @param y0
-     * @param x1
-     * @param y1
-     */
-    public void lineaBresenham(QVector3 up, QVector3 right, Primitive primitiva, int x0, int y0, int x1, int y1,
-            Vertex[] vt, QVector3[] normals, QVector2[] uv) {
-        int x, y, dx, dy, p, incE, incNE, stepx, stepy;
-        dx = (x1 - x0);
-        dy = (y1 - y0);
-        /* determinar que punto usar para empezar, cual para terminar */
-        if (dy < 0) {
-            dy = -dy;
-            stepy = -1;
-        } else {
-            stepy = 1;
-        }
-        if (dx < 0) {
-            dx = -dx;
-            stepx = -1;
-        } else {
-            stepx = 1;
-        }
-        x = x0;
-        y = y0;
-
-        computeCurrentVertex(up, right, vt[0], vt[1], normals[0], normals[1], uv[0], uv[1], 0, primitiva, x, y);
-
-        /* se cicla hasta llegar al extremo de la línea */
-        if (dx > dy) {
-            p = 2 * dy - dx;
-            incE = 2 * dy;
-            incNE = 2 * (dy - dx);
-            while (x != x1) {
-                x = x + stepx;
-                if (p < 0) {
-                    p = p + incE;
-                } else {
-                    y = y + stepy;
-                    p = p + incNE;
-                }
-                computeCurrentVertex(up, right, vt[0], vt[1], normals[0], normals[1], uv[0], uv[1],
-                        (float) x / (float) dx, primitiva, x, y);
-            }
-        } else {
-            p = 2 * dx - dy;
-            incE = 2 * dx;
-            incNE = 2 * (dx - dy);
-            while (y != y1) {
-                y = y + stepy;
-                if (p < 0) {
-                    p = p + incE;
-                } else {
-                    x = x + stepx;
-                    p = p + incNE;
-                }
-                computeCurrentVertex(up, right, vt[0], vt[1], normals[0], normals[1], uv[0], uv[1],
-                        (float) x / (float) dx, primitiva, x, y);
-            }
-        }
-    }
 
     private QVector2[] projectVertices(Vertex... v) {
         // obtenemos los puntos proyectados en la pantalla

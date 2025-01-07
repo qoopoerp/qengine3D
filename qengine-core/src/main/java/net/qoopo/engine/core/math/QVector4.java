@@ -7,7 +7,7 @@ import net.qoopo.engine.core.util.QGlobal;
 public class QVector4 implements Serializable {
 
     public static QVector4 zero = new QVector4(0, 0, 0, 0);
-//    public static QVector3 gravedad=QVector3.of(0, -10, 0);
+    // public static QVector3 gravedad=QVector3.of(0, -10, 0);
 
     public static QVector4 unitario_x = new QVector4(1, 0, 0, 0);
     public static QVector4 unitario_y = new QVector4(0, 1, 0, 0);
@@ -93,7 +93,7 @@ public class QVector4 implements Serializable {
         x += value;
         y += value;
         z += value;
-//        w += value;
+        // w += value;
         return this;
     }
 
@@ -101,7 +101,7 @@ public class QVector4 implements Serializable {
         x -= value;
         y -= value;
         z -= value;
-//        w -= value;
+        // w -= value;
         return this;
     }
 
@@ -110,7 +110,7 @@ public class QVector4 implements Serializable {
             x += other.x;
             y += other.y;
             z += other.z;
-//            w += other.w;
+            // w += other.w;
         }
         return this;
     }
@@ -129,7 +129,7 @@ public class QVector4 implements Serializable {
         x *= alpha;
         y *= alpha;
         z *= alpha;
-//        w *= alpha;
+        // w *= alpha;
         return this;
     }
 
@@ -143,6 +143,33 @@ public class QVector4 implements Serializable {
 
     public float dot(QVector4 other) {
         return (this.x * other.x + this.y * other.y + this.z * other.z + this.w * other.w);
+    }
+
+    public QVector4 rotateX(float angle) {
+        float cosAngle = (float) QMath.cos(angle);
+        float sinAngle = (float) QMath.sin(angle);
+        float tempY = y * cosAngle - z * sinAngle;
+        z = y * sinAngle + z * cosAngle;
+        y = tempY;
+        return this;
+    }
+
+    public QVector4 rotateY(float angle) {
+        float cosAngle = (float) QMath.cos(angle);
+        float sinAngle = (float) QMath.sin(angle);
+        float tempZ = z * cosAngle - x * sinAngle;
+        x = z * sinAngle + x * cosAngle;
+        z = tempZ;
+        return this;
+    }
+
+    public QVector4 rotateZ(float angle) {
+        float cosAngle = (float) QMath.cos(angle);
+        float sinAngle = (float) QMath.sin(angle);
+        float tempX = x * cosAngle - y * sinAngle;
+        y = x * sinAngle + y * cosAngle;
+        x = tempX;
+        return this;
     }
 
     @Override

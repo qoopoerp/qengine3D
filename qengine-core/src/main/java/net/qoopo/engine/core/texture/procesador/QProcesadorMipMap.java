@@ -12,7 +12,7 @@ import net.qoopo.engine.core.math.QColor;
 import net.qoopo.engine.core.renderer.post.procesos.QPostProceso;
 import net.qoopo.engine.core.renderer.post.procesos.antialiasing.QMSAA;
 import net.qoopo.engine.core.renderer.post.procesos.blur.QProcesadorBlur;
-import net.qoopo.engine.core.texture.QTextura;
+import net.qoopo.engine.core.texture.Texture;
 
 /**
  * Este procesador permite cargar una textura atlas (una textura que tiene
@@ -20,20 +20,20 @@ import net.qoopo.engine.core.texture.QTextura;
  *
  * @author alberto
  */
-public class QProcesadorMipMap extends QProcesadorTextura {
+public class QProcesadorMipMap extends Texture {
 
     public static final int TIPO_BLUR = 1;
     public static final int TIPO_ANTIALIASING = 2;
-    private QTextura texturaAtlas;
-    private QTextura[] texturarreglo; // permite meyor velocidad
-    private QTextura textura;
+    private Texture texturaAtlas;
+    private Texture[] texturarreglo; // permite meyor velocidad
+    private Texture textura;
     private int niveles;
     private int nivel;
     private int tipo = TIPO_ANTIALIASING; // 1 antialiasing, 2 blur
     private int anchoOriginal = 0;
 
-    public QProcesadorMipMap(QTextura textura, int niveles, int tipo) {
-        this.textura = new QTextura();
+    public QProcesadorMipMap(Texture textura, int niveles, int tipo) {
+        this.textura = new Texture();
         this.niveles = niveles;
         this.tipo = tipo;
         if (textura.getAncho() != 0 && textura.getAlto() != 0) {
@@ -42,8 +42,8 @@ public class QProcesadorMipMap extends QProcesadorTextura {
         }
     }
 
-    public QProcesadorMipMap(QTextura textura, int niveles) {
-        this.textura = new QTextura();
+    public QProcesadorMipMap(Texture textura, int niveles) {
+        this.textura = new Texture();
         this.niveles = niveles;
         if (textura.getAncho() != 0 && textura.getAlto() != 0) {
             generarMipMap(textura, niveles, tipo);
@@ -52,7 +52,7 @@ public class QProcesadorMipMap extends QProcesadorTextura {
 
     }
 
-    public QTextura generarMipMap(QTextura textura) {
+    public Texture generarMipMap(Texture textura) {
         return generarMipMap(textura, niveles, tipo);
     }
 
@@ -68,9 +68,9 @@ public class QProcesadorMipMap extends QProcesadorTextura {
      *                QProcesadorMipMap.TIPO_ANTIALIASING)
      * @return La textura con los mipmap generados
      */
-    public QTextura generarMipMap(QTextura textura, int niveles, int tipo) {
+    public Texture generarMipMap(Texture textura, int niveles, int tipo) {
         // calculo el ancho necesario
-        texturarreglo = new QTextura[niveles];
+        texturarreglo = new Texture[niveles];
         this.niveles = niveles;
         this.tipo = tipo;
         this.anchoOriginal = textura.getAncho();
@@ -78,11 +78,11 @@ public class QProcesadorMipMap extends QProcesadorTextura {
         for (int iNivel = 2; iNivel <= niveles; iNivel++) {
             totalAncho += textura.getAncho() / iNivel;
         }
-        QTextura mipmap = new QTextura(totalAncho, textura.getAlto());
+        Texture mipmap = new Texture(totalAncho, textura.getAlto());
 
         int xGlobal = 0;
         for (int iNivel = 1; iNivel <= niveles; iNivel++) {
-            QTextura tmp = new QTextura();
+            Texture tmp = new Texture();
 
             if (iNivel > 1) {
                 QPostProceso proc = null;
@@ -116,19 +116,19 @@ public class QProcesadorMipMap extends QProcesadorTextura {
         return mipmap;
     }
 
-    public QTextura getTexturaAtlas() {
+    public Texture getTexturaAtlas() {
         return texturaAtlas;
     }
 
-    public void setTexturaAtlas(QTextura texturaAtlas) {
+    public void setTexturaAtlas(Texture texturaAtlas) {
         this.texturaAtlas = texturaAtlas;
     }
 
-    public QTextura[] getTexturarreglo() {
+    public Texture[] getTexturarreglo() {
         return texturarreglo;
     }
 
-    public void setTexturarreglo(QTextura[] texturarreglo) {
+    public void setTexturarreglo(Texture[] texturarreglo) {
         this.texturarreglo = texturarreglo;
     }
 
@@ -169,46 +169,46 @@ public class QProcesadorMipMap extends QProcesadorTextura {
         textura = texturarreglo[nivel - 1];
     }
 
-    public QTextura getTextura() {
+    public Texture getTextura() {
         return textura;
     }
 
-    public void setTextura(QTextura textura) {
+    public void setTextura(Texture textura) {
         this.textura = textura;
     }
 
     @Override
-    public int get_ARGB(float x, float y) {
+    public int getARGB(float x, float y) {
         return textura.getARGB(x, y);
     }
 
     @Override
-    public QColor get_QARGB(float x, float y) {
+    public QColor getQColor(float x, float y) {
         return textura.getQColor(x, y);
     }
 
-    @Override
-    public float getNormalX(float x, float y) {
-        return textura.getNormalX(x, y);
-    }
+    // @Override
+    // public float getNormalX(float x, float y) {
+    // return textura.getNormalX(x, y);
+    // }
+
+    // @Override
+    // public float getNormalY(float x, float y) {
+    // return textura.getNormalY(x, y);
+    // }
+
+    // @Override
+    // public float getNormalZ(float x, float y) {
+    // return textura.getNormalZ(x, y);
+    // }
 
     @Override
-    public float getNormalY(float x, float y) {
-        return textura.getNormalY(x, y);
-    }
-
-    @Override
-    public float getNormalZ(float x, float y) {
-        return textura.getNormalZ(x, y);
-    }
-
-    @Override
-    public BufferedImage getTexture(Dimension size) {
+    public BufferedImage getImagen(Dimension size) {
         return textura.getImagen(size);
     }
 
     @Override
-    public BufferedImage getTexture() {
+    public BufferedImage getImagen() {
         return textura.getImagen();
     }
 

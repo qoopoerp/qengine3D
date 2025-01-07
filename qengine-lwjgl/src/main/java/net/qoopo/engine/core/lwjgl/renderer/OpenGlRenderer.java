@@ -33,10 +33,11 @@ import org.lwjgl.system.MemoryUtil;
 
 import net.qoopo.engine.core.entity.Entity;
 import net.qoopo.engine.core.entity.component.mesh.primitive.Primitive;
+import net.qoopo.engine.core.entity.component.mesh.primitive.QVertexBuffer;
 import net.qoopo.engine.core.entity.component.mesh.primitive.Vertex;
-import net.qoopo.engine.core.entity.component.transform.QVertexBuffer;
 import net.qoopo.engine.core.lwjgl.renderer.core.QGlVentana;
 import net.qoopo.engine.core.lwjgl.renderer.core.shader.QGLShader;
+import net.qoopo.engine.core.math.QMatriz4;
 import net.qoopo.engine.core.math.QVector2;
 import net.qoopo.engine.core.renderer.RenderEngine;
 import net.qoopo.engine.core.renderer.superficie.Superficie;
@@ -180,15 +181,22 @@ public class OpenGlRenderer extends RenderEngine {
     }
 
     @Override
-    public void renderLine(Primitive primitiva, Vertex... vertex) {
+    public void renderLine(QMatriz4 matViewModel, Primitive primitiva, Vertex... vertex) {
         // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'rasterLine'");
+        throw new UnsupportedOperationException("Unimplemented method 'renderLine'");
     }
 
     @Override
-    public void render(QVertexBuffer bufferVertices, Primitive primitiva, boolean wire) {
+    public void render(QMatriz4 matViewModel, QVertexBuffer bufferVertices, Primitive primitiva, boolean wire) {
         // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'raster'");
+        throw new UnsupportedOperationException("Unimplemented method 'render'");
+    }
+
+    @Override
+    public void renderEntity(Entity entity, QMatriz4 matrizVista, QMatriz4 matrizVistaInvertidaBillboard,
+            boolean transparentes) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'renderEntity'");
     }
 
     @Override
@@ -209,8 +217,7 @@ public class OpenGlRenderer extends RenderEngine {
         throw new UnsupportedOperationException("Unimplemented method 'postRender'");
     }
 
-    // @Override
-    // public void dibujarPixel(int x, int y) {
-    // }
+  
+
 
 }

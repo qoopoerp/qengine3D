@@ -9,7 +9,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import net.qoopo.engine.core.entity.component.mesh.primitive.Shape;
-import net.qoopo.engine.core.material.basico.QMaterialBas;
+import net.qoopo.engine.core.material.basico.Material;
 import net.qoopo.engine.core.math.QMath;
 
 /**
@@ -23,22 +23,22 @@ public class Sphere extends Shape {
     private int secciones = 36;
 
     public Sphere() {
-        nombre = "Esfera";
-        material = new QMaterialBas("Esfera");
+        name = "Esfera";
+        material = new Material("Esfera");
         radio = 1;
         build();
     }
 
     public Sphere(float radio) {
-        nombre = "Esfera";
-        material = new QMaterialBas("Esfera");
+        name = "Esfera";
+        material = new Material("Esfera");
         this.radio = radio;
         build();
     }
 
     public Sphere(float radio, int secciones) {
-        nombre = "Esfera";
-        material = new QMaterialBas("Esfera");
+        name = "Esfera";
+        material = new Material("Esfera");
         this.radio = radio;
         this.secciones = secciones;
         build();

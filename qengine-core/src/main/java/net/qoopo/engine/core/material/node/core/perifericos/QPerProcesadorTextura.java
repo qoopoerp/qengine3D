@@ -5,34 +5,30 @@
  */
 package net.qoopo.engine.core.material.node.core.perifericos;
 
+import lombok.Getter;
+import lombok.Setter;
 import net.qoopo.engine.core.entity.component.mesh.primitive.Fragment;
 import net.qoopo.engine.core.material.node.core.QNodoEnlace;
 import net.qoopo.engine.core.material.node.core.QNodoPeriferico;
 import net.qoopo.engine.core.renderer.RenderEngine;
-import net.qoopo.engine.core.texture.procesador.QProcesadorTextura;
+import net.qoopo.engine.core.texture.Texture;
 
 /**
  *
  * @author alberto
  */
+@Getter
+@Setter
 public class QPerProcesadorTextura extends QNodoPeriferico {
 
-    private QProcesadorTextura procesadorTextura;
+    private Texture procesadorTextura;
 
     public QPerProcesadorTextura() {
     }
 
-    public QPerProcesadorTextura(QProcesadorTextura procesadorTextura) {
+    public QPerProcesadorTextura(Texture procesadorTextura) {
         this.procesadorTextura = procesadorTextura;
 
-    }
-
-    public QProcesadorTextura getProcesadorTextura() {
-        return procesadorTextura;
-    }
-
-    public void setProcesadorTextura(QProcesadorTextura procesadorTextura) {
-        this.procesadorTextura = procesadorTextura;
     }
 
     @Override

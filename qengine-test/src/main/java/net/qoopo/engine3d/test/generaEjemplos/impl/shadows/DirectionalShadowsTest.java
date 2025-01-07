@@ -10,15 +10,14 @@ import java.io.File;
 import net.qoopo.engine.core.assets.AssetManager;
 import net.qoopo.engine.core.entity.Entity;
 import net.qoopo.engine.core.entity.component.mesh.Mesh;
-import net.qoopo.engine.core.entity.component.mesh.primitive.shape.PlanarMesh;
 import net.qoopo.engine.core.entity.component.mesh.primitive.shape.Box;
+import net.qoopo.engine.core.entity.component.mesh.primitive.shape.PlanarMesh;
 import net.qoopo.engine.core.entity.component.mesh.primitive.shape.Sphere;
 import net.qoopo.engine.core.entity.component.mesh.util.QUnidadMedida;
-import net.qoopo.engine.core.material.basico.QMaterialBas;
+import net.qoopo.engine.core.material.basico.Material;
 import net.qoopo.engine.core.math.QColor;
 import net.qoopo.engine.core.renderer.RenderEngine;
 import net.qoopo.engine.core.scene.Scene;
-import net.qoopo.engine.core.texture.procesador.QProcesadorSimple;
 import net.qoopo.engine.core.texture.util.MaterialUtil;
 import net.qoopo.engine3d.test.generaEjemplos.MakeTestScene;
 
@@ -33,25 +32,15 @@ public class DirectionalShadowsTest extends MakeTestScene {
                 this.scene = scene;
 
                 try {
-
-                        // QMaterialBas mat1 = new QMaterialBas();
-                        // mat1.setMapaColor(new QProcesadorSimple(
-                        // AssetManager.get().loadTexture("difusa",
-                        // new File("assets/textures/testNormal/cajaColor.jpg"))));
-                        // mat1.setMapaNormal(new QProcesadorSimple(
-                        // AssetManager.get().loadTexture("normal",
-                        // new File("assets/textures/testNormal/cajaNormal.jpg"))));
-
                         Entity cuboEntidad = new Entity("cubo");
                         cuboEntidad.move(0, 5, 0);
                         // cuboEntidad.addComponent(QMaterialUtil.aplicarMaterial(new Box(2), mat1));
                         cuboEntidad.addComponent(new Box(2));
                         scene.addEntity(cuboEntidad);
 
-                        QMaterialBas mat2 = new QMaterialBas();
-                        mat2.setMapaColor(new QProcesadorSimple(
-                                        AssetManager.get().loadTexture("difusa2",
-                                                        new File("assets/textures/fuego/fuego4.png"))));
+                        Material mat2 = new Material();
+                        mat2.setMapaColor(AssetManager.get().loadTexture("difusa2",
+                                        new File("assets/textures/fuego/fuego4.png")));
                         mat2.setTransparencia(true);
                         mat2.setColorTransparente(QColor.BLACK);
                         Entity cuboEntidad2 = new Entity("cubo 2");

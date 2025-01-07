@@ -19,11 +19,11 @@ import net.qoopo.engine.core.entity.component.physics.collision.detector.shape.p
 import net.qoopo.engine.core.entity.component.physics.collision.detector.shape.primitivas.QColisionEsfera;
 import net.qoopo.engine.core.entity.component.physics.dinamica.QObjetoDinamico;
 import net.qoopo.engine.core.entity.component.physics.dinamica.QObjetoRigido;
-import net.qoopo.engine.core.material.basico.QMaterialBas;
+import net.qoopo.engine.core.material.basico.Material;
 import net.qoopo.engine.core.math.QColor;
 import net.qoopo.engine.core.math.QVector3;
 import net.qoopo.engine.core.scene.Scene;
-import net.qoopo.engine.core.texture.QTextura;
+import net.qoopo.engine.core.texture.Texture;
 import net.qoopo.engine.core.texture.util.MaterialUtil;
 
 /**
@@ -36,18 +36,18 @@ public class EjemploFisica1 extends FisicaDisparar {
     private float anchoLadrillo = 0.24f;
     private float altoLadrillo = 0.12f;
 
-    private static QMaterialBas materialLadrillo;
-    private static QMaterialBas materialBalas;
-    private static QMaterialBas materialBombas;
+    private static Material materialLadrillo;
+    private static Material materialBalas;
+    private static Material materialBombas;
 
     @Override
     public void make(Scene mundo) {
         super.make(mundo);
 
-        materialBalas = new QMaterialBas("bala");
-        materialBalas.setColorBase(QColor.BLUE);
-        materialBombas = new QMaterialBas("bomba");
-        materialBombas.setColorBase(QColor.YELLOW);
+        materialBalas = new Material("bala");
+        materialBalas.setColor(QColor.BLUE);
+        materialBombas = new Material("bomba");
+        materialBombas.setColor(QColor.YELLOW);
 
         // //el mundo por default esta con unidades de medida en metro
         // //al non usar el conversor d eunidades de media, se toma como metros
@@ -132,12 +132,12 @@ public class EjemploFisica1 extends FisicaDisparar {
         anchoLadrillo = mundo.UM.convertirPixel(50, QUnidadMedida.CENTIMETRO);
         altoLadrillo = mundo.UM.convertirPixel(50, QUnidadMedida.CENTIMETRO);
 
-        materialLadrillo = new QMaterialBas();
+        materialLadrillo = new Material();
 
         materialLadrillo = null;
         try {
-            materialLadrillo = new QMaterialBas(
-                    new QTextura(ImageIO.read(new File("assets/textures/basicas/muro/ladrillo_1.jpg"))),
+            materialLadrillo = new Material(
+                    new Texture(ImageIO.read(new File("assets/textures/basicas/muro/ladrillo_1.jpg"))),
                     64);
             // materialLadrillo.alpha = 1;
         } catch (Exception e) {

@@ -27,7 +27,7 @@ import net.qoopo.engine.core.scene.Scene;
 import net.qoopo.engine.core.util.QGlobal;
 import net.qoopo.engine.renderer.SoftwareRenderer;
 import net.qoopo.engine.renderer.raster.ParallelRaster;
-import net.qoopo.engine.renderer.shader.fragment.basico.parciales.QSimpleShaderBAS;
+import net.qoopo.engine.renderer.shader.fragment.basico.parciales.SimpleFragmetShader;
 import net.qoopo.engine.renderer.util.TransformationVectorUtil;
 
 /**
@@ -85,7 +85,7 @@ public class SoftwareShadowRender extends SoftwareRenderer {
         this.camaraRender = camaraRender;
         setDireccion(luz.getDirection());
         raster = new ParallelRaster(this);
-        shader = new QSimpleShaderBAS(this);
+        shader = new SimpleFragmetShader(this);
     }
 
     public SoftwareShadowRender(int tipo, Scene escena, QSpotLigth luz, Camera camaraRender, int ancho, int alto) {
@@ -99,7 +99,7 @@ public class SoftwareShadowRender extends SoftwareRenderer {
         this.camaraRender = camaraRender;
         setDireccion(luz.getDirection());
         raster = new ParallelRaster(this);
-        shader = new QSimpleShaderBAS(this);
+        shader = new SimpleFragmetShader(this);
     }
 
     public SoftwareShadowRender(int tipo, Scene escena, QPointLigth luz, Camera camaraRender, int ancho, int alto,
@@ -117,13 +117,13 @@ public class SoftwareShadowRender extends SoftwareRenderer {
         setDireccion(direccion);
         vArriba = arriba;
         raster = new ParallelRaster(this);
-        shader = new QSimpleShaderBAS(this);
+        shader = new SimpleFragmetShader(this);
     }
 
     @Override
     public void clean() {
         try {
-            frameBuffer.limpiarZBuffer();
+            frameBuffer.cleanZBuffer();
             // frameBuffer.llenarColor(colorFondo);
         } catch (Exception e) {
         }
@@ -160,7 +160,7 @@ public class SoftwareShadowRender extends SoftwareRenderer {
         switch (tipo) {
             case SoftwareShadowRender.DIRECIONALES:
                 // la camara se puede mover al ser adjunta a una entity
-                centro = camaraRender.getMatrizTransformacion(QGlobal.tiempo).toTranslationVector();
+                centro = camaraRender.getMatrizTransformacion(QGlobal.time).toTranslationVector();
                 if (!cascada) {
                     camara.setEscalaOrtogonal(Math.abs(camaraRender.frustrumLejos - camaraRender.frustrumCerca) / 2);
                     radio = Math.abs(camaraRender.frustrumLejos - camaraRender.frustrumCerca) / 2;
@@ -207,7 +207,7 @@ public class SoftwareShadowRender extends SoftwareRenderer {
                 break;
             case SoftwareShadowRender.NO_DIRECCIONALES:
                 // LUCES NO DIRECCIONALES
-                camara.lookAt(luz.getEntity().getMatrizTransformacion(QGlobal.tiempo).toTranslationVector(),
+                camara.lookAt(luz.getEntity().getMatrizTransformacion(QGlobal.time).toTranslationVector(),
                         normalDireccion, vArriba);
                 break;
         }
@@ -279,15 +279,14 @@ public class SoftwareShadowRender extends SoftwareRenderer {
      *
      */
     @Override
-    public void render() {
-        listaCarasTransparente.clear();
+    public void render() {    
         poligonosDibujadosTemp = 0;
         try {
             // La Matriz de vista es la inversa de la matriz de la camara.
             // Esto es porque la camara siempre estara en el centro y movemos el mundo
             // en direccion contraria a la camara.
-            QMatriz4 matrizVista = camara.getMatrizTransformacion(QGlobal.tiempo).invert();
-            QMatriz4 matrizVistaInvertidaBillboard = camara.getMatrizTransformacion(QGlobal.tiempo);
+            QMatriz4 matrizVista = camara.getMatrizTransformacion(QGlobal.time).invert();
+            QMatriz4 matrizVistaInvertidaBillboard = camara.getMatrizTransformacion(QGlobal.time);
             // caras solidas
             scene.getEntities().stream()
                     .filter(entity -> entity.isToRender())

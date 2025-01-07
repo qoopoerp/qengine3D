@@ -13,10 +13,10 @@ import net.qoopo.engine.core.assets.AssetManager;
 import net.qoopo.engine.core.entity.Entity;
 import net.qoopo.engine.core.entity.component.mesh.Mesh;
 import net.qoopo.engine.core.entity.component.mesh.primitive.shape.Plane;
-import net.qoopo.engine.core.material.basico.QMaterialBas;
+import net.qoopo.engine.core.material.basico.Material;
 import net.qoopo.engine.core.renderer.RenderEngine;
 import net.qoopo.engine.core.scene.Scene;
-import net.qoopo.engine.core.texture.QTextura;
+import net.qoopo.engine.core.texture.Texture;
 import net.qoopo.engine.core.texture.util.MaterialUtil;
 import net.qoopo.engine3d.test.generaEjemplos.MakeTestScene;
 
@@ -32,17 +32,17 @@ public class FloorTestScene extends MakeTestScene {
                         Entity piso = new Entity("Piso");
                         Mesh pisoGeometria = new Plane(50, 50);
 
-                        QMaterialBas material = new QMaterialBas();
+                        Material material = new Material();
 
-                        QTextura albedo = AssetManager.get().loadTexture("difusa", new File("assets/"
+                        Texture albedo = AssetManager.get().loadTexture("difusa", new File("assets/"
                                         + "textures/pbr/floor/rectangle-polished-tile-ue/albedo.png"));
-                        QTextura normal = AssetManager.get().loadTexture("normal", new File("assets/"
+                        Texture normal = AssetManager.get().loadTexture("normal", new File("assets/"
                                         + "textures/pbr/floor/rectangle-polished-tile-ue/normal.png"));
-                        QTextura rugoso = AssetManager.get().loadTexture("rugoso", new File("assets/"
+                        Texture rugoso = AssetManager.get().loadTexture("rugoso", new File("assets/"
                                         + "textures/pbr/floor/rectangle-polished-tile-ue/roughness.png"));
-                        QTextura metalico = AssetManager.get().loadTexture("metalico", new File("assets/"
+                        Texture metalico = AssetManager.get().loadTexture("metalico", new File("assets/"
                                         + "textures/pbr/floor/rectangle-polished-tile-ue/metallic.png"));
-                        QTextura sombras = AssetManager.get().loadTexture("ao", new File("assets/" +
+                        Texture sombras = AssetManager.get().loadTexture("ao", new File("assets/" +
                                         "textures/pbr/floor/rectangle-polished-tile-ue/ao.png"));
 
                         material.setMapaColor(albedo);

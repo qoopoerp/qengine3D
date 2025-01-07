@@ -8,30 +8,30 @@ package net.qoopo.engine.core.entity.component.mesh.primitive.shape;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import lombok.Getter;
+import lombok.Setter;
 import net.qoopo.engine.core.entity.component.mesh.primitive.Shape;
-import net.qoopo.engine.core.material.basico.QMaterialBas;
+import net.qoopo.engine.core.material.basico.Material;
 import net.qoopo.engine.core.util.array.IntArray;
 
 /**
  *
  * @author alberto
  */
+@Getter
+@Setter
 public class Box extends Shape {
 
-    // variables usadas para tener los valores anterior y solo construir en caso de
-    // que cambie
-    // private float anchoAnt;
-    // private float altoAnt;
-    // private float largoAnt;
     private float ancho;
     private float alto;
     private float largo;
 
     private boolean mapUVtoFace = false;
+    private boolean triangles = true;
 
     public Box() {
-        material = new QMaterialBas("Caja");
-        nombre = "Caja";
+        material = new Material("Caja");
+        name = "Caja";
         ancho = 1;
         alto = 1;
         largo = 1;
@@ -39,8 +39,8 @@ public class Box extends Shape {
     }
 
     public Box(float lado) {
-        material = new QMaterialBas("Caja");
-        nombre = "Caja";
+        material = new Material("Caja");
+        name = "Caja";
         this.ancho = lado;
         this.alto = lado;
         this.largo = lado;
@@ -48,8 +48,8 @@ public class Box extends Shape {
     }
 
     public Box(float lado, boolean mapUVtoFace) {
-        material = new QMaterialBas("Caja");
-        nombre = "Caja";
+        material = new Material("Caja");
+        name = "Caja";
         this.ancho = lado;
         this.alto = lado;
         this.largo = lado;
@@ -58,8 +58,8 @@ public class Box extends Shape {
     }
 
     public Box(float alto, float ancho, float largo) {
-        material = new QMaterialBas("Caja");
-        nombre = "Caja";
+        material = new Material("Caja");
+        name = "Caja";
         this.ancho = ancho;
         this.alto = alto;
         this.largo = largo;
@@ -67,12 +67,23 @@ public class Box extends Shape {
     }
 
     public Box(float alto, float ancho, float largo, boolean mapUVtoFace) {
-        material = new QMaterialBas("Caja");
-        nombre = "Caja";
+        material = new Material("Caja");
+        name = "Caja";
         this.ancho = ancho;
         this.alto = alto;
         this.largo = largo;
         this.mapUVtoFace = mapUVtoFace;
+        build();
+    }
+
+    public Box(float alto, float ancho, float largo, boolean mapUVtoFace, boolean triangles) {
+        material = new Material("Caja");
+        name = "Caja";
+        this.ancho = ancho;
+        this.alto = alto;
+        this.largo = largo;
+        this.mapUVtoFace = mapUVtoFace;
+        this.triangles = triangles;
         build();
     }
 
@@ -124,29 +135,48 @@ public class Box extends Shape {
             this.addNormal(0, 0, -1); // back
 
             // caras
-            // cara frontal
-            this.addPoly(IntArray.of(3, 1, 0), IntArray.of(4, 4, 4), IntArray.of(2, 1, 0));
-            this.addPoly(IntArray.of(3, 2, 1), IntArray.of(4, 4, 4), IntArray.of(2, 3, 1));
+            if (isTriangles()) {
+                // cara frontal
+                this.addPoly(IntArray.of(3, 1, 0), IntArray.of(4, 4, 4), IntArray.of(2, 1, 0));
+                this.addPoly(IntArray.of(3, 2, 1), IntArray.of(4, 4, 4), IntArray.of(2, 3, 1));
 
-            // cara trasera
-            this.addPoly(IntArray.of(5, 7, 4), IntArray.of(5, 5, 5), IntArray.of(2, 1, 0));
-            this.addPoly(IntArray.of(5, 6, 7), IntArray.of(5, 5, 5), IntArray.of(2, 3, 1));
+                // cara trasera
+                this.addPoly(IntArray.of(5, 7, 4), IntArray.of(5, 5, 5), IntArray.of(2, 1, 0));
+                this.addPoly(IntArray.of(5, 6, 7), IntArray.of(5, 5, 5), IntArray.of(2, 3, 1));
 
-            // cara lateral right
-            this.addPoly(IntArray.of(2, 5, 1), IntArray.of(3, 3, 3), IntArray.of(2, 1, 0));
-            this.addPoly(IntArray.of(2, 6, 5), IntArray.of(3, 3, 3), IntArray.of(2, 3, 1));
+                // cara lateral right
+                this.addPoly(IntArray.of(2, 5, 1), IntArray.of(3, 3, 3), IntArray.of(2, 1, 0));
+                this.addPoly(IntArray.of(2, 6, 5), IntArray.of(3, 3, 3), IntArray.of(2, 3, 1));
 
-            // cara lateral left
-            this.addPoly(IntArray.of(4, 3, 0), IntArray.of(2, 2, 2), IntArray.of(2, 1, 0));
-            this.addPoly(IntArray.of(4, 7, 3), IntArray.of(2, 2, 2), IntArray.of(2, 3, 1));
+                // cara lateral left
+                this.addPoly(IntArray.of(4, 3, 0), IntArray.of(2, 2, 2), IntArray.of(2, 1, 0));
+                this.addPoly(IntArray.of(4, 7, 3), IntArray.of(2, 2, 2), IntArray.of(2, 3, 1));
 
-            // cara superior
-            this.addPoly(IntArray.of(0, 5, 4), IntArray.of(0, 0, 0), IntArray.of(2, 1, 0));
-            this.addPoly(IntArray.of(0, 1, 5), IntArray.of(0, 0, 0), IntArray.of(2, 3, 1));
+                // cara superior
+                this.addPoly(IntArray.of(0, 5, 4), IntArray.of(0, 0, 0), IntArray.of(2, 1, 0));
+                this.addPoly(IntArray.of(0, 1, 5), IntArray.of(0, 0, 0), IntArray.of(2, 3, 1));
 
-            // cara inferior
-            this.addPoly(IntArray.of(6, 2, 3), IntArray.of(1, 1, 1), IntArray.of(2, 1, 0));
-            this.addPoly(IntArray.of(6, 3, 7), IntArray.of(1, 1, 1), IntArray.of(2, 3, 1));
+                // cara inferior
+                this.addPoly(IntArray.of(6, 2, 3), IntArray.of(1, 1, 1), IntArray.of(2, 1, 0));
+                this.addPoly(IntArray.of(6, 3, 7), IntArray.of(1, 1, 1), IntArray.of(2, 3, 1));
+            } else {
+                // cara frontal
+                this.addPoly(IntArray.of(0, 3, 2, 1), IntArray.of(4, 4, 4, 4), IntArray.of(0, 2, 3, 1));
+                // cara trasera
+                this.addPoly(IntArray.of(4, 5, 6, 7), IntArray.of(5, 5, 5, 5), IntArray.of(0, 2, 3, 1));
+
+                // cara lateral right
+                this.addPoly(IntArray.of(1, 2, 6, 5), IntArray.of(3, 3, 3, 3), IntArray.of(0, 2, 3, 1));
+
+                // cara lateral left
+                this.addPoly(IntArray.of(3, 4, 7, 3), IntArray.of(2, 2, 2, 2), IntArray.of(0, 2, 3, 1));
+
+                // cara superior
+                this.addPoly(IntArray.of(4, 0, 1, 5), IntArray.of(0, 0, 0, 0), IntArray.of(0, 2, 3, 1));
+
+                // cara inferior
+                this.addPoly(IntArray.of(3, 6, 3, 7), IntArray.of(1, 1, 1, 1), IntArray.of(0, 2, 3, 1));
+            }
             applyMaterial(material);
             // computeNormals();
         } catch (Exception ex) {
@@ -245,59 +275,53 @@ public class Box extends Shape {
             this.addNormal(0, 0, -1); // back
 
             // caras
-            // cara frontal
-            this.addPoly(IntArray.of(3, 1, 0), IntArray.of(4, 4, 4), IntArray.of(2, 1, 0));
-            this.addPoly(IntArray.of(3, 2, 1), IntArray.of(4, 4, 4), IntArray.of(2, 3, 1));
+            if (isTriangles()) {
+                // cara frontal
+                this.addPoly(IntArray.of(3, 1, 0), IntArray.of(4, 4, 4), IntArray.of(2, 1, 0));
+                this.addPoly(IntArray.of(3, 2, 1), IntArray.of(4, 4, 4), IntArray.of(2, 3, 1));
 
-            // cara trasera
-            this.addPoly(IntArray.of(5, 7, 4), IntArray.of(5, 5, 5), IntArray.of(2, 1, 0));
-            this.addPoly(IntArray.of(5, 6, 7), IntArray.of(5, 5, 5), IntArray.of(2, 3, 1));
+                // cara trasera
+                this.addPoly(IntArray.of(5, 7, 4), IntArray.of(5, 5, 5), IntArray.of(2, 1, 0));
+                this.addPoly(IntArray.of(5, 6, 7), IntArray.of(5, 5, 5), IntArray.of(2, 3, 1));
 
-            // cara lateral right
-            this.addPoly(IntArray.of(2, 5, 1), IntArray.of(3, 3, 3), IntArray.of(2, 1, 0));
-            this.addPoly(IntArray.of(2, 6, 5), IntArray.of(3, 3, 3), IntArray.of(2, 3, 1));
+                // cara lateral right
+                this.addPoly(IntArray.of(2, 5, 1), IntArray.of(3, 3, 3), IntArray.of(2, 1, 0));
+                this.addPoly(IntArray.of(2, 6, 5), IntArray.of(3, 3, 3), IntArray.of(2, 3, 1));
 
-            // cara lateral left
-            this.addPoly(IntArray.of(4, 3, 0), IntArray.of(2, 2, 2), IntArray.of(2, 1, 0));
-            this.addPoly(IntArray.of(4, 7, 3), IntArray.of(2, 2, 2), IntArray.of(2, 3, 1));
+                // cara lateral left
+                this.addPoly(IntArray.of(4, 3, 0), IntArray.of(2, 2, 2), IntArray.of(2, 1, 0));
+                this.addPoly(IntArray.of(4, 7, 3), IntArray.of(2, 2, 2), IntArray.of(2, 3, 1));
 
-            // cara superior
-            this.addPoly(IntArray.of(0, 5, 4), IntArray.of(0, 0, 0), IntArray.of(2, 1, 0));
-            this.addPoly(IntArray.of(0, 1, 5), IntArray.of(0, 0, 0), IntArray.of(2, 3, 1));
+                // cara superior
+                this.addPoly(IntArray.of(0, 5, 4), IntArray.of(0, 0, 0), IntArray.of(2, 1, 0));
+                this.addPoly(IntArray.of(0, 1, 5), IntArray.of(0, 0, 0), IntArray.of(2, 3, 1));
 
-            // cara inferior
-            this.addPoly(IntArray.of(6, 2, 3), IntArray.of(1, 1, 1), IntArray.of(2, 1, 0));
-            this.addPoly(IntArray.of(6, 3, 7), IntArray.of(1, 1, 1), IntArray.of(2, 3, 1));
+                // cara inferior
+                this.addPoly(IntArray.of(6, 2, 3), IntArray.of(1, 1, 1), IntArray.of(2, 1, 0));
+                this.addPoly(IntArray.of(6, 3, 7), IntArray.of(1, 1, 1), IntArray.of(2, 3, 1));
+            } else {
+                // cara frontal
+                this.addPoly(IntArray.of(0, 3, 2, 1), IntArray.of(4, 4, 4, 4), IntArray.of(0, 2, 3, 1));
+                // cara trasera
+                this.addPoly(IntArray.of(4, 5, 6, 7), IntArray.of(5, 5, 5, 5), IntArray.of(0, 2, 3, 1));
 
+                // cara lateral right
+                this.addPoly(IntArray.of(1, 2, 6, 5), IntArray.of(3, 3, 3, 3), IntArray.of(0, 2, 3, 1));
+
+                // cara lateral left
+                this.addPoly(IntArray.of(3, 4, 7, 3), IntArray.of(2, 2, 2, 2), IntArray.of(0, 2, 3, 1));
+
+                // cara superior
+                this.addPoly(IntArray.of(4, 0, 1, 5), IntArray.of(0, 0, 0, 0), IntArray.of(0, 2, 3, 1));
+
+                // cara inferior
+                this.addPoly(IntArray.of(3, 6, 3, 7), IntArray.of(1, 1, 1, 1), IntArray.of(0, 2, 3, 1));
+            }
             // computeNormals();
             applyMaterial(material);
         } catch (Exception ex) {
             Logger.getLogger(Box.class.getName()).log(Level.SEVERE, null, ex);
         }
-    }
-
-    public float getAncho() {
-        return ancho;
-    }
-
-    public void setAncho(float ancho) {
-        this.ancho = ancho;
-    }
-
-    public float getAlto() {
-        return alto;
-    }
-
-    public void setAlto(float alto) {
-        this.alto = alto;
-    }
-
-    public float getLargo() {
-        return largo;
-    }
-
-    public void setLargo(float largo) {
-        this.largo = largo;
     }
 
 }

@@ -5,11 +5,11 @@ import lombok.Setter;
 import net.qoopo.engine.core.assets.AssetManager;
 import net.qoopo.engine.core.entity.component.mesh.primitive.shape.Plane;
 import net.qoopo.engine.core.entity.component.water.texture.WaterTextureProcessor;
-import net.qoopo.engine.core.material.basico.QMaterialBas;
+import net.qoopo.engine.core.material.basico.Material;
 import net.qoopo.engine.core.math.QColor;
 import net.qoopo.engine.core.renderer.RenderEngine;
 import net.qoopo.engine.core.scene.Scene;
-import net.qoopo.engine.core.texture.QTextura;
+import net.qoopo.engine.core.texture.Texture;
 import net.qoopo.engine.core.texture.util.MaterialUtil;
 
 @Getter
@@ -17,8 +17,8 @@ import net.qoopo.engine.core.texture.util.MaterialUtil;
 public class WaterDuDv extends Water {
 
     protected final static int MUESTRAS_TEXTURAS = 2;
-    protected QTextura textNormal = null;
-    protected QTextura dudvMaps = null;
+    protected Texture textNormal = null;
+    protected Texture dudvMaps = null;
 
     public WaterDuDv(Scene scene, int width, int height) {
         this.width = width;
@@ -46,8 +46,8 @@ public class WaterDuDv extends Water {
         outputTexture = new WaterTextureProcessor(textReflexion, textRefraccion, dudvMaps);
 
         // Material
-        material = new QMaterialBas("water");
-        material.setColorBase(new QColor(1, 0, 0, 0.7f));
+        material = new Material("water");
+        material.setColor(new QColor(1, 0, 0, 0.7f));
         material.setSpecularExponent(64);
         material.setMapaNormal(getTextNormal());
         material.setMapaColor(getOutputTexture());

@@ -106,6 +106,10 @@ public class Entity implements Serializable {
         return ComponentUtil.getComponent(this, className);
     }
 
+    public List<? extends EntityComponent> getComponents(Class<? extends EntityComponent> className) {
+        return ComponentUtil.getComponents(this, className);
+    }
+
     public void addChild(Entity hijo) {
         if (!childs.contains(hijo)) {
             hijo.setParent(this);

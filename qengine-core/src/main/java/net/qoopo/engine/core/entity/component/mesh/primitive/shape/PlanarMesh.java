@@ -11,7 +11,7 @@ import java.util.logging.Logger;
 import net.qoopo.engine.core.entity.component.mesh.Mesh;
 import net.qoopo.engine.core.entity.component.mesh.generator.height.HeightsGenerator;
 import net.qoopo.engine.core.entity.component.mesh.primitive.Shape;
-import net.qoopo.engine.core.material.basico.QMaterialBas;
+import net.qoopo.engine.core.material.basico.Material;
 
 /**
  * Genera una malla en un plano que puede alterar sus vertices en función de un
@@ -35,8 +35,8 @@ public class PlanarMesh extends Shape {
     private HeightsGenerator heightsGenerator;
 
     public PlanarMesh(float ancho, float largo, float seccionesAncho, float seccionesLargo) {
-        nombre = "Malla";
-        material = new QMaterialBas("Malla");
+        name = "Malla";
+        material = new Material("Malla");
         this.ancho = ancho;
         this.largo = largo;
         this.delta = ancho / seccionesAncho;
@@ -46,8 +46,8 @@ public class PlanarMesh extends Shape {
 
     public PlanarMesh(float ancho, float largo, float seccionesAncho, float seccionesLargo,
             HeightsGenerator heightsGenerator) {
-        nombre = "Malla";
-        material = new QMaterialBas("Malla");
+        name = "Malla";
+        material = new Material("Malla");
         this.ancho = ancho;
         this.largo = largo;
         this.delta = ancho / seccionesAncho;
@@ -57,36 +57,36 @@ public class PlanarMesh extends Shape {
     }
 
     public PlanarMesh(boolean wire, float ancho, float largo, float seccionesAncho, float seccionesLargo) {
-        nombre = "Malla";
+        name = "Malla";
         this.ancho = ancho;
-        material = new QMaterialBas("Malla");
+        material = new Material("Malla");
         this.largo = largo;
         this.delta = ancho / seccionesAncho;
         this.delta2 = largo / seccionesLargo;
         if (wire) {
-            tipo = Mesh.GEOMETRY_TYPE_WIRE;
+            type = Mesh.GEOMETRY_TYPE_WIRE;
         }
         build();
     }
 
     public PlanarMesh(boolean wire, float ancho, float largo, float seccionesAncho, float seccionesLargo,
             HeightsGenerator heightsGenerator) {
-        nombre = "Malla";
+        name = "Malla";
         this.ancho = ancho;
-        material = new QMaterialBas("Malla");
+        material = new Material("Malla");
         this.largo = largo;
         this.delta = ancho / seccionesAncho;
         this.delta2 = largo / seccionesLargo;
         if (wire) {
-            tipo = Mesh.GEOMETRY_TYPE_WIRE;
+            type = Mesh.GEOMETRY_TYPE_WIRE;
         }
         this.heightsGenerator = heightsGenerator;
         build();
     }
 
     public PlanarMesh(int eje, float ancho, float largo, float seccionesAncho, float seccionesLargo) {
-        nombre = "Malla";
-        material = new QMaterialBas("Malla");
+        name = "Malla";
+        material = new Material("Malla");
         this.ancho = ancho;
         this.largo = largo;
         this.delta = ancho / seccionesAncho;
@@ -97,8 +97,8 @@ public class PlanarMesh extends Shape {
 
     public PlanarMesh(int eje, float ancho, float largo, float seccionesAncho, float seccionesLargo,
             HeightsGenerator heightsGenerator) {
-        nombre = "Malla";
-        material = new QMaterialBas("Malla");
+        name = "Malla";
+        material = new Material("Malla");
         this.ancho = ancho;
         this.largo = largo;
         this.delta = ancho / seccionesAncho;
@@ -109,30 +109,30 @@ public class PlanarMesh extends Shape {
     }
 
     public PlanarMesh(int eje, boolean wire, float ancho, float largo, float seccionesAncho, float seccionesLargo) {
-        nombre = "Malla";
+        name = "Malla";
         this.ancho = ancho;
-        material = new QMaterialBas("Malla");
+        material = new Material("Malla");
         this.largo = largo;
         this.delta = ancho / seccionesAncho;
         this.delta2 = largo / seccionesLargo;
         this.eje = eje;
         if (wire) {
-            tipo = Mesh.GEOMETRY_TYPE_WIRE;
+            type = Mesh.GEOMETRY_TYPE_WIRE;
         }
         build();
     }
 
     public PlanarMesh(int eje, boolean wire, float ancho, float largo, float seccionesAncho, float seccionesLargo,
             HeightsGenerator heightsGenerator) {
-        nombre = "Malla";
+        name = "Malla";
         this.ancho = ancho;
-        material = new QMaterialBas("Malla");
+        material = new Material("Malla");
         this.largo = largo;
         this.delta = ancho / seccionesAncho;
         this.delta2 = largo / seccionesLargo;
         this.eje = eje;
         if (wire) {
-            tipo = Mesh.GEOMETRY_TYPE_WIRE;
+            type = Mesh.GEOMETRY_TYPE_WIRE;
         }
         this.heightsGenerator = heightsGenerator;
         build();

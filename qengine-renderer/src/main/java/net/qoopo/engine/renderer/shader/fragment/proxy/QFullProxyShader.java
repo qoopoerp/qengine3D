@@ -6,7 +6,7 @@
 package net.qoopo.engine.renderer.shader.fragment.proxy;
 
 import net.qoopo.engine.core.entity.component.mesh.primitive.Fragment;
-import net.qoopo.engine.core.material.basico.QMaterialBas;
+import net.qoopo.engine.core.material.basico.Material;
 import net.qoopo.engine.core.material.node.MaterialNode;
 import net.qoopo.engine.core.math.QColor;
 import net.qoopo.engine.core.renderer.RenderEngine;
@@ -35,7 +35,7 @@ public class QFullProxyShader extends FragmentShader {
     @Override
     public QColor shadeFragment(Fragment pixel, int x, int y) {
         try {
-            if (pixel.material instanceof QMaterialBas) {
+            if (pixel.material instanceof Material) {
                 return basico.shadeFragment(pixel, x, y);
             } else if (pixel.material instanceof MaterialNode) {
                 return nodos.shadeFragment(pixel, x, y);

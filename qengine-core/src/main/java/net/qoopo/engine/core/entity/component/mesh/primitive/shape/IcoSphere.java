@@ -11,7 +11,7 @@ import java.util.logging.Logger;
 import net.qoopo.engine.core.entity.component.mesh.primitive.Shape;
 import net.qoopo.engine.core.entity.component.modifier.generate.InflateModifier;
 import net.qoopo.engine.core.entity.component.modifier.generate.SubdivisionModifier;
-import net.qoopo.engine.core.material.basico.QMaterialBas;
+import net.qoopo.engine.core.material.basico.Material;
 import net.qoopo.engine.core.math.QColor;
 import net.qoopo.engine.core.util.array.IntArray;
 
@@ -26,22 +26,22 @@ public class IcoSphere extends Shape {
     private int divisiones = 3;
 
     public IcoSphere() {
-        nombre = "NicoEsfera";
-        material = new QMaterialBas("NicoEsfera");
+        name = "IcoSphere";
+        material = new Material("IcoSphere");
         radio = 1;
         build();
     }
 
     public IcoSphere(float radio) {
-        nombre = "NicoEsfera";
-        material = new QMaterialBas("NicoEsfera");
+        name = "IcoSphere";
+        material = new Material("IcoSphere");
         this.radio = radio;
         build();
     }
 
     public IcoSphere(float radio, int divisiones) {
-        nombre = "NicoEsfera";
-        material = new QMaterialBas("NicoEsfera");
+        name = "IcoSphere";
+        material = new Material("IcoSphere");
         this.radio = radio;
         this.divisiones = divisiones;
         build();
@@ -68,14 +68,14 @@ public class IcoSphere extends Shape {
      */
     private void crearOriginal() {
         try {
-            QMaterialBas blanco = new QMaterialBas("blanco");
-            blanco.setColorBase(QColor.WHITE);
-            QMaterialBas rojo = new QMaterialBas("rojo");
-            rojo.setColorBase(QColor.RED);
-            QMaterialBas azul = new QMaterialBas("azul");
-            azul.setColorBase(QColor.BLUE);
-            QMaterialBas amarillo = new QMaterialBas("amarillo");
-            amarillo.setColorBase(QColor.YELLOW);
+            Material blanco = new Material("blanco");
+            blanco.setColor(QColor.WHITE);
+            Material rojo = new Material("rojo");
+            rojo.setColor(QColor.RED);
+            Material azul = new Material("azul");
+            azul.setColor(QColor.BLUE);
+            Material amarillo = new Material("amarillo");
+            amarillo.setColor(QColor.YELLOW);
 
             addVertex(radio / 2, radio / 2, radio / 2);// 0
             addVertex(-radio / 2, -radio / 2, radio / 2);// 1

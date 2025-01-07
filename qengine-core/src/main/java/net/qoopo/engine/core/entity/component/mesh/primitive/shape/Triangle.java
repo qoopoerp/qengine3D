@@ -9,7 +9,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import net.qoopo.engine.core.entity.component.mesh.primitive.Shape;
-import net.qoopo.engine.core.material.basico.QMaterialBas;
+import net.qoopo.engine.core.material.basico.Material;
 
 /**
  *
@@ -20,8 +20,8 @@ public class Triangle extends Shape {
     private float lado;
 
     public Triangle(float lado) {
-        nombre = "Triangulo";
-        material = new QMaterialBas("Triángulo");
+        name = "Triangulo";
+        material = new Material("Triángulo");
         this.lado = lado;
         build();
     }

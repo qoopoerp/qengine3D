@@ -6,7 +6,7 @@
 package net.qoopo.engine.core.renderer.post.procesos.blur;
 
 import net.qoopo.engine.core.renderer.post.procesos.QPostProceso;
-import net.qoopo.engine.core.texture.QTextura;
+import net.qoopo.engine.core.texture.Texture;
 
 /**
  * Realiza un efecto blur solo a ciertas partes d ela imagen cuando cumple una
@@ -37,14 +37,14 @@ public class QProcesadorDepthOfField extends QPostProceso {
     }
 
     @Override
-    public void procesar(QTextura... buffer) {
+    public void procesar(Texture... buffer) {
         bufferSalida = buffer[0];
         for (int i = 1; i <= repeticiones; i++) {
             bufferSalida = transposedHBlur(transposedHBlur(bufferSalida));
         }
     }
 
-    private QTextura transposedHBlur(QTextura buffer) {
+    private Texture transposedHBlur(Texture buffer) {
         int height = buffer.getAlto();
         int width = buffer.getAncho();
 
@@ -59,7 +59,7 @@ public class QProcesadorDepthOfField extends QPostProceso {
 
         // result is transposed, so the width/height are swapped
         // System.out.println("ancho=" + nuevoAncho + " alto=" + nuevoAlto);
-        QTextura bufferReturn = new QTextura(nuevoAncho, nuevoAlto);
+        Texture bufferReturn = new Texture(nuevoAncho, nuevoAlto);
         // QColor pixel = new QColor();
         //
         //// buffer.calcularMaximosMinimosZBuffer();

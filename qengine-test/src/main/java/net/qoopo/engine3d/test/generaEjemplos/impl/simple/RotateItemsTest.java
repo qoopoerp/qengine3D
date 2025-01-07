@@ -9,7 +9,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import net.qoopo.engine.core.entity.Entity;
-import net.qoopo.engine.core.entity.component.movement.RotationComponent;
+import net.qoopo.engine.core.entity.component.movement.RotationEntityComponent;
 import net.qoopo.engine.core.renderer.RenderEngine;
 import net.qoopo.engine.core.scene.Camera;
 import net.qoopo.engine.core.scene.Scene;
@@ -33,7 +33,7 @@ public class RotateItemsTest extends MakeTestScene {
             for (Entity entidad : mundo.getEntities()) {
                 if (!(entidad instanceof Camera)) {
                     // lista.add(entidad);
-                    entidad.addComponent(new RotationComponent());
+                    entidad.addComponent(new RotationEntityComponent());
                 }
             }
 

@@ -36,7 +36,7 @@ public class PnlInflate extends javax.swing.JPanel {
 
     private void aplicarCambios() {
         modifier.setRadio(Float.valueOf(txtRadious.getText()));
-        modifier.setCachedMesh(null);
+        modifier.changed();
         // modifier.build();
     }
 

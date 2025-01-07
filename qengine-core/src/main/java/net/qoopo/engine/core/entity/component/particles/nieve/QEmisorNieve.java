@@ -18,10 +18,10 @@ import net.qoopo.engine.core.entity.component.physics.collision.detector.shape.m
 import net.qoopo.engine.core.entity.component.physics.collision.detector.shape.primitivas.AABB;
 import net.qoopo.engine.core.entity.component.physics.dinamica.QObjetoDinamico;
 import net.qoopo.engine.core.entity.component.physics.dinamica.QObjetoRigido;
-import net.qoopo.engine.core.material.basico.QMaterialBas;
+import net.qoopo.engine.core.material.basico.Material;
 import net.qoopo.engine.core.math.QColor;
 import net.qoopo.engine.core.math.QVector3;
-import net.qoopo.engine.core.texture.QTextura;
+import net.qoopo.engine.core.texture.Texture;
 import net.qoopo.engine.core.texture.util.MaterialUtil;
 import net.qoopo.engine.core.util.QGlobal;
 import net.qoopo.engine.core.util.ComponentUtil;
@@ -33,13 +33,13 @@ import net.qoopo.engine.core.util.image.ImgReader;
  */
 public class QEmisorNieve extends ParticleEmissor {
 
-    private QMaterialBas material = null;
+    private Material material = null;
 
     private void cargarMaterial() {
         material = null;
         try {
-            material = new QMaterialBas(
-                    new QTextura(ImgReader.read(new File("assets/textures/nieve/copo0.png"))), 64);
+            material = new Material(
+                    new Texture(ImgReader.read(new File("assets/textures/nieve/copo0.png"))), 64);
             // material.setTransAlfa(0.90f);// el objeto tiene una transparencia
             material.setColorTransparente(QColor.BLACK);
             material.setTransparencia(true);
@@ -130,7 +130,7 @@ public class QEmisorNieve extends ParticleEmissor {
         float maxMov = 0.00009f;
 
         for (Particle copo : this.particulas) {
-            QObjetoRigido rigido = ComponentUtil.getFisicoRigido(copo.objeto);
+            QObjetoRigido rigido = (QObjetoRigido) ComponentUtil.getComponent(copo.objeto, QObjetoRigido.class);
             rigido.agregarFuerzas(QVector3.of(
                     rnd.nextFloat() * (maxMov - miniMov) + miniMov,
                     rnd.nextFloat() * (maxMov - miniMov) + miniMov,

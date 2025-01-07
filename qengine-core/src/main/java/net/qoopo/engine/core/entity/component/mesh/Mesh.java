@@ -21,8 +21,6 @@ import net.qoopo.engine.core.util.mesh.NormalUtil;
 @Setter
 public class Mesh implements EntityComponent {
 
-    @Getter
-    @Setter
     private Entity entity;
 
     private long timeMark = 0L;
@@ -35,19 +33,19 @@ public class Mesh implements EntityComponent {
     public static final int GEOMETRY_TYPE_WIRE = 3; // alambre (formado por triangulos)
     public static final int GEOMETRY_TYPE_SEGMENT = 4; // alambre por lineas
 
-    public int tipo = GEOMETRY_TYPE_MESH;
-    public String nombre = "";// usada para identificar los objetos cargados , luego la eliminamos
+    public int type = GEOMETRY_TYPE_MESH;
+    public String name = "";// usada para identificar los objetos cargados , luego la eliminamos
     public Vertex[] vertexList = new Vertex[0];
     public QVector3[] normalList = new QVector3[0];
     public QVector2[] uvList = new QVector2[0];
     public Primitive[] primitiveList = new Primitive[0];
 
     public Mesh() {
-        tipo = GEOMETRY_TYPE_MESH;
+        type = GEOMETRY_TYPE_MESH;
     }
 
     public Mesh(int type) {
-        this.tipo = type;
+        this.type = type;
     }
 
     public void clearNormals() {
@@ -147,7 +145,7 @@ public class Mesh implements EntityComponent {
 
     public Line addLine(int... vertices) throws Exception {
         validarVertices(vertices);
-        Line nuevo = new Line(this, vertices);
+        Line nuevo = new Line(this, vertices,vertices,vertices);
         primitiveList = Arrays.copyOf(primitiveList, primitiveList.length + 1);
         primitiveList[primitiveList.length - 1] = nuevo;
         return nuevo;
@@ -155,7 +153,7 @@ public class Mesh implements EntityComponent {
 
     public Line addLine(AbstractMaterial material, int... vertices) throws Exception {
         validarVertices(vertices);
-        Line nuevo = new Line(this, vertices);
+        Line nuevo = new Line(this, vertices,vertices,vertices);
         nuevo.material = material;
         primitiveList = Arrays.copyOf(primitiveList, primitiveList.length + 1);
         primitiveList[primitiveList.length - 1] = nuevo;
@@ -226,7 +224,7 @@ public class Mesh implements EntityComponent {
 
     @Override
     public Mesh clone() {
-        Mesh nuevo = new Mesh(this.tipo);
+        Mesh nuevo = new Mesh(this.type);
         nuevo.timeMark = timeMark;
         // nuevo.vertexList = Arrays.copyOf(vertexList, vertexList.length);
         // nuevo.primitiveList = Arrays.copyOf(primitiveList, primitiveList.length);
@@ -257,9 +255,7 @@ public class Mesh implements EntityComponent {
         return nuevo;
     }
 
-    public void destroy() {
-        // destruir();
-    }
+
 
     @Override
     public void destruir() {
@@ -301,13 +297,13 @@ public class Mesh implements EntityComponent {
 
     public Mesh smooth() {
         MaterialUtil.smooth(this, true);
-        updateTimeMark();
+        // updateTimeMark();
         return this;
     }
 
     public Mesh unSmooth() {
         MaterialUtil.smooth(this, false);
-        updateTimeMark();
+        // updateTimeMark();
         return this;
     }
 

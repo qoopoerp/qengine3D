@@ -10,7 +10,7 @@ import lombok.Setter;
 import net.qoopo.engine.core.entity.component.mesh.Mesh;
 import net.qoopo.engine.core.entity.component.mesh.primitive.shape.PlanarMesh;
 import net.qoopo.engine.core.entity.component.terrain.Terrain;
-import net.qoopo.engine.core.material.basico.QMaterialBas;
+import net.qoopo.engine.core.material.basico.Material;
 import net.qoopo.engine.core.math.QColor;
 import net.qoopo.engine.core.texture.util.MaterialUtil;
 import net.qoopo.engine.core.util.mesh.NormalUtil;
@@ -27,13 +27,13 @@ public class SimpleTerrain extends Terrain {
     protected float tileSize;
 
     protected int offset;
-    protected QMaterialBas materialTerreno;
+    protected Material materialTerreno;
 
     public SimpleTerrain() {
 
     }
 
-    public SimpleTerrain(int widthTiles, int heightTiles, float tileSize, QMaterialBas material, boolean smooth) {
+    public SimpleTerrain(int widthTiles, int heightTiles, float tileSize, Material material, boolean smooth) {
         this.tileSize = tileSize;
         this.widthTiles = widthTiles;
         this.heightTiles = heightTiles;
@@ -48,12 +48,12 @@ public class SimpleTerrain extends Terrain {
         }
 
         Mesh mesh = new Mesh();
-        mesh.nombre = "Terreno";
+        mesh.name = "Terreno";
 
         if (materialTerreno != null) {
             this.material = materialTerreno;
         } else {
-            material.setColorBase(new QColor(1, 139f / 255f, 99f / 255f, 55f / 255f));
+            material.setColor(new QColor(1, 139f / 255f, 99f / 255f, 55f / 255f));
             material.setSpecularExponent(10000);
         }
 

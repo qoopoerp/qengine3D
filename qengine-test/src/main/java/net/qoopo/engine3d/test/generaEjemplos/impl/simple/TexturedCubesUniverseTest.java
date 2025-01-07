@@ -12,10 +12,9 @@ import net.qoopo.engine.core.assets.AssetManager;
 import net.qoopo.engine.core.entity.Entity;
 import net.qoopo.engine.core.entity.component.mesh.Mesh;
 import net.qoopo.engine.core.entity.component.mesh.primitive.shape.Box;
-import net.qoopo.engine.core.material.basico.QMaterialBas;
+import net.qoopo.engine.core.material.basico.Material;
 import net.qoopo.engine.core.renderer.RenderEngine;
 import net.qoopo.engine.core.scene.Scene;
-import net.qoopo.engine.core.texture.procesador.QProcesadorSimple;
 import net.qoopo.engine.core.texture.util.MaterialUtil;
 import net.qoopo.engine3d.test.generaEjemplos.MakeTestScene;
 
@@ -26,16 +25,15 @@ import net.qoopo.engine3d.test.generaEjemplos.MakeTestScene;
  */
 public class TexturedCubesUniverseTest extends MakeTestScene {
 
-    private QMaterialBas material = null;
+    private Material material = null;
 
     private void loadMaterial() {
         material = null;
         try {
-            material = new QMaterialBas();
-            material.setMapaColor(new QProcesadorSimple(
-                    AssetManager.get().loadTexture("difusa", new File("assets/textures/rock.png"))));
-            material.setMapaNormal(new QProcesadorSimple(
-                    AssetManager.get().loadTexture("normal", new File("assets/textures/rock_normals.png"))));
+            material = new Material();
+            material.setMapaColor(AssetManager.get().loadTexture("difusa", new File("assets/textures/rock.png")));
+            material.setMapaNormal(
+                    AssetManager.get().loadTexture("normal", new File("assets/textures/rock_normals.png")));
         } catch (Exception e) {
             e.printStackTrace();
         }

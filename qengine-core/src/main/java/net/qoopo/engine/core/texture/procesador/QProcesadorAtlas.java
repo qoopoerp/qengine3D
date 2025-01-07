@@ -9,7 +9,7 @@ import java.awt.Dimension;
 import java.awt.image.BufferedImage;
 
 import net.qoopo.engine.core.math.QColor;
-import net.qoopo.engine.core.texture.QTextura;
+import net.qoopo.engine.core.texture.Texture;
 
 /**
  * Este procesador permite cargar una textura atlas (una textura que tiene
@@ -17,19 +17,19 @@ import net.qoopo.engine.core.texture.QTextura;
  *
  * @author alberto
  */
-public class QProcesadorAtlas extends QProcesadorTextura {
+public class QProcesadorAtlas extends Texture {
 
-    private QTextura texturaAtlas;
-    private QTextura textura;
+    private Texture texturaAtlas;
+    private Texture textura;
     private int filas = 1;
     private int columnas = 1;
     // la fila y columna de la textura que se ira a tomar
     private int fila = 1;
     private int col = 1;
 
-    public QProcesadorAtlas(QTextura textura, int filas, int columnas) {
+    public QProcesadorAtlas(Texture textura, int filas, int columnas) {
         this.texturaAtlas = textura;
-        this.textura = new QTextura();
+        this.textura = new Texture();
         this.filas = filas;
         this.columnas = columnas;
     }
@@ -77,46 +77,46 @@ public class QProcesadorAtlas extends QProcesadorTextura {
 
     }
 
-    public QTextura getTextura() {
+    public Texture getTextura() {
         return textura;
     }
 
-    public void setTextura(QTextura textura) {
+    public void setTextura(Texture textura) {
         this.textura = textura;
     }
 
     @Override
-    public int get_ARGB(float x, float y) {
+    public int getARGB(float x, float y) {
         return textura.getARGB(x, y);
     }
 
     @Override
-    public QColor get_QARGB(float x, float y) {
+    public QColor getQColor(float x, float y) {
         return textura.getQColor(x, y);
     }
 
-    @Override
-    public float getNormalX(float x, float y) {
-        return textura.getNormalX(x, y);
-    }
+    // @Override
+    // public float getNormalX(float x, float y) {
+    // return textura.getNormalX(x, y);
+    // }
+
+    // @Override
+    // public float getNormalY(float x, float y) {
+    // return textura.getNormalY(x, y);
+    // }
+
+    // @Override
+    // public float getNormalZ(float x, float y) {
+    // return textura.getNormalZ(x, y);
+    // }
 
     @Override
-    public float getNormalY(float x, float y) {
-        return textura.getNormalY(x, y);
-    }
-
-    @Override
-    public float getNormalZ(float x, float y) {
-        return textura.getNormalZ(x, y);
-    }
-
-    @Override
-    public BufferedImage getTexture(Dimension size) {
+    public BufferedImage getImagen(Dimension size) {
         return textura.getImagen(size);
     }
 
     @Override
-    public BufferedImage getTexture() {
+    public BufferedImage getImagen() {
         return textura.getImagen();
     }
 

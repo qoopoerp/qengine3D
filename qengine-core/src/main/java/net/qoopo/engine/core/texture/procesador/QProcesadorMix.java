@@ -10,45 +10,40 @@ import java.awt.image.BufferedImage;
 
 import net.qoopo.engine.core.math.QColor;
 import net.qoopo.engine.core.math.QMath;
-import net.qoopo.engine.core.texture.QTextura;
+import net.qoopo.engine.core.texture.Texture;
 
 /**
  * Mezcla 2 textures de acuerdo a la razon dada
  *
  * @author alberto
  */
-public class QProcesadorMix extends QProcesadorTextura {
+public class QProcesadorMix extends Texture {
 
-    private QTextura texturaA;
-    private QTextura texturaB;
-    private QTextura textura;
+    private Texture texturaA;
+    private Texture texturaB;
+    private Texture textura;
 
     private float razon = 0;
 
-    public QProcesadorMix(QTextura texturaA, QTextura texturaB) {
+    public QProcesadorMix(Texture texturaA, Texture texturaB) {
         this.texturaA = texturaA;
         this.texturaB = texturaB;
-        this.textura = new QTextura();
+        this.textura = new Texture();
     }
 
-    @Override
-    public void procesar() {
-
-    }
-
-    public QTextura getTexturaA() {
+    public Texture getTexturaA() {
         return texturaA;
     }
 
-    public void setTexturaA(QTextura texturaA) {
+    public void setTexturaA(Texture texturaA) {
         this.texturaA = texturaA;
     }
 
-    public QTextura getTexturaB() {
+    public Texture getTexturaB() {
         return texturaB;
     }
 
-    public void setTexturaB(QTextura texturaB) {
+    public void setTexturaB(Texture texturaB) {
         this.texturaB = texturaB;
     }
 
@@ -61,37 +56,40 @@ public class QProcesadorMix extends QProcesadorTextura {
     }
 
     @Override
-    public int get_ARGB(float x, float y) {
+    public int getARGB(float x, float y) {
         return textura.getARGB(x, y);
     }
 
     @Override
-    public QColor get_QARGB(float x, float y) {
+    public QColor getQColor(float x, float y) {
         return QMath.mix(texturaA.getQColor(x, y), texturaB.getQColor(x, y), razon);
     }
 
-    @Override
-    public float getNormalX(float x, float y) {
-        return QMath.mix(texturaA.getNormalX(x, y), texturaB.getNormalX(x, y), razon);
-    }
+    // @Override
+    // public float getNormalX(float x, float y) {
+    // return QMath.mix(texturaA.getNormalX(x, y), texturaB.getNormalX(x, y),
+    // razon);
+    // }
+
+    // @Override
+    // public float getNormalY(float x, float y) {
+    // return QMath.mix(texturaA.getNormalY(x, y), texturaB.getNormalY(x, y),
+    // razon);
+    // }
+
+    // @Override
+    // public float getNormalZ(float x, float y) {
+    // return QMath.mix(texturaA.getNormalZ(x, y), texturaB.getNormalZ(x, y),
+    // razon);
+    // }
 
     @Override
-    public float getNormalY(float x, float y) {
-        return QMath.mix(texturaA.getNormalY(x, y), texturaB.getNormalY(x, y), razon);
-    }
-
-    @Override
-    public float getNormalZ(float x, float y) {
-        return QMath.mix(texturaA.getNormalZ(x, y), texturaB.getNormalZ(x, y), razon);
-    }
-
-    @Override
-    public BufferedImage getTexture(Dimension size) {
+    public BufferedImage getImagen(Dimension size) {
         return textura.getImagen(size);
     }
 
     @Override
-    public BufferedImage getTexture() {
+    public BufferedImage getImagen() {
         return textura.getImagen();
     }
 
@@ -122,11 +120,11 @@ public class QProcesadorMix extends QProcesadorTextura {
     public void setMuestrasV(float muestras) {
     }
 
-    public QTextura getTextura() {
+    public Texture getTextura() {
         return textura;
     }
 
-    public void setTextura(QTextura textura) {
+    public void setTextura(Texture textura) {
         this.textura = textura;
     }
 

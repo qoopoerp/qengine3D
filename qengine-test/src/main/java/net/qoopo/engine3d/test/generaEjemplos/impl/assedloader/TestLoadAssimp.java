@@ -75,7 +75,7 @@ public class TestLoadAssimp extends MakeTestScene {
             // archivos.add(new File("assets/models/collada/mixamo/Bot-Y/Idle.dae"));
             // archivos.add(new File("assets/models/collada/mixamo/Bot-Y/Boxing.dae"));
             //// //------- fbx ------------------
-            archivos.add(new File("assets/models/fbx/mixamo/Shoved Reaction With Spin.fbx"));
+            // archivos.add(new File("assets/models/fbx/mixamo/Shoved Reaction With Spin.fbx"));
             // archivos.add(new File("assets/models/fbx/mixamo/Bot-Y/Idle.fbx"));
             // archivos.add(new File("assets/models/fbx/mixamo/Bot-Y/Boxing.fbx"));
             // archivos.add(new File("assets/models/fbx/mixamo/Bot-Y/Mutant Punch.fbx"));

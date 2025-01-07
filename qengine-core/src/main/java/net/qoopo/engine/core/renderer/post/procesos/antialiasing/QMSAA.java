@@ -7,7 +7,7 @@ package net.qoopo.engine.core.renderer.post.procesos.antialiasing;
 
 import net.qoopo.engine.core.math.QColor;
 import net.qoopo.engine.core.renderer.post.procesos.QPostProceso;
-import net.qoopo.engine.core.texture.QTextura;
+import net.qoopo.engine.core.texture.Texture;
 
 /**
  * Realiza un proceso de antialiasing
@@ -20,11 +20,11 @@ public class QMSAA extends QPostProceso {
 
     public QMSAA(int ancho, int alto, int muestras) {
         this.muestras = muestras;
-        bufferSalida = new QTextura(ancho, alto);
+        bufferSalida = new Texture(ancho, alto);
     }
 
     @Override
-    public void procesar(QTextura... buffer) {
+    public void procesar(Texture... buffer) {
         QColor color;
         try {
             for (int x = 0; x < buffer[0].getAncho(); x++) {

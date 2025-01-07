@@ -8,8 +8,9 @@ package net.qoopo.engine.core.entity.component.mesh.primitive.shape;
 import net.qoopo.engine.core.entity.component.mesh.generator.MeshGenerator;
 import net.qoopo.engine.core.entity.component.mesh.primitive.Shape;
 import net.qoopo.engine.core.entity.component.mesh.primitive.Vertex;
+import net.qoopo.engine.core.entity.component.modifier.generate.RevolutionModifier;
 import net.qoopo.engine.core.entity.component.transform.QTransformacion;
-import net.qoopo.engine.core.material.basico.QMaterialBas;
+import net.qoopo.engine.core.material.basico.Material;
 import net.qoopo.engine.core.math.QVector3;
 
 /**
@@ -23,8 +24,8 @@ public class CylinderZ extends Shape {
     private int secciones;
 
     public CylinderZ() {
-        material = new QMaterialBas("Cilindro");
-        nombre = "CilindroZ";
+        material = new Material("Cilindro");
+        name = "CilindroZ";
         radio = 1;
         alto = 1;
         secciones = 36;
@@ -32,8 +33,8 @@ public class CylinderZ extends Shape {
     }
 
     public CylinderZ(float alto, float radio) {
-        material = new QMaterialBas("Cilindro");
-        nombre = "CilindroZ";
+        material = new Material("Cilindro");
+        name = "CilindroZ";
         this.radio = radio;
         this.alto = alto;
         secciones = 36;
@@ -41,8 +42,8 @@ public class CylinderZ extends Shape {
     }
 
     public CylinderZ(float alto, float radio, int secciones) {
-        material = new QMaterialBas("Cilindro");
-        nombre = "CilindroZ";
+        material = new Material("Cilindro");
+        name = "CilindroZ";
         this.radio = radio;
         this.alto = alto;
         this.secciones = secciones;
@@ -58,7 +59,8 @@ public class CylinderZ extends Shape {
         this.addVertex(radio, alto / 2, 0);
         this.addVertex(radio, -alto / 2, 0);
         this.addVertex(0, -alto / 2, 0);
-        MeshGenerator.generateRevolutionMesh(this, secciones);
+        // MeshGenerator.generateRevolutionMesh(this, secciones);
+        new RevolutionModifier(secciones).apply(this);
         computeNormals();
         applyMaterial(material);
         // ahora roto los vertices para que se alineen al eje x

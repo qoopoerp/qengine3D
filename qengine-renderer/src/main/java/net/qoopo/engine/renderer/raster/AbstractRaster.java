@@ -6,13 +6,13 @@
 package net.qoopo.engine.renderer.raster;
 
 import net.qoopo.engine.core.entity.component.mesh.primitive.Primitive;
+import net.qoopo.engine.core.entity.component.mesh.primitive.QVertexBuffer;
 import net.qoopo.engine.core.entity.component.mesh.primitive.Vertex;
-import net.qoopo.engine.core.entity.component.transform.QVertexBuffer;
 import net.qoopo.engine.core.math.QMath;
+import net.qoopo.engine.core.math.QMatriz4;
 import net.qoopo.engine.core.math.QVector2;
 import net.qoopo.engine.core.math.QVector3;
 import net.qoopo.engine.core.scene.Camera;
-import net.qoopo.engine.core.util.TempVars;
 
 /**
  * Realiza la rasterización de los polígonos
@@ -30,7 +30,7 @@ public interface AbstractRaster {
      * @param p1
      * @param p2
      */
-    public void rasterLine(Primitive primitiva, Vertex... vertex);
+    public void rasterLine(QMatriz4 matViewModel,Primitive primitiva, Vertex... vertex);
 
     /**
      * Realiza la rasterización de un polígono
@@ -39,7 +39,7 @@ public interface AbstractRaster {
      * @param primitiva
      * @param wire
      */
-    public void raster(QVertexBuffer bufferVertices, Primitive primitiva, boolean wire);
+    public void raster(QMatriz4 matViewModel,QVertexBuffer bufferVertices, Primitive primitiva, boolean wire);
 
     /**
      * Realiza el clipping de los vertices
@@ -106,17 +106,16 @@ public interface AbstractRaster {
                 }
                 alfa = camara.getClipedVerticeAlfa(vertexTemp[0].location.getVector3(),
                         vertexTemp[1].location.getVector3());
-                TempVars tempVars = TempVars.get();
-                interpolatedVertex = tempVars.vertex1;
-                interpolatedNormal = tempVars.vector3f1;
-                interporlatedUV = tempVars.vector2f1;
+
+                interpolatedVertex = new Vertex();
+                interpolatedNormal = new QVector3();
+                interporlatedUV = new QVector2();
                 QMath.interpolateLinear(interpolatedVertex, alfa, vertexTemp[0], vertexTemp[1]);
                 QMath.interpolateLinear(interpolatedNormal, alfa, normalTemp[0], normalTemp[1]);
                 QMath.interpolateLinear(interporlatedUV, alfa, uvTemp[0], uvTemp[1]);
                 clippedData.addVertex(interpolatedVertex);
                 clippedData.addNormal(interpolatedNormal);
                 clippedData.addUV(interporlatedUV);
-                tempVars.release();
             }
         }
         return clippedData;

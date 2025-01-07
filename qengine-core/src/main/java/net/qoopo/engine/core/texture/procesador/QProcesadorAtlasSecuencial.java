@@ -9,7 +9,7 @@ import java.awt.Dimension;
 import java.awt.image.BufferedImage;
 
 import net.qoopo.engine.core.math.QColor;
-import net.qoopo.engine.core.texture.QTextura;
+import net.qoopo.engine.core.texture.Texture;
 
 /**
  * Este procesador permite cargar una textura atlas que tiene varias textures en
@@ -18,8 +18,8 @@ import net.qoopo.engine.core.texture.QTextura;
  *
  * @author alberto
  */
-public class QProcesadorAtlasSecuencial extends QProcesadorTextura {
-    private QTextura textura;
+public class QProcesadorAtlasSecuencial extends Texture {
+    private Texture textura;
     private float filas = 1;
     private float columnas = 1;
 
@@ -33,7 +33,7 @@ public class QProcesadorAtlasSecuencial extends QProcesadorTextura {
     float anchoCelda;
     float altoCelda;
 
-    public QProcesadorAtlasSecuencial(QTextura textura, int filas, int columnas, long tiempo_ms) {
+    public QProcesadorAtlasSecuencial(Texture textura, int filas, int columnas, long tiempo_ms) {
         this.textura = textura;
         this.filas = filas;
         this.columnas = columnas;
@@ -103,17 +103,17 @@ public class QProcesadorAtlasSecuencial extends QProcesadorTextura {
         }
     }
 
-    public QTextura getTextura() {
+    public Texture getTextura() {
         procesar();
         return textura;
     }
 
-    public void setTextura(QTextura textura) {
+    public void setTextura(Texture textura) {
         this.textura = textura;
     }
 
     @Override
-    public int get_ARGB(float x, float y) {
+    public int getARGB(float x, float y) {
         procesar();
         x = col * anchoCelda + (x / columnas);
         y = fila * altoCelda + (y / filas);
@@ -121,44 +121,44 @@ public class QProcesadorAtlasSecuencial extends QProcesadorTextura {
     }
 
     @Override
-    public QColor get_QARGB(float x, float y) {
+    public QColor getQColor(float x, float y) {
         procesar();
         x = col * anchoCelda + (x / columnas);
         y = fila * altoCelda + (y / filas);
         return textura.getQColor(x, y);
     }
 
-    @Override
-    public float getNormalX(float x, float y) {
-        procesar();
-        x = col * anchoCelda + (x / columnas);
-        y = fila * altoCelda + (y / filas);
-        return textura.getNormalX(x, y);
-    }
+    // @Override
+    // public float getNormalX(float x, float y) {
+    // procesar();
+    // x = col * anchoCelda + (x / columnas);
+    // y = fila * altoCelda + (y / filas);
+    // return textura.getNormalX(x, y);
+    // }
+
+    // @Override
+    // public float getNormalY(float x, float y) {
+    // procesar();
+    // x = col * anchoCelda + (x / columnas);
+    // y = fila * altoCelda + (y / filas);
+    // return textura.getNormalY(x, y);
+    // }
+
+    // @Override
+    // public float getNormalZ(float x, float y) {
+    // procesar();
+    // x = col * anchoCelda + (x / columnas);
+    // y = fila * altoCelda + (y / filas);
+    // return textura.getNormalZ(x, y);
+    // }
 
     @Override
-    public float getNormalY(float x, float y) {
-        procesar();
-        x = col * anchoCelda + (x / columnas);
-        y = fila * altoCelda + (y / filas);
-        return textura.getNormalY(x, y);
-    }
-
-    @Override
-    public float getNormalZ(float x, float y) {
-        procesar();
-        x = col * anchoCelda + (x / columnas);
-        y = fila * altoCelda + (y / filas);
-        return textura.getNormalZ(x, y);
-    }
-
-    @Override
-    public BufferedImage getTexture(Dimension size) {
+    public BufferedImage getImagen(Dimension size) {
         return textura.getImagen(size);
     }
 
     @Override
-    public BufferedImage getTexture() {
+    public BufferedImage getImagen() {
         return textura.getImagen();
     }
 

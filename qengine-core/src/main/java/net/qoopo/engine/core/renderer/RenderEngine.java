@@ -16,12 +16,12 @@ import net.qoopo.engine.core.engine.Engine;
 import net.qoopo.engine.core.engine.EngineTime;
 import net.qoopo.engine.core.entity.Entity;
 import net.qoopo.engine.core.entity.component.ligth.QLigth;
-import net.qoopo.engine.core.entity.component.mesh.primitive.Poly;
 import net.qoopo.engine.core.entity.component.mesh.primitive.Primitive;
+import net.qoopo.engine.core.entity.component.mesh.primitive.QVertexBuffer;
 import net.qoopo.engine.core.entity.component.mesh.primitive.Vertex;
-import net.qoopo.engine.core.entity.component.transform.QVertexBuffer;
 import net.qoopo.engine.core.input.QDefaultListener;
 import net.qoopo.engine.core.math.QColor;
+import net.qoopo.engine.core.math.QMatriz4;
 import net.qoopo.engine.core.math.QVector2;
 import net.qoopo.engine.core.renderer.buffer.QFrameBuffer;
 import net.qoopo.engine.core.renderer.post.flujos.QRenderEfectos;
@@ -30,7 +30,7 @@ import net.qoopo.engine.core.scene.Camera;
 import net.qoopo.engine.core.scene.QClipPane;
 import net.qoopo.engine.core.scene.QOrigen;
 import net.qoopo.engine.core.scene.Scene;
-import net.qoopo.engine.core.texture.QTextura;
+import net.qoopo.engine.core.texture.Texture;
 import net.qoopo.engine.core.util.image.ImgReader;
 
 @Getter
@@ -38,9 +38,7 @@ import net.qoopo.engine.core.util.image.ImgReader;
 public abstract class RenderEngine extends Engine {
 
     protected static BufferedImage imageSplash;
-    // --------------------------------------------------------------------------------------------------------------------------------
-    // CONSTANTES
-    // --------------------------------------------------------------------------------------------------------------------------------
+
     public static final int RENDER_INTERNO = 1;
     public static final int RENDER_JAVA3D = 2;
     public static final int RENDER_OPENGL = 3;
@@ -124,7 +122,7 @@ public abstract class RenderEngine extends Engine {
     /**
      * La textura donde se va a renderizar la salida del frameBuffer
      */
-    protected QTextura textura;
+    protected Texture textura;
 
     /**
      * Esta variable indica si el render es real. En caso de no serlo se salta
@@ -145,7 +143,7 @@ public abstract class RenderEngine extends Engine {
 
     protected List<QLigth> litgths = new ArrayList<>();
 
-    protected ArrayList<Poly> listaCarasTransparente = new ArrayList<>();
+    // protected ArrayList<Poly> listaCarasTransparente = new ArrayList<>();
     protected boolean tomar;
 
     protected QRenderEfectos efectosPostProceso;
@@ -163,7 +161,6 @@ public abstract class RenderEngine extends Engine {
 
     public RenderEngine(Scene escena, String nombre, Superficie superficie, int ancho, int alto) {
         System.out.println("instanciando nuevo rendered -> " + nombre);
-
         this.scene = escena;
         this.nombre = nombre;
         this.superficie = superficie;
@@ -263,10 +260,6 @@ public abstract class RenderEngine extends Engine {
     protected void prepararInputListener() {
         if (superficie != null && superficie.getComponente() != null) {
             agregarListeners(superficie.getComponente());
-            // } else {
-            // System.out.println("[x] No se agrego el listener porque no hay una superficie
-            // -> " + nombre);
-            // Utils.printTrace();
         }
     }
 
@@ -371,8 +364,7 @@ public abstract class RenderEngine extends Engine {
      * Muestra una imagen splash
      */
     protected void mostrarSplash() {
-        if (renderReal && imageSplash != null) // dibujamos una imagen de carga
-        {
+        if (renderReal && imageSplash != null) {
             if (this.getSuperficie() != null
                     && this.getSuperficie().getComponente() != null
                     && this.getSuperficie().getComponente().getGraphics() != null) {
@@ -391,11 +383,11 @@ public abstract class RenderEngine extends Engine {
         }
     }
 
-    public QTextura getTextura() {
+    public Texture getTextura() {
         return textura;
     }
 
-    public void setTextura(QTextura textura) {
+    public void setTextura(Texture textura) {
         this.textura = textura;
         if (frameBuffer != null) {
             frameBuffer.setTextura(textura);
@@ -418,9 +410,6 @@ public abstract class RenderEngine extends Engine {
         this.litgths = luces;
     }
 
-    // public Map<String, QProcesadorSombra> getProcesadorSombras() {
-    // return procesadorSombras;
-    // }
     public boolean isCargando() {
         return cargando;
     }
@@ -469,24 +458,6 @@ public abstract class RenderEngine extends Engine {
         this.renderReal = renderReal;
     }
 
-    /**
-     * Cambia el raster
-     *
-     * @param opcion
-     */
-    public void cambiarRaster(int opcion) {
-
-    }
-
-    /**
-     * Cambia el shader
-     *
-     * @param opcion
-     */
-    public void cambiarShader(int opcion) {
-
-    }
-
     // public abstract AbstractRaster(QMotorRender render);
     /**
      *
@@ -494,7 +465,7 @@ public abstract class RenderEngine extends Engine {
      * @param p1
      * @param p2
      */
-    public abstract void renderLine(Primitive primitiva, Vertex... vertex);
+    public abstract void renderLine(QMatriz4 matViewModel, Primitive primitiva, Vertex... vertex);
 
     /**
      * Realiza la rasterización de un polígono
@@ -503,7 +474,10 @@ public abstract class RenderEngine extends Engine {
      * @param primitiva
      * @param wire
      */
-    public abstract void render(QVertexBuffer bufferVertices, Primitive primitiva, boolean wire);
+    public abstract void render(QMatriz4 matViewModel, QVertexBuffer bufferVertices, Primitive primitiva, boolean wire);
+
+    public abstract void renderEntity(Entity entity, QMatriz4 matrizVista, QMatriz4 matrizVistaInvertidaBillboard,
+            boolean transparentes);
 
     public abstract void render() throws Exception;
 

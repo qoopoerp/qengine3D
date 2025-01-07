@@ -22,7 +22,7 @@ import net.qoopo.engine.core.entity.Entity;
 import net.qoopo.engine.core.entity.component.mesh.Mesh;
 import net.qoopo.engine.core.entity.component.mesh.primitive.Poly;
 import net.qoopo.engine.core.entity.component.mesh.primitive.Primitive;
-import net.qoopo.engine.core.material.basico.QMaterialBas;
+import net.qoopo.engine.core.material.basico.Material;
 import net.qoopo.engine.core.math.QColor;
 
 /**
@@ -60,10 +60,10 @@ public class LoadAsciiModel implements ModelLoader {
                 String line;
                 // ArrayList<QPoligono.UVCoordinate> uvList = new ArrayList<>();
 
-                HashMap<String, QMaterialBas> materialMap = new HashMap<>();
+                HashMap<String, Material> materialMap = new HashMap<>();
 
-                QMaterialBas defaultMaterial = new QMaterialBas("Default");
-                QMaterialBas currentMaterial = null;
+                Material defaultMaterial = new Material("Default");
+                Material currentMaterial = null;
 
                 int cargando = 0;
                 boolean vertices = false;
@@ -152,7 +152,7 @@ public class LoadAsciiModel implements ModelLoader {
 
             // lista.add(readingObject);
 
-            Entity ent = new Entity(readingObject.nombre);
+            Entity ent = new Entity(readingObject.name);
             ent.addComponent(readingObject);
             lista.add(ent);
             // refreshObjectList();
@@ -173,19 +173,19 @@ public class LoadAsciiModel implements ModelLoader {
         return null;
     }
 
-    private void readMaterial(File materialFile, HashMap<String, QMaterialBas> materialMap, String directory) {
+    private void readMaterial(File materialFile, HashMap<String, Material> materialMap, String directory) {
         try {
             if (materialFile.exists()) {
                 BufferedReader materialReader = new BufferedReader(new FileReader(materialFile));
                 String materialLine = "";
-                QMaterialBas readingMaterial = null;
+                Material readingMaterial = null;
 
                 int countMaterial = 0;
                 while ((materialLine = materialReader.readLine()) != null) {
                     if (materialLine.startsWith("ambient ")) {
 
                         String materialName = String.valueOf(countMaterial);
-                        readingMaterial = new QMaterialBas(materialName);
+                        readingMaterial = new Material(materialName);
                         materialMap.put(readingMaterial.getNombre(), readingMaterial);
                         countMaterial++;
 
@@ -194,7 +194,7 @@ public class LoadAsciiModel implements ModelLoader {
                         // Float.parseFloat(att[2]), Float.parseFloat(att[3])));
                     } else if (materialLine.startsWith("diffuse ")) {
                         String[] att = materialLine.split("\\s+");
-                        readingMaterial.setColorBase(new QColor(1, Float.parseFloat(att[1]),
+                        readingMaterial.setColor(new QColor(1, Float.parseFloat(att[1]),
                                 Float.parseFloat(att[2]), Float.parseFloat(att[3])));
                     } else if (materialLine.startsWith("specular ")) {
                         // String[] att = materialLine.split("\\s+");

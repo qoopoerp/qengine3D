@@ -17,7 +17,8 @@ import javax.imageio.ImageIO;
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
-import net.qoopo.engine.core.texture.QTextura;
+import net.qoopo.engine.core.entity.component.mesh.Mesh;
+import net.qoopo.engine.core.texture.Texture;
 import net.qoopo.engine.core.util.ComponentUtil;
 import net.qoopo.engine.core.util.image.ImgUtil;
 import net.qoopo.engine.terrain.HeightMapTerrain;
@@ -39,8 +40,8 @@ public class PnlTerreno extends javax.swing.JPanel {
         private BufferedImage mapaDifusoActual;// para la vista previa
         private BufferedImage mapaNormalActual;// para la vista previa
 
-        private QTextura textura;
-        private QTextura texturaNormal;
+        private Texture textura;
+        private Texture texturaNormal;
 
         /*
          * BufferedImage imagen, float tamanioCelda, float minY, float maxY, QTextura
@@ -57,14 +58,14 @@ public class PnlTerreno extends javax.swing.JPanel {
                 chooser.setAccessory(preview);
                 chooser.addPropertyChangeListener(preview);
 
-                textura = new QTextura();
+                textura = new Texture();
                 this.terreno = terreno;
 
         }
 
         private void aplicarCambios() {
                 // elimino los componentes de geometria que se haya generado anteriormente
-                ComponentUtil.eliminarComponenteGeometria(terreno.getEntity());
+                ComponentUtil.removeComponents(terreno.getEntity(), Mesh.class);
                 if (textura != null) {
                         textura.setMuestrasU(Float.valueOf(txtMU_Difusa.getText()));
                         textura.setMuestrasV(Float.valueOf(txtMV_Difusa.getText()));
@@ -589,7 +590,7 @@ public class PnlTerreno extends javax.swing.JPanel {
                 if (chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
 
                         try {
-                                textura = new QTextura(ImageIO.read(chooser.getSelectedFile()));
+                                textura = new Texture(ImageIO.read(chooser.getSelectedFile()));
                                 mapaDifusoActual = textura
                                                 .getImagen(new Dimension(pnlMapaDifuso.getWidth(),
                                                                 pnlMapaDifuso.getHeight()));
@@ -622,7 +623,7 @@ public class PnlTerreno extends javax.swing.JPanel {
                 if (chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
 
                         try {
-                                texturaNormal = new QTextura(ImageIO.read(chooser.getSelectedFile()));
+                                texturaNormal = new Texture(ImageIO.read(chooser.getSelectedFile()));
                                 mapaNormalActual = texturaNormal
                                                 .getImagen(new Dimension(pnlNormalMap.getWidth(),
                                                                 pnlNormalMap.getHeight()));

@@ -19,13 +19,13 @@ import net.qoopo.engine.core.entity.component.physics.vehiculo.QRueda;
 import net.qoopo.engine.core.entity.component.physics.vehiculo.QVehiculo;
 import net.qoopo.engine.core.entity.component.physics.vehiculo.QVehiculoControl;
 import net.qoopo.engine.core.lwjgl.audio.component.SoundListenerAL;
-import net.qoopo.engine.core.material.basico.QMaterialBas;
+import net.qoopo.engine.core.material.basico.Material;
 import net.qoopo.engine.core.math.QColor;
 import net.qoopo.engine.core.math.QVector3;
 import net.qoopo.engine.core.scene.Camera;
 import net.qoopo.engine.core.scene.QEscenario;
 import net.qoopo.engine.core.scene.Scene;
-import net.qoopo.engine.core.texture.QTextura;
+import net.qoopo.engine.core.texture.Texture;
 import net.qoopo.engine.core.texture.util.MaterialUtil;
 import net.qoopo.engine3d.QEngine3D;
 import net.qoopo.engine3d.core.sky.QCielo;
@@ -78,8 +78,8 @@ public class JuegoEjemplo {
                 float alturaLlantaConexion = 0.25f;
                 float px = 0.5f;
                 float pz = 0.8f;
-                QMaterialBas material = new QMaterialBas("Vehículo");
-                material.setColorBase(QColor.BLUE);
+                Material material = new Material("Vehículo");
+                material.setColor(QColor.BLUE);
 
                 Entity carro = new Entity();
                 Box geom = new Box(0.5f, 1, 2);
@@ -102,8 +102,8 @@ public class JuegoEjemplo {
                 carro.addComponent(vehiculo);
 
                 // ruedas
-                QMaterialBas materialRueda = new QMaterialBas("Rueda");
-                materialRueda.setColorBase(QColor.DARK_GRAY);
+                Material materialRueda = new Material("Rueda");
+                materialRueda.setColor(QColor.DARK_GRAY);
 
                 CylinderX forma = new CylinderX(0.1f, 0.25f);
                 MaterialUtil.applyMaterial(forma, materialRueda);
@@ -195,11 +195,11 @@ public class JuegoEjemplo {
 
                 // QTextura cieloDia = QGestorRecursos.loadTexture("dia", "assets/"+
                 // "textures/cielo/esfericos/cielo_dia.jpg");
-                QTextura cieloDia = AssetManager.get().loadTexture("dia",
+                Texture cieloDia = AssetManager.get().loadTexture("dia",
                                 "assets/textures/cielo/esfericos/cielo4.jpg");
                 // QTextura cieloNoche = QGestorRecursos.loadTexture("noche",
                 // "res/textures/cielo/esfericos/cielo_noche.png");
-                QTextura cieloNoche = AssetManager.get().loadTexture("noche",
+                Texture cieloNoche = AssetManager.get().loadTexture("noche",
                                 "assets/textures/cielo/esfericos/cielo_noche_2.jpg");
                 QCielo cielo = new SphereCielo(cieloDia, cieloNoche,
                                 motor.getScene().UM.convertirPixel(500, QUnidadMedida.METRO));

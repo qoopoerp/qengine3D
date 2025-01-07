@@ -16,10 +16,10 @@ import net.qoopo.engine.core.entity.component.mesh.util.QUnidadMedida;
 import net.qoopo.engine.core.entity.component.physics.collision.detector.shape.primitivas.QColisionCaja;
 import net.qoopo.engine.core.entity.component.physics.dinamica.QObjetoDinamico;
 import net.qoopo.engine.core.entity.component.physics.dinamica.QObjetoRigido;
-import net.qoopo.engine.core.material.basico.QMaterialBas;
+import net.qoopo.engine.core.material.basico.Material;
 import net.qoopo.engine.core.math.QVector3;
 import net.qoopo.engine.core.scene.Scene;
-import net.qoopo.engine.core.texture.QTextura;
+import net.qoopo.engine.core.texture.Texture;
 import net.qoopo.engine.core.texture.util.MaterialUtil;
 import net.qoopo.engine.core.util.QGlobal;
 
@@ -33,7 +33,7 @@ public class EjemploFisica2 extends FisicaDisparar {
     private float anchoLadrillo = 0.24f;
     private float altoLadrillo = 0.12f;
 
-    private static QMaterialBas materialLadrillo;
+    private static Material materialLadrillo;
 
     @Override
     public void make(Scene mundo) {
@@ -67,12 +67,12 @@ public class EjemploFisica2 extends FisicaDisparar {
         anchoLadrillo = mundo.UM.convertirPixel(50, QUnidadMedida.CENTIMETRO);
         altoLadrillo = mundo.UM.convertirPixel(50, QUnidadMedida.CENTIMETRO);
 
-        materialLadrillo = new QMaterialBas();
+        materialLadrillo = new Material();
 
         materialLadrillo = null;
         try {
-            materialLadrillo = new QMaterialBas(
-                    new QTextura(ImageIO.read(new File("assets/textures/muro/ladrillo_1.jpg"))), 64);
+            materialLadrillo = new Material(
+                    new Texture(ImageIO.read(new File("assets/textures/muro/ladrillo_1.jpg"))), 64);
             // materialLadrillo.alpha = 1;
         } catch (Exception e) {
             e.printStackTrace();

@@ -8,7 +8,8 @@ package net.qoopo.engine3d.test.juegotest.generadores;
 import java.awt.event.KeyEvent;
 
 import net.qoopo.engine.core.entity.Entity;
-import net.qoopo.engine.core.entity.component.animation.QCompAlmacenAnimaciones;
+import net.qoopo.engine.core.entity.component.animation.AnimationComponent;
+import net.qoopo.engine.core.entity.component.animation.AnimationStorageComponent;
 import net.qoopo.engine.core.entity.component.gui.QTecladoReceptor;
 import net.qoopo.engine.core.entity.component.mesh.primitive.shape.Box;
 import net.qoopo.engine.core.entity.component.mesh.primitive.shape.Cylinder;
@@ -67,7 +68,7 @@ public class CreadorVehiculos {
         vehiculo.addChild(ruedaTI);
         vehiculo.addChild(ruedaTD);
 
-        QCompAlmacenAnimaciones almacen = new QCompAlmacenAnimaciones();
+        AnimationStorageComponent almacen = new AnimationStorageComponent();
         // almacen.agregarAnimacion("caminar", animacionCaminar(10));
         // almacen.agregarAnimacion("correr", animacionCaminar(2));
         vehiculo.addComponent(almacen);
@@ -102,15 +103,17 @@ public class CreadorVehiculos {
                         case KeyEvent.VK_W:
                             if (shift) {
                                 // corre
-                                ComponentUtil.eliminarComponenteAnimacion(entity);
+                                ComponentUtil.removeComponents(entity, AnimationComponent.class);
                                 vehiculo.addComponent(
-                                        ComponentUtil.getAlmacenAnimaciones(entity).getAnimacion("correr"));
+                                        ((AnimationStorageComponent) ComponentUtil.getComponent(entity,
+                                                AnimationStorageComponent.class)).get("correr"));
                                 vehiculo.moveForward(0.15f);
                             } else {
                                 // camina
-                                ComponentUtil.eliminarComponenteAnimacion(entity);
+                                ComponentUtil.removeComponents(entity, AnimationComponent.class);
                                 vehiculo.addComponent(
-                                        ComponentUtil.getAlmacenAnimaciones(entity).getAnimacion("caminar"));
+                                        ((AnimationStorageComponent) ComponentUtil.getComponent(entity,
+                                                AnimationStorageComponent.class)).get("caminar"));
                                 vehiculo.moveForward(0.05f);
                             }
 
@@ -118,15 +121,17 @@ public class CreadorVehiculos {
                         case KeyEvent.VK_S:
                             if (shift) {
                                 // corre
-                                ComponentUtil.eliminarComponenteAnimacion(entity);
+                                ComponentUtil.removeComponents(entity, AnimationComponent.class);
                                 vehiculo.addComponent(
-                                        ComponentUtil.getAlmacenAnimaciones(entity).getAnimacion("correr"));
+                                        ((AnimationStorageComponent) ComponentUtil.getComponent(entity,
+                                                AnimationStorageComponent.class)).get("correr"));
                                 vehiculo.moveForward(-0.15f);
                             } else {
                                 // camina
-                                ComponentUtil.eliminarComponenteAnimacion(entity);
+                                ComponentUtil.removeComponents(entity, AnimationComponent.class);
                                 vehiculo.addComponent(
-                                        ComponentUtil.getAlmacenAnimaciones(entity).getAnimacion("caminar"));
+                                        ((AnimationStorageComponent) ComponentUtil.getComponent(entity,
+                                                AnimationStorageComponent.class)).get("caminar"));
                                 vehiculo.moveForward(-0.05f);
                             }
                             break;
@@ -150,7 +155,7 @@ public class CreadorVehiculos {
             @Override
             public void keyReleased(KeyEvent evt) {
                 // elimino cualquier animacion
-                ComponentUtil.eliminarComponenteAnimacion(entity);
+                ComponentUtil.removeComponents(entity, AnimationComponent.class);
                 switch (evt.getKeyCode()) {
 
                     case KeyEvent.VK_SHIFT:

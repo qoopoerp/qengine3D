@@ -1,7 +1,7 @@
 package net.qoopo.engine.core.util;
 
+import net.qoopo.engine.core.entity.component.mesh.primitive.QVertexBuffer;
 import net.qoopo.engine.core.entity.component.mesh.primitive.Vertex;
-import net.qoopo.engine.core.entity.component.transform.QVertexBuffer;
 import net.qoopo.engine.core.math.Cuaternion;
 import net.qoopo.engine.core.math.QColor;
 import net.qoopo.engine.core.math.QMatriz3;
@@ -22,7 +22,7 @@ public class TempVars {
     /**
      * Allow X instances of TempVars in a single thread.
      */
-    private static final int STACK_SIZE = 20;
+    private static final int STACK_SIZE = 50;
 
     /**
      * ThreadLocal to store a TempVarsStack for each thread. This ensures each

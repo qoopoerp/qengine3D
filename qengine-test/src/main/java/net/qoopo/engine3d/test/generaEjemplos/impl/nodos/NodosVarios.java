@@ -19,7 +19,6 @@ import net.qoopo.engine.core.material.node.core.output.MaterialOutputNode;
 import net.qoopo.engine.core.math.QColor;
 import net.qoopo.engine.core.renderer.RenderEngine;
 import net.qoopo.engine.core.scene.Scene;
-import net.qoopo.engine.core.texture.procesador.QProcesadorSimple;
 import net.qoopo.engine.core.texture.util.MaterialUtil;
 import net.qoopo.engine.core.util.QGlobal;
 import net.qoopo.engine.renderer.shader.fragment.nodos.shader.QNodoColorIluminacion;
@@ -58,12 +57,12 @@ public class NodosVarios extends MakeTestScene {
         // con textura e iluminacion (Nodo) con mapa de normales
         MaterialNode materialC6 = new MaterialNode();
 
-        QNodoColorTextura nodoTexturaC6_1 = new QNodoColorTextura(new QProcesadorSimple(AssetManager.get().loadTexture(
+        QNodoColorTextura nodoTexturaC6_1 = new QNodoColorTextura(AssetManager.get().loadTexture(
                 "difusa",
-                new File("assets/textures/poliigon/bricks/RockGrey016/1K/RockGrey016_COL_VAR1_1K.jpg"))));
-        QNodoColorTextura nodoTexturaC6_2 = new QNodoColorTextura(new QProcesadorSimple(AssetManager.get().loadTexture(
+                new File("assets/textures/poliigon/bricks/RockGrey016/1K/RockGrey016_COL_VAR1_1K.jpg")));
+        QNodoColorTextura nodoTexturaC6_2 = new QNodoColorTextura(AssetManager.get().loadTexture(
                 "normal",
-                new File("assets/textures/poliigon/bricks/RockGrey016/1K/RockGrey016_NRM_1K.jpg"))));
+                new File("assets/textures/poliigon/bricks/RockGrey016/1K/RockGrey016_NRM_1K.jpg")));
         QNodoColorIluminacion nodoDifusoC6_1 = new QNodoColorIluminacion();
 
         // enlace que une la salida de la textura con con difuso
@@ -90,7 +89,7 @@ public class NodosVarios extends MakeTestScene {
         // QGeometria esfera2 = new Sphere(1);
         MaterialNode mat5 = new MaterialNode("Reflexion");
 
-        QNodoColorReflexion nodoreflexion = new QNodoColorReflexion(new QProcesadorSimple(mapa2.getTexturaEntorno()));
+        QNodoColorReflexion nodoreflexion = new QNodoColorReflexion(mapa2.getTexturaEntorno());
         nodoreflexion.setTipoMapaEntorno(CubeMap.FORMATO_MAPA_CUBO);
         QNodoColorIluminacion nodoDifuso = new QNodoColorIluminacion();
 

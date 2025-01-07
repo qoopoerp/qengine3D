@@ -42,7 +42,7 @@ public class PnlSubdivision extends javax.swing.JPanel {
     private void aplicarCambios() {
         modifier.setTimes(Integer.valueOf(txtTimes.getText()));
         modifier.setType(cmbType.getSelectedIndex());
-        modifier.setCachedMesh(null);
+        modifier.changed();
         // modifier.build();
     }
 

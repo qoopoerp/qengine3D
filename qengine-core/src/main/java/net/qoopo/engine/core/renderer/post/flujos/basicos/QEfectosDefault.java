@@ -6,7 +6,7 @@
 package net.qoopo.engine.core.renderer.post.flujos.basicos;
 
 import net.qoopo.engine.core.renderer.post.flujos.QRenderEfectos;
-import net.qoopo.engine.core.texture.QTextura;
+import net.qoopo.engine.core.texture.Texture;
 
 /**
  * No realiza ningun efecto post procesamiento
@@ -19,7 +19,7 @@ public class QEfectosDefault extends QRenderEfectos {
     }
 
     @Override
-    public QTextura ejecutar(QTextura buffer) {
+    public Texture ejecutar(Texture buffer) {
         return buffer;
     }
 

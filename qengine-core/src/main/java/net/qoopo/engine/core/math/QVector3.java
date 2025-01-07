@@ -16,11 +16,6 @@ public class QVector3 implements Serializable {
     public static final QVector3 unitario_xyz = new QVector3(1.0f, 1.0f, 1.0f);
 
     public float x, y, z;
-    // private float tempX;
-    // private float tempY;
-    // private float tempZ;
-    // private float sinAngle;
-    // private float cosAngle;
 
     public QVector3() {
         x = 0.0f;

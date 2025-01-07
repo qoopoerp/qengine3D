@@ -7,7 +7,7 @@ package net.qoopo.engine.core.renderer.post.procesos.color;
 
 import net.qoopo.engine.core.math.QColor;
 import net.qoopo.engine.core.renderer.post.procesos.QPostProceso;
-import net.qoopo.engine.core.texture.QTextura;
+import net.qoopo.engine.core.texture.Texture;
 
 /**
  * Realiza una modificación del color final de la imagen convirtiendo en cel
@@ -21,11 +21,11 @@ public class QProcesadorCel extends QPostProceso {
     private int niveles = 4;
 
     public QProcesadorCel(int ancho, int alto) {
-        bufferSalida = new QTextura(ancho, alto);
+        bufferSalida = new Texture(ancho, alto);
     }
 
     @Override
-    public void procesar(QTextura... buffer) {
+    public void procesar(Texture... buffer) {
         QColor color;
         float brillo;
         float f = 0;

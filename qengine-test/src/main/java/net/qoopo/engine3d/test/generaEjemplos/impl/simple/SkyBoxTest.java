@@ -10,7 +10,7 @@ import java.io.File;
 import net.qoopo.engine.core.assets.AssetManager;
 import net.qoopo.engine.core.entity.Entity;
 import net.qoopo.engine.core.entity.component.mesh.primitive.shape.Sphere;
-import net.qoopo.engine.core.material.basico.QMaterialBas;
+import net.qoopo.engine.core.material.basico.Material;
 import net.qoopo.engine.core.renderer.RenderEngine;
 import net.qoopo.engine.core.scene.Scene;
 import net.qoopo.engine.core.texture.util.MaterialUtil;
@@ -32,7 +32,7 @@ public class SkyBoxTest extends MakeTestScene {
 
         // agrego una esfera para cargar un mapa como entorno
         Entity entorno = new Entity("Entorno");
-        QMaterialBas matEntorno = new QMaterialBas("Entorno");
+        Material matEntorno = new Material("Entorno");
         matEntorno.setFactorEmision(1.0f);
         matEntorno.setMapaColor(AssetManager.get().loadTexture("entornoDifuso",
                 new File("assets/textures/hdri/autumn_field_puresky_1k.png")));

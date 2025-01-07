@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.qoopo.engine.core.math.QColor;
-import net.qoopo.engine.core.texture.QTextura;
+import net.qoopo.engine.core.texture.Texture;
 
 /**
  * Este procesador carga un arreglo de textures que iran cambiando la textura a
@@ -19,11 +19,11 @@ import net.qoopo.engine.core.texture.QTextura;
  *
  * @author alberto
  */
-public class QProcesadorSecuencial extends QProcesadorTextura {
+public class QProcesadorSecuencial extends Texture {
 
-    private QTextura textura;// es la textura actual, se usa una aparte porq en las transiciones puede ser el
+    private Texture textura;// es la textura actual, se usa una aparte porq en las transiciones puede ser el
                              // resultado de 2 textures mezcladas
-    private List<QTextura> textures;
+    private List<Texture> textures;
     private long tiempo_ms;// tiempo de vida de cada textura en milisegundos
     private int contador = 0;
     private long t_anterior = -1;
@@ -34,19 +34,19 @@ public class QProcesadorSecuencial extends QProcesadorTextura {
         t_anterior = -1;
     }
 
-    public void agregarTextura(QTextura textura) {
+    public void agregarTextura(Texture textura) {
         textures.add(textura);
     }
 
-    public void eliminarTextura(QTextura textura) {
+    public void eliminarTextura(Texture textura) {
         textures.remove(textura);
     }
 
-    public List<QTextura> getTexturas() {
+    public List<Texture> getTexturas() {
         return textures;
     }
 
-    public void setTexturas(List<QTextura> textures) {
+    public void setTexturas(List<Texture> textures) {
         this.textures = textures;
     }
 
@@ -58,11 +58,11 @@ public class QProcesadorSecuencial extends QProcesadorTextura {
         this.tiempo_ms = tiempo_ms;
     }
 
-    public QTextura getTextura() {
+    public Texture getTextura() {
         return textura;
     }
 
-    public void setTextura(QTextura textura) {
+    public void setTextura(Texture textura) {
         this.textura = textura;
     }
 
@@ -85,49 +85,49 @@ public class QProcesadorSecuencial extends QProcesadorTextura {
     }
 
     @Override
-    public int get_ARGB(float x, float y) {
+    public int getARGB(float x, float y) {
         procesar();
         return textura.getARGB(x, y);
     }
 
     @Override
-    public QColor get_QARGB(float x, float y) {
+    public QColor getQColor(float x, float y) {
         procesar();
         return textura.getQColor(x, y);
     }
 
-    @Override
-    public float getNormalX(float x, float y) {
-        procesar();
-        return textura.getNormalX(x, y);
-    }
+    // @Override
+    // public float getNormalX(float x, float y) {
+    // procesar();
+    // return textura.getNormalX(x, y);
+    // }
+
+    // @Override
+    // public float getNormalY(float x, float y) {
+    // procesar();
+    // return textura.getNormalY(x, y);
+    // }
+
+    // @Override
+    // public float getNormalZ(float x, float y) {
+    // procesar();
+    // return textura.getNormalZ(x, y);
+    // }
 
     @Override
-    public float getNormalY(float x, float y) {
-        procesar();
-        return textura.getNormalY(x, y);
-    }
-
-    @Override
-    public float getNormalZ(float x, float y) {
-        procesar();
-        return textura.getNormalZ(x, y);
-    }
-
-    @Override
-    public BufferedImage getTexture(Dimension size) {
+    public BufferedImage getImagen(Dimension size) {
         procesar();
         return textura.getImagen(size);
     }
 
     @Override
-    public BufferedImage getTexture() {
+    public BufferedImage getImagen() {
         return textura.getImagen();
     }
 
     @Override
     public void destruir() {
-        for (QTextura tex : textures) {
+        for (Texture tex : textures) {
             tex.destruir();
         }
         textures.clear();

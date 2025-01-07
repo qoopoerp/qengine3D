@@ -12,7 +12,7 @@ import net.qoopo.engine.core.entity.component.EntityComponent;
 import net.qoopo.engine.core.entity.component.cubemap.CubeMap;
 import net.qoopo.engine.core.entity.component.mesh.Mesh;
 import net.qoopo.engine.core.entity.component.mesh.primitive.Primitive;
-import net.qoopo.engine.core.material.basico.QMaterialBas;
+import net.qoopo.engine.core.material.basico.Material;
 import net.qoopo.engine.core.util.QGlobal;
 import net.qoopo.engine.core.util.ComponentUtil;
 
@@ -221,22 +221,22 @@ public class PnlMapaCubo extends javax.swing.JPanel {
     }// GEN-LAST:event_btnAplicarActionPerformed
 
     private void btnQuitarActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btnQuitarActionPerformed
-        ComponentUtil.eliminarComponenteMapaCubo(mapa.getEntity());
-        List<QMaterialBas> lst = new ArrayList<>();
+        ComponentUtil.removeComponents(mapa.getEntity(), CubeMap.class);
+        List<Material> lst = new ArrayList<>();
         // ahora recorro todos los materiales del objeto y le quito la textura de
         // reflexion
         for (EntityComponent componente : mapa.getEntity().getComponents()) {
             if (componente instanceof Mesh) {
                 for (Primitive poligono : ((Mesh) componente).primitiveList) {
-                    if (poligono.material instanceof QMaterialBas) {
-                        if (!lst.contains((QMaterialBas) poligono.material)) {
-                            lst.add((QMaterialBas) poligono.material);
+                    if (poligono.material instanceof Material) {
+                        if (!lst.contains((Material) poligono.material)) {
+                            lst.add((Material) poligono.material);
                         }
                     }
                 }
             }
         }
-        for (QMaterialBas mat : lst) {
+        for (Material mat : lst) {
             mat.clearEnviromentMap();
             mat.setMetalico(0);
             mat.setIndiceRefraccion(0);

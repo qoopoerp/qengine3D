@@ -11,11 +11,11 @@ import net.qoopo.engine.core.assets.AssetManager;
 import net.qoopo.engine.core.entity.Entity;
 import net.qoopo.engine.core.entity.component.cubemap.CubeMap;
 import net.qoopo.engine.core.entity.component.mesh.primitive.shape.Sphere;
-import net.qoopo.engine.core.material.basico.QMaterialBas;
+import net.qoopo.engine.core.material.basico.Material;
 import net.qoopo.engine.core.math.QColor;
 import net.qoopo.engine.core.renderer.RenderEngine;
 import net.qoopo.engine.core.scene.Scene;
-import net.qoopo.engine.core.texture.QTextura;
+import net.qoopo.engine.core.texture.Texture;
 import net.qoopo.engine.core.texture.util.MaterialUtil;
 import net.qoopo.engine.core.util.QGlobal;
 import net.qoopo.engine3d.test.generaEjemplos.MakeTestScene;
@@ -30,20 +30,20 @@ public class PBRSphereTest extends MakeTestScene {
                 this.scene = mundo;
 
                 // //-------------------------
-                QTextura albedo = AssetManager.get().loadTexture("difusa", new File("assets/"
+                Texture albedo = AssetManager.get().loadTexture("difusa", new File("assets/"
                                 + "textures/pbr/metal/used-stainless-steel/albedo.png"));
-                QTextura normal = AssetManager.get().loadTexture("normal", new File("assets/"
+                Texture normal = AssetManager.get().loadTexture("normal", new File("assets/"
                                 + "textures/pbr/metal/used-stainless-steel/normal.png"));
-                QTextura rugoso = AssetManager.get().loadTexture("rugoso", new File("assets/"
+                Texture rugoso = AssetManager.get().loadTexture("rugoso", new File("assets/"
                                 + "textures/pbr/metal/used-stainless-steel/roughness.png"));
-                QTextura metalico = AssetManager.get().loadTexture("metalico", new File("assets/"
+                Texture metalico = AssetManager.get().loadTexture("metalico", new File("assets/"
                                 + "textures/pbr/metal/used-stainless-steel/metallic.png"));
-                QTextura sombras = AssetManager.get().loadTexture("ao", new File("assets/" +
+                Texture sombras = AssetManager.get().loadTexture("ao", new File("assets/" +
                                 "textures/pbr/metal/used-stainless-steel/ao.png"));
 
-                QMaterialBas material = new QMaterialBas();
+                Material material = new Material();
 
-                material.setColorBase(QColor.WHITE);
+                material.setColor(QColor.WHITE);
                 material.setMapaColor(albedo);
                 material.setMapaNormal(normal);
                 material.setMapaRugosidad(rugoso);

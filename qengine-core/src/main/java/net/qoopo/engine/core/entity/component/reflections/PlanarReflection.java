@@ -15,7 +15,7 @@ import net.qoopo.engine.core.math.QVector3;
 import net.qoopo.engine.core.renderer.RenderEngine;
 import net.qoopo.engine.core.scene.Camera;
 import net.qoopo.engine.core.scene.Scene;
-import net.qoopo.engine.core.texture.QTextura;
+import net.qoopo.engine.core.texture.Texture;
 
 /**
  * Genera una reflexion planar.Útil en espejos, pisos etc.
@@ -33,7 +33,7 @@ public class PlanarReflection implements EntityComponent, UpdatableComponent {
 
     private int metodo = 1;
 
-    public PlanarReflection(QTextura textura, Scene universo, int ancho, int alto) {
+    public PlanarReflection(Texture textura, Scene universo, int ancho, int alto) {
         // this.texturaEspejo = textura;
         try {
 

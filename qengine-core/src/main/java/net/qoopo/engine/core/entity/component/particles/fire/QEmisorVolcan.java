@@ -17,7 +17,7 @@ import net.qoopo.engine.core.entity.component.particles.ParticleEmissor;
 import net.qoopo.engine.core.entity.component.physics.collision.detector.shape.primitivas.AABB;
 import net.qoopo.engine.core.entity.component.physics.dinamica.QObjetoDinamico;
 import net.qoopo.engine.core.entity.component.physics.dinamica.QObjetoRigido;
-import net.qoopo.engine.core.material.basico.QMaterialBas;
+import net.qoopo.engine.core.material.basico.Material;
 import net.qoopo.engine.core.math.QVector3;
 import net.qoopo.engine.core.texture.util.MaterialUtil;
 
@@ -27,12 +27,12 @@ import net.qoopo.engine.core.texture.util.MaterialUtil;
  */
 public class QEmisorVolcan extends ParticleEmissor {
 
-    private QMaterialBas material = null;
+    private Material material = null;
 
     private void cargarMaterial() {
         material = null;
         try {
-            material = new QMaterialBas(AssetManager.get().loadTexture("fuego", "res/fuego/fuego1.png"), 64);
+            material = new Material(AssetManager.get().loadTexture("fuego", "res/fuego/fuego1.png"), 64);
             material.setTransAlfa(0.90f);// el objeto tiene una transparencia
         } catch (Exception e) {
             e.printStackTrace();

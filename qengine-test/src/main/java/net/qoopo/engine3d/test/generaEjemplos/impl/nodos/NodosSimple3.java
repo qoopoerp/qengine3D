@@ -12,14 +12,13 @@ import net.qoopo.engine.core.entity.Entity;
 import net.qoopo.engine.core.entity.component.cubemap.CubeMap;
 import net.qoopo.engine.core.entity.component.mesh.Mesh;
 import net.qoopo.engine.core.entity.component.mesh.primitive.shape.Sphere;
-import net.qoopo.engine.core.material.basico.QMaterialBas;
+import net.qoopo.engine.core.material.basico.Material;
 import net.qoopo.engine.core.material.node.MaterialNode;
 import net.qoopo.engine.core.material.node.core.QNodoEnlace;
 import net.qoopo.engine.core.material.node.core.output.MaterialOutputNode;
 import net.qoopo.engine.core.math.QColor;
 import net.qoopo.engine.core.renderer.RenderEngine;
 import net.qoopo.engine.core.scene.Scene;
-import net.qoopo.engine.core.texture.procesador.QProcesadorSimple;
 import net.qoopo.engine.core.texture.util.MaterialUtil;
 import net.qoopo.engine.core.util.QGlobal;
 import net.qoopo.engine.core.util.mesh.NormalUtil;
@@ -42,9 +41,9 @@ public class NodosSimple3 extends MakeTestScene {
 
                 // agrego una esfera para cargar un mapa como entorno
                 Entity entorno = new Entity("Entorno");
-                QMaterialBas matEntorno = new QMaterialBas("Entorno");
-                matEntorno.setMapaColor(new QProcesadorSimple(AssetManager.get().loadTexture("difusa",
-                                new File("assets/textures/entorno/hdri/exteriores/from_cubemap.jpg"))));
+                Material matEntorno = new Material("Entorno");
+                matEntorno.setMapaColor(AssetManager.get().loadTexture("difusa",
+                                new File("assets/textures/entorno/hdri/exteriores/from_cubemap.jpg")));
 
                 entorno.addComponent(MaterialUtil.applyMaterial(NormalUtil.invertirNormales(new Sphere(50)),
                                 matEntorno));
@@ -60,10 +59,10 @@ public class NodosSimple3 extends MakeTestScene {
                 CubeMap mapa = new CubeMap(QGlobal.MAPA_CUPO_RESOLUCION);
 
                 Mesh esfera1 = new Sphere(1);
-                QMaterialBas mat4 = new QMaterialBas("Reflexion real");
-                mat4.setColorBase(QColor.YELLOW);
+                Material mat4 = new Material("Reflexion real");
+                mat4.setColor(QColor.YELLOW);
                 mat4.setMetalico(1);
-                mat4.setMapaEntorno(new QProcesadorSimple(mapa.getTexturaEntorno()));
+                mat4.setMapaEntorno(mapa.getTexturaEntorno());
                 mat4.setTipoMapaEntorno(CubeMap.FORMATO_MAPA_CUBO);
                 cubo4.addComponent(MaterialUtil.applyMaterial(esfera1, mat4));
                 cubo4.addComponent(mapa);
@@ -78,8 +77,7 @@ public class NodosSimple3 extends MakeTestScene {
                 Mesh esfera2 = new Sphere(1);
                 MaterialNode mat5 = new MaterialNode("Reflexion real Nodo");
 
-                QNodoColorReflexion nodoreflexion = new QNodoColorReflexion(
-                                new QProcesadorSimple(mapa2.getTexturaEntorno()));
+                QNodoColorReflexion nodoreflexion = new QNodoColorReflexion(mapa2.getTexturaEntorno());
                 nodoreflexion.setTipoMapaEntorno(CubeMap.FORMATO_MAPA_CUBO);
                 QNodoColorIluminacion nodoDifuso = new QNodoColorIluminacion();
 

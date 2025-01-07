@@ -19,10 +19,6 @@ public class Vertex implements Serializable {
     public static final Vertex ZERO = new Vertex(0, 0, 0, 1);
 
     public QVector4 location = new QVector4();
-
-    // public QVector3 normal = QVector3.unitario_y.clone();
-
-    // public float u, v;
     public QVector3 up = QVector3.unitario_y.clone();
     public QVector3 right = QVector3.unitario_x.clone();
     public boolean normalInversa = false;
@@ -62,30 +58,12 @@ public class Vertex implements Serializable {
         location.w = w;
     }
 
-    // public Vertex(float x, float y, float z, float w, float u, float v) {
-    // location.x = x;
-    // location.y = y;
-    // location.z = z;
-    // location.w = w;
-    // this.u = u;
-    // this.v = v;
-    // }
-
     public Vertex(float x, float y, float z) {
         location.x = x;
         location.y = y;
         location.z = z;
         location.w = 1;
     }
-
-    // public Vertex(float x, float y, float z, float u, float v) {
-    // location.x = x;
-    // location.y = y;
-    // location.z = z;
-    // location.w = 1;
-    // this.u = u;
-    // this.v = v;
-    // }
 
     public void set(float x, float y, float z, float w) {
         location.x = x;
@@ -105,10 +83,12 @@ public class Vertex implements Serializable {
         location.y = vertice.location.y;
         location.z = vertice.location.z;
         location.w = vertice.location.w;
+        up.set(vertice.up);
+        right.set(vertice.right);
+        normalInversa = vertice.normalInversa;
         this.listaHuesos = Arrays.copyOf(vertice.listaHuesos, vertice.listaHuesos.length);
         this.listaHuesosIds = Arrays.copyOf(vertice.listaHuesosIds, vertice.listaHuesosIds.length);
         this.listaHuesosPesos = Arrays.copyOf(vertice.listaHuesosPesos, vertice.listaHuesosPesos.length);
-        // this.normal.set(vertice.normal);
     }
 
     public void copyAttribute(Vertex other) {
@@ -116,11 +96,19 @@ public class Vertex implements Serializable {
         location.y = other.location.y;
         location.z = other.location.z;
         location.w = other.location.w;
-        // this.normal.set(other.normal);
+        up.set(other.up);
+        right.set(other.right);
+        normalInversa = other.normalInversa;
+        listaHuesos = Arrays.copyOf(other.listaHuesos, other.listaHuesos.length);
+        listaHuesosIds = Arrays.copyOf(other.listaHuesosIds, other.listaHuesosIds.length);
+        listaHuesosPesos = Arrays.copyOf(other.listaHuesosPesos, other.listaHuesosPesos.length);
     }
 
     public Vertex clone() {
         Vertex result = new Vertex(location.x, location.y, location.z, location.w);
+        result.up.set(up);
+        result.right.set(right);
+        result.normalInversa = normalInversa;
         result.listaHuesos = Arrays.copyOf(listaHuesos, listaHuesos.length);
         result.listaHuesosIds = Arrays.copyOf(listaHuesosIds, listaHuesosIds.length);
         result.listaHuesosPesos = Arrays.copyOf(listaHuesosPesos, listaHuesosPesos.length);

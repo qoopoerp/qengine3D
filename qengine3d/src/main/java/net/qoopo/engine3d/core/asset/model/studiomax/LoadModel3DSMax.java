@@ -14,7 +14,7 @@ import java.util.List;
 import net.qoopo.engine.core.entity.Entity;
 import net.qoopo.engine.core.entity.component.mesh.Mesh;
 import net.qoopo.engine.core.entity.component.mesh.primitive.Poly;
-import net.qoopo.engine.core.material.basico.QMaterialBas;
+import net.qoopo.engine.core.material.basico.Material;
 import net.qoopo.engine3d.core.asset.model.studiomax.util.Model3DS;
 import net.qoopo.engine3d.core.asset.model.studiomax.util.ModelLoader;
 import net.qoopo.engine3d.core.asset.model.studiomax.util.ModelObject;
@@ -42,7 +42,7 @@ public class LoadModel3DSMax implements net.qoopo.engine.core.assets.model.Model
             List<Entity> lista = new ArrayList<>();
 
             Model3DS modelo = ModelLoader.load3dModel(file);
-            QMaterialBas material = new QMaterialBas("default");
+            Material material = new Material("default");
             // try{
             // material = new QMaterialBas(ImgReader.leerImagen(new
             // File(archivo.getParentFile(),archivo.getName() + ".png")), 64, 64);
@@ -54,7 +54,7 @@ public class LoadModel3DSMax implements net.qoopo.engine.core.assets.model.Model
 
             for (ModelObject modeloOb : modelo.objects) {
                 objetoActual = new Mesh();
-                objetoActual.nombre = modeloOb.getName();
+                objetoActual.name = modeloOb.getName();
                 // vertices
                 int vertices = modeloOb.vertices.length;
                 for (int i = 0; i < vertices; i += 3) {
@@ -86,7 +86,7 @@ public class LoadModel3DSMax implements net.qoopo.engine.core.assets.model.Model
                 // System.out.println(" caras = " + objetoActual.primitivas.length);
                 objetoActual.computeNormals();
 
-                Entity ent = new Entity(objetoActual.nombre);
+                Entity ent = new Entity(objetoActual.name);
                 ent.addComponent(objetoActual);
                 lista.add(ent);
             }

@@ -10,16 +10,11 @@ import java.util.Random;
 
 import net.qoopo.engine.core.assets.AssetManager;
 import net.qoopo.engine.core.entity.Entity;
-import net.qoopo.engine.core.entity.component.ligth.QDirectionalLigth;
-import net.qoopo.engine.core.entity.component.ligth.QLigth;
 import net.qoopo.engine.core.entity.component.mesh.Mesh;
 import net.qoopo.engine.core.entity.component.mesh.primitive.shape.Sphere;
-import net.qoopo.engine.core.material.basico.QMaterialBas;
-import net.qoopo.engine.core.math.QColor;
-import net.qoopo.engine.core.math.QVector3;
+import net.qoopo.engine.core.material.basico.Material;
 import net.qoopo.engine.core.renderer.RenderEngine;
 import net.qoopo.engine.core.scene.Scene;
-import net.qoopo.engine.core.texture.procesador.QProcesadorSimple;
 import net.qoopo.engine.core.texture.util.MaterialUtil;
 import net.qoopo.engine3d.test.generaEjemplos.MakeTestScene;
 
@@ -30,19 +25,17 @@ import net.qoopo.engine3d.test.generaEjemplos.MakeTestScene;
  */
 public class TexturedSphereUniverseTest extends MakeTestScene {
 
-    private QMaterialBas material = null;
+    private Material material = null;
 
     private void loadMaterial() {
         material = null;
         try {
             // int colorTransparencia = -1;
-            material = new QMaterialBas();
-
-            material.setFactorNormal(0.5f);
-            material.setMapaColor(new QProcesadorSimple(AssetManager.get().loadTexture("difusa",
-                    new File("assets/textures/solar_system/2k_earth_daymap.jpg"))));
-            material.setMapaNormal(new QProcesadorSimple(AssetManager.get().loadTexture("normal",
-                    new File("assets/textures/solar_system/2k_earth_normal_map.png"))));
+            material = new Material();
+            material.setMapaColor(AssetManager.get().loadTexture("difusa",
+                    new File("assets/textures/solar_system/2k_earth_daymap.jpg")));
+            material.setMapaNormal(AssetManager.get().loadTexture("normal",
+                    new File("assets/textures/solar_system/2k_earth_normal_map.png")));
             // material.texturaColorTransparente = colorTransparencia;
             // if (colorTransparencia != -1) {
             // material.transAlfa = 0.99f;// el objeto tiene una trasnparencia

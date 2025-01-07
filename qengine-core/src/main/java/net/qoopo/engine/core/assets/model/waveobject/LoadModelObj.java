@@ -26,11 +26,11 @@ import net.qoopo.engine.core.entity.component.physics.collision.detector.Collisi
 import net.qoopo.engine.core.entity.component.physics.collision.detector.shape.mallas.QColisionMallaConvexa;
 import net.qoopo.engine.core.entity.component.physics.dinamica.QObjetoDinamico;
 import net.qoopo.engine.core.entity.component.physics.dinamica.QObjetoRigido;
-import net.qoopo.engine.core.material.basico.QMaterialBas;
+import net.qoopo.engine.core.material.basico.Material;
 import net.qoopo.engine.core.math.QColor;
 import net.qoopo.engine.core.math.QVector2;
 import net.qoopo.engine.core.math.QVector3;
-import net.qoopo.engine.core.texture.QTextura;
+import net.qoopo.engine.core.texture.Texture;
 import net.qoopo.engine.core.util.image.ImgReader;
 
 /**
@@ -54,31 +54,31 @@ public class LoadModelObj implements ModelLoader {
         return loadModel(stream, "");
     }
 
-    private void readMaterial(File materialFile, HashMap<String, QMaterialBas> materialMap, String directory) {
+    private void readMaterial(File materialFile, HashMap<String, Material> materialMap, String directory) {
         try {
             if (materialFile.exists()) {
                 BufferedReader materialReader = new BufferedReader(new FileReader(materialFile));
                 String materialLine = "";
-                QMaterialBas readingMaterial = null;
+                Material readingMaterial = null;
                 while ((materialLine = materialReader.readLine()) != null) {
                     if (materialLine.startsWith("newmtl ")) {
                         if (readingMaterial != null) {
                             materialMap.put(readingMaterial.getNombre(), readingMaterial);
                         }
                         String materialName = materialLine.substring("newmtl ".length());
-                        readingMaterial = new QMaterialBas(materialName);
+                        readingMaterial = new Material(materialName);
                     } else if (materialLine.startsWith("Ka ")) {
                         // String[] att = materialLine.split("\\s+");
                         // readingMaterial.setColorAmbiente(new QColor(1, Float.parseFloat(att[1]),
                         // Float.parseFloat(att[2]), Float.parseFloat(att[3])));
                     } else if (materialLine.startsWith("Kd ")) {
                         String[] att = materialLine.split("\\s+");
-                        readingMaterial.setColorBase(new QColor(1, Float.parseFloat(att[1]),
+                        readingMaterial.setColor(new QColor(1, Float.parseFloat(att[1]),
                                 Float.parseFloat(att[2]), Float.parseFloat(att[3])));
                     } else if (materialLine.startsWith("Ks ")) {
-                        // String[] att = materialLine.split("\\s+");
-                        // readingMaterial.setColorEspecular(new QColor(1, Float.parseFloat(att[1]),
-                        // Float.parseFloat(att[2]), Float.parseFloat(att[3])));
+                        String[] att = materialLine.split("\\s+");
+                        readingMaterial.setColorEspecular(new QColor(1, Float.parseFloat(att[1]),
+                                Float.parseFloat(att[2]), Float.parseFloat(att[3])));
                     } else if (materialLine.startsWith("d ")) {
                         String[] att = materialLine.split("\\s+");
                         readingMaterial.setTransAlfa(Float.parseFloat(att[1]));
@@ -93,7 +93,7 @@ public class LoadModelObj implements ModelLoader {
                         if (!texture.isEmpty()) {
                             texture = texture.replaceAll("\\\\", "/");
                             try {
-                                readingMaterial.setMapaColor(new QTextura(
+                                readingMaterial.setMapaColor(new Texture(
                                         ImgReader.read(validarFile(directory, texture))));
                             } catch (Exception e) {
                                 System.out.println(
@@ -106,7 +106,7 @@ public class LoadModelObj implements ModelLoader {
                         if (!texture.isEmpty()) {
                             texture = texture.replaceAll("\\\\", "/");
                             try {
-                                readingMaterial.setMapaTransparencia(new QTextura(
+                                readingMaterial.setMapaTransparencia(new Texture(
                                         ImgReader.read(validarFile(directory, texture))));
                             } catch (Exception e) {
                                 System.out.println(
@@ -119,13 +119,13 @@ public class LoadModelObj implements ModelLoader {
                         if (!texture.isEmpty()) {
                             if (texture.startsWith("-bm ")) {
                                 texture = texture.substring("-bm ".length()).trim();
-                                readingMaterial.setFactorNormal(Float
-                                        .parseFloat(texture.substring(0, texture.indexOf(" "))));
+                                // readingMaterial.setFactorNormal(Float
+                                //         .parseFloat(texture.substring(0, texture.indexOf(" "))));
                                 texture = texture.substring(texture.indexOf(" ")).trim();
                             }
                             texture = texture.replaceAll("\\\\", "/");
                             try {
-                                readingMaterial.setMapaNormal(new QTextura(
+                                readingMaterial.setMapaNormal(new Texture(
                                         ImgReader.read(validarFile(directory, texture))));
                             } catch (Exception e) {
                                 System.out.println(
@@ -138,7 +138,7 @@ public class LoadModelObj implements ModelLoader {
                         if (!texture.isEmpty()) {
                             texture = texture.replaceAll("\\\\", "/");
                             try {
-                                readingMaterial.setMapaRugosidad(new QTextura(
+                                readingMaterial.setMapaRugosidad(new Texture(
                                         ImgReader.read(validarFile(directory, texture))));
                             } catch (Exception e) {
                                 System.out.println(
@@ -151,7 +151,7 @@ public class LoadModelObj implements ModelLoader {
                         if (!texture.isEmpty()) {
                             texture = texture.replaceAll("\\\\", "/");
                             try {
-                                readingMaterial.setMapaMetalico(new QTextura(
+                                readingMaterial.setMapaMetalico(new Texture(
                                         ImgReader.read(validarFile(directory, texture))));
                             } catch (Exception e) {
                                 System.out.println(
@@ -164,14 +164,14 @@ public class LoadModelObj implements ModelLoader {
                         if (!texture.isEmpty()) {
                             if (texture.startsWith("-bm ")) {
                                 texture = texture.substring("-bm ".length()).trim();
-                                readingMaterial.setFactorNormal(Float
-                                        .parseFloat(texture.substring(0, texture.indexOf(" "))));
+                                // readingMaterial.setFactorNormal(Float
+                                //         .parseFloat(texture.substring(0, texture.indexOf(" "))));
                                 texture = texture.substring(texture.indexOf(" ")).trim();
                             }
                             texture = texture.replaceAll("\\\\", "/");
                             // System.out.println(directory + File.separator + texture);
                             try {
-                                readingMaterial.setMapaNormal(new QTextura(
+                                readingMaterial.setMapaNormal(new Texture(
                                         ImgReader.read(validarFile(directory, texture))));
                             } catch (Exception e) {
                                 System.out.println(
@@ -204,9 +204,9 @@ public class LoadModelObj implements ModelLoader {
                 // reader = new BufferedReader(new FileReader(archivo));
                 reader = new BufferedReader(new InputStreamReader(stream));
                 String line;
-                HashMap<String, QMaterialBas> materialMap = new HashMap<>();
-                QMaterialBas defaultMaterial = new QMaterialBas("Default");
-                QMaterialBas currentMaterial = null;
+                HashMap<String, Material> materialMap = new HashMap<>();
+                Material defaultMaterial = new Material("Default");
+                Material currentMaterial = null;
                 while ((line = reader.readLine()) != null) {
                     String[] tokens = line.split("\\s+");
                     switch (tokens[0]) {
@@ -233,7 +233,7 @@ public class LoadModelObj implements ModelLoader {
                                 // }
                                 vertexIndexOffset += readingMesh.vertexList.length;
 
-                                Entity ent = new Entity(readingMesh.nombre);
+                                Entity ent = new Entity(readingMesh.name);
                                 ent.addComponent(readingMesh);
                                 CollisionShape colision = new QColisionMallaConvexa(readingMesh);
                                 ent.addComponent(colision);
@@ -248,7 +248,7 @@ public class LoadModelObj implements ModelLoader {
                                 name = null;
                             }
                             readingMesh = new Mesh();
-                            readingMesh.nombre = name;
+                            readingMesh.name = name;
                             break;
                         case "v":
                             if (readingMesh == null) {
@@ -344,7 +344,7 @@ public class LoadModelObj implements ModelLoader {
                 // geometriaLeyendo.vertices[i].normal.normalize();
                 // }
 
-                Entity ent = new Entity(readingMesh.nombre);
+                Entity ent = new Entity(readingMesh.name);
                 ent.addComponent(readingMesh);
                 CollisionShape colision = new QColisionMallaConvexa(readingMesh);
                 ent.addComponent(colision);

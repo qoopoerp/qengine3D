@@ -95,12 +95,12 @@ import net.qoopo.engine.core.texture.util.MaterialUtil;
 import net.qoopo.engine.core.util.QGlobal;
 import net.qoopo.engine.core.util.ComponentUtil;
 import net.qoopo.engine.core.util.mesh.NormalUtil;
-import net.qoopo.engine.java3d.renderer.QRenderJava3D;
+import net.qoopo.engine.java3d.renderer.Java3DRenderer;
 import net.qoopo.engine.renderer.SoftwareRenderer;
 import net.qoopo.engine.terrain.HeightMapTerrain;
 import net.qoopo.engine3d.QEngine3D;
 import net.qoopo.engine3d.core.asset.model.DefaultModelLoader;
-import net.qoopo.engine3d.core.input.control.gizmo.QGizmo;
+import net.qoopo.engine3d.core.input.control.gizmo.Gizmo;
 import net.qoopo.engine3d.core.util.Accion;
 import net.qoopo.engine3d.core.util.QDefinirCentro;
 import net.qoopo.engine3d.core.util.SerializarUtil;
@@ -227,7 +227,7 @@ public class Principal extends javax.swing.JFrame {
 
                     pnlEditorEntidad.liberar();
                     populateControls();
-                    jPanel2.repaint();
+                    pnlOpciones.repaint();
                 }
             }
         });
@@ -295,7 +295,7 @@ public class Principal extends javax.swing.JFrame {
         RenderEngine nuevoRenderer;
         switch (tipoRenderer) {
             case RenderEngine.RENDER_JAVA3D:
-                nuevoRenderer = new QRenderJava3D(motor.getScene(), nombre, new Superficie(panelDibujo), 800, 600);
+                nuevoRenderer = new Java3DRenderer(motor.getScene(), nombre, new Superficie(panelDibujo), 800, 600);
                 break;
             case RenderEngine.RENDER_OPENGL:
                 nuevoRenderer = new OpenGlRenderer(motor.getScene(), nombre, new Superficie(panelDibujo), 800, 600);
@@ -379,7 +379,7 @@ public class Principal extends javax.swing.JFrame {
         }
         pnlEditorEntidad.liberar();
         populateControls();
-        jPanel2.repaint();
+        pnlOpciones.repaint();
     }
 
     @SuppressWarnings("unchecked")
@@ -401,7 +401,7 @@ public class Principal extends javax.swing.JFrame {
         treeEntidades = new javax.swing.JTree();
         panelHerramientas = new javax.swing.JTabbedPane();
         scrollOpciones = new javax.swing.JScrollPane();
-        jPanel2 = new javax.swing.JPanel();
+        pnlOpciones = new javax.swing.JPanel();
         jPanel5 = new javax.swing.JPanel();
         cbxShowLight = new javax.swing.JCheckBox();
         cbxNormalMapping = new javax.swing.JCheckBox();
@@ -414,53 +414,40 @@ public class Principal extends javax.swing.JFrame {
         cbxZSort = new javax.swing.JCheckBox();
         cbxInterpolar = new javax.swing.JCheckBox();
         chkVerGrid = new javax.swing.JCheckBox();
-        jLabel8 = new javax.swing.JLabel();
-        btnRaster1 = new javax.swing.JButton();
-        btnRaster2 = new javax.swing.JButton();
-        btnRaster3 = new javax.swing.JButton();
-        jPanel11 = new javax.swing.JPanel();
+        lblOpcionesRender = new javax.swing.JLabel();
+        pnlLuzAmbiente = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         pnlColorFondo = new javax.swing.JPanel();
-        jPanel13 = new javax.swing.JPanel();
+        pnlNeblina = new javax.swing.JPanel();
         chkNeblina = new javax.swing.JCheckBox();
         jLabel9 = new javax.swing.JLabel();
         spnNeblinaDensidad = new javax.swing.JSpinner();
         jLabel10 = new javax.swing.JLabel();
         pnlNeblinaColor = new javax.swing.JPanel();
-        jLabel17 = new javax.swing.JLabel();
-        jLabel20 = new javax.swing.JLabel();
-        btnFullShader = new javax.swing.JButton();
-        btnShadowShader = new javax.swing.JButton();
-        btnIlumShader = new javax.swing.JButton();
-        btnTexturaShader = new javax.swing.JButton();
-        btnPhongShader = new javax.swing.JButton();
-        btnFlatShader = new javax.swing.JButton();
-        btnSimpleShader = new javax.swing.JButton();
-        btnPBRShader = new javax.swing.JButton();
         scrollHeramientas = new javax.swing.JScrollPane();
         pnlHerramientas = new javax.swing.JPanel();
-        jLabel2 = new javax.swing.JLabel();
-        jLabel18 = new javax.swing.JLabel();
-        jLabel6 = new javax.swing.JLabel();
+        lblHerramientasEntidad = new javax.swing.JLabel();
+        lblSombreado = new javax.swing.JLabel();
+        lblToolEntidadNormales = new javax.swing.JLabel();
         btnInvertirNormales = new javax.swing.JButton();
-        jLabel11 = new javax.swing.JLabel();
-        jLabel5 = new javax.swing.JLabel();
+        lblToolEntidadTipo = new javax.swing.JLabel();
+        lblToolDefinirCentro = new javax.swing.JLabel();
         btnCentroGeometria = new javax.swing.JButton();
         btnActualizarReflejos = new javax.swing.JButton();
-        jLabel12 = new javax.swing.JLabel();
+        lblToolsMapas = new javax.swing.JLabel();
         btnActualizarSombras = new javax.swing.JButton();
-        jLabel13 = new javax.swing.JLabel();
+        lblToolsGeneral = new javax.swing.JLabel();
         btnGuadarScreenShot = new javax.swing.JButton();
         btnSuavizar = new javax.swing.JButton();
         btnNoSuavizar = new javax.swing.JButton();
         btnTipoSolido = new javax.swing.JButton();
         btnTipoAlambre = new javax.swing.JButton();
-        jLabel14 = new javax.swing.JLabel();
+        lblToolsGeometria = new javax.swing.JLabel();
         btnDividir = new javax.swing.JButton();
         btnCalcularNormales = new javax.swing.JButton();
         btnDividirCatmull = new javax.swing.JButton();
-        jButton9 = new javax.swing.JButton();
-        jLabel4 = new javax.swing.JLabel();
+        btnInflar = new javax.swing.JButton();
+        lblToolInflar = new javax.swing.JLabel();
         txtInflarRadio = new javax.swing.JTextField();
         btnEliminarVerticesDuplicados = new javax.swing.JButton();
         pnlProcesadores = new javax.swing.JPanel();
@@ -751,33 +738,12 @@ public class Principal extends javax.swing.JFrame {
                                                 javax.swing.GroupLayout.PREFERRED_SIZE))
                                 .addContainerGap(15, Short.MAX_VALUE)));
 
-        jLabel8.setFont(new java.awt.Font("Dialog", 1, 11)); // NOI18N
-        jLabel8.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel8.setText("Opciones Render");
-        jLabel8.setOpaque(true);
+        lblOpcionesRender.setFont(new java.awt.Font("Dialog", 1, 11)); // NOI18N
+        lblOpcionesRender.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        lblOpcionesRender.setText("Opciones Render");
+        lblOpcionesRender.setOpaque(true);
 
-        btnRaster1.setText("Raster 1");
-        btnRaster1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnRaster1ActionPerformed(evt);
-            }
-        });
-
-        btnRaster2.setText("Raster 2");
-        btnRaster2.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnRaster2ActionPerformed(evt);
-            }
-        });
-
-        btnRaster3.setText("Raster 3");
-        btnRaster3.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnRaster3ActionPerformed(evt);
-            }
-        });
-
-        jPanel11.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Luz Ambiente",
+        pnlLuzAmbiente.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Luz Ambiente",
                 javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION,
                 new java.awt.Font("Dialog", 0, 9))); // NOI18N
 
@@ -804,29 +770,30 @@ public class Principal extends javax.swing.JFrame {
                 pnlColorFondoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                         .addGap(0, 0, Short.MAX_VALUE));
 
-        javax.swing.GroupLayout jPanel11Layout = new javax.swing.GroupLayout(jPanel11);
-        jPanel11.setLayout(jPanel11Layout);
-        jPanel11Layout.setHorizontalGroup(
-                jPanel11Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addGroup(jPanel11Layout.createSequentialGroup()
+        javax.swing.GroupLayout pnlLuzAmbienteLayout = new javax.swing.GroupLayout(pnlLuzAmbiente);
+        pnlLuzAmbiente.setLayout(pnlLuzAmbienteLayout);
+        pnlLuzAmbienteLayout.setHorizontalGroup(
+                pnlLuzAmbienteLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(pnlLuzAmbienteLayout.createSequentialGroup()
                                 .addComponent(jLabel1)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                 .addComponent(pnlColorFondo, javax.swing.GroupLayout.PREFERRED_SIZE,
                                         javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addContainerGap(223, Short.MAX_VALUE)));
-        jPanel11Layout.setVerticalGroup(
-                jPanel11Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addGroup(jPanel11Layout.createSequentialGroup()
-                                .addGroup(jPanel11Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+        pnlLuzAmbienteLayout.setVerticalGroup(
+                pnlLuzAmbienteLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(pnlLuzAmbienteLayout.createSequentialGroup()
+                                .addGroup(pnlLuzAmbienteLayout
+                                        .createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                         .addComponent(pnlColorFondo, javax.swing.GroupLayout.DEFAULT_SIZE,
                                                 javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                         .addGroup(javax.swing.GroupLayout.Alignment.TRAILING,
-                                                jPanel11Layout.createSequentialGroup()
+                                                pnlLuzAmbienteLayout.createSequentialGroup()
                                                         .addComponent(jLabel1)
                                                         .addGap(4, 4, 4)))
                                 .addGap(0, 0, Short.MAX_VALUE)));
 
-        jPanel13.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Neblina",
+        pnlNeblina.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Neblina",
                 javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION,
                 new java.awt.Font("Dialog", 0, 9))); // NOI18N
 
@@ -867,29 +834,31 @@ public class Principal extends javax.swing.JFrame {
                 pnlNeblinaColorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                         .addGap(0, 0, Short.MAX_VALUE));
 
-        javax.swing.GroupLayout jPanel13Layout = new javax.swing.GroupLayout(jPanel13);
-        jPanel13.setLayout(jPanel13Layout);
-        jPanel13Layout.setHorizontalGroup(
-                jPanel13Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addGroup(jPanel13Layout.createSequentialGroup()
-                                .addGroup(jPanel13Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                        .addComponent(jLabel9)
-                                        .addComponent(chkNeblina))
+        javax.swing.GroupLayout pnlNeblinaLayout = new javax.swing.GroupLayout(pnlNeblina);
+        pnlNeblina.setLayout(pnlNeblinaLayout);
+        pnlNeblinaLayout.setHorizontalGroup(
+                pnlNeblinaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(pnlNeblinaLayout.createSequentialGroup()
+                                .addGroup(
+                                        pnlNeblinaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                                .addComponent(jLabel9)
+                                                .addComponent(chkNeblina))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addGroup(jPanel13Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addGroup(pnlNeblinaLayout
+                                        .createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                         .addComponent(spnNeblinaDensidad, javax.swing.GroupLayout.PREFERRED_SIZE, 113,
                                                 javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addGroup(jPanel13Layout.createSequentialGroup()
+                                        .addGroup(pnlNeblinaLayout.createSequentialGroup()
                                                 .addComponent(jLabel10)
                                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                                 .addComponent(pnlNeblinaColor, javax.swing.GroupLayout.PREFERRED_SIZE,
                                                         javax.swing.GroupLayout.DEFAULT_SIZE,
                                                         javax.swing.GroupLayout.PREFERRED_SIZE)))
                                 .addGap(0, 0, Short.MAX_VALUE)));
-        jPanel13Layout.setVerticalGroup(
-                jPanel13Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addGroup(jPanel13Layout.createSequentialGroup()
-                                .addGroup(jPanel13Layout
+        pnlNeblinaLayout.setVerticalGroup(
+                pnlNeblinaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(pnlNeblinaLayout.createSequentialGroup()
+                                .addGroup(pnlNeblinaLayout
                                         .createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                                         .addComponent(pnlNeblinaColor, javax.swing.GroupLayout.DEFAULT_SIZE,
                                                 javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -898,7 +867,8 @@ public class Principal extends javax.swing.JFrame {
                                         .addComponent(chkNeblina, javax.swing.GroupLayout.PREFERRED_SIZE, 0,
                                                 Short.MAX_VALUE))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addGroup(jPanel13Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addGroup(pnlNeblinaLayout
+                                        .createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                         .addComponent(spnNeblinaDensidad, javax.swing.GroupLayout.Alignment.TRAILING,
                                                 javax.swing.GroupLayout.PREFERRED_SIZE,
                                                 javax.swing.GroupLayout.DEFAULT_SIZE,
@@ -906,200 +876,149 @@ public class Principal extends javax.swing.JFrame {
                                         .addComponent(jLabel9))
                                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)));
 
-        jLabel17.setText("Rasterizador");
-
-        jLabel20.setText("Shader");
-
-        btnFullShader.setText("Estandar");
-        btnFullShader.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnFullShaderActionPerformed(evt);
-            }
-        });
-
-        btnShadowShader.setText("Sombras");
-        btnShadowShader.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnShadowShaderActionPerformed(evt);
-            }
-        });
-
-        btnIlumShader.setText("Iluminación");
-        btnIlumShader.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnIlumShaderActionPerformed(evt);
-            }
-        });
-
-        btnTexturaShader.setText("Textura");
-        btnTexturaShader.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnTexturaShaderActionPerformed(evt);
-            }
-        });
-
-        btnPhongShader.setText("Phong");
-        btnPhongShader.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnPhongShaderActionPerformed(evt);
-            }
-        });
-
-        btnFlatShader.setText("Flat");
-        btnFlatShader.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnFlatShaderActionPerformed(evt);
-            }
-        });
-
-        btnSimpleShader.setText("Simple");
-        btnSimpleShader.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnSimpleShaderActionPerformed(evt);
-            }
-        });
-
-        btnPBRShader.setText("PBR");
-        btnPBRShader.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnPBRShaderActionPerformed(evt);
-            }
-        });
-
-        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
-        jPanel2.setLayout(jPanel2Layout);
-        jPanel2Layout.setHorizontalGroup(
-                jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addGroup(jPanel2Layout.createSequentialGroup()
+        javax.swing.GroupLayout pnlOpcionesLayout = new javax.swing.GroupLayout(pnlOpciones);
+        pnlOpciones.setLayout(pnlOpcionesLayout);
+        pnlOpcionesLayout.setHorizontalGroup(
+                pnlOpcionesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(pnlOpcionesLayout.createSequentialGroup()
                                 .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE,
                                         javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(0, 89, Short.MAX_VALUE))
-                        .addGroup(jPanel2Layout.createSequentialGroup()
-                                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                        .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addGroup(pnlOpcionesLayout.createSequentialGroup()
+                                .addGroup(pnlOpcionesLayout
+                                        .createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addGroup(pnlOpcionesLayout.createSequentialGroup()
                                                 .addContainerGap()
-                                                .addGroup(jPanel2Layout
+                                                .addGroup(pnlOpcionesLayout
                                                         .createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                                        .addComponent(jPanel11, javax.swing.GroupLayout.DEFAULT_SIZE,
+                                                        .addComponent(pnlLuzAmbiente,
+                                                                javax.swing.GroupLayout.DEFAULT_SIZE,
                                                                 javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                                        .addComponent(jPanel13, javax.swing.GroupLayout.DEFAULT_SIZE,
+                                                        .addComponent(pnlNeblina, javax.swing.GroupLayout.DEFAULT_SIZE,
                                                                 javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                                        .addGroup(jPanel2Layout.createSequentialGroup()
-                                                                .addGroup(jPanel2Layout.createParallelGroup(
-                                                                        javax.swing.GroupLayout.Alignment.LEADING)
-                                                                        .addComponent(jLabel17)
-                                                                        .addComponent(jLabel20)
-                                                                        .addGroup(jPanel2Layout.createSequentialGroup()
-                                                                                .addComponent(btnRaster1)
-                                                                                .addPreferredGap(
-                                                                                        javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                                                                .addComponent(btnRaster2)
-                                                                                .addPreferredGap(
-                                                                                        javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                                                                .addComponent(btnRaster3))
-                                                                        .addGroup(jPanel2Layout.createSequentialGroup()
-                                                                                .addGroup(jPanel2Layout
-                                                                                        .createParallelGroup(
-                                                                                                javax.swing.GroupLayout.Alignment.TRAILING,
-                                                                                                false)
-                                                                                        .addComponent(btnFlatShader,
-                                                                                                javax.swing.GroupLayout.DEFAULT_SIZE,
-                                                                                                javax.swing.GroupLayout.DEFAULT_SIZE,
-                                                                                                Short.MAX_VALUE)
-                                                                                        .addGroup(
-                                                                                                javax.swing.GroupLayout.Alignment.LEADING,
-                                                                                                jPanel2Layout
-                                                                                                        .createSequentialGroup()
-                                                                                                        .addGap(1, 1, 1)
-                                                                                                        .addComponent(
-                                                                                                                btnShadowShader,
-                                                                                                                javax.swing.GroupLayout.DEFAULT_SIZE,
-                                                                                                                javax.swing.GroupLayout.DEFAULT_SIZE,
-                                                                                                                Short.MAX_VALUE))
-                                                                                        .addComponent(btnFullShader,
-                                                                                                javax.swing.GroupLayout.DEFAULT_SIZE,
-                                                                                                98, Short.MAX_VALUE)
-                                                                                        .addComponent(btnTexturaShader,
-                                                                                                javax.swing.GroupLayout.DEFAULT_SIZE,
-                                                                                                javax.swing.GroupLayout.DEFAULT_SIZE,
-                                                                                                Short.MAX_VALUE))
-                                                                                .addPreferredGap(
-                                                                                        javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                                                                .addGroup(jPanel2Layout
-                                                                                        .createParallelGroup(
-                                                                                                javax.swing.GroupLayout.Alignment.LEADING,
-                                                                                                false)
-                                                                                        .addComponent(btnPhongShader,
-                                                                                                javax.swing.GroupLayout.DEFAULT_SIZE,
-                                                                                                javax.swing.GroupLayout.DEFAULT_SIZE,
-                                                                                                Short.MAX_VALUE)
-                                                                                        .addComponent(btnIlumShader)
-                                                                                        .addComponent(btnPBRShader,
-                                                                                                javax.swing.GroupLayout.PREFERRED_SIZE,
-                                                                                                98,
-                                                                                                javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                                                        .addComponent(btnSimpleShader,
-                                                                                                javax.swing.GroupLayout.DEFAULT_SIZE,
-                                                                                                102, Short.MAX_VALUE))))
-                                                                .addGap(0, 0, Short.MAX_VALUE))))
-                                        .addComponent(jLabel8, javax.swing.GroupLayout.DEFAULT_SIZE,
+                                                // .addGroup(jPanel2Layout.createSequentialGroup()
+                                                // .addGroup(
+                                                // jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                                // .addComponent(lblRasterizador)
+                                                // .addComponent(lblShader)
+                                                // .addGroup(jPanel2Layout.createSequentialGroup()
+                                                // .addComponent(btnRaster1)
+                                                // .addPreferredGap(
+                                                // javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                                // .addComponent(btnRaster2)
+                                                // .addPreferredGap(
+                                                // javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                                // .addComponent(btnRaster3))
+                                                // .addGroup(jPanel2Layout.createSequentialGroup()
+                                                // .addGroup(jPanel2Layout
+                                                // .createParallelGroup(
+                                                // javax.swing.GroupLayout.Alignment.TRAILING,
+                                                // false)
+                                                // .addComponent(btnFlatShader,
+                                                // javax.swing.GroupLayout.DEFAULT_SIZE,
+                                                // javax.swing.GroupLayout.DEFAULT_SIZE,
+                                                // Short.MAX_VALUE)
+                                                // .addGroup(
+                                                // javax.swing.GroupLayout.Alignment.LEADING,
+                                                // jPanel2Layout
+                                                // .createSequentialGroup()
+                                                // .addGap(1, 1, 1)
+                                                // .addComponent(
+                                                // btnShadowShader,
+                                                // javax.swing.GroupLayout.DEFAULT_SIZE,
+                                                // javax.swing.GroupLayout.DEFAULT_SIZE,
+                                                // Short.MAX_VALUE)
+                                                // )
+                                                // .addComponent(btnFullShader,
+                                                // javax.swing.GroupLayout.DEFAULT_SIZE,
+                                                // 98, Short.MAX_VALUE)
+                                                // .addComponent(btnTexturaShader,
+                                                // javax.swing.GroupLayout.DEFAULT_SIZE,
+                                                // javax.swing.GroupLayout.DEFAULT_SIZE,
+                                                // Short.MAX_VALUE)
+                                                // )
+                                                // .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                // .addGroup(jPanel2Layout
+                                                // .createParallelGroup(
+                                                // javax.swing.GroupLayout.Alignment.LEADING,
+                                                // false)
+                                                // .addComponent(btnPhongShader,
+                                                // javax.swing.GroupLayout.DEFAULT_SIZE,
+                                                // javax.swing.GroupLayout.DEFAULT_SIZE,
+                                                // Short.MAX_VALUE)
+                                                // .addComponent(btnIlumShader)
+                                                // .addComponent(btnPBRShader,
+                                                // javax.swing.GroupLayout.PREFERRED_SIZE,
+                                                // 98,
+                                                // javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                // .addComponent(btnSimpleShader,
+                                                // javax.swing.GroupLayout.DEFAULT_SIZE,
+                                                // 102, Short.MAX_VALUE)
+                                                // )
+                                                // )
+                                                // )
+                                                // .addGap(0, 0, Short.MAX_VALUE)
+
+                                                // )
+                                                ))
+                                        .addComponent(lblOpcionesRender, javax.swing.GroupLayout.DEFAULT_SIZE,
                                                 javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                                 .addContainerGap()));
-        jPanel2Layout.setVerticalGroup(
-                jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addGroup(jPanel2Layout.createSequentialGroup()
-                                .addComponent(jLabel8)
+        pnlOpcionesLayout.setVerticalGroup(
+                pnlOpcionesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(pnlOpcionesLayout.createSequentialGroup()
+                                .addComponent(lblOpcionesRender)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE,
                                         javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jPanel11, javax.swing.GroupLayout.PREFERRED_SIZE,
+                                .addComponent(pnlLuzAmbiente, javax.swing.GroupLayout.PREFERRED_SIZE,
                                         javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jPanel13, javax.swing.GroupLayout.PREFERRED_SIZE,
+                                .addComponent(pnlNeblina, javax.swing.GroupLayout.PREFERRED_SIZE,
                                         javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jLabel17)
-                                .addGap(5, 5, 5)
-                                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                        .addComponent(btnRaster1)
-                                        .addComponent(btnRaster2)
-                                        .addComponent(btnRaster3))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(jLabel20)
-                                .addGap(18, 18, 18)
-                                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                        .addComponent(btnFullShader)
-                                        .addComponent(btnPBRShader))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                        .addComponent(btnIlumShader)
-                                        .addComponent(btnShadowShader))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                        .addComponent(btnPhongShader)
-                                        .addComponent(btnTexturaShader))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                        .addComponent(btnSimpleShader)
-                                        .addComponent(btnFlatShader))
+                                // .addComponent(lblRasterizador)
+                                // .addGap(5, 5, 5)
+                                // .addGroup(pnlOpcionesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                // .addComponent(btnRaster1)
+                                // .addComponent(btnRaster2)
+                                // .addComponent(btnRaster3))
+                                // .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                // .addComponent(lblShader)
+                                // .addGap(18, 18, 18)
+                                // .addGroup(pnlOpcionesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                // .addComponent(btnFullShader)
+                                // .addComponent(btnPBRShader))
+                                // .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                // .addGroup(pnlOpcionesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                // .addComponent(btnIlumShader)
+                                // .addComponent(btnShadowShader))
+                                // .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                // .addGroup(pnlOpcionesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                // .addComponent(btnPhongShader)
+                                // .addComponent(btnTexturaShader))
+                                // .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                // .addGroup(pnlOpcionesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                // .addComponent(btnSimpleShader)
+                                // .addComponent(btnFlatShader))
                                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)));
 
-        scrollOpciones.setViewportView(jPanel2);
+        scrollOpciones.setViewportView(pnlOpciones);
 
         panelHerramientas.addTab("Opciones", scrollOpciones);
 
-        jLabel2.setFont(new java.awt.Font("Dialog", 1, 11)); // NOI18N
-        jLabel2.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel2.setText("Entidad");
-        jLabel2.setFocusable(false);
-        jLabel2.setOpaque(true);
+        lblHerramientasEntidad.setFont(new java.awt.Font("Dialog", 1, 11)); // NOI18N
+        lblHerramientasEntidad.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        lblHerramientasEntidad.setText("Entidad");
+        lblHerramientasEntidad.setFocusable(false);
+        lblHerramientasEntidad.setOpaque(true);
 
-        jLabel18.setFont(new java.awt.Font("Dialog", 0, 9)); // NOI18N
-        jLabel18.setText("Sombreado:");
+        lblSombreado.setFont(new java.awt.Font("Dialog", 0, 9)); // NOI18N
+        lblSombreado.setText("Sombreado:");
 
-        jLabel6.setFont(new java.awt.Font("Dialog", 0, 9)); // NOI18N
-        jLabel6.setText("Normales:");
+        lblToolEntidadNormales.setFont(new java.awt.Font("Dialog", 0, 9)); // NOI18N
+        lblToolEntidadNormales.setText("Normales:");
 
         btnInvertirNormales.setFont(new java.awt.Font("Dialog", 0, 9)); // NOI18N
         btnInvertirNormales.setText("Invertir");
@@ -1109,10 +1028,10 @@ public class Principal extends javax.swing.JFrame {
             }
         });
 
-        jLabel11.setFont(new java.awt.Font("Dialog", 0, 9)); // NOI18N
-        jLabel11.setText("Tipo:");
+        lblToolEntidadTipo.setFont(new java.awt.Font("Dialog", 0, 9)); // NOI18N
+        lblToolEntidadTipo.setText("Tipo:");
 
-        jLabel5.setText("Definir Centro:");
+        lblToolDefinirCentro.setText("Definir Centro:");
 
         btnCentroGeometria.setFont(new java.awt.Font("Dialog", 0, 9)); // NOI18N
         btnCentroGeometria.setText("Centro de Geometría");
@@ -1130,11 +1049,11 @@ public class Principal extends javax.swing.JFrame {
             }
         });
 
-        jLabel12.setFont(new java.awt.Font("Dialog", 1, 11)); // NOI18N
-        jLabel12.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel12.setText("Mapas");
-        jLabel12.setFocusable(false);
-        jLabel12.setOpaque(true);
+        lblToolsMapas.setFont(new java.awt.Font("Dialog", 1, 11)); // NOI18N
+        lblToolsMapas.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        lblToolsMapas.setText("Mapas");
+        lblToolsMapas.setFocusable(false);
+        lblToolsMapas.setOpaque(true);
 
         btnActualizarSombras.setFont(new java.awt.Font("Dialog", 0, 9)); // NOI18N
         btnActualizarSombras.setText("Actualizar sombras");
@@ -1144,11 +1063,11 @@ public class Principal extends javax.swing.JFrame {
             }
         });
 
-        jLabel13.setFont(new java.awt.Font("Dialog", 1, 11)); // NOI18N
-        jLabel13.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel13.setText("General");
-        jLabel13.setFocusable(false);
-        jLabel13.setOpaque(true);
+        lblToolsGeneral.setFont(new java.awt.Font("Dialog", 1, 11)); // NOI18N
+        lblToolsGeneral.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        lblToolsGeneral.setText("General");
+        lblToolsGeneral.setFocusable(false);
+        lblToolsGeneral.setOpaque(true);
 
         btnGuadarScreenShot.setFont(new java.awt.Font("Dialog", 0, 9)); // NOI18N
         btnGuadarScreenShot.setText("Guardar");
@@ -1190,8 +1109,8 @@ public class Principal extends javax.swing.JFrame {
             }
         });
 
-        jLabel14.setFont(new java.awt.Font("Dialog", 0, 9)); // NOI18N
-        jLabel14.setText("Geometría:");
+        lblToolsGeometria.setFont(new java.awt.Font("Dialog", 0, 9)); // NOI18N
+        lblToolsGeometria.setText("Geometría:");
 
         btnDividir.setFont(new java.awt.Font("Dialog", 0, 9)); // NOI18N
         btnDividir.setText("Dividir");
@@ -1202,6 +1121,7 @@ public class Principal extends javax.swing.JFrame {
         });
 
         btnCalcularNormales.setText("Calcular");
+        btnCalcularNormales.setFont(new java.awt.Font("Dialog", 0, 9)); // NOI18N
         btnCalcularNormales.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnCalcularNormalesActionPerformed(evt);
@@ -1209,24 +1129,27 @@ public class Principal extends javax.swing.JFrame {
         });
 
         btnDividirCatmull.setText("Dividir Catmull-Clark");
+        btnDividirCatmull.setFont(new java.awt.Font("Dialog", 0, 9)); // NOI18N
         btnDividirCatmull.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnDividirCatmullActionPerformed(evt);
             }
         });
 
-        jButton9.setText("Inflar");
-        jButton9.addActionListener(new java.awt.event.ActionListener() {
+        btnInflar.setText("Inflar");
+        btnInflar.setFont(new java.awt.Font("Dialog", 0, 9)); // NOI18N
+        btnInflar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 // jButton9ActionPerformed(evt);
             }
         });
 
-        jLabel4.setText("Inflar:");
+        lblToolInflar.setText("Inflar:");
 
         txtInflarRadio.setText("1");
 
         btnEliminarVerticesDuplicados.setText("Eliminar Duplicados");
+        btnEliminarVerticesDuplicados.setFont(new java.awt.Font("Dialog", 0, 9)); // NOI18N
         btnEliminarVerticesDuplicados.setToolTipText("Elimina los vertices duplicados");
         btnEliminarVerticesDuplicados.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -1238,18 +1161,18 @@ public class Principal extends javax.swing.JFrame {
         pnlHerramientas.setLayout(pnlHerramientasLayout);
         pnlHerramientasLayout.setHorizontalGroup(
                 pnlHerramientasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addComponent(jLabel2, javax.swing.GroupLayout.Alignment.TRAILING,
+                        .addComponent(lblHerramientasEntidad, javax.swing.GroupLayout.Alignment.TRAILING,
                                 javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE,
                                 Short.MAX_VALUE)
                         .addComponent(btnCentroGeometria, javax.swing.GroupLayout.DEFAULT_SIZE,
                                 javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jLabel12, javax.swing.GroupLayout.DEFAULT_SIZE,
+                        .addComponent(lblToolsMapas, javax.swing.GroupLayout.DEFAULT_SIZE,
                                 javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(btnActualizarReflejos, javax.swing.GroupLayout.DEFAULT_SIZE,
                                 javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(btnActualizarSombras, javax.swing.GroupLayout.DEFAULT_SIZE,
                                 javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jLabel13, javax.swing.GroupLayout.DEFAULT_SIZE,
+                        .addComponent(lblToolsGeneral, javax.swing.GroupLayout.DEFAULT_SIZE,
                                 javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(btnGuadarScreenShot, javax.swing.GroupLayout.DEFAULT_SIZE,
                                 javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -1259,9 +1182,9 @@ public class Principal extends javax.swing.JFrame {
                                         .addGroup(pnlHerramientasLayout.createSequentialGroup()
                                                 .addGroup(pnlHerramientasLayout
                                                         .createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                                        .addComponent(jLabel18)
-                                                        .addComponent(jLabel6)
-                                                        .addComponent(jLabel11))
+                                                        .addComponent(lblSombreado)
+                                                        .addComponent(lblToolEntidadNormales)
+                                                        .addComponent(lblToolEntidadTipo))
                                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                                 .addGroup(pnlHerramientasLayout
                                                         .createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING,
@@ -1286,13 +1209,13 @@ public class Principal extends javax.swing.JFrame {
                                                         .addComponent(btnNoSuavizar,
                                                                 javax.swing.GroupLayout.DEFAULT_SIZE,
                                                                 javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
-                                        .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 261,
+                                        .addComponent(lblToolDefinirCentro, javax.swing.GroupLayout.PREFERRED_SIZE, 261,
                                                 javax.swing.GroupLayout.PREFERRED_SIZE)
                                         .addGroup(pnlHerramientasLayout.createSequentialGroup()
                                                 .addGroup(pnlHerramientasLayout
                                                         .createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                                        .addComponent(jLabel14)
-                                                        .addComponent(jLabel4))
+                                                        .addComponent(lblToolsGeometria)
+                                                        .addComponent(lblToolInflar))
                                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                                 .addGroup(pnlHerramientasLayout
                                                         .createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING,
@@ -1309,7 +1232,7 @@ public class Principal extends javax.swing.JFrame {
                                                                 .addGap(18, 18, 18)
                                                                 .addGroup(pnlHerramientasLayout.createParallelGroup(
                                                                         javax.swing.GroupLayout.Alignment.LEADING)
-                                                                        .addComponent(jButton9,
+                                                                        .addComponent(btnInflar,
                                                                                 javax.swing.GroupLayout.DEFAULT_SIZE,
                                                                                 javax.swing.GroupLayout.DEFAULT_SIZE,
                                                                                 Short.MAX_VALUE)
@@ -1325,11 +1248,11 @@ public class Principal extends javax.swing.JFrame {
         pnlHerramientasLayout.setVerticalGroup(
                 pnlHerramientasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                         .addGroup(pnlHerramientasLayout.createSequentialGroup()
-                                .addComponent(jLabel2)
+                                .addComponent(lblHerramientasEntidad)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                 .addGroup(pnlHerramientasLayout
                                         .createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                        .addComponent(jLabel18)
+                                        .addComponent(lblSombreado)
                                         .addGroup(pnlHerramientasLayout
                                                 .createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                                                 .addComponent(btnSuavizar)
@@ -1337,25 +1260,25 @@ public class Principal extends javax.swing.JFrame {
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addGroup(pnlHerramientasLayout
                                         .createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                        .addComponent(jLabel6)
+                                        .addComponent(lblToolEntidadNormales)
                                         .addComponent(btnInvertirNormales)
                                         .addComponent(btnCalcularNormales))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addGroup(pnlHerramientasLayout
                                         .createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                        .addComponent(jLabel11)
+                                        .addComponent(lblToolEntidadTipo)
                                         .addGroup(pnlHerramientasLayout
                                                 .createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                                                 .addComponent(btnTipoSolido)
                                                 .addComponent(btnTipoAlambre)))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jLabel5)
+                                .addComponent(lblToolDefinirCentro)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(btnCentroGeometria)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                 .addGroup(pnlHerramientasLayout
                                         .createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                        .addComponent(jLabel14)
+                                        .addComponent(lblToolsGeometria)
                                         .addComponent(btnDividir)
                                         .addComponent(btnEliminarVerticesDuplicados))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -1368,20 +1291,20 @@ public class Principal extends javax.swing.JFrame {
                                                         .createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                                         .addGroup(pnlHerramientasLayout.createSequentialGroup()
                                                                 .addGap(3, 3, 3)
-                                                                .addComponent(jLabel4))
+                                                                .addComponent(lblToolInflar))
                                                         .addComponent(txtInflarRadio,
                                                                 javax.swing.GroupLayout.PREFERRED_SIZE,
                                                                 javax.swing.GroupLayout.DEFAULT_SIZE,
                                                                 javax.swing.GroupLayout.PREFERRED_SIZE))
                                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                                .addComponent(jLabel12))
-                                        .addComponent(jButton9))
+                                                .addComponent(lblToolsMapas))
+                                        .addComponent(btnInflar))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(btnActualizarReflejos)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(btnActualizarSombras)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(jLabel13)
+                                .addComponent(lblToolsGeneral)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(btnGuadarScreenShot)
                                 .addGap(0, 91, Short.MAX_VALUE)));
@@ -2801,7 +2724,7 @@ public class Principal extends javax.swing.JFrame {
         for (Entity seleccionado : editorRenderer.entidadesSeleccionadas) {
             for (EntityComponent compo : seleccionado.getComponents()) {
                 if (compo instanceof Mesh) {
-                    ((Mesh) compo).tipo = Mesh.GEOMETRY_TYPE_MESH;
+                    ((Mesh) compo).type = Mesh.GEOMETRY_TYPE_MESH;
                 }
             }
         }
@@ -2811,7 +2734,7 @@ public class Principal extends javax.swing.JFrame {
         for (Entity seleccionado : editorRenderer.entidadesSeleccionadas) {
             for (EntityComponent compo : seleccionado.getComponents()) {
                 if (compo instanceof Mesh) {
-                    ((Mesh) compo).tipo = Mesh.GEOMETRY_TYPE_WIRE;
+                    ((Mesh) compo).type = Mesh.GEOMETRY_TYPE_WIRE;
                 }
             }
         }
@@ -2862,18 +2785,6 @@ public class Principal extends javax.swing.JFrame {
         actualizarArbolEscena();
         seleccionarEntidad(objeto);
     }// GEN-LAST:event_mnuEspiralActionPerformed
-
-    private void btnRaster1ActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btnRaster1ActionPerformed
-        renderer.cambiarRaster(1);
-    }// GEN-LAST:event_btnRaster1ActionPerformed
-
-    private void btnRaster2ActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btnRaster2ActionPerformed
-        renderer.cambiarRaster(2);
-    }// GEN-LAST:event_btnRaster2ActionPerformed
-
-    private void btnRaster3ActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btnRaster2ActionPerformed
-        renderer.cambiarRaster(3);
-    }//
 
     private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jMenuItem1ActionPerformed
         Entity objeto = new Entity("Cilindro");
@@ -3021,38 +2932,6 @@ public class Principal extends javax.swing.JFrame {
     private void btnAnimInvertirActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btnAnimInvertirActionPerformed
         motor.getAnimationEngine().invertir();
     }// GEN-LAST:event_btnAnimInvertirActionPerformed
-
-    private void btnFullShaderActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btnFullShaderActionPerformed
-        renderer.cambiarShader(6);
-    }// GEN-LAST:event_btnFullShaderActionPerformed
-
-    private void btnShadowShaderActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btnShadowShaderActionPerformed
-        renderer.cambiarShader(5);
-    }// GEN-LAST:event_btnShadowShaderActionPerformed
-
-    private void btnIlumShaderActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btnIlumShaderActionPerformed
-        renderer.cambiarShader(4);
-    }// GEN-LAST:event_btnIlumShaderActionPerformed
-
-    private void btnTexturaShaderActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btnTexturaShaderActionPerformed
-        renderer.cambiarShader(3);
-    }// GEN-LAST:event_btnTexturaShaderActionPerformed
-
-    private void btnPhongShaderActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btnPhongShaderActionPerformed
-        renderer.cambiarShader(2);
-    }// GEN-LAST:event_btnPhongShaderActionPerformed
-
-    private void btnFlatShaderActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btnFlatShaderActionPerformed
-        renderer.cambiarShader(1);
-    }// GEN-LAST:event_btnFlatShaderActionPerformed
-
-    private void btnSimpleShaderActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btnSimpleShaderActionPerformed
-        renderer.cambiarShader(0);
-    }// GEN-LAST:event_btnSimpleShaderActionPerformed
-
-    private void btnPBRShaderActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btnPBRShaderActionPerformed
-        renderer.cambiarShader(7);
-    }// GEN-LAST:event_btnPBRShaderActionPerformed
 
     private void chkVerGridActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_chkVerGridActionPerformed
         renderer.opciones.setDibujarGrid(chkVerGrid.isSelected());
@@ -3309,7 +3188,7 @@ public class Principal extends javax.swing.JFrame {
 
                 if (SwingUtilities.isLeftMouseButton(evt)) {
                     selectedObject = renderer.selectEntity(new QVector2(evt.getX(), evt.getY()));
-                    if (selectedObject instanceof QGizmo // || selectedObject instanceof QGizmoParte
+                    if (selectedObject instanceof Gizmo // || selectedObject instanceof QGizmoParte
                     ) {
                         return;
                     }
@@ -3339,8 +3218,8 @@ public class Principal extends javax.swing.JFrame {
                 if (SwingUtilities.isLeftMouseButton(evt)) {
                     // activo los Gizmos
                     if (selectedObject != null) {
-                        if (selectedObject instanceof QGizmo) {
-                            ((QGizmo) selectedObject).mouseMove(QInputManager.getDeltaX(), -QInputManager.getDeltaY());
+                        if (selectedObject instanceof Gizmo) {
+                            ((Gizmo) selectedObject).mouseMove(QInputManager.getDeltaX(), -QInputManager.getDeltaY());
                             // } else if (selectedObject instanceof QGizmoParte) {
                             // ((QGizmoParte) selectedObject).mouseMove(deltaX, -deltaY);
                         }
@@ -3404,13 +3283,15 @@ public class Principal extends javax.swing.JFrame {
 
                     case KeyEvent.VK_DECIMAL: {
                         try {
-                            CameraController control = ComponentUtil.getCamaraControl(renderer.getCamara());
+                            CameraController control = (CameraController) ComponentUtil
+                                    .getComponent(renderer.getCamara(), CameraController.class);
                             if (control != null) {
                                 control.getTarget()
                                         .set(editorRenderer.entidadActiva.getTransformacion().getTraslacion());
                                 control.updateCamera();
                             } else {
-                                CameraOrbiter control2 = ComponentUtil.getCamaraOrbitar(renderer.getCamara());
+                                CameraOrbiter control2 = (CameraOrbiter) ComponentUtil
+                                        .getComponent(renderer.getCamara(), CameraOrbiter.class);
                                 if (control2 != null) {
                                     control2.getTarget()
                                             .set(editorRenderer.entidadActiva.getTransformacion().getTraslacion());
@@ -3502,21 +3383,10 @@ public class Principal extends javax.swing.JFrame {
     private javax.swing.JButton btnDividir;
     private javax.swing.JButton btnDividirCatmull;
     private javax.swing.JButton btnEliminarVerticesDuplicados;
-    private javax.swing.JButton btnFlatShader;
-    private javax.swing.JButton btnFullShader;
     private javax.swing.JButton btnGuadarScreenShot;
-    private javax.swing.JButton btnIlumShader;
     private javax.swing.JButton btnInvertirNormales;
     private javax.swing.JButton btnNoSuavizar;
-    private javax.swing.JButton btnPBRShader;
-    private javax.swing.JButton btnPhongShader;
-    private javax.swing.JButton btnRaster1;
-    private javax.swing.JButton btnRaster2;
-    private javax.swing.JButton btnRaster3;
-    private javax.swing.JButton btnShadowShader;
-    private javax.swing.JButton btnSimpleShader;
     private javax.swing.JButton btnSuavizar;
-    private javax.swing.JButton btnTexturaShader;
     private javax.swing.JButton btnTipoAlambre;
     private javax.swing.JButton btnTipoSolido;
     private javax.swing.ButtonGroup buttonGroup1;
@@ -3562,27 +3432,25 @@ public class Principal extends javax.swing.JFrame {
     private javax.swing.JButton jButton6;
     private javax.swing.JButton jButton7;
     private javax.swing.JButton jButton8;
-    private javax.swing.JButton jButton9;
+    private javax.swing.JButton btnInflar;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
-    private javax.swing.JLabel jLabel11;
-    private javax.swing.JLabel jLabel12;
-    private javax.swing.JLabel jLabel13;
-    private javax.swing.JLabel jLabel14;
+    private javax.swing.JLabel lblToolEntidadTipo;
+    private javax.swing.JLabel lblToolsMapas;
+    private javax.swing.JLabel lblToolsGeneral;
+    private javax.swing.JLabel lblToolsGeometria;
     private javax.swing.JLabel jLabel15;
     private javax.swing.JLabel jLabel16;
-    private javax.swing.JLabel jLabel17;
-    private javax.swing.JLabel jLabel18;
+    private javax.swing.JLabel lblSombreado;
     private javax.swing.JLabel jLabel19;
-    private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel20;
+    private javax.swing.JLabel lblHerramientasEntidad;
     private javax.swing.JLabel jLabel21;
     private javax.swing.JLabel jLabel3;
-    private javax.swing.JLabel jLabel4;
-    private javax.swing.JLabel jLabel5;
-    private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel lblToolInflar;
+    private javax.swing.JLabel lblToolDefinirCentro;
+    private javax.swing.JLabel lblToolEntidadNormales;
     private javax.swing.JLabel jLabel7;
-    private javax.swing.JLabel jLabel8;
+    private javax.swing.JLabel lblOpcionesRender;
     private javax.swing.JLabel jLabel9;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenu jMenu2;
@@ -3614,9 +3482,9 @@ public class Principal extends javax.swing.JFrame {
     private javax.swing.JMenuItem jMenuItem3;
     private javax.swing.JMenuItem jMenuItem5;
     private javax.swing.JMenuItem jMenuItem8;
-    private javax.swing.JPanel jPanel11;
-    private javax.swing.JPanel jPanel13;
-    private javax.swing.JPanel jPanel2;
+    private javax.swing.JPanel pnlLuzAmbiente;
+    private javax.swing.JPanel pnlNeblina;
+    private javax.swing.JPanel pnlOpciones;
     private javax.swing.JPanel jPanel5;
     private javax.swing.JScrollPane jScrollPane4;
     private javax.swing.JSeparator jSeparator1;

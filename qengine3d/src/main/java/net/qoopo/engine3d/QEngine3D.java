@@ -46,7 +46,7 @@ import net.qoopo.engine.core.scene.Camera;
 import net.qoopo.engine.core.scene.Scene;
 import net.qoopo.engine.core.util.QGlobal;
 import net.qoopo.engine.core.util.image.ImgUtil;
-import net.qoopo.engine.java3d.renderer.QRenderJava3D;
+import net.qoopo.engine.java3d.renderer.Java3DRenderer;
 import net.qoopo.engine.jbullet.JBulletPhysicsEngine;
 import net.qoopo.engine.renderer.SoftwareRenderer;
 import net.qoopo.engine3d.core.asset.model.DefaultModelLoader;
@@ -227,7 +227,7 @@ public class QEngine3D extends Engine implements Runnable {
         try {
 
             // el tiempo usado para manejar la cache de las transformaciones
-            QGlobal.tiempo = System.currentTimeMillis();
+            QGlobal.time = System.currentTimeMillis();
 
             // ejecuta los componentes que realizan modificadiones
             // runComponents();
@@ -546,7 +546,7 @@ public class QEngine3D extends Engine implements Runnable {
                 renderEngine = new SoftwareRenderer(scene, new Superficie(panelDibujo), ancho, alto);
                 break;
             case RenderEngine.RENDER_JAVA3D:
-                renderEngine = new QRenderJava3D(scene, new Superficie(panelDibujo), ancho, alto);
+                renderEngine = new Java3DRenderer(scene, new Superficie(panelDibujo), ancho, alto);
                 break;
             case RenderEngine.RENDER_OPENGL:
                 renderEngine = new OpenGlRenderer(scene, new Superficie(panelDibujo), ancho, alto);

@@ -7,7 +7,7 @@ package net.qoopo.engine.core.renderer.post.procesos.color;
 
 import net.qoopo.engine.core.math.QColor;
 import net.qoopo.engine.core.renderer.post.procesos.QPostProceso;
-import net.qoopo.engine.core.texture.QTextura;
+import net.qoopo.engine.core.texture.Texture;
 
 /**
  * Realiza una modificación del color final de la imagen realzando el contraste
@@ -19,19 +19,19 @@ public class QProcesadorBrillo extends QPostProceso {
     private float umbral = 0.7f;
 
     public QProcesadorBrillo(int ancho, int alto) {
-        bufferSalida = new QTextura(ancho, alto);
+        bufferSalida = new Texture(ancho, alto);
     }
 
     public QProcesadorBrillo(int ancho, int alto, float umbral) {
-        bufferSalida = new QTextura(ancho, alto);
+        bufferSalida = new Texture(ancho, alto);
         this.umbral = umbral;
     }
 
     @Override
-    public void procesar(QTextura... buffer) {
+    public void procesar(Texture... buffer) {
         QColor color;
         float brillo;
-        QTextura textura = buffer[0];
+        Texture textura = buffer[0];
         try {
             for (int x = 0; x < textura.getAncho(); x++) {
                 for (int y = 0; y < textura.getAlto(); y++) {

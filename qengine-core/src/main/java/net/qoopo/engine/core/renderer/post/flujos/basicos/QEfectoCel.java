@@ -7,7 +7,7 @@ package net.qoopo.engine.core.renderer.post.flujos.basicos;
 
 import net.qoopo.engine.core.renderer.post.flujos.QRenderEfectos;
 import net.qoopo.engine.core.renderer.post.procesos.color.QProcesadorCel;
-import net.qoopo.engine.core.texture.QTextura;
+import net.qoopo.engine.core.texture.Texture;
 
 /**
  * Realiza un efecto de realce de contraste
@@ -22,7 +22,7 @@ public class QEfectoCel extends QRenderEfectos {
     }
 
     @Override
-    public QTextura ejecutar(QTextura buffer) {
+    public Texture ejecutar(Texture buffer) {
         try {
             if (filtro == null || (filtro.getBufferSalida().getAncho() != buffer.getAncho() && filtro.getBufferSalida().getAlto() != buffer.getAlto())) {
                 filtro = new QProcesadorCel(buffer.getAncho(), buffer.getAlto());
