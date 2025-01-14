@@ -5,12 +5,14 @@
  */
 package net.qoopo.engine.core.scene;
 
+import lombok.Getter;
+import lombok.Setter;
 import net.qoopo.engine.core.assets.model.ModelLoader;
 import net.qoopo.engine.core.assets.model.waveobject.LoadModelObj;
 import net.qoopo.engine.core.entity.Entity;
 import net.qoopo.engine.core.entity.component.mesh.Mesh;
 import net.qoopo.engine.core.entity.component.mesh.primitive.Vertex;
-import net.qoopo.engine.core.material.basico.Material;
+import net.qoopo.engine.core.material.Material;
 import net.qoopo.engine.core.math.QColor;
 import net.qoopo.engine.core.math.QMatriz4;
 import net.qoopo.engine.core.math.QVector2;
@@ -25,6 +27,8 @@ import net.qoopo.engine.core.util.array.IntArray;
  *
  * @author aigarcia
  */
+@Getter
+@Setter
 public class Camera extends Entity {
 
     private static final Mesh GEOMETRIA_FRUSTUM = new Mesh();
@@ -231,7 +235,7 @@ public class Camera extends Entity {
         QVector3[] esquinas = getEsquinasFrustum();
         construirPlanosRecorte(esquinas);
         construirGeometria(esquinas);
-
+        cached_time = -1L;
     }
 
     /**
@@ -454,13 +458,13 @@ public class Camera extends Entity {
     /**
      * Actualiza la posicion y direccion de la camara
      *
-     * @param posicion
-     * @param direccion
+     * @param location
+     * @param direction
      * @param up
      */
-    public void lookAt(QVector3 posicion, QVector3 direccion, QVector3 up) {
-        transformacion.getTraslacion().set(posicion);
-        transformacion.getRotacion().getCuaternion().lookAt(direccion, up);
+    public void lookAt(QVector3 location, QVector3 direction, QVector3 up) {
+        transformacion.getTraslacion().set(location);
+        transformacion.getRotacion().getCuaternion().lookAt(direction, up);
         transformacion.getRotacion().actualizarAngulos();
         updateCamera();
     }

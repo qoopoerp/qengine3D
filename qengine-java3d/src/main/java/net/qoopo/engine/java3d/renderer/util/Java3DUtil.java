@@ -272,8 +272,8 @@ public class Java3DUtil {
             switch (objeto.primitiveList[0].vertexIndexList.length) {
                 case 4:
                     // si son cuadrados
-                    if (((net.qoopo.engine.core.material.basico.Material) objeto.primitiveList[0].material)
-                            .getMapaColor() != null) {
+                    if (((net.qoopo.engine.core.material.Material) objeto.primitiveList[0].material)
+                            .getColorMap() != null) {
                         listaGeometria = new QuadArray(objeto.primitiveList.length * 4,
                                 QuadArray.COORDINATES | QuadArray.NORMALS | QuadArray.TEXTURE_COORDINATE_2);
                     } else {
@@ -283,8 +283,8 @@ public class Java3DUtil {
                     break;
                 case 3:
                     // si son triangulos
-                    if (((net.qoopo.engine.core.material.basico.Material) objeto.primitiveList[0].material)
-                            .getMapaColor() != null) {
+                    if (((net.qoopo.engine.core.material.Material) objeto.primitiveList[0].material)
+                            .getColorMap() != null) {
                         listaGeometria = new TriangleArray(objeto.primitiveList.length * 3,
                                 TriangleArray.COORDINATES | TriangleArray.NORMALS | TriangleArray.TEXTURE_COORDINATE_2);
                     } else {
@@ -353,20 +353,20 @@ public class Java3DUtil {
             apariencia.setCapability(Appearance.ALLOW_TRANSPARENCY_ATTRIBUTES_WRITE);
 
             Color3f color = new Color3f(
-                    ((net.qoopo.engine.core.material.basico.Material) objeto.primitiveList[0].material).getColor().r,
-                    ((net.qoopo.engine.core.material.basico.Material) objeto.primitiveList[0].material).getColor().g,
-                    ((net.qoopo.engine.core.material.basico.Material) objeto.primitiveList[0].material).getColor().b);
+                    ((net.qoopo.engine.core.material.Material) objeto.primitiveList[0].material).getColor().r,
+                    ((net.qoopo.engine.core.material.Material) objeto.primitiveList[0].material).getColor().g,
+                    ((net.qoopo.engine.core.material.Material) objeto.primitiveList[0].material).getColor().b);
 
             Color3f colorEmisivo = new Color3f(
-                    ((net.qoopo.engine.core.material.basico.Material) objeto.primitiveList[0].material).getColor().r
-                            * ((net.qoopo.engine.core.material.basico.Material) objeto.primitiveList[0].material)
-                                    .getFactorEmision(),
-                    ((net.qoopo.engine.core.material.basico.Material) objeto.primitiveList[0].material).getColor().g
-                            * ((net.qoopo.engine.core.material.basico.Material) objeto.primitiveList[0].material)
-                                    .getFactorEmision(),
-                    ((net.qoopo.engine.core.material.basico.Material) objeto.primitiveList[0].material).getColor().b
-                            * ((net.qoopo.engine.core.material.basico.Material) objeto.primitiveList[0].material)
-                                    .getFactorEmision());
+                    ((net.qoopo.engine.core.material.Material) objeto.primitiveList[0].material).getColor().r
+                            * ((net.qoopo.engine.core.material.Material) objeto.primitiveList[0].material)
+                                    .getEmision(),
+                    ((net.qoopo.engine.core.material.Material) objeto.primitiveList[0].material).getColor().g
+                            * ((net.qoopo.engine.core.material.Material) objeto.primitiveList[0].material)
+                                    .getEmision(),
+                    ((net.qoopo.engine.core.material.Material) objeto.primitiveList[0].material).getColor().b
+                            * ((net.qoopo.engine.core.material.Material) objeto.primitiveList[0].material)
+                                    .getEmision());
 
             // Color3f colorEspecular = new Color3f(
             // ((QMaterialBas) objeto.primitivas[0].material).getColorEspecular().r,
@@ -378,24 +378,24 @@ public class Java3DUtil {
                     1.0f);
 
             // hasta ahora se asume que toda la geometria tiene una sola textura
-            if (((net.qoopo.engine.core.material.basico.Material) objeto.primitiveList[0].material)
-                    .getMapaColor() != null) {
+            if (((net.qoopo.engine.core.material.Material) objeto.primitiveList[0].material)
+                    .getColorMap() != null) {
                 // si hay textura
                 // TextureLoader loader = new TextureLoader("img/text1.jpg", "INTENSITY", new
                 // Container());
                 try {
                     Texture texture;
-                    if (((net.qoopo.engine.core.material.basico.Material) objeto.primitiveList[0].material)
-                            .getMapaColor().objetoJava3D == null) {
+                    if (((net.qoopo.engine.core.material.Material) objeto.primitiveList[0].material)
+                            .getColorMap().transientObject == null) {
                         TextureLoader loader = new TextureLoader(
-                                ((net.qoopo.engine.core.material.basico.Material) objeto.primitiveList[0].material)
-                                        .getMapaColor().getImagen());
+                                ((net.qoopo.engine.core.material.Material) objeto.primitiveList[0].material)
+                                        .getColorMap().getImagen());
                         texture = loader.getTexture();
-                        ((net.qoopo.engine.core.material.basico.Material) objeto.primitiveList[0].material)
-                                .getMapaColor().objetoJava3D = texture;
+                        ((net.qoopo.engine.core.material.Material) objeto.primitiveList[0].material)
+                                .getColorMap().transientObject = texture;
                     } else {
-                        texture = (Texture) ((net.qoopo.engine.core.material.basico.Material) objeto.primitiveList[0].material)
-                                .getMapaColor().objetoJava3D;
+                        texture = (Texture) ((net.qoopo.engine.core.material.Material) objeto.primitiveList[0].material)
+                                .getColorMap().transientObject;
                     }
                     // estos atributos permite que la textura sea iluminada
                     TextureAttributes texAttr = new TextureAttributes();
@@ -419,7 +419,7 @@ public class Java3DUtil {
                     texture.setBoundaryModeT(Texture.WRAP);
                     // texture.setBoundaryColor(new Color4f(0.0f, 1.0f, 0.0f, 0.0f));
                     Material material = new Material(color, colorEmisivo, color, colorEspecular,
-                            ((net.qoopo.engine.core.material.basico.Material) objeto.primitiveList[0].material)
+                            ((net.qoopo.engine.core.material.Material) objeto.primitiveList[0].material)
                                     .getSpecularExponent());
 
                     apariencia.setTextureAttributes(texAttr);
@@ -427,7 +427,7 @@ public class Java3DUtil {
                     apariencia.setTexture(texture);
                 }
                 Material material = new Material(color, colorEmisivo, color, colorEspecular,
-                        ((net.qoopo.engine.core.material.basico.Material) objeto.primitiveList[0].material)
+                        ((net.qoopo.engine.core.material.Material) objeto.primitiveList[0].material)
                                 .getSpecularExponent());
                 apariencia.setMaterial(material);
             } else {
@@ -439,7 +439,7 @@ public class Java3DUtil {
                 texture.setBoundaryModeT(Texture.WRAP);
                 // texture.setBoundaryColor(new Color4f(0.0f, 1.0f, 0.0f, 0.0f));
                 Material material = new Material(color, colorEmisivo, color, colorEspecular,
-                        ((net.qoopo.engine.core.material.basico.Material) objeto.primitiveList[0].material)
+                        ((net.qoopo.engine.core.material.Material) objeto.primitiveList[0].material)
                                 .getSpecularExponent());
 
                 apariencia.setTextureAttributes(texAttr);
@@ -451,7 +451,7 @@ public class Java3DUtil {
             TransparencyAttributes t_attr = new TransparencyAttributes();
             t_attr.setTransparencyMode(TransparencyAttributes.BLENDED);
             t_attr.setTransparency(
-                    1.0f - ((net.qoopo.engine.core.material.basico.Material) objeto.primitiveList[0].material)
+                    1.0f - ((net.qoopo.engine.core.material.Material) objeto.primitiveList[0].material)
                             .getTransAlfa());
 
             apariencia.setTransparencyAttributes(t_attr);

@@ -36,7 +36,7 @@ public abstract class FragmentShader {
 
     protected RenderEngine render;
 
-    protected static final float exponenteGamma = 1.0f / 2.2f;
+   
     protected static final float exposicion = 1.0f;
 
     public FragmentShader(RenderEngine render) {

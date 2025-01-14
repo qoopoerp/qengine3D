@@ -26,7 +26,7 @@ import net.qoopo.engine.core.entity.component.physics.collision.detector.Collisi
 import net.qoopo.engine.core.entity.component.physics.collision.detector.shape.mallas.QColisionMallaConvexa;
 import net.qoopo.engine.core.entity.component.physics.dinamica.QObjetoDinamico;
 import net.qoopo.engine.core.entity.component.physics.dinamica.QObjetoRigido;
-import net.qoopo.engine.core.material.basico.Material;
+import net.qoopo.engine.core.material.Material;
 import net.qoopo.engine.core.math.QColor;
 import net.qoopo.engine.core.math.QVector2;
 import net.qoopo.engine.core.math.QVector3;
@@ -93,7 +93,7 @@ public class LoadModelObj implements ModelLoader {
                         if (!texture.isEmpty()) {
                             texture = texture.replaceAll("\\\\", "/");
                             try {
-                                readingMaterial.setMapaColor(new Texture(
+                                readingMaterial.setColorMap(new Texture(
                                         ImgReader.read(validarFile(directory, texture))));
                             } catch (Exception e) {
                                 System.out.println(
@@ -106,7 +106,7 @@ public class LoadModelObj implements ModelLoader {
                         if (!texture.isEmpty()) {
                             texture = texture.replaceAll("\\\\", "/");
                             try {
-                                readingMaterial.setMapaTransparencia(new Texture(
+                                readingMaterial.setAlphaMap(new Texture(
                                         ImgReader.read(validarFile(directory, texture))));
                             } catch (Exception e) {
                                 System.out.println(
@@ -125,7 +125,7 @@ public class LoadModelObj implements ModelLoader {
                             }
                             texture = texture.replaceAll("\\\\", "/");
                             try {
-                                readingMaterial.setMapaNormal(new Texture(
+                                readingMaterial.setNormalMap(new Texture(
                                         ImgReader.read(validarFile(directory, texture))));
                             } catch (Exception e) {
                                 System.out.println(
@@ -138,7 +138,7 @@ public class LoadModelObj implements ModelLoader {
                         if (!texture.isEmpty()) {
                             texture = texture.replaceAll("\\\\", "/");
                             try {
-                                readingMaterial.setMapaRugosidad(new Texture(
+                                readingMaterial.setRoughnessMap(new Texture(
                                         ImgReader.read(validarFile(directory, texture))));
                             } catch (Exception e) {
                                 System.out.println(
@@ -151,7 +151,7 @@ public class LoadModelObj implements ModelLoader {
                         if (!texture.isEmpty()) {
                             texture = texture.replaceAll("\\\\", "/");
                             try {
-                                readingMaterial.setMapaMetalico(new Texture(
+                                readingMaterial.setMetallicMap(new Texture(
                                         ImgReader.read(validarFile(directory, texture))));
                             } catch (Exception e) {
                                 System.out.println(
@@ -171,7 +171,7 @@ public class LoadModelObj implements ModelLoader {
                             texture = texture.replaceAll("\\\\", "/");
                             // System.out.println(directory + File.separator + texture);
                             try {
-                                readingMaterial.setMapaNormal(new Texture(
+                                readingMaterial.setNormalMap(new Texture(
                                         ImgReader.read(validarFile(directory, texture))));
                             } catch (Exception e) {
                                 System.out.println(

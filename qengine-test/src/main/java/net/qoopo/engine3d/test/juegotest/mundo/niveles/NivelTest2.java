@@ -22,7 +22,7 @@ import net.qoopo.engine.core.entity.component.physics.dinamica.QObjetoDinamico;
 import net.qoopo.engine.core.entity.component.physics.dinamica.QObjetoRigido;
 import net.qoopo.engine.core.entity.component.terrain.Terrain;
 import net.qoopo.engine.core.entity.component.water.WaterDuDv;
-import net.qoopo.engine.core.material.basico.Material;
+import net.qoopo.engine.core.material.Material;
 import net.qoopo.engine.core.math.QColor;
 import net.qoopo.engine.core.math.QVector3;
 import net.qoopo.engine.core.scene.QEscenario;
@@ -305,11 +305,11 @@ public class NivelTest2 extends QEscenario {
         Texture terrainTexture = AssetManager.get().loadTexture("terreno",
                 "assets/textures/terrain/rocky_terrain/rocky_terrain_02_diff_4k.jpg");
         Material materialTerrain = new Material(terrainTexture);
-        materialTerrain.setMapaNormal(AssetManager.get().loadTexture("terreno_normal",
+        materialTerrain.setNormalMap(AssetManager.get().loadTexture("terreno_normal",
                 "assets/textures/terrain/rocky_terrain/rocky_terrain_02_nor_gl_4k.png"));
         materialTerrain.setMapaEspecular(AssetManager.get().loadTexture("terreno_normal",
                 "assets/textures/terrain/rocky_terrain/rocky_terrain_02_spec_4k.png"));
-        materialTerrain.setMapaRugosidad(AssetManager.get().loadTexture("terreno_normal",
+        materialTerrain.setRoughnessMap(AssetManager.get().loadTexture("terreno_normal",
                 "assets/textures/terrain/rocky_terrain/rocky_terrain_02_rough_4k.png"));
 
         Terrain terreno = new HeightMapTerrain(new File("assets/heightmaps/heightmap.png"), 1, -5, 15f,
@@ -342,8 +342,8 @@ public class NivelTest2 extends QEscenario {
         agua.addComponent(MaterialUtil.applyMaterial(new Plane(150, 150), material));
         WaterDuDv procesador = new WaterDuDv(universo, anchoReflejo, altoReflejo);
         agua.addComponent(procesador);
-        material.setMapaNormal(procesador.getTextNormal());
-        material.setMapaColor(procesador.getOutputTexture());
+        material.setNormalMap(procesador.getTextNormal());
+        material.setColorMap(procesador.getOutputTexture());
         agua.move(120, 0.1f, -120);
         agua.rotate((float) Math.toRadians(90), 0, 0);
         universo.addEntity(agua);
@@ -365,8 +365,8 @@ public class NivelTest2 extends QEscenario {
         agua.addComponent(MaterialUtil.applyMaterial(new Plane(150, 150), material));
         WaterDuDv procesador = new WaterDuDv(universo, anchoReflejo, altoReflejo);
         agua.addComponent(procesador);
-        material.setMapaNormal(procesador.getTextNormal());
-        material.setMapaColor(procesador.getOutputTexture());
+        material.setNormalMap(procesador.getTextNormal());
+        material.setColorMap(procesador.getOutputTexture());
         agua.move(-90, -1, 120);
         agua.scale(2, 1.3f, 1);
 

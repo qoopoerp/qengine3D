@@ -23,6 +23,8 @@ import javax.swing.ImageIcon;
 import javax.swing.JColorChooser;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
+import javax.swing.JMenu;
+import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JTree;
 import javax.swing.SpinnerNumberModel;
@@ -78,25 +80,29 @@ import net.qoopo.engine.core.lwjgl.renderer.OpenGlRenderer;
 import net.qoopo.engine.core.math.QColor;
 import net.qoopo.engine.core.math.QVector2;
 import net.qoopo.engine.core.math.QVector3;
-import net.qoopo.engine.core.renderer.QOpcionesRenderer;
 import net.qoopo.engine.core.renderer.RenderEngine;
-import net.qoopo.engine.core.renderer.post.flujos.antialiasing.QAntialiasing;
-import net.qoopo.engine.core.renderer.post.flujos.basicos.QEfectoBlur;
-import net.qoopo.engine.core.renderer.post.flujos.basicos.QEfectoCel;
-import net.qoopo.engine.core.renderer.post.flujos.basicos.QEfectoContraste;
-import net.qoopo.engine.core.renderer.post.flujos.basicos.QEfectoDepthOfField;
-import net.qoopo.engine.core.renderer.post.flujos.complejos.QEfectoBloom;
-import net.qoopo.engine.core.renderer.post.procesos.blur.QProcesadorDepthOfField;
+import net.qoopo.engine.core.renderer.RenderOptions;
+import net.qoopo.engine.core.renderer.post.FilterTexture;
+import net.qoopo.engine.core.renderer.post.filters.antialiasing.MsaaFilter;
+import net.qoopo.engine.core.renderer.post.filters.blur.BlurFilter;
+import net.qoopo.engine.core.renderer.post.filters.blur.DepthOfFieldFilter;
+import net.qoopo.engine.core.renderer.post.filters.color.BloomFilter;
+import net.qoopo.engine.core.renderer.post.filters.color.CelShadeFilter;
+import net.qoopo.engine.core.renderer.post.filters.color.GammaFixFilter;
+import net.qoopo.engine.core.renderer.post.filters.color.HightContrastFilter;
 import net.qoopo.engine.core.renderer.superficie.QJPanel;
 import net.qoopo.engine.core.renderer.superficie.Superficie;
 import net.qoopo.engine.core.scene.Camera;
 import net.qoopo.engine.core.scene.Scene;
-import net.qoopo.engine.core.texture.util.MaterialUtil;
-import net.qoopo.engine.core.util.QGlobal;
 import net.qoopo.engine.core.util.ComponentUtil;
-import net.qoopo.engine.core.util.mesh.NormalUtil;
+import net.qoopo.engine.core.util.QGlobal;
 import net.qoopo.engine.java3d.renderer.Java3DRenderer;
 import net.qoopo.engine.renderer.SoftwareRenderer;
+import net.qoopo.engine.renderer.shader.fragment.basico.StandardFragmentShader;
+import net.qoopo.engine.renderer.shader.fragment.basico.parciales.FlatFragmentShader;
+import net.qoopo.engine.renderer.shader.fragment.basico.parciales.OnlyColorFragmentShader;
+import net.qoopo.engine.renderer.shader.fragment.basico.parciales.PhongFramentShader;
+import net.qoopo.engine.renderer.shader.fragment.pbr.BRDFFragmentShader;
 import net.qoopo.engine.terrain.HeightMapTerrain;
 import net.qoopo.engine3d.QEngine3D;
 import net.qoopo.engine3d.core.asset.model.DefaultModelLoader;
@@ -118,9 +124,8 @@ public class Principal extends javax.swing.JFrame {
 
     public static Principal instancia;
     // el motor que va a renderizar en el modo de dise;o
-    private QEngine3D motor;
+    private QEngine3D engine;
 
-    private List<RenderEngine> listaRenderer = new ArrayList<>();
     private List<EditorRenderer> listaEditorRenderer = new ArrayList<>();
     private RenderEngine renderer; // renderer seleccionado
     private EditorRenderer editorRenderer;
@@ -140,6 +145,8 @@ public class Principal extends javax.swing.JFrame {
 
     private Scene escena;
 
+    private FilterTexture gammaFixFilter = new GammaFixFilter();
+
     public Principal() {
         // configura las acciones para interactuar desde el renderar hacia afuera
         accionSeleccionar = new Accion() {
@@ -156,9 +163,9 @@ public class Principal extends javax.swing.JFrame {
             @Override
             public void run(Object... parametros) {
                 try {
-                    if (motor.getAnimationEngine() != null && motor.getAnimationEngine().isEjecutando()) {
+                    if (engine.getAnimationEngine() != null && engine.getAnimationEngine().isEjecutando()) {
                         cambiandoLineaTiempo = true;
-                        sldLineaTiempo.setValue((int) (motor.getAnimationEngine().getTiempo() * 10));
+                        sldLineaTiempo.setValue((int) (engine.getAnimationEngine().getTiempo() * 10));
                         cambiandoLineaTiempo = false;
                     }
                     if (editorRenderer != null)
@@ -172,30 +179,21 @@ public class Principal extends javax.swing.JFrame {
         instancia = this;
         initComponents();
         chooser.setCurrentDirectory(new File("assets/"));
-        motor = new QEngine3D();
-        this.escena = motor.getScene();
-        motor.getCustomActions().add(actionUpdateEditor);
-        motor.getScene().setAmbientColor(new QColor(50.0f / 255.0f, 50.0f / 255.0f, 50.0f / 255.0f));
-        pnlColorFondo.setBackground(motor.getScene().getAmbientColor().getColor());
+        engine = new QEngine3D();
+        this.escena = engine.getScene();
+        engine.getCustomActions().add(actionUpdateEditor);
+        engine.getScene().setAmbientColor(new QColor(50.0f / 255.0f, 50.0f / 255.0f, 50.0f / 255.0f));
+        pnlColorFondo.setBackground(engine.getScene().getAmbientColor().getColor());
 
-        motor.setIniciarAudio(false);
-        motor.setIniciarDiaNoche(false);
-        motor.setIniciarFisica(false);
-        motor.setIniciarInteligencia(false);
-        motor.setIniciarAnimaciones(false);
-        agregarRenderer("Main", QVector3.of(-5, 10, 12), QVector3.of(0, 0, 0), RenderEngine.RENDER_INTERNO);
+        engine.setIniciarAudio(false);
+        engine.setIniciarDiaNoche(false);
+        engine.setIniciarFisica(false);
+        engine.setIniciarInteligencia(false);
+        engine.setIniciarAnimaciones(false);
+        agregarRenderer("Main", QVector3.of(0, 5, 5), QVector3.of(0, 0, 0), RenderEngine.RENDER_INTERNO);
         renderer.opciones.setDibujarLuces(true);
-        motor.setRenderEngine(renderer);
-
-        // renderer.setPanelClip(new QClipPane(QVector3.unitario_y.clone(), 0));//la
-        // normal es hacia arriba
-        // renderer.setPanelClip(new QClipPane(QVector3.of(0, -1, 0), 0));//la normal es
-        // hacia abajo
-        // renderer.setPanelClip(new QClipPane(QVector3.unitario_y.clone(), 2f));//la
-        // normal es hacia arriba
-        // renderer.setPanelClip(new QClipPane(QVector3.of(0, -1, 0), 2));//la normal es
-        // hacia abajo
-        motor.start();
+        // motor.setRenderEngine(renderer);
+        engine.start();
         scrollOpciones.getVerticalScrollBar().setUnitIncrement(20);
         this.setExtendedState(MAXIMIZED_BOTH);
         actualizarArbolEscena();
@@ -240,7 +238,7 @@ public class Principal extends javax.swing.JFrame {
 
     public void loadInitialScene() {
         InitialScene initialScene = new InitialScene();
-        initialScene.make(motor.getScene());
+        initialScene.make(engine.getScene());
         actualizarArbolEscena();
     }
 
@@ -263,7 +261,7 @@ public class Principal extends javax.swing.JFrame {
      */
     public void agregarRenderer(String nombre, Camera camara, int tipoRenderer) {
         // agregamos un nuevo panel para el renderer principal
-        motor.setModificando(true);
+        engine.setModificando(true);
 
         try {
             Thread.sleep(500);
@@ -273,7 +271,7 @@ public class Principal extends javax.swing.JFrame {
 
         QJPanel panelDibujo = new QJPanel();
 
-        int tam = listaRenderer.size();
+        int tam = engine.getRendererList().size();
         switch (tam) {
             case 0:
                 panelRenderes.setLayout(new GridLayout(1, 1));
@@ -286,7 +284,7 @@ public class Principal extends javax.swing.JFrame {
                 break;
         }
 
-        for (RenderEngine render : listaRenderer) {
+        for (RenderEngine render : engine.getRendererList()) {
             panelRenderes.add(render.getSuperficie().getComponente());
         }
 
@@ -295,20 +293,18 @@ public class Principal extends javax.swing.JFrame {
         RenderEngine nuevoRenderer;
         switch (tipoRenderer) {
             case RenderEngine.RENDER_JAVA3D:
-                nuevoRenderer = new Java3DRenderer(motor.getScene(), nombre, new Superficie(panelDibujo), 800, 600);
+                nuevoRenderer = new Java3DRenderer(engine.getScene(), nombre, new Superficie(panelDibujo), 800, 600);
                 break;
             case RenderEngine.RENDER_OPENGL:
-                nuevoRenderer = new OpenGlRenderer(motor.getScene(), nombre, new Superficie(panelDibujo), 800, 600);
+                nuevoRenderer = new OpenGlRenderer(engine.getScene(), nombre, new Superficie(panelDibujo), 800, 600);
                 break;
             case RenderEngine.RENDER_INTERNO:
             default:
-                nuevoRenderer = new SoftwareRenderer(motor.getScene(), nombre, new Superficie(panelDibujo), 800, 600);
+                nuevoRenderer = new SoftwareRenderer(engine.getScene(), nombre, new Superficie(panelDibujo), 800, 600);
                 break;
         }
         // nuevoRenderer.opciones.setRenderArtefactos(true);
-
         EditorRenderer nuevoEditorRenderer = new EditorRenderer(nuevoRenderer);
-
         panelDibujo.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mousePressed(java.awt.event.MouseEvent evt) {
                 setRenderer(nuevoRenderer);
@@ -322,18 +318,20 @@ public class Principal extends javax.swing.JFrame {
             // }
         });
 
-        motor.getScene().addEntity(camara);
-        nuevoRenderer.setCamara(camara);// setea la camara inicial creada
+        engine.getScene().addEntity(camara);
+        nuevoRenderer.setCamera(camara);// setea la camara inicial creada
         // nuevoRenderer.setAccionSeleccionar(accionSeleccionar);
 
-        for (RenderEngine render : listaRenderer) {
+        if (QGlobal.ENABLE_GAMMA_FIX)
+            nuevoRenderer.addFilter(gammaFixFilter);
+
+        for (RenderEngine render : engine.getRendererList()) {
             render.resize();
         }
 
-        listaRenderer.add(nuevoRenderer);
+        engine.getRendererList().add(nuevoRenderer);
         listaEditorRenderer.add(nuevoEditorRenderer);
 
-        motor.setRendererList(listaRenderer);
         setRenderer(nuevoRenderer);
         this.editorRenderer = nuevoEditorRenderer;
 
@@ -341,7 +339,10 @@ public class Principal extends javax.swing.JFrame {
         // camara.agregarComponente(new QCamaraOrbitar(camara));
         // camara.agregarComponente(new QCamaraPrimeraPersona(camara));
         prepararInputListenerRenderer(nuevoRenderer);
-        motor.setModificando(false);
+
+        // configura el shader como pbr
+        // nuevoRenderer.setShader(new PBRFragmentShader(renderer));
+        engine.setModificando(false);
         this.pack();
     }
 
@@ -452,16 +453,16 @@ public class Principal extends javax.swing.JFrame {
         btnEliminarVerticesDuplicados = new javax.swing.JButton();
         pnlProcesadores = new javax.swing.JPanel();
         jLabel3 = new javax.swing.JLabel();
-        jButton11 = new javax.swing.JButton();
-        jButton12 = new javax.swing.JButton();
-        jButton13 = new javax.swing.JButton();
-        jButton14 = new javax.swing.JButton();
-        jButton15 = new javax.swing.JButton();
-        jButton16 = new javax.swing.JButton();
-        jButton17 = new javax.swing.JButton();
+        btnClearFilters = new javax.swing.JButton();
+        btnBlooomFilter = new javax.swing.JButton();
+        btnHightContrastFilter = new javax.swing.JButton();
+        btnBlurFilter = new javax.swing.JButton();
+        btnDOFfilter1 = new javax.swing.JButton();
+        btnDOFfilter2 = new javax.swing.JButton();
+        btnDOFfilter3 = new javax.swing.JButton();
         jSeparator5 = new javax.swing.JSeparator();
-        jButton18 = new javax.swing.JButton();
-        jButton19 = new javax.swing.JButton();
+        btnCelFilter = new javax.swing.JButton();
+        btnMsaaFilter = new javax.swing.JButton();
         pnlMotores = new javax.swing.JPanel();
         btnStartPhysics = new javax.swing.JButton();
         btnStopPhysics = new javax.swing.JButton();
@@ -504,8 +505,8 @@ public class Principal extends javax.swing.JFrame {
         itmMenuExportentity = new javax.swing.JMenuItem();
         itmMenuImport = new javax.swing.JMenuItem();
         jMenuItem24 = new javax.swing.JMenuItem();
-        jMenu3 = new javax.swing.JMenu();
-        jMenu5 = new javax.swing.JMenu();
+        mnuRenderizadores = new javax.swing.JMenu();
+        mnutipoVista = new javax.swing.JMenu();
         jMenuItem13 = new javax.swing.JMenuItem();
         jMenuItem14 = new javax.swing.JMenuItem();
         jMenuItem15 = new javax.swing.JMenuItem();
@@ -1316,75 +1317,75 @@ public class Principal extends javax.swing.JFrame {
         jLabel3.setFont(new java.awt.Font("Dialog", 1, 11)); // NOI18N
         jLabel3.setText("PROCESADORES POST RENDERIZADO");
 
-        jButton11.setFont(new java.awt.Font("Dialog", 0, 9)); // NOI18N
-        jButton11.setText("Quitar");
-        jButton11.addActionListener(new java.awt.event.ActionListener() {
+        btnClearFilters.setFont(new java.awt.Font("Dialog", 0, 9)); // NOI18N
+        btnClearFilters.setText("Quitar");
+        btnClearFilters.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton11ActionPerformed(evt);
+                btnClearFiltersAP(evt);
             }
         });
 
-        jButton12.setFont(new java.awt.Font("Dialog", 0, 9)); // NOI18N
-        jButton12.setText("Bloom");
-        jButton12.addActionListener(new java.awt.event.ActionListener() {
+        btnBlooomFilter.setFont(new java.awt.Font("Dialog", 0, 9)); // NOI18N
+        btnBlooomFilter.setText("Bloom");
+        btnBlooomFilter.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton12ActionPerformed(evt);
+                btnBlooomFilterAP(evt);
             }
         });
 
-        jButton13.setFont(new java.awt.Font("Dialog", 0, 9)); // NOI18N
-        jButton13.setText("Contraste");
-        jButton13.addActionListener(new java.awt.event.ActionListener() {
+        btnHightContrastFilter.setFont(new java.awt.Font("Dialog", 0, 9)); // NOI18N
+        btnHightContrastFilter.setText("Contraste");
+        btnHightContrastFilter.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton13ActionPerformed(evt);
+                btnHightContrastFilterAP(evt);
             }
         });
 
-        jButton14.setFont(new java.awt.Font("Dialog", 0, 9)); // NOI18N
-        jButton14.setText("Blur");
-        jButton14.addActionListener(new java.awt.event.ActionListener() {
+        btnBlurFilter.setFont(new java.awt.Font("Dialog", 0, 9)); // NOI18N
+        btnBlurFilter.setText("Blur");
+        btnBlurFilter.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton14ActionPerformed(evt);
+                btnBlurFilterAP(evt);
             }
         });
 
-        jButton15.setFont(new java.awt.Font("Dialog", 0, 9)); // NOI18N
-        jButton15.setText("DOF 1");
-        jButton15.addActionListener(new java.awt.event.ActionListener() {
+        btnDOFfilter1.setFont(new java.awt.Font("Dialog", 0, 9)); // NOI18N
+        btnDOFfilter1.setText("DOF 1");
+        btnDOFfilter1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton15ActionPerformed(evt);
+                btnDOFfilter1AP(evt);
             }
         });
 
-        jButton16.setFont(new java.awt.Font("Dialog", 0, 9)); // NOI18N
-        jButton16.setText("DOF 2");
-        jButton16.addActionListener(new java.awt.event.ActionListener() {
+        btnDOFfilter2.setFont(new java.awt.Font("Dialog", 0, 9)); // NOI18N
+        btnDOFfilter2.setText("DOF 2");
+        btnDOFfilter2.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton16ActionPerformed(evt);
+                btnDOFfilter2AP(evt);
             }
         });
 
-        jButton17.setFont(new java.awt.Font("Dialog", 0, 9)); // NOI18N
-        jButton17.setText("DOF 3");
-        jButton17.addActionListener(new java.awt.event.ActionListener() {
+        btnDOFfilter3.setFont(new java.awt.Font("Dialog", 0, 9)); // NOI18N
+        btnDOFfilter3.setText("DOF 3");
+        btnDOFfilter3.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton17ActionPerformed(evt);
+                btnDOFfilter3AP(evt);
             }
         });
 
-        jButton18.setFont(new java.awt.Font("Dialog", 0, 9)); // NOI18N
-        jButton18.setText("Cel");
-        jButton18.addActionListener(new java.awt.event.ActionListener() {
+        btnCelFilter.setFont(new java.awt.Font("Dialog", 0, 9)); // NOI18N
+        btnCelFilter.setText("Cel");
+        btnCelFilter.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton18ActionPerformed(evt);
+                btnCelFilterAP(evt);
             }
         });
 
-        jButton19.setFont(new java.awt.Font("Dialog", 0, 9)); // NOI18N
-        jButton19.setText("MSAA");
-        jButton19.addActionListener(new java.awt.event.ActionListener() {
+        btnMsaaFilter.setFont(new java.awt.Font("Dialog", 0, 9)); // NOI18N
+        btnMsaaFilter.setText("MSAA");
+        btnMsaaFilter.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton19ActionPerformed(evt);
+                btnMsaaFilterAP(evt);
             }
         });
 
@@ -1403,33 +1404,41 @@ public class Principal extends javax.swing.JFrame {
                                                 .addGroup(pnlProcesadoresLayout
                                                         .createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING,
                                                                 false)
-                                                        .addComponent(jButton12, javax.swing.GroupLayout.DEFAULT_SIZE,
+                                                        .addComponent(btnBlooomFilter,
+                                                                javax.swing.GroupLayout.DEFAULT_SIZE,
                                                                 javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                                        .addComponent(jButton15, javax.swing.GroupLayout.DEFAULT_SIZE,
+                                                        .addComponent(btnDOFfilter1,
+                                                                javax.swing.GroupLayout.DEFAULT_SIZE,
                                                                 javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                                        .addComponent(jButton11, javax.swing.GroupLayout.DEFAULT_SIZE,
+                                                        .addComponent(btnClearFilters,
+                                                                javax.swing.GroupLayout.DEFAULT_SIZE,
                                                                 javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                                        .addComponent(jButton19, javax.swing.GroupLayout.DEFAULT_SIZE,
+                                                        .addComponent(btnMsaaFilter,
+                                                                javax.swing.GroupLayout.DEFAULT_SIZE,
                                                                 javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                                 .addGroup(pnlProcesadoresLayout
                                                         .createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING,
                                                                 false)
-                                                        .addComponent(jButton18, javax.swing.GroupLayout.DEFAULT_SIZE,
+                                                        .addComponent(btnCelFilter,
+                                                                javax.swing.GroupLayout.DEFAULT_SIZE,
                                                                 javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                                        .addComponent(jButton16,
+                                                        .addComponent(btnDOFfilter2,
                                                                 javax.swing.GroupLayout.Alignment.LEADING,
                                                                 javax.swing.GroupLayout.DEFAULT_SIZE,
                                                                 javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                                        .addComponent(jButton13, javax.swing.GroupLayout.DEFAULT_SIZE,
+                                                        .addComponent(btnHightContrastFilter,
+                                                                javax.swing.GroupLayout.DEFAULT_SIZE,
                                                                 javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                                 .addGroup(pnlProcesadoresLayout
                                                         .createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING,
                                                                 false)
-                                                        .addComponent(jButton14, javax.swing.GroupLayout.DEFAULT_SIZE,
+                                                        .addComponent(btnBlurFilter,
+                                                                javax.swing.GroupLayout.DEFAULT_SIZE,
                                                                 javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                                        .addComponent(jButton17, javax.swing.GroupLayout.DEFAULT_SIZE,
+                                                        .addComponent(btnDOFfilter3,
+                                                                javax.swing.GroupLayout.DEFAULT_SIZE,
                                                                 javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                                                 .addGap(0, 0, Short.MAX_VALUE)))
                                 .addContainerGap()));
@@ -1441,24 +1450,24 @@ public class Principal extends javax.swing.JFrame {
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                 .addGroup(pnlProcesadoresLayout
                                         .createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                        .addComponent(jButton11)
-                                        .addComponent(jButton18))
+                                        .addComponent(btnClearFilters)
+                                        .addComponent(btnCelFilter))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addGroup(pnlProcesadoresLayout
                                         .createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                         .addGroup(pnlProcesadoresLayout
                                                 .createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                                .addComponent(jButton13)
-                                                .addComponent(jButton14))
-                                        .addComponent(jButton12))
+                                                .addComponent(btnHightContrastFilter)
+                                                .addComponent(btnBlurFilter))
+                                        .addComponent(btnBlooomFilter))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addGroup(pnlProcesadoresLayout
                                         .createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                        .addComponent(jButton15)
-                                        .addComponent(jButton16)
-                                        .addComponent(jButton17))
+                                        .addComponent(btnDOFfilter1)
+                                        .addComponent(btnDOFfilter2)
+                                        .addComponent(btnDOFfilter3))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jButton19)
+                                .addComponent(btnMsaaFilter)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(jSeparator5, javax.swing.GroupLayout.PREFERRED_SIZE,
                                         javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -1900,9 +1909,54 @@ public class Principal extends javax.swing.JFrame {
 
         barraMenu.add(mnuFile);
 
-        jMenu3.setText("Renderizadores");
+        mnuRenderizadores.setText("Render");
 
-        jMenu5.setText("Tipo Vista");
+        // shader
+        JMenu mnuShader = new JMenu("Shader");
+
+        JMenuItem mnuShaderStandar = new JMenuItem("Estándard");
+        mnuShaderStandar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                renderer.setShader(new StandardFragmentShader(renderer));
+            }
+        });
+        mnuShader.add(mnuShaderStandar);
+
+        JMenuItem mnuShaderPBR = new JMenuItem("PBR");
+        mnuShaderPBR.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                renderer.setShader(new BRDFFragmentShader(renderer));
+            }
+        });
+        mnuShader.add(mnuShaderPBR);
+
+        JMenuItem mnuFlatShader = new JMenuItem("Solid (Flat)");
+        mnuFlatShader.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                renderer.setShader(new FlatFragmentShader(renderer));
+            }
+        });
+        mnuShader.add(mnuFlatShader);
+
+        JMenuItem mnoPhongShader = new JMenuItem("Solid (Smooth)");
+        mnoPhongShader.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                renderer.setShader(new PhongFramentShader(renderer));
+            }
+        });
+        mnuShader.add(mnoPhongShader);
+
+        JMenuItem mnuColor = new JMenuItem("Color");
+        mnuColor.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                renderer.setShader(new OnlyColorFragmentShader(renderer));
+            }
+        });
+        mnuShader.add(mnuColor);
+
+        mnuRenderizadores.add(mnuShader);
+
+        mnutipoVista.setText("Tipo Vista");
 
         jMenuItem13.setText("Alambre");
         jMenuItem13.addActionListener(new java.awt.event.ActionListener() {
@@ -1910,7 +1964,7 @@ public class Principal extends javax.swing.JFrame {
                 jMenuItem13ActionPerformed(evt);
             }
         });
-        jMenu5.add(jMenuItem13);
+        mnutipoVista.add(jMenuItem13);
 
         jMenuItem14.setText("Sólido Plano");
         jMenuItem14.addActionListener(new java.awt.event.ActionListener() {
@@ -1918,7 +1972,7 @@ public class Principal extends javax.swing.JFrame {
                 jMenuItem14ActionPerformed(evt);
             }
         });
-        jMenu5.add(jMenuItem14);
+        mnutipoVista.add(jMenuItem14);
 
         jMenuItem15.setText("Solido Suave");
         jMenuItem15.addActionListener(new java.awt.event.ActionListener() {
@@ -1926,7 +1980,7 @@ public class Principal extends javax.swing.JFrame {
                 jMenuItem15ActionPerformed(evt);
             }
         });
-        jMenu5.add(jMenuItem15);
+        mnutipoVista.add(jMenuItem15);
 
         jMenuItem16.setText("Material");
         jMenuItem16.addActionListener(new java.awt.event.ActionListener() {
@@ -1934,7 +1988,7 @@ public class Principal extends javax.swing.JFrame {
                 jMenuItem16ActionPerformed(evt);
             }
         });
-        jMenu5.add(jMenuItem16);
+        mnutipoVista.add(jMenuItem16);
 
         jMenuItem17.setText("Sombras");
         jMenuItem17.addActionListener(new java.awt.event.ActionListener() {
@@ -1942,9 +1996,9 @@ public class Principal extends javax.swing.JFrame {
                 jMenuItem17ActionPerformed(evt);
             }
         });
-        jMenu5.add(jMenuItem17);
+        mnutipoVista.add(jMenuItem17);
 
-        jMenu3.add(jMenu5);
+        mnuRenderizadores.add(mnutipoVista);
 
         jMenu9.setText("Agregar");
 
@@ -1964,9 +2018,9 @@ public class Principal extends javax.swing.JFrame {
         });
         jMenu9.add(itmAgregarRender);
 
-        jMenu3.add(jMenu9);
+        mnuRenderizadores.add(jMenu9);
 
-        barraMenu.add(jMenu3);
+        barraMenu.add(mnuRenderizadores);
 
         jMenu4.setText("Crear");
 
@@ -2273,7 +2327,7 @@ public class Principal extends javax.swing.JFrame {
         }
         for (Entity object : toRemove) {
             // renderer.eliminarObjeto(object);
-            motor.getScene().removeEntity(object);
+            engine.getScene().removeEntity(object);
         }
 
         actualizarArbolEscena();
@@ -2312,7 +2366,7 @@ public class Principal extends javax.swing.JFrame {
             for (Entity object : clipboard) {
                 Entity newObject = object.clone();
                 newObject.setName(object.getName() + " Copy");
-                motor.getScene().addEntity(newObject);
+                engine.getScene().addEntity(newObject);
                 editorRenderer.entidadesSeleccionadas.add(newObject);
                 editorRenderer.entidadActiva = newObject;
             }
@@ -2342,7 +2396,7 @@ public class Principal extends javax.swing.JFrame {
         esfera.addComponent(new Sphere(1.0f));
         esfera.addComponent(new QColisionEsfera(1.0f));
 
-        motor.getScene().addEntity(esfera);
+        engine.getScene().addEntity(esfera);
         actualizarArbolEscena();
         seleccionarEntidad(esfera);
     }// GEN-LAST:event_jMenuItem8ActionPerformed
@@ -2351,7 +2405,7 @@ public class Principal extends javax.swing.JFrame {
         Entity cubo = new Entity("Cubo");
         cubo.addComponent(new Box(1));
         cubo.addComponent(new QColisionCaja(1, 1, 1));
-        motor.getScene().addEntity(cubo);
+        engine.getScene().addEntity(cubo);
         actualizarArbolEscena();
         seleccionarEntidad(cubo);
         // actualizarFigurasRenderers();
@@ -2364,7 +2418,7 @@ public class Principal extends javax.swing.JFrame {
         // objeto.agregarComponente(new QColisionCapsula(1, 2));
         // objeto.agregarComponente(new QColisionCaja(2, 1, 2));
         objeto.addComponent(new QColisionMallaConvexa(toro));
-        motor.getScene().addEntity(objeto);
+        engine.getScene().addEntity(objeto);
         actualizarArbolEscena();
         seleccionarEntidad(objeto);
     }// GEN-LAST:event_itmToroActionPerformed
@@ -2373,7 +2427,7 @@ public class Principal extends javax.swing.JFrame {
         Entity objeto = new Entity("Cilindro");
         objeto.addComponent(new Cylinder(1, 1.0f));
         objeto.addComponent(new QColisionCilindro(1, 1.0f));
-        motor.getScene().addEntity(objeto);
+        engine.getScene().addEntity(objeto);
         actualizarArbolEscena();
         seleccionarEntidad(objeto);
     }// GEN-LAST:event_jMenuItem11ActionPerformed
@@ -2382,21 +2436,21 @@ public class Principal extends javax.swing.JFrame {
         Entity objeto = new Entity("Cono");
         objeto.addComponent(new Cone(1, 1.0f));
         objeto.addComponent(new QColisionCono(1, 1.0f));
-        motor.getScene().addEntity(objeto);
+        engine.getScene().addEntity(objeto);
         actualizarArbolEscena();
         seleccionarEntidad(objeto);
     }// GEN-LAST:event_jMenuItem12ActionPerformed
 
     private void jMenuItem13ActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jMenuItem13ActionPerformed
-        renderer.opciones.setTipoVista(QOpcionesRenderer.VISTA_WIRE);
+        renderer.opciones.setTipoVista(RenderOptions.VISTA_WIRE);
     }// GEN-LAST:event_jMenuItem13ActionPerformed
 
     private void jMenuItem14ActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jMenuItem14ActionPerformed
-        renderer.opciones.setTipoVista(QOpcionesRenderer.VISTA_FLAT);
+        renderer.opciones.setTipoVista(RenderOptions.VISTA_FLAT);
     }// GEN-LAST:event_jMenuItem14ActionPerformed
 
     private void jMenuItem15ActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jMenuItem15ActionPerformed
-        renderer.opciones.setTipoVista(QOpcionesRenderer.VISTA_PHONG);
+        renderer.opciones.setTipoVista(RenderOptions.VISTA_PHONG);
     }// GEN-LAST:event_jMenuItem15ActionPerformed
 
     private void jMenuItem16ActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jMenuItem16ActionPerformed
@@ -2411,7 +2465,7 @@ public class Principal extends javax.swing.JFrame {
         Entity nuevaLuz = new Entity("Luz Puntual");
         nuevaLuz.addComponent(
                 new QPointLigth(0.75f, new QColor(Color.white), Float.POSITIVE_INFINITY, false, false));
-        motor.getScene().addEntity(nuevaLuz);
+        engine.getScene().addEntity(nuevaLuz);
         actualizarArbolEscena();
         seleccionarEntidad(nuevaLuz);
     }// GEN-LAST:event_mnuLuzPuntualActionPerformed
@@ -2420,7 +2474,7 @@ public class Principal extends javax.swing.JFrame {
         Entity nuevaLuz = new Entity("Luz Direccional");
         nuevaLuz.addComponent(
                 new QDirectionalLigth(1f, new QColor(Color.white), Float.POSITIVE_INFINITY, false, false));
-        motor.getScene().addEntity(nuevaLuz);
+        engine.getScene().addEntity(nuevaLuz);
         actualizarArbolEscena();
         seleccionarEntidad(nuevaLuz);
     }// GEN-LAST:event_mnuLuzDireccionalActionPerformed
@@ -2429,7 +2483,7 @@ public class Principal extends javax.swing.JFrame {
         Entity nuevaLuz = new Entity("Luz Cónica");
         nuevaLuz.addComponent(new QSpotLigth(0.75f, new QColor(Color.white), Float.POSITIVE_INFINITY,
                 QVector3.of(0, -1, 0), (float) Math.toRadians(45), (float) Math.toRadians(40), false, false));
-        motor.getScene().addEntity(nuevaLuz);
+        engine.getScene().addEntity(nuevaLuz);
         actualizarArbolEscena();
         seleccionarEntidad(nuevaLuz);
     }// GEN-LAST:event_mnuLuzConicaActionPerformed
@@ -2486,7 +2540,7 @@ public class Principal extends javax.swing.JFrame {
             try {
                 ModelLoader loader = new DefaultModelLoader();
                 Entity entity = loader.loadModel(chooser.getSelectedFile());
-                motor.getScene().addEntity(entity);
+                engine.getScene().addEntity(entity);
                 seleccionarEntidad(entity);
                 actualizarArbolEscena();
             } catch (Exception e) {
@@ -2510,7 +2564,7 @@ public class Principal extends javax.swing.JFrame {
         Mesh plano = new Plane(2, 2);
         entidad.addComponent(plano);
         entidad.addComponent(new QColisionMallaConvexa(plano));
-        motor.getScene().addEntity(entidad);
+        engine.getScene().addEntity(entidad);
         actualizarArbolEscena();
         seleccionarEntidad(entidad);
     }// GEN-LAST:event_jMenuItem18ActionPerformed
@@ -2541,8 +2595,8 @@ public class Principal extends javax.swing.JFrame {
                 archivo = archivo + ".qengineuni";
             }
             int i = 0;
-            int tam = motor.getScene().getEntities().size();
-            for (Entity entidad : motor.getScene().getEntities()) {
+            int tam = engine.getScene().getEntities().size();
+            for (Entity entidad : engine.getScene().getEntities()) {
                 SerializarUtil.agregarObjeto(archivo, entidad, true, true);
                 i++;
                 barraProgreso.setValue((int) (100 * (float) i / (float) tam));
@@ -2558,9 +2612,9 @@ public class Principal extends javax.swing.JFrame {
             chooser.setFileFilter(new FileNameExtensionFilter("Archivo Escenario Motor3D", "qengineuni"));
             if (chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
                 Entity entity = AssetManager.get().loadModel(chooser.getSelectedFile());
-                motor.getScene().addEntity(entity);
+                engine.getScene().addEntity(entity);
                 if (entity instanceof Camera) {
-                    renderer.setCamara((Camera) entity);
+                    renderer.setCamera((Camera) entity);
                     actualizarArbolEscena();
                 }
             }
@@ -2572,41 +2626,40 @@ public class Principal extends javax.swing.JFrame {
         actualizarArbolEscena();
     }// GEN-LAST:event_jMenuItem20ActionPerformed
 
-    private void jButton11ActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jButton11ActionPerformed
-        renderer.setEfectosPostProceso(null);
+    private void btnClearFiltersAP(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jButton11ActionPerformed
+        renderer.clearFilters();
     }// GEN-LAST:event_jButton11ActionPerformed
 
-    private void jButton12ActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jButton12ActionPerformed
-        renderer.setEfectosPostProceso(new QEfectoBloom());
+    private void btnBlooomFilterAP(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jButton12ActionPerformed
+        renderer.addFilter(new BloomFilter());
     }// GEN-LAST:event_jButton12ActionPerformed
 
-    private void jButton13ActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jButton13ActionPerformed
-        renderer.setEfectosPostProceso(new QEfectoContraste());
+    private void btnHightContrastFilterAP(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jButton13ActionPerformed
+        renderer.addFilter(new HightContrastFilter());
     }// GEN-LAST:event_jButton13ActionPerformed
 
-    private void jButton14ActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jButton14ActionPerformed
-        renderer.setEfectosPostProceso(
-                new QEfectoBlur(renderer.getFrameBuffer().getAncho(), renderer.getFrameBuffer().getAlto()));
+    private void btnBlurFilterAP(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jButton14ActionPerformed
+        renderer.addFilter(new BlurFilter());
     }// GEN-LAST:event_jButton14ActionPerformed
 
     private void btnActualizarReflejosActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btnActualizarReflejosActionPerformed
         // motor.setForzarActualizacionMapaReflejos(true);
     }// GEN-LAST:event_btnActualizarReflejosActionPerformed
 
-    private void jButton15ActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jButton15ActionPerformed
-        renderer.setEfectosPostProceso(new QEfectoDepthOfField(QProcesadorDepthOfField.DESENFOQUE_CERCA, 0.5f));
+    private void btnDOFfilter1AP(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jButton15ActionPerformed
+        renderer.addFilter(new DepthOfFieldFilter(DepthOfFieldFilter.DESENFOQUE_CERCA, 0.5f));
     }// GEN-LAST:event_jButton15ActionPerformed
 
-    private void jButton16ActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jButton16ActionPerformed
-        renderer.setEfectosPostProceso(new QEfectoDepthOfField(QProcesadorDepthOfField.DESENFOQUE_LEJOS, 0.5f));
+    private void btnDOFfilter2AP(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jButton16ActionPerformed
+        renderer.addFilter(new DepthOfFieldFilter(DepthOfFieldFilter.DESENFOQUE_LEJOS, 0.5f));
     }// GEN-LAST:event_jButton16ActionPerformed
 
-    private void jButton17ActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jButton17ActionPerformed
-        renderer.setEfectosPostProceso(new QEfectoDepthOfField(QProcesadorDepthOfField.DESENFOQUE_EXCLUYENTE, 0.5f));
+    private void btnDOFfilter3AP(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jButton17ActionPerformed
+        renderer.addFilter(new DepthOfFieldFilter(DepthOfFieldFilter.DESENFOQUE_EXCLUYENTE, 0.5f));
     }// GEN-LAST:event_jButton17ActionPerformed
 
-    private void jButton18ActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jButton18ActionPerformed
-        renderer.setEfectosPostProceso(new QEfectoCel());
+    private void btnCelFilterAP(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jButton18ActionPerformed
+        renderer.addFilter(new CelShadeFilter());
     }// GEN-LAST:event_jButton18ActionPerformed
 
     private void pnlColorFondoMouseClicked(java.awt.event.MouseEvent evt) {// GEN-FIRST:event_pnlColorFondoMouseClicked
@@ -2618,7 +2671,7 @@ public class Principal extends javax.swing.JFrame {
         Color newColor = colorChooser.showDialog(this, "Seleccione un color", pnlColorFondo.getBackground());
         if (newColor != null) {
             pnlColorFondo.setBackground(newColor);
-            motor.getScene().setAmbientColor(new QColor(newColor));
+            engine.getScene().setAmbientColor(new QColor(newColor));
             // renderer.setColorFondo(new QColor(newColor));
         }
     }// GEN-LAST:event_pnlColorFondoMousePressed
@@ -2649,7 +2702,7 @@ public class Principal extends javax.swing.JFrame {
         PlanarMesh malla = new PlanarMesh(true, 20, 20, 20, 20);
         entidad.addComponent(malla);
         entidad.addComponent(new QColisionMallaConvexa(malla));
-        motor.getScene().addEntity(entidad);
+        engine.getScene().addEntity(entidad);
         actualizarArbolEscena();
         seleccionarEntidad(entidad);
     }// GEN-LAST:event_jMenuItem2ActionPerformed
@@ -2661,7 +2714,7 @@ public class Principal extends javax.swing.JFrame {
             HeightMapTerrain terreno = new HeightMapTerrain(chooser.getSelectedFile(), 1, 0f, 50f, 5, null, true);
             entidad.addComponent(terreno);
             terreno.build();
-            motor.getScene().addEntity(entidad);
+            engine.getScene().addEntity(entidad);
             actualizarArbolEscena();
             seleccionarEntidad(entidad);
         }
@@ -2669,7 +2722,7 @@ public class Principal extends javax.swing.JFrame {
 
     private void jMenuItem3ActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jMenuItem3ActionPerformed
         Entity entidad = new Entity("Entidad");
-        motor.getScene().addEntity(entidad);
+        engine.getScene().addEntity(entidad);
         actualizarArbolEscena();
         seleccionarEntidad(entidad);
     }// GEN-LAST:event_jMenuItem3ActionPerformed
@@ -2678,7 +2731,7 @@ public class Principal extends javax.swing.JFrame {
         Entity objeto = new Entity("Cilindro");
         objeto.addComponent(new CylinderX(1, 1.0f));
         objeto.addComponent(new QColisionCilindroX(1, 1.0f));
-        motor.getScene().addEntity(objeto);
+        engine.getScene().addEntity(objeto);
         actualizarArbolEscena();
         seleccionarEntidad(objeto);
     }// GEN-LAST:event_jMenuItem26ActionPerformed
@@ -2747,7 +2800,7 @@ public class Principal extends javax.swing.JFrame {
 
     private void itmAddCamaraActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_itmAddCamaraActionPerformed
         Camera entidad = new Camera();
-        motor.getScene().addEntity(entidad);
+        engine.getScene().addEntity(entidad);
         actualizarArbolEscena();
         seleccionarEntidad(entidad);
     }// GEN-LAST:event_itmAddCamaraActionPerformed
@@ -2768,20 +2821,20 @@ public class Principal extends javax.swing.JFrame {
         Triangle triangulo = new Triangle(1);
         entidad.addComponent(triangulo);
         entidad.addComponent(new QColisionTriangulo(triangulo));
-        motor.getScene().addEntity(entidad);
+        engine.getScene().addEntity(entidad);
         actualizarArbolEscena();
         seleccionarEntidad(entidad);
     }// GEN-LAST:event_jMenuItem5ActionPerformed
 
-    private void jButton19ActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jButton19ActionPerformed
-        renderer.setEfectosPostProceso(new QAntialiasing());
+    private void btnMsaaFilterAP(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jButton19ActionPerformed
+        renderer.addFilter(new MsaaFilter());
     }// GEN-LAST:event_jButton19ActionPerformed
 
     private void mnuEspiralActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_mnuEspiralActionPerformed
         Entity objeto = new Entity("Espiral");
         objeto.addComponent(new QEspiral(1, 10, 20));
         // objeto.agregarComponente(new QColisionCilindro(1, 1.0f));
-        motor.getScene().addEntity(objeto);
+        engine.getScene().addEntity(objeto);
         actualizarArbolEscena();
         seleccionarEntidad(objeto);
     }// GEN-LAST:event_mnuEspiralActionPerformed
@@ -2790,7 +2843,7 @@ public class Principal extends javax.swing.JFrame {
         Entity objeto = new Entity("Cilindro");
         objeto.addComponent(new CylinderZ(1, 1.0f));
         objeto.addComponent(new QColisionCilindroX(1, 1.0f));
-        motor.getScene().addEntity(objeto);
+        engine.getScene().addEntity(objeto);
         actualizarArbolEscena();
         seleccionarEntidad(objeto);
     }// GEN-LAST:event_jMenuItem1ActionPerformed
@@ -2800,7 +2853,7 @@ public class Principal extends javax.swing.JFrame {
         // objeto.agregarComponente(new QPrisma(3, 1.0f, 1.0f, 20, 3));
         objeto.addComponent(new Prism(3, 1.0f, 1.0f, 5, 3));
         // objeto.agregarComponente(new QColisionCilindro(1, 1.0f));
-        motor.getScene().addEntity(objeto);
+        engine.getScene().addEntity(objeto);
         actualizarArbolEscena();
         seleccionarEntidad(objeto);
     }// GEN-LAST:event_mnuItemPrismaActionPerformed
@@ -2809,7 +2862,7 @@ public class Principal extends javax.swing.JFrame {
         Entity esfera = new Entity("Geoesfera");
         esfera.addComponent(new GeoSphere(1.0f, 3));
         esfera.addComponent(new QColisionEsfera(1.0f));
-        motor.getScene().addEntity(esfera);
+        engine.getScene().addEntity(esfera);
         actualizarArbolEscena();
         seleccionarEntidad(esfera);
     }// GEN-LAST:event_mnuItemGeosferaActionPerformed
@@ -2819,11 +2872,11 @@ public class Principal extends javax.swing.JFrame {
     }// GEN-LAST:event_cbxInterpolarActionPerformed
 
     private void btnAnimIniciarActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btnAnimIniciarActionPerformed
-        motor.startAnimation();
+        engine.startAnimation();
     }// GEN-LAST:event_btnAnimIniciarActionPerformed
 
     private void btnAnimDetenerActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btnAnimDetenerActionPerformed
-        motor.stopAnimation();
+        engine.stopAnimation();
     }// GEN-LAST:event_btnAnimDetenerActionPerformed
 
     private void jButton7ActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jButton7ActionPerformed
@@ -2862,75 +2915,75 @@ public class Principal extends javax.swing.JFrame {
     }// GEN-LAST:event_jButton3ActionPerformed
 
     private void btnStopPhysicsAP(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jButton2ActionPerformed
-        motor.detenerFisica();
+        engine.detenerFisica();
     }// GEN-LAST:event_jButton2ActionPerformed
 
     private void btnStartPhysicsAP(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jButton1ActionPerformed
-        motor.iniciarFisica();
+        engine.iniciarFisica();
         // motor.iniciarFisica(2);
     }// GEN-LAST:event_jButton1ActionPerformed
 
     private void txtAnimTiempoInicioActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_txtAnimTiempoInicioActionPerformed
-        motor.getAnimationEngine().setTiempoInicio(Float.valueOf(txtAnimTiempoInicio.getText()));
+        engine.getAnimationEngine().setTiempoInicio(Float.valueOf(txtAnimTiempoInicio.getText()));
         sldLineaTiempo.setMinimum(Integer.parseInt(txtAnimTiempoInicio.getText()) * 10);
     }// GEN-LAST:event_txtAnimTiempoInicioActionPerformed
 
     private void txtAnimTiempoInicioKeyReleased(java.awt.event.KeyEvent evt) {// GEN-FIRST:event_txtAnimTiempoInicioKeyReleased
-        motor.getAnimationEngine().setTiempoInicio(Float.valueOf(txtAnimTiempoInicio.getText()));
+        engine.getAnimationEngine().setTiempoInicio(Float.valueOf(txtAnimTiempoInicio.getText()));
         sldLineaTiempo.setMinimum(Integer.parseInt(txtAnimTiempoInicio.getText()) * 10);
     }// GEN-LAST:event_txtAnimTiempoInicioKeyReleased
 
     private void txtAnimTiempoFinActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_txtAnimTiempoFinActionPerformed
-        motor.getAnimationEngine().setTiempoFin(Float.valueOf(txtAnimTiempoFin.getText()));
+        engine.getAnimationEngine().setTiempoFin(Float.valueOf(txtAnimTiempoFin.getText()));
         sldLineaTiempo.setMaximum(Integer.parseInt(txtAnimTiempoFin.getText()) * 10);
     }// GEN-LAST:event_txtAnimTiempoFinActionPerformed
 
     private void txtAnimTiempoFinKeyReleased(java.awt.event.KeyEvent evt) {// GEN-FIRST:event_txtAnimTiempoFinKeyReleased
-        motor.getAnimationEngine().setTiempoFin(Float.valueOf(txtAnimTiempoFin.getText()));
+        engine.getAnimationEngine().setTiempoFin(Float.valueOf(txtAnimTiempoFin.getText()));
         sldLineaTiempo.setMaximum(Integer.parseInt(txtAnimTiempoFin.getText()) * 10);
     }// GEN-LAST:event_txtAnimTiempoFinKeyReleased
 
     private void sldLineaTiempoStateChanged(javax.swing.event.ChangeEvent evt) {// GEN-FIRST:event_sldLineaTiempoStateChanged
 
         if (!cambiandoLineaTiempo) {
-            motor.getAnimationEngine()
+            engine.getAnimationEngine()
                     .setTiempo(((float) sldLineaTiempo.getValue() / (float) sldLineaTiempo.getMaximum())
                             * ((float) sldLineaTiempo.getMaximum() / 10.f));
-            motor.getAnimationEngine().actualizarPoses(motor.getAnimationEngine().getTiempo());
+            engine.getAnimationEngine().actualizarPoses(engine.getAnimationEngine().getTiempo());
         }
-        txtAnimTiempo.setText("Tiempo:" + df.format(motor.getAnimationEngine().getTiempo()));
+        txtAnimTiempo.setText("Tiempo:" + df.format(engine.getAnimationEngine().getTiempo()));
     }// GEN-LAST:event_sldLineaTiempoStateChanged
 
     private void btnAnimVelocidad1XActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btnAnimVelocidad1XActionPerformed
-        motor.getAnimationEngine().setVelocidad(1.0f);
+        engine.getAnimationEngine().setVelocidad(1.0f);
     }// GEN-LAST:event_btnAnimVelocidad1XActionPerformed
 
     private void btnAnimVelocidad075XActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btnAnimVelocidad075XActionPerformed
-        motor.getAnimationEngine().setVelocidad(0.75f);
+        engine.getAnimationEngine().setVelocidad(0.75f);
     }// GEN-LAST:event_btnAnimVelocidad075XActionPerformed
 
     private void btnANimVelocidad05XActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btnANimVelocidad05XActionPerformed
-        motor.getAnimationEngine().setVelocidad(0.5f);
+        engine.getAnimationEngine().setVelocidad(0.5f);
     }// GEN-LAST:event_btnANimVelocidad05XActionPerformed
 
     private void btnAnimVelocidad025XActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btnAnimVelocidad025XActionPerformed
-        motor.getAnimationEngine().setVelocidad(0.25f);
+        engine.getAnimationEngine().setVelocidad(0.25f);
     }// GEN-LAST:event_btnAnimVelocidad025XActionPerformed
 
     private void btnAnimVelocidad15XActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btnAnimVelocidad15XActionPerformed
-        motor.getAnimationEngine().setVelocidad(1.5f);
+        engine.getAnimationEngine().setVelocidad(1.5f);
     }// GEN-LAST:event_btnAnimVelocidad15XActionPerformed
 
     private void btnAnimVelocidad2XActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btnAnimVelocidad2XActionPerformed
-        motor.getAnimationEngine().setVelocidad(2.0f);
+        engine.getAnimationEngine().setVelocidad(2.0f);
     }// GEN-LAST:event_btnAnimVelocidad2XActionPerformed
 
     private void btnAnimVelocidad4XActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btnAnimVelocidad4XActionPerformed
-        motor.getAnimationEngine().setVelocidad(4.0f);
+        engine.getAnimationEngine().setVelocidad(4.0f);
     }// GEN-LAST:event_btnAnimVelocidad4XActionPerformed
 
     private void btnAnimInvertirActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btnAnimInvertirActionPerformed
-        motor.getAnimationEngine().invertir();
+        engine.getAnimationEngine().invertir();
     }// GEN-LAST:event_btnAnimInvertirActionPerformed
 
     private void chkVerGridActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_chkVerGridActionPerformed
@@ -2942,7 +2995,7 @@ public class Principal extends javax.swing.JFrame {
         Mesh malla = new Teapot();
         item.addComponent(malla);
         item.addComponent(new QColisionMallaConvexa(malla));
-        motor.getScene().addEntity(item);
+        engine.getScene().addEntity(item);
         actualizarArbolEscena();
         seleccionarEntidad(item);
     }// GEN-LAST:event_mnuItemTeteraActionPerformed
@@ -2952,7 +3005,7 @@ public class Principal extends javax.swing.JFrame {
         Mesh malla = new Suzane();
         item.addComponent(malla);
         item.addComponent(new QColisionMallaConvexa(malla));
-        motor.getScene().addEntity(item);
+        engine.getScene().addEntity(item);
         actualizarArbolEscena();
         seleccionarEntidad(item);
     }
@@ -2974,7 +3027,7 @@ public class Principal extends javax.swing.JFrame {
             toRemove.add(object);
         }
         for (Entity object : toRemove) {
-            motor.getScene().removeEntityAndChilds(object);
+            engine.getScene().removeEntityAndChilds(object);
         }
         actualizarArbolEscena();
     }
@@ -2983,7 +3036,7 @@ public class Principal extends javax.swing.JFrame {
         Entity esfera = new Entity("Nicoesfera");
         esfera.addComponent(new IcoSphere(1.0f, 3));
         esfera.addComponent(new QColisionEsfera(1.0f));
-        motor.getScene().addEntity(esfera);
+        engine.getScene().addEntity(esfera);
         actualizarArbolEscena();
         seleccionarEntidad(esfera);
     }// GEN-LAST:event_itmCrearNcoesferaActionPerformed
@@ -2992,7 +3045,7 @@ public class Principal extends javax.swing.JFrame {
         Entity esfera = new Entity("Cuboesfera");
         esfera.addComponent(new SphereBox(1.0f, 3));
         esfera.addComponent(new QColisionEsfera(1.0f));
-        motor.getScene().addEntity(esfera);
+        engine.getScene().addEntity(esfera);
         actualizarArbolEscena();
         seleccionarEntidad(esfera);
     }
@@ -3029,7 +3082,7 @@ public class Principal extends javax.swing.JFrame {
     private void refreshStats() {
         int vertexCount = 0;
         int faceCount = 0;
-        for (Entity objeto : motor.getScene().getEntities()) {
+        for (Entity objeto : engine.getScene().getEntities()) {
             if (objeto != null && objeto.isToRender()) {
                 for (EntityComponent componente : objeto.getComponents()) {
                     if (componente instanceof Mesh) {
@@ -3041,13 +3094,13 @@ public class Principal extends javax.swing.JFrame {
             }
         }
         lblEstad.setText(vertexCount + " vértices; " + faceCount + " polígonos; "
-                + motor.getScene().getEntities().size() + " objetos");
+                + engine.getScene().getEntities().size() + " objetos");
     }
 
     public void actualizarArbolEscena() {
         // actualizo el arbol
         DefaultMutableTreeNode raiz = new DefaultMutableTreeNode(new QArbolWrapper("Escena", null));
-        for (Entity entidad : motor.getScene().getEntities()) {
+        for (Entity entidad : engine.getScene().getEntities()) {
             // solo agrego los que no tienen un padre
             if (entidad.getParent() == null) {
                 raiz.add(generarArbolEntidad(entidad));
@@ -3284,14 +3337,14 @@ public class Principal extends javax.swing.JFrame {
                     case KeyEvent.VK_DECIMAL: {
                         try {
                             CameraController control = (CameraController) ComponentUtil
-                                    .getComponent(renderer.getCamara(), CameraController.class);
+                                    .getComponent(renderer.getCamera(), CameraController.class);
                             if (control != null) {
                                 control.getTarget()
                                         .set(editorRenderer.entidadActiva.getTransformacion().getTraslacion());
                                 control.updateCamera();
                             } else {
                                 CameraOrbiter control2 = (CameraOrbiter) ComponentUtil
-                                        .getComponent(renderer.getCamara(), CameraOrbiter.class);
+                                        .getComponent(renderer.getCamera(), CameraOrbiter.class);
                                 if (control2 != null) {
                                     control2.getTarget()
                                             .set(editorRenderer.entidadActiva.getTransformacion().getTraslacion());
@@ -3304,13 +3357,13 @@ public class Principal extends javax.swing.JFrame {
                         break;
                     }
                     case KeyEvent.VK_Y:
-                        renderer.opciones.setTipoVista(QOpcionesRenderer.VISTA_WIRE);
+                        renderer.opciones.setTipoVista(RenderOptions.VISTA_WIRE);
                         break;
                     case KeyEvent.VK_U:
-                        renderer.opciones.setTipoVista(QOpcionesRenderer.VISTA_FLAT);
+                        renderer.opciones.setTipoVista(RenderOptions.VISTA_FLAT);
                         break;
                     case KeyEvent.VK_I:
-                        renderer.opciones.setTipoVista(QOpcionesRenderer.VISTA_PHONG);
+                        renderer.opciones.setTipoVista(RenderOptions.VISTA_PHONG);
                         break;
                     case KeyEvent.VK_T:
                         renderer.setShowStats(!renderer.isShowStats());
@@ -3416,15 +3469,15 @@ public class Principal extends javax.swing.JFrame {
     private javax.swing.JMenuItem itmPegar;
     private javax.swing.JMenuItem itmSeleccionarTodo;
     private javax.swing.JButton btnStartPhysics;
-    private javax.swing.JButton jButton11;
-    private javax.swing.JButton jButton12;
-    private javax.swing.JButton jButton13;
-    private javax.swing.JButton jButton14;
-    private javax.swing.JButton jButton15;
-    private javax.swing.JButton jButton16;
-    private javax.swing.JButton jButton17;
-    private javax.swing.JButton jButton18;
-    private javax.swing.JButton jButton19;
+    private javax.swing.JButton btnClearFilters;
+    private javax.swing.JButton btnBlooomFilter;
+    private javax.swing.JButton btnHightContrastFilter;
+    private javax.swing.JButton btnBlurFilter;
+    private javax.swing.JButton btnDOFfilter1;
+    private javax.swing.JButton btnDOFfilter2;
+    private javax.swing.JButton btnDOFfilter3;
+    private javax.swing.JButton btnCelFilter;
+    private javax.swing.JButton btnMsaaFilter;
     private javax.swing.JButton btnStopPhysics;
     private javax.swing.JButton btnAccion1;
     private javax.swing.JButton btnAccion2;
@@ -3454,9 +3507,9 @@ public class Principal extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel9;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenu jMenu2;
-    private javax.swing.JMenu jMenu3;
+    private javax.swing.JMenu mnuRenderizadores;
     private javax.swing.JMenu jMenu4;
-    private javax.swing.JMenu jMenu5;
+    private javax.swing.JMenu mnutipoVista;
     private javax.swing.JMenu jMenu6;
     private javax.swing.JMenu mnuFile;
     private javax.swing.JMenu jMenu8;

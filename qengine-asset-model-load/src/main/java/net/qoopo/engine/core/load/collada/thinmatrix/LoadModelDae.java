@@ -31,7 +31,7 @@ import net.qoopo.engine.core.load.collada.thinmatrix.data.KeyFrameData;
 import net.qoopo.engine.core.load.collada.thinmatrix.data.MeshData;
 import net.qoopo.engine.core.load.collada.thinmatrix.data.SkeletonData;
 import net.qoopo.engine.core.load.collada.thinmatrix.loader.ColladaLoader;
-import net.qoopo.engine.core.material.basico.Material;
+import net.qoopo.engine.core.material.Material;
 import net.qoopo.engine.core.math.QMatriz4;
 import net.qoopo.engine.core.util.QJOMLUtil;
 

@@ -41,8 +41,8 @@ public class PlanarReflection implements EntityComponent, UpdatableComponent {
             render = AssetManager.get().getRendererFactory().createRenderEngine(universo, "mirror", null, ancho,
                     ancho);
             render.setTextura(textura);
-            render.setEfectosPostProceso(null);
-            render.setCamara(new Camera("mirror"));
+            render.setFilterQueue(null);
+            render.setCamera(new Camera("mirror"));
             render.opciones.setForzarResolucion(true);
             render.opciones.setNormalMapping(false);
             render.opciones.setSombras(false);
@@ -59,15 +59,15 @@ public class PlanarReflection implements EntityComponent, UpdatableComponent {
     public void update(RenderEngine mainRender, Scene universo) {
         entity.setToRender(false);
         // actualizo la resolución de acuerdo a la cámara
-        if (render.opciones.getAncho() != mainRender.getFrameBuffer().getAncho()
-                && render.opciones.getAlto() != mainRender.getFrameBuffer().getAlto()) {
-            render.opciones.setAncho(mainRender.getFrameBuffer().getAncho());
-            render.opciones.setAlto(mainRender.getFrameBuffer().getAlto());
+        if (render.opciones.getAncho() != mainRender.getFrameBuffer().getWidth()
+                && render.opciones.getAlto() != mainRender.getFrameBuffer().getHeight()) {
+            render.opciones.setAncho(mainRender.getFrameBuffer().getWidth());
+            render.opciones.setAlto(mainRender.getFrameBuffer().getHeight());
             render.resize();
         }
 
-        render.getCamara().setName(entity.getName());
-        render.setNombre(entity.getName());
+        render.getCamera().setName(entity.getName());
+        render.setName(entity.getName());
 
         // el proceo consiste en el siguiente
         // debo colocar la camara en la posicion contraria a la que viene y en direcicon
@@ -78,7 +78,7 @@ public class PlanarReflection implements EntityComponent, UpdatableComponent {
         if (metodo == 1) {
             // metoo uno con la camara fija en el espejo
             try {
-                render.getCamara().lookAt(entity.getTransformacion().getTraslacion(), entity.getDirection(),
+                render.getCamera().lookAt(entity.getTransformacion().getTraslacion(), entity.getDirection(),
                         entity.getUp().clone());
             } catch (Exception e) {
                 e.printStackTrace();
@@ -89,11 +89,11 @@ public class PlanarReflection implements EntityComponent, UpdatableComponent {
             QVector3 vision = QVector3.empty();
             vision.set(
                     entity.getTransformacion().getTraslacion().x
-                            - mainRender.getCamara().getTransformacion().getTraslacion().x,
+                            - mainRender.getCamera().getTransformacion().getTraslacion().x,
                     entity.getTransformacion().getTraslacion().y
-                            - mainRender.getCamara().getTransformacion().getTraslacion().y,
+                            - mainRender.getCamera().getTransformacion().getTraslacion().y,
                     entity.getTransformacion().getTraslacion().z
-                            - mainRender.getCamara().getTransformacion().getTraslacion().z);
+                            - mainRender.getCamera().getTransformacion().getTraslacion().z);
             // entity.transformacion.getTraslacion().clone().add(camara.transformacion.getTraslacion().clone().multiply(-1));
             // http://di002.edv.uniovi.es/~rr/Tema5.pdf
             // QVector3 rayoReflejado = vision.add(
@@ -111,7 +111,7 @@ public class PlanarReflection implements EntityComponent, UpdatableComponent {
                 // su propia geometia y colapsa la vision (ya se corrigio con la bandera de
                 // renderizar)
 
-                render.getCamara().lookAtTarget(nuevaPos, entity.getTransformacion().getTraslacion().clone(),
+                render.getCamera().lookAtTarget(nuevaPos, entity.getTransformacion().getTraslacion().clone(),
                         entity.getUp().clone());
 
                 // render.setPanelClip(new ClipPane(entity.getDireccion(),
@@ -125,7 +125,7 @@ public class PlanarReflection implements EntityComponent, UpdatableComponent {
 
         render.update();
         render.shadeFragments();
-        render.postRender();
+        render.draw();
         entity.setToRender(true);
     }
 

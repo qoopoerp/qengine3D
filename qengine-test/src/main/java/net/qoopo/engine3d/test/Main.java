@@ -22,9 +22,9 @@ public class Main {
         motor.configRenderer(800, 600, camera);
         motor.exitonEsc();
         motor.start();
-        motor.getRenderEngine().setShowStats(true);
-        motor.getRenderEngine().setCargando(true);
+        // motor.getRenderEngine().setShowStats(true);
+        // motor.getRenderEngine().setLoading(true);
         new InitialScene().make(motor.getScene());
-        motor.getRenderEngine().setCargando(false);
+
     }
 }

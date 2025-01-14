@@ -35,6 +35,16 @@
     </dependencyManagement>
 
     <dependencies>
+
+
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>1.18.24</version>
+            <scope>provided</scope>
+        </dependency>
+
+
         <!-- CORE -->
         <dependency>
             <groupId>net.qoopo.qengine</groupId>
@@ -47,7 +57,6 @@
             <artifactId>qengine-asset-model-load</artifactId>
             <version>1.0.0</version>
         </dependency>
-
 
         <dependency>
             <groupId>net.qoopo.qengine</groupId>

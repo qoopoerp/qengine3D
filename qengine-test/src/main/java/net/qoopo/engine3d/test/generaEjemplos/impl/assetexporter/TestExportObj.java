@@ -30,19 +30,23 @@ public class TestExportObj extends MakeTestScene {
 
             List<File> archivos = new ArrayList<>();
 
-            // archivos.add(new File("assets/models/obj/casa/Casa_F3DM/Casa.obj"));
-            // archivos.add(new File("assets/models/obj/casa_abandonada/cottage_obj.obj"));
             // archivos.add(new File("assets/models/obj/teapot.obj"));
             // archivos.add(new File("assets/models/obj/bunny.obj"));
-            archivos.add(new File("assets/models/obj/cube.obj"));
-            archivos.add(new File("assets/models/obj/caja_madera/box.obj"));
-            // archivos.add(new File("assets/models/obj/camara/camara.obj"));
-            // archivos.add(new File("assets/models/collada/vaquero_tuto/model.dae"));
-            // archivos.add(new File("assets/models/obj/chestnut/AL05a.obj"));
+            // archivos.add(new File("assets/models/obj/cube.obj"));
+            // archivos.add(new File("assets/models/obj/caja_madera/box.obj"));
+            // archivos.add(new File("assets/models/obj/cyborg/cyborg.obj"));
+
+            archivos.add(new File("assets/models/fbx/basic/torus.fbx"));
+            archivos.add(new File("assets/models/fbx/basic/cube.fbx"));
+            archivos.add(new File("assets/models/fbx/basic/cone.fbx"));
+            archivos.add(new File("assets/models/fbx/basic/cilinder.fbx"));
+            archivos.add(new File("assets/models/fbx/basic/icosphere.fbx"));
+            archivos.add(new File("assets/models/fbx/basic/piramid.fbx"));
+
+            archivos.add(new File("assets/models/fbx/nathan_animated_walking_fbx/rp_nathan_animated_003_walking.fbx"));
 
             // archivos.add(new File("assets/models/fbx/mixamo/Shoved Reaction With
             // Spin.fbx"));
-            // archivos.add(new File("assets/models/fbx/cerberus/cerberus.fbx"));
 
             for (int i = 0; i < archivos.size(); i++) {
                 try {

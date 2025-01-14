@@ -6,13 +6,13 @@
 package net.qoopo.engine.renderer.shader.fragment.proxy;
 
 import net.qoopo.engine.core.entity.component.mesh.primitive.Fragment;
-import net.qoopo.engine.core.material.basico.Material;
+import net.qoopo.engine.core.material.Material;
 import net.qoopo.engine.core.material.node.MaterialNode;
 import net.qoopo.engine.core.math.QColor;
 import net.qoopo.engine.core.renderer.RenderEngine;
 import net.qoopo.engine.renderer.shader.fragment.FragmentShader;
 import net.qoopo.engine.renderer.shader.fragment.nodos.NodeFragmentShader;
-import net.qoopo.engine.renderer.shader.fragment.pbr.PBRFragmentShader;
+import net.qoopo.engine.renderer.shader.fragment.pbr.BRDFFragmentShader;
 
 /**
  * Calcula el color e iluminación de cada pixel, dependiendo si es con material
@@ -27,7 +27,7 @@ public class QPbrProxyShader extends FragmentShader {
 
     public QPbrProxyShader(RenderEngine render) {
         super(render);
-        basico = new PBRFragmentShader(render);
+        basico = new BRDFFragmentShader(render);
         nodos = new NodeFragmentShader(render);
     }
 

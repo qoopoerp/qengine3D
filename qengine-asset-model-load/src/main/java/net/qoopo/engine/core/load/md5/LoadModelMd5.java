@@ -32,7 +32,7 @@ import net.qoopo.engine.core.load.md5.util.MD5JointInfo;
 import net.qoopo.engine.core.load.md5.util.MD5Mesh;
 import net.qoopo.engine.core.load.md5.util.MD5Model;
 import net.qoopo.engine.core.load.md5.util.MD5Utils;
-import net.qoopo.engine.core.material.basico.Material;
+import net.qoopo.engine.core.material.Material;
 import net.qoopo.engine.core.math.Cuaternion;
 import net.qoopo.engine.core.math.QColor;
 import net.qoopo.engine.core.math.QRotacion;
@@ -285,7 +285,7 @@ public class LoadModelMd5 implements ModelLoader {
             if (texturePath != null && texturePath.length() > 0) {
                 if (new File(texturePath).exists()) {
                     Material material = new Material();
-                    material.setMapaColor(AssetManager.get().loadTexture(texturePath, texturePath));
+                    material.setColorMap(AssetManager.get().loadTexture(texturePath, texturePath));
 
                     // Handle other Maps;
                     int pos = texturePath.lastIndexOf(".");
@@ -296,13 +296,13 @@ public class LoadModelMd5 implements ModelLoader {
                         String normalMapFileName = basePath + NORMAL_FILE_SUFFIX + extension;
                         // System.out.println("el archivo de normal deberia ser:" + normalMapFileName);
                         if (Utils.existsResourceFile(normalMapFileName)) {
-                            material.setMapaNormal(
+                            material.setNormalMap(
                                     AssetManager.get().loadTexture(normalMapFileName, normalMapFileName));
                         } else {
                             normalMapFileName = basePath + NORMAL_FILE_SUFFIX_2 + extension;
                             // System.out.println("el archivo de normal deberia ser:" + normalMapFileName);
                             if (Utils.existsResourceFile(normalMapFileName)) {
-                                material.setMapaNormal(
+                                material.setNormalMap(
                                         AssetManager.get().loadTexture(normalMapFileName, normalMapFileName));
                             }
                         }

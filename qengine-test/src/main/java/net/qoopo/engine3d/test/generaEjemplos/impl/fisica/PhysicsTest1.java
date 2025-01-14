@@ -19,7 +19,7 @@ import net.qoopo.engine.core.entity.component.physics.collision.detector.shape.p
 import net.qoopo.engine.core.entity.component.physics.collision.detector.shape.primitivas.QColisionEsfera;
 import net.qoopo.engine.core.entity.component.physics.dinamica.QObjetoDinamico;
 import net.qoopo.engine.core.entity.component.physics.dinamica.QObjetoRigido;
-import net.qoopo.engine.core.material.basico.Material;
+import net.qoopo.engine.core.material.Material;
 import net.qoopo.engine.core.math.QColor;
 import net.qoopo.engine.core.math.QVector3;
 import net.qoopo.engine.core.scene.Scene;
@@ -30,7 +30,7 @@ import net.qoopo.engine.core.texture.util.MaterialUtil;
  *
  * @author alberto
  */
-public class EjemploFisica1 extends FisicaDisparar {
+public class PhysicsTest1 extends FisicaDisparar {
 
     private float largoLadrillo = 0.48f;
     private float anchoLadrillo = 0.24f;
@@ -49,42 +49,15 @@ public class EjemploFisica1 extends FisicaDisparar {
         materialBombas = new Material("bomba");
         materialBombas.setColor(QColor.YELLOW);
 
-        // //el mundo por default esta con unidades de medida en metro
-        // //al non usar el conversor d eunidades de media, se toma como metros
-        // //Piso
-        // Entity piso = new Entity("piso");
-        //// piso.transformacion.getTraslacion().y = 0f;
-        // piso.mover(0, 0, 0);
-        // piso.escalar(10f, 10f, 10f);
-        //
-        // piso.agregarComponente(new Box(0.1f, mundo.UM.convertirPixel(50),
-        // mundo.UM.convertirPixel(50)));
-        //
-        // QColisionCaja colision = new QColisionCaja(mundo.UM.convertirPixel(50), 0.1f,
-        // mundo.UM.convertirPixel(50));
-        // piso.agregarComponente(colision);
-        //
-        // QObjetoRigido pisoRigidez = new QObjetoRigido(QObjetoDinamico.ESTATICO);
-        // pisoRigidez.setMasa(0, QVector3.zero.clone());
-        // pisoRigidez.setFormaColision(colision);
-        //
-        // piso.agregarComponente(pisoRigidez);
-        // mundo.addEntity(piso);
-
-        // carga.setAccionFinal(accionFinal);
-        // // carga.setProgreso(barraProgreso);
-        // carga.cargar(new File("assets/"+
-        // "models/obj/ESCENARIOS/escenarioQEngine.obj"));
-
         try {
             mundo.addEntity(AssetManager.get()
-                    .loadModel(new File("assets/models/obj/ESCENARIOS/escenarioQEngine.obj")));
+                    .loadModel(new File("assets/models/obj/escenarios/testLevel1.obj")));
         } catch (FileNotFoundException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
-        crearEsferas(mundo);
-        construirMuro(mundo);
+        // crearEsferas(mundo);
+        // construirMuro(mundo);
     }
 
     private void crearEsferas(Scene mundo) {
@@ -131,8 +104,6 @@ public class EjemploFisica1 extends FisicaDisparar {
         largoLadrillo = mundo.UM.convertirPixel(50, QUnidadMedida.CENTIMETRO);
         anchoLadrillo = mundo.UM.convertirPixel(50, QUnidadMedida.CENTIMETRO);
         altoLadrillo = mundo.UM.convertirPixel(50, QUnidadMedida.CENTIMETRO);
-
-        materialLadrillo = new Material();
 
         materialLadrillo = null;
         try {

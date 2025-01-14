@@ -6,7 +6,7 @@ import net.qoopo.engine.core.entity.component.ligth.QLigth;
 import net.qoopo.engine.core.entity.component.ligth.QPointLigth;
 import net.qoopo.engine.core.entity.component.ligth.QSpotLigth;
 import net.qoopo.engine.core.entity.component.mesh.primitive.Fragment;
-import net.qoopo.engine.core.material.basico.Material;
+import net.qoopo.engine.core.material.Material;
 import net.qoopo.engine.core.math.QColor;
 import net.qoopo.engine.core.math.QMath;
 import net.qoopo.engine.core.math.QVector3;
@@ -36,7 +36,7 @@ public class LigthFragmenShader extends FragmentShader {
         if (fragment == null) {
             return null;
         }
-        if (!fragment.isDibujar()) {
+        if (!fragment.isDraw()) {
             return null;
         }
 
@@ -46,9 +46,9 @@ public class LigthFragmenShader extends FragmentShader {
         // TOMA EL VALOR DE LA TRANSPARENCIA
         if (((Material) fragment.material).isTransparencia()) {
             // si tiene un mapa de transparencia
-            if (((Material) fragment.material).getMapaTransparencia() != null) {
+            if (((Material) fragment.material).getAlphaMap() != null) {
                 // es una imagen en blanco y negro, toma cualquier canal de color
-                transparencia = ((Material) fragment.material).getMapaTransparencia().getQColor(fragment.u, fragment.v).r;
+                transparencia = ((Material) fragment.material).getAlphaMap().getQColor(fragment.u, fragment.v).r;
             } else {
                 // toma el valor de transparencia del material
                 transparencia = ((Material) fragment.material).getTransAlfa();
@@ -61,18 +61,18 @@ public class LigthFragmenShader extends FragmentShader {
          * COLOR DIFUSO /BASE
          * ********************************************************************************
          */
-        if (((Material) fragment.material).getMapaColor() == null || !render.opciones.isMaterial()) {
+        if (((Material) fragment.material).getColorMap() == null || !render.opciones.isMaterial()) {
             // si no hay textura usa el color del material
             color.set(fragment.material.getColor());
         } else {
             // si la textura no es proyectada (lo hace otro renderer) toma las coordenadas
             // ya calculadas
-            if (!((Material) fragment.material).getMapaColor().isProyectada()) {
-                colorDifuso = ((Material) fragment.material).getMapaColor().getQColor(fragment.u, fragment.v);
+            if (!((Material) fragment.material).getColorMap().isProyectada()) {
+                colorDifuso = ((Material) fragment.material).getColorMap().getQColor(fragment.u, fragment.v);
             } else {
-                colorDifuso = ((Material) fragment.material).getMapaColor().getQColor(
-                        (float) x / (float) render.getFrameBuffer().getAncho(),
-                        -(float) y / (float) render.getFrameBuffer().getAlto());
+                colorDifuso = ((Material) fragment.material).getColorMap().getQColor(
+                        (float) x / (float) render.getFrameBuffer().getWidth(),
+                        -(float) y / (float) render.getFrameBuffer().getHeight());
             }
 
             color.set(colorDifuso);
@@ -119,14 +119,14 @@ public class LigthFragmenShader extends FragmentShader {
         iluminacion.setColorLuz(QColor.BLACK.clone());
         Material material = (Material) fragment.material;
         // usa el mapa de iluminacion con el ambiente
-        if (material.getMapaEmisivo() != null && render.opciones.isMaterial()) {
-            QColor colorEmisivo = material.getMapaEmisivo().getQColor(fragment.u, fragment.v);
+        if (material.getEmissiveMap() != null && render.opciones.isMaterial()) {
+            QColor colorEmisivo = material.getEmissiveMap().getQColor(fragment.u, fragment.v);
             iluminacion.setColorAmbiente(colorEmisivo.clone().add(render.getScene().getAmbientColor()));
         } else {
             // si tiene factor de emision toma ese valor solamente
-            if (material.getFactorEmision() > 0) {
+            if (material.getEmision() > 0) {
                 // illumination.dR = material.getFactorEmision();
-                float factorEmision = material.getFactorEmision();
+                float factorEmision = material.getEmision();
                 iluminacion.setColorAmbiente(new QColor(factorEmision, factorEmision, factorEmision));
                 return;// no hago mas calculos
             } else {
@@ -136,9 +136,9 @@ public class LigthFragmenShader extends FragmentShader {
 
         TempVars tempVars = TempVars.get();
         try {
-            float rugosidad = material.getRugosidad();
-            if (render.opciones.isMaterial() && material.getMapaRugosidad() != null) {
-                rugosidad = material.getMapaRugosidad().getQColor(fragment.u, fragment.v).r;
+            float rugosidad = material.getRoughness();
+            if (render.opciones.isMaterial() && material.getRoughnessMap() != null) {
+                rugosidad = material.getRoughnessMap().getQColor(fragment.u, fragment.v).r;
             }
 
             float reflectancia = 1.0f - rugosidad;
@@ -151,7 +151,7 @@ public class LigthFragmenShader extends FragmentShader {
                         if (luz instanceof QPointLigth || luz instanceof QSpotLigth) {
                             vectorLuz.set(fragment.ubicacion.getVector3().clone().subtract(
                                     TransformationVectorUtil.transformarVector(QVector3.zero, luz.getEntity(),
-                                            render.getCamara())));
+                                            render.getCamera())));
                             distanciaLuz = vectorLuz.length();
                             // solo toma en cuenta a los puntos q estan en el area de afectacion
                             if (distanciaLuz > luz.radio) {

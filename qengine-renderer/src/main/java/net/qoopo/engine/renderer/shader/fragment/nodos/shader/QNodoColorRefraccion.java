@@ -108,10 +108,10 @@ public class QNodoColorRefraccion extends ShaderNode {
                 // tm.vector3f1.set(currentPixel.ubicacion.getVector3());
                 tm.vector3f1.set(TransformationVectorUtil.transformarVector(
                         TransformationVectorUtil.transformarVectorInversa(pixel.ubicacion, pixel.entity,
-                                render.getCamara()),
+                                render.getCamera()),
                         pixel.entity).getVector3());
                 // ahora restamos la posicion de la camara a la posicion del mundo
-                tm.vector3f1.subtract(render.getCamara().getMatrizTransformacion(QGlobal.time).toTranslationVector());
+                tm.vector3f1.subtract(render.getCamera().getMatrizTransformacion(QGlobal.time).toTranslationVector());
                 tm.vector3f1.normalize();
 
                 // ***********************************************************
@@ -121,7 +121,7 @@ public class QNodoColorRefraccion extends ShaderNode {
                                                                                                        // aire sobre
                                                                                                        // indice del
                                                                                                        // material
-                color = TextureUtil.getColorMapaEntorno(tm.vector3f4, enTextura.getProcesadorTextura(),
+                color = TextureUtil.getEnviromentMapColor(tm.vector3f4, enTextura.getProcesadorTextura(),
                         tipoMapaEntorno);
             } catch (Exception e) {
                 // System.out.println("error reflexion " + e.getMessage());

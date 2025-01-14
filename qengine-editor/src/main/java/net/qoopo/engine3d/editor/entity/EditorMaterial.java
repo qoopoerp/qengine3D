@@ -26,14 +26,14 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 
 import net.qoopo.engine.core.assets.AssetManager;
 import net.qoopo.engine.core.entity.Entity;
-import net.qoopo.engine.core.entity.component.cubemap.CubeMap;
+import net.qoopo.engine.core.entity.component.environment.EnvProbe;
 import net.qoopo.engine.core.entity.component.ligth.QDirectionalLigth;
 import net.qoopo.engine.core.entity.component.mesh.Mesh;
 import net.qoopo.engine.core.entity.component.mesh.primitive.shape.Box;
 import net.qoopo.engine.core.entity.component.mesh.primitive.shape.Plane;
 import net.qoopo.engine.core.entity.component.mesh.primitive.shape.Sphere;
 import net.qoopo.engine.core.entity.component.mesh.primitive.shape.Teapot;
-import net.qoopo.engine.core.material.basico.Material;
+import net.qoopo.engine.core.material.Material;
 import net.qoopo.engine.core.math.QColor;
 import net.qoopo.engine.core.math.QVector3;
 import net.qoopo.engine.core.renderer.RenderEngine;
@@ -42,7 +42,7 @@ import net.qoopo.engine.core.renderer.superficie.Superficie;
 import net.qoopo.engine.core.scene.Camera;
 import net.qoopo.engine.core.scene.Scene;
 import net.qoopo.engine.core.texture.Texture;
-import net.qoopo.engine.core.texture.procesador.QProcesadorMipMap;
+import net.qoopo.engine.core.texture.procesador.MipmapTexture;
 import net.qoopo.engine.core.texture.util.MaterialUtil;
 import net.qoopo.engine.core.util.ComponentUtil;
 import net.qoopo.engine.core.util.mesh.NormalUtil;
@@ -127,7 +127,7 @@ public class EditorMaterial extends javax.swing.JPanel {
             Camera camara = new Camera("Material");
             camara.lookAtTarget(QVector3.of(1.2f, 1.2f, 1.2f), QVector3.of(0, 0, 0), QVector3.of(0, 1, 0));
             camara.frustrumLejos = 20.0f;
-            renderVistaPrevia.setCamara(camara);
+            renderVistaPrevia.setCamera(camara);
 
             Entity luz = new Entity("luz");
             luz.addComponent(new QDirectionalLigth(QVector3.of(-1f, -0.5f, -1.5f)));
@@ -139,7 +139,7 @@ public class EditorMaterial extends javax.swing.JPanel {
             renderVistaPrevia.getScene().addEntity(luz);
             renderVistaPrevia.setShowStats(false);
             renderVistaPrevia.opciones.setDibujarLuces(false);
-            renderVistaPrevia.setEfectosPostProceso(null);
+            renderVistaPrevia.setFilterQueue(null);
             renderVistaPrevia.setInteractuar(false);
             renderVistaPrevia.start();
             renderVistaPrevia.resize();
@@ -169,8 +169,8 @@ public class EditorMaterial extends javax.swing.JPanel {
             }
             spnSpecExp.setValue((float) material.getSpecularExponent());
             sldAlpha.setValue((int) (material.getTransAlfa() * sldAlpha.getMaximum()));
-            sldMetalico.setValue((int) (material.getMetalico() * sldMetalico.getMaximum()));
-            sldRugosidad.setValue((int) (material.getRugosidad() * sldRugosidad.getMaximum()));
+            sldMetalico.setValue((int) (material.getMetallic() * sldMetalico.getMaximum()));
+            sldRugosidad.setValue((int) (material.getRoughness() * sldRugosidad.getMaximum()));
             // sldEspecularidad.setValue((int) (material.getEspecular() *
             // sldEspecularidad.getMaximum()));
 
@@ -193,8 +193,8 @@ public class EditorMaterial extends javax.swing.JPanel {
             mapaIrradiacion = new BufferedImage(pnlIrrMap.getWidth(), pnlIrrMap.getHeight(),
                     BufferedImage.TYPE_INT_ARGB);
 
-            if (material.getMapaColor() != null) {
-                mapaDifuso.getGraphics().drawImage(material.getMapaColor().getImagen(pnlDifuso.getSize()), 0, 0,
+            if (material.getColorMap() != null) {
+                mapaDifuso.getGraphics().drawImage(material.getColorMap().getImagen(pnlDifuso.getSize()), 0, 0,
                         pnlDifuso);
             }
 
@@ -203,40 +203,40 @@ public class EditorMaterial extends javax.swing.JPanel {
                         0, 0, pnlEspecularMap);
             }
 
-            if (material.getMapaEmisivo() != null) {
-                mapaEmision.getGraphics().drawImage(material.getMapaEmisivo().getImagen(pnlEmisivoMap.getSize()), 0, 0,
+            if (material.getEmissiveMap() != null) {
+                mapaEmision.getGraphics().drawImage(material.getEmissiveMap().getImagen(pnlEmisivoMap.getSize()), 0, 0,
                         pnlEmisivoMap);
             }
 
-            if (material.getMapaNormal() != null) {
-                mapaNormal.getGraphics().drawImage(material.getMapaNormal().getImagen(pnlNormalMap.getSize()), 0, 0,
+            if (material.getNormalMap() != null) {
+                mapaNormal.getGraphics().drawImage(material.getNormalMap().getImagen(pnlNormalMap.getSize()), 0, 0,
                         pnlNormalMap);
             }
-            if (material.getMapaDesplazamiento() != null) {
-                mapaDesplazamiento.getGraphics()
-                        .drawImage(material.getMapaDesplazamiento().getImagen(pnlDispMap.getSize()), 0, 0, pnlDispMap);
-            }
-            if (material.getMapaEntorno() != null) {
-                mapaEntorno.getGraphics().drawImage(material.getMapaEntorno().getImagen(pnlEntornoMap.getSize()), 0, 0,
+            // if (material.getMapaDesplazamiento() != null) {
+            //     mapaDesplazamiento.getGraphics()
+            //             .drawImage(material.getMapaDesplazamiento().getImagen(pnlDispMap.getSize()), 0, 0, pnlDispMap);
+            // }
+            if (material.getEnvMap() != null) {
+                mapaEntorno.getGraphics().drawImage(material.getEnvMap().getImagen(pnlEntornoMap.getSize()), 0, 0,
                         pnlEntornoMap);
             }
-            if (material.getMapaTransparencia() != null) {
-                mapaAlpha.getGraphics().drawImage(material.getMapaTransparencia().getImagen(pnlAlphaMap.getSize()), 0,
+            if (material.getAlphaMap() != null) {
+                mapaAlpha.getGraphics().drawImage(material.getAlphaMap().getImagen(pnlAlphaMap.getSize()), 0,
                         0, pnlAlphaMap);
             }
-            if (material.getMapaSAO() != null) {
-                mapaAO.getGraphics().drawImage(material.getMapaSAO().getImagen(pnlAOMap.getSize()), 0, 0, pnlAOMap);
+            if (material.getAoMap() != null) {
+                mapaAO.getGraphics().drawImage(material.getAoMap().getImagen(pnlAOMap.getSize()), 0, 0, pnlAOMap);
             }
-            if (material.getMapaRugosidad() != null) {
-                mapaRugosidad.getGraphics().drawImage(material.getMapaRugosidad().getImagen(pnlRugMap.getSize()), 0, 0,
+            if (material.getRoughnessMap() != null) {
+                mapaRugosidad.getGraphics().drawImage(material.getRoughnessMap().getImagen(pnlRugMap.getSize()), 0, 0,
                         pnlRugMap);
             }
-            if (material.getMapaMetalico() != null) {
-                mapaMetalico.getGraphics().drawImage(material.getMapaMetalico().getImagen(pnlMetalMap.getSize()), 0, 0,
+            if (material.getMetallicMap() != null) {
+                mapaMetalico.getGraphics().drawImage(material.getMetallicMap().getImagen(pnlMetalMap.getSize()), 0, 0,
                         pnlMetalMap);
             }
-            if (material.getMapaIrradiacion() != null) {
-                mapaIrradiacion.getGraphics().drawImage(material.getMapaIrradiacion().getImagen(pnlIrrMap.getSize()),
+            if (material.getHdrMap() != null) {
+                mapaIrradiacion.getGraphics().drawImage(material.getHdrMap().getImagen(pnlIrrMap.getSize()),
                         0, 0, pnlIrrMap);
             }
             pnlDifuso.paint(pnlDifuso.getGraphics());
@@ -251,13 +251,13 @@ public class EditorMaterial extends javax.swing.JPanel {
             pnlMetalMap.paint(pnlMetalMap.getGraphics());
             pnlIrrMap.paint(pnlIrrMap.getGraphics());
             // spnNormalAmount.setValue(material.getFactorNormal());
-            spnFactorRefraccion.setValue(material.getIndiceRefraccion());
-            spnFactorEmision.setValue(material.getFactorEmision());
+            spnFactorRefraccion.setValue(material.getIor());
+            spnFactorEmision.setValue(material.getEmision());
             chkTransparencia.setSelected(material.isTransparencia());
             chkReflexion.setSelected(material.isReflexion());
             chkRefraccion.setSelected(material.isRefraccion());
-            optCubo.setSelected(material.getTipoMapaEntorno() == 1);
-            optHDRI.setSelected(material.getTipoMapaEntorno() == 2);
+            optCubo.setSelected(material.getEnvMapType() == 1);
+            optHDRI.setSelected(material.getEnvMapType() == 2);
             objectLock = false;
         } catch (Exception e) {
             e.printStackTrace();
@@ -335,71 +335,71 @@ public class EditorMaterial extends javax.swing.JPanel {
             activeMaterial.setSpecularExponent((int) getFloatFromSpinner(spnSpecExp));
             activeMaterial.setTransAlfa((float) sldAlpha.getValue() / sldAlpha.getMaximum());
             // activeMaterial.setFactorNormal(getFloatFromSpinner(spnNormalAmount));
-            activeMaterial.setRugosidad((float) sldRugosidad.getValue() / sldRugosidad.getMaximum());
-            activeMaterial.setMetalico((float) sldMetalico.getValue() / sldMetalico.getMaximum());
+            activeMaterial.setRoughness((float) sldRugosidad.getValue() / sldRugosidad.getMaximum());
+            activeMaterial.setMetallic((float) sldMetalico.getValue() / sldMetalico.getMaximum());
             // activeMaterial.setEspecular((float) sldEspecularidad.getValue() /
             // sldEspecularidad.getMaximum());
 
-            sldRugosidad.setToolTipText("Rugosidad (" + activeMaterial.getRugosidad() + "):");
-            sldMetalico.setToolTipText("Metalico (" + activeMaterial.getMetalico() + "):");
+            sldRugosidad.setToolTipText("Rugosidad (" + activeMaterial.getRoughness() + "):");
+            sldMetalico.setToolTipText("Metalico (" + activeMaterial.getMetallic() + "):");
             // sldEspecularidad.setToolTipText("Especularidad (" +
             // activeMaterial.getEspecular() + "):");
 
             // activeMaterial.setFactorReflexion(getFloatFromSpinner(spnFactorReflexion));
-            activeMaterial.setIndiceRefraccion(getFloatFromSpinner(spnFactorRefraccion));
-            activeMaterial.setFactorEmision(getFloatFromSpinner(spnFactorEmision));
+            activeMaterial.setIor(getFloatFromSpinner(spnFactorRefraccion));
+            activeMaterial.setEmision(getFloatFromSpinner(spnFactorEmision));
             activeMaterial.setTransparencia(chkTransparencia.isSelected());
             activeMaterial.setReflexion(chkReflexion.isSelected());
             activeMaterial.setRefraccion(chkRefraccion.isSelected());
 
             if (optHDRI.isSelected()) {
-                activeMaterial.setTipoMapaEntorno(2);
+                activeMaterial.setEnvMapType(2);
             } else {
-                activeMaterial.setTipoMapaEntorno(1);
+                activeMaterial.setEnvMapType(1);
             }
-            if (activeMaterial.getMapaColor() != null) {
-                activeMaterial.getMapaColor().setMuestrasU(Float.parseFloat(txtMU_Difusa.getText()));
-                activeMaterial.getMapaColor().setMuestrasV(Float.parseFloat(txtMV_Difusa.getText()));
+            if (activeMaterial.getColorMap() != null) {
+                activeMaterial.getColorMap().setMuestrasU(Float.parseFloat(txtMU_Difusa.getText()));
+                activeMaterial.getColorMap().setMuestrasV(Float.parseFloat(txtMV_Difusa.getText()));
             }
             if (activeMaterial.getMapaEspecular() != null) {
                 activeMaterial.getMapaEspecular().setMuestrasU(Float.parseFloat(txtMU_Especular.getText()));
                 activeMaterial.getMapaEspecular().setMuestrasV(Float.parseFloat(txtMV_Especular.getText()));
             }
-            if (activeMaterial.getMapaEmisivo() != null) {
-                activeMaterial.getMapaEmisivo().setMuestrasU(Float.parseFloat(txtMU_Emisivo.getText()));
-                activeMaterial.getMapaEmisivo().setMuestrasV(Float.parseFloat(txtMV_Emisivo.getText()));
+            if (activeMaterial.getEmissiveMap() != null) {
+                activeMaterial.getEmissiveMap().setMuestrasU(Float.parseFloat(txtMU_Emisivo.getText()));
+                activeMaterial.getEmissiveMap().setMuestrasV(Float.parseFloat(txtMV_Emisivo.getText()));
             }
-            if (activeMaterial.getMapaNormal() != null) {
-                activeMaterial.getMapaNormal().setMuestrasU(Float.parseFloat(txtMU_Normal.getText()));
-                activeMaterial.getMapaNormal().setMuestrasV(Float.parseFloat(txtMV_Normal.getText()));
+            if (activeMaterial.getNormalMap() != null) {
+                activeMaterial.getNormalMap().setMuestrasU(Float.parseFloat(txtMU_Normal.getText()));
+                activeMaterial.getNormalMap().setMuestrasV(Float.parseFloat(txtMV_Normal.getText()));
             }
-            if (activeMaterial.getMapaDesplazamiento() != null) {
-                activeMaterial.getMapaDesplazamiento().setMuestrasU(Float.parseFloat(txtMU_Disp.getText()));
-                activeMaterial.getMapaDesplazamiento().setMuestrasV(Float.parseFloat(txtMV_Disp.getText()));
+            // if (activeMaterial.getMapaDesplazamiento() != null) {
+            //     activeMaterial.getMapaDesplazamiento().setMuestrasU(Float.parseFloat(txtMU_Disp.getText()));
+            //     activeMaterial.getMapaDesplazamiento().setMuestrasV(Float.parseFloat(txtMV_Disp.getText()));
+            // }
+            if (activeMaterial.getAlphaMap() != null) {
+                activeMaterial.getAlphaMap().setMuestrasU(Float.parseFloat(txtMU_Transp.getText()));
+                activeMaterial.getAlphaMap().setMuestrasV(Float.parseFloat(txtMV_Transp.getText()));
             }
-            if (activeMaterial.getMapaTransparencia() != null) {
-                activeMaterial.getMapaTransparencia().setMuestrasU(Float.parseFloat(txtMU_Transp.getText()));
-                activeMaterial.getMapaTransparencia().setMuestrasV(Float.parseFloat(txtMV_Transp.getText()));
+            if (activeMaterial.getEnvMap() != null) {
+                activeMaterial.getEnvMap().setMuestrasU(Float.parseFloat(txtMU_Entorno.getText()));
+                activeMaterial.getEnvMap().setMuestrasV(Float.parseFloat(txtMV_Entorno.getText()));
             }
-            if (activeMaterial.getMapaEntorno() != null) {
-                activeMaterial.getMapaEntorno().setMuestrasU(Float.parseFloat(txtMU_Entorno.getText()));
-                activeMaterial.getMapaEntorno().setMuestrasV(Float.parseFloat(txtMV_Entorno.getText()));
+            if (activeMaterial.getAoMap() != null) {
+                activeMaterial.getAoMap().setMuestrasU(Float.parseFloat(txtMU_AO.getText()));
+                activeMaterial.getAoMap().setMuestrasV(Float.parseFloat(txtMV_AO.getText()));
             }
-            if (activeMaterial.getMapaSAO() != null) {
-                activeMaterial.getMapaSAO().setMuestrasU(Float.parseFloat(txtMU_AO.getText()));
-                activeMaterial.getMapaSAO().setMuestrasV(Float.parseFloat(txtMV_AO.getText()));
+            if (activeMaterial.getRoughnessMap() != null) {
+                activeMaterial.getRoughnessMap().setMuestrasU(Float.parseFloat(txtMU_Rugosidad.getText()));
+                activeMaterial.getRoughnessMap().setMuestrasV(Float.parseFloat(txtMV_Rugosidad.getText()));
             }
-            if (activeMaterial.getMapaRugosidad() != null) {
-                activeMaterial.getMapaRugosidad().setMuestrasU(Float.parseFloat(txtMU_Rugosidad.getText()));
-                activeMaterial.getMapaRugosidad().setMuestrasV(Float.parseFloat(txtMV_Rugosidad.getText()));
+            if (activeMaterial.getMetallicMap() != null) {
+                activeMaterial.getMetallicMap().setMuestrasU(Float.parseFloat(txtMU_Metalico.getText()));
+                activeMaterial.getMetallicMap().setMuestrasV(Float.parseFloat(txtMV_Metalico.getText()));
             }
-            if (activeMaterial.getMapaMetalico() != null) {
-                activeMaterial.getMapaMetalico().setMuestrasU(Float.parseFloat(txtMU_Metalico.getText()));
-                activeMaterial.getMapaMetalico().setMuestrasV(Float.parseFloat(txtMV_Metalico.getText()));
-            }
-            if (activeMaterial.getMapaIrradiacion() != null) {
-                activeMaterial.getMapaIrradiacion().setMuestrasU(Float.parseFloat(txtMU_Irradiacion.getText()));
-                activeMaterial.getMapaIrradiacion().setMuestrasV(Float.parseFloat(txtMV_Irradiacion.getText()));
+            if (activeMaterial.getHdrMap() != null) {
+                activeMaterial.getHdrMap().setMuestrasU(Float.parseFloat(txtMU_Irradiacion.getText()));
+                activeMaterial.getHdrMap().setMuestrasV(Float.parseFloat(txtMV_Irradiacion.getText()));
             }
 
             // activeMaterial.environmentReflection = (float) sldEnvReflection.getValue() /
@@ -615,8 +615,8 @@ public class EditorMaterial extends javax.swing.JPanel {
         sldRugosidad = new javax.swing.JSlider();
         lblMetalico = new javax.swing.JLabel();
         sldMetalico = new javax.swing.JSlider();
-        lblEspecularidad = new javax.swing.JLabel();
-        sldEspecularidad = new javax.swing.JSlider();
+        // lblEspecularidad = new javax.swing.JLabel();
+        // sldEspecularidad = new javax.swing.JSlider();
 
         jPanel13.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Vista Previa",
                 javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION,
@@ -2196,14 +2196,14 @@ public class EditorMaterial extends javax.swing.JPanel {
             }
         });
 
-        lblEspecularidad.setFont(new java.awt.Font("Dialog", 0, 9)); // NOI18N
-        lblEspecularidad.setText("Especularidad:");
+        // lblEspecularidad.setFont(new java.awt.Font("Dialog", 0, 9)); // NOI18N
+        // lblEspecularidad.setText("Especularidad:");
 
-        sldEspecularidad.addChangeListener(new javax.swing.event.ChangeListener() {
-            public void stateChanged(javax.swing.event.ChangeEvent evt) {
-                sldEspecularidadStateChanged(evt);
-            }
-        });
+        // sldEspecularidad.addChangeListener(new javax.swing.event.ChangeListener() {
+        // public void stateChanged(javax.swing.event.ChangeEvent evt) {
+        // sldEspecularidadStateChanged(evt);
+        // }
+        // });
 
         javax.swing.GroupLayout jPanel16Layout = new javax.swing.GroupLayout(jPanel16);
         jPanel16.setLayout(jPanel16Layout);
@@ -2246,9 +2246,9 @@ public class EditorMaterial extends javax.swing.JPanel {
                                                 .addGroup(jPanel16Layout
                                                         .createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING,
                                                                 false)
-                                                        .addComponent(lblEspecularidad,
-                                                                javax.swing.GroupLayout.DEFAULT_SIZE,
-                                                                javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                                        // .addComponent(lblEspecularidad,
+                                                        // javax.swing.GroupLayout.DEFAULT_SIZE,
+                                                        // javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                                         .addComponent(lblMetalico, javax.swing.GroupLayout.DEFAULT_SIZE,
                                                                 javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                                         .addComponent(lblRugosidad,
@@ -2266,12 +2266,14 @@ public class EditorMaterial extends javax.swing.JPanel {
                                                                         .addComponent(sldRugosidad,
                                                                                 javax.swing.GroupLayout.PREFERRED_SIZE,
                                                                                 0, Short.MAX_VALUE)))
-                                                        .addGroup(jPanel16Layout.createSequentialGroup()
-                                                                .addPreferredGap(
-                                                                        javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                                                .addComponent(sldEspecularidad,
-                                                                        javax.swing.GroupLayout.PREFERRED_SIZE, 0,
-                                                                        Short.MAX_VALUE)))
+                                                // .addGroup(jPanel16Layout.createSequentialGroup()
+                                                // .addPreferredGap(
+                                                // javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                // .addComponent(sldEspecularidad,
+                                                // javax.swing.GroupLayout.PREFERRED_SIZE, 0,
+                                                // Short.MAX_VALUE)
+                                                // )
+                                                )
                                                 .addContainerGap()))));
         jPanel16Layout.setVerticalGroup(
                 jPanel16Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -2288,11 +2290,11 @@ public class EditorMaterial extends javax.swing.JPanel {
                                                 javax.swing.GroupLayout.PREFERRED_SIZE)
                                         .addComponent(lblMetalico))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addGroup(jPanel16Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                        .addComponent(lblEspecularidad)
-                                        .addComponent(sldEspecularidad, javax.swing.GroupLayout.PREFERRED_SIZE,
-                                                javax.swing.GroupLayout.DEFAULT_SIZE,
-                                                javax.swing.GroupLayout.PREFERRED_SIZE))
+                                // .addGroup(jPanel16Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                // .addComponent(lblEspecularidad)
+                                // .addComponent(sldEspecularidad, javax.swing.GroupLayout.PREFERRED_SIZE,
+                                // javax.swing.GroupLayout.DEFAULT_SIZE,
+                                // javax.swing.GroupLayout.PREFERRED_SIZE))
                                 .addGap(10, 10, 10)
                                 .addGroup(jPanel16Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                                         .addComponent(lblSpecExp, javax.swing.GroupLayout.DEFAULT_SIZE,
@@ -2489,13 +2491,9 @@ public class EditorMaterial extends javax.swing.JPanel {
         applyMaterialControl();
     }// GEN-LAST:event_sldRugosidadStateChanged
 
-    private void sldEspecularidadStateChanged(javax.swing.event.ChangeEvent evt) {// GEN-FIRST:event_sldEspecularidadStateChanged
-        applyMaterialControl();
-    }// GEN-LAST:event_sldEspecularidadStateChanged
-
     private void jButton10ActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jButton10ActionPerformed
         try {
-            new FrmVistaPrevia(activeMaterial.getMapaMetalico()).setVisible(true);
+            new FrmVistaPrevia(activeMaterial.getMetallicMap()).setVisible(true);
         } catch (Exception e) {
         }
     }// GEN-LAST:event_jButton10ActionPerformed
@@ -2511,10 +2509,11 @@ public class EditorMaterial extends javax.swing.JPanel {
         if (activeMaterial != null) {
             // chooser.setCurrentDirectory(new File("assets/"));
             chooser.setFileFilter(
-                    new FileNameExtensionFilter("Archivos soportados", "png", "jpg", "jpeg", "bmp", "gif"));
+                    new FileNameExtensionFilter("Archivos soportados", "png", "jpg", "jpeg", "bmp", "gif", "hdr",
+                            "hdr"));
             if (chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
                 try {
-                    activeMaterial.setMapaMetalico(new Texture(ImageIO.read(chooser.getSelectedFile())));
+                    activeMaterial.setMetallicMap(new Texture(ImageIO.read(chooser.getSelectedFile())));
                     populateMaterialControl(activeMaterial);
                 } catch (IOException ex) {
                     Logger.getLogger(Principal.class.getName()).log(Level.SEVERE, null, ex);
@@ -2537,7 +2536,7 @@ public class EditorMaterial extends javax.swing.JPanel {
 
     private void jButton9ActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jButton9ActionPerformed
         try {
-            new FrmVistaPrevia(activeMaterial.getMapaRugosidad()).setVisible(true);
+            new FrmVistaPrevia(activeMaterial.getRoughnessMap()).setVisible(true);
         } catch (Exception e) {
         }
     }// GEN-LAST:event_jButton9ActionPerformed
@@ -2553,11 +2552,11 @@ public class EditorMaterial extends javax.swing.JPanel {
         if (activeMaterial != null) {
             // chooser.setCurrentDirectory(new File("assets/"));
             chooser.setFileFilter(
-                    new FileNameExtensionFilter("Archivos soportados", "png", "jpg", "jpeg", "bmp", "gif"));
+                    new FileNameExtensionFilter("Archivos soportados", "png", "jpg", "jpeg", "bmp", "gif", "hdr"));
             if (chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
 
                 try {
-                    activeMaterial.setMapaRugosidad(new Texture(ImageIO.read(chooser.getSelectedFile())));
+                    activeMaterial.setRoughnessMap(new Texture(ImageIO.read(chooser.getSelectedFile())));
                     populateMaterialControl(activeMaterial);
                     // if (activeMaterial.getMapaDifusa() != null) {
                     //
@@ -2586,10 +2585,10 @@ public class EditorMaterial extends javax.swing.JPanel {
     private void btnAOMapActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btnAOMapActionPerformed
         if (activeMaterial != null) {
             chooser.setFileFilter(
-                    new FileNameExtensionFilter("Archivos soportados", "png", "jpg", "jpeg", "bmp", "gif"));
+                    new FileNameExtensionFilter("Archivos soportados", "png", "jpg", "jpeg", "bmp", "gif", "hdr"));
             if (chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
                 try {
-                    activeMaterial.setMapaSAO(new Texture(ImageIO.read(chooser.getSelectedFile())));
+                    activeMaterial.setAoMap(new Texture(ImageIO.read(chooser.getSelectedFile())));
                     populateMaterialControl(activeMaterial);
                 } catch (IOException ex) {
                     Logger.getLogger(Principal.class.getName()).log(Level.SEVERE, null, ex);
@@ -2608,7 +2607,7 @@ public class EditorMaterial extends javax.swing.JPanel {
     private void jButton8ActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jButton8ActionPerformed
         // TODO add your handling code here:
         try {
-            new FrmVistaPrevia(activeMaterial.getMapaSAO()).setVisible(true);
+            new FrmVistaPrevia(activeMaterial.getAoMap()).setVisible(true);
         } catch (Exception e) {
         }
     }// GEN-LAST:event_jButton8ActionPerformed
@@ -2688,7 +2687,7 @@ public class EditorMaterial extends javax.swing.JPanel {
     private void btnSetMapaDifusoCrearActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btnSetMapaDifusoCrearActionPerformed
         if (activeMaterial != null) {
             chooser.setFileFilter(
-                    new FileNameExtensionFilter("Archivos soportados", "png", "jpg", "jpeg", "bmp", "gif"));
+                    new FileNameExtensionFilter("Archivos soportados", "png", "jpg", "jpeg", "bmp", "gif", "hdr"));
 
             JOptionPane.showMessageDialog(this, "Debe ingresar las imágenes en este orde: +X, +Y, +Z, -X,-Y, -Z",
                     "Ingreso de textura", 0);
@@ -2711,7 +2710,7 @@ public class EditorMaterial extends javax.swing.JPanel {
             }
             if (c == 6) {
 
-                CubeMap tmp = new CubeMap(CubeMap.FORMATO_MAPA_HDRI,
+                EnvProbe tmp = new EnvProbe(EnvProbe.FORMATO_MAPA_HDRI,
                         textures[0],
                         textures[1],
                         textures[2],
@@ -2719,7 +2718,7 @@ public class EditorMaterial extends javax.swing.JPanel {
                         textures[4],
                         textures[5]);
 
-                activeMaterial.setMapaColor(tmp.getTexturaEntorno());
+                activeMaterial.setColorMap(tmp.getEnvMap());
                 populateMaterialControl(activeMaterial);
                 tmp.destruir();
                 tmp = null;
@@ -2730,7 +2729,7 @@ public class EditorMaterial extends javax.swing.JPanel {
     private void btnEntornoMapCrearActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btnEntornoMapCrearActionPerformed
         if (activeMaterial != null) {
             chooser.setFileFilter(
-                    new FileNameExtensionFilter("Archivos soportados", "png", "jpg", "jpeg", "bmp", "gif"));
+                    new FileNameExtensionFilter("Archivos soportados", "png", "jpg", "jpeg", "bmp", "gif", "hdr"));
 
             JOptionPane.showMessageDialog(this, "Debe ingresar las imágenes en este orden: +X, +Y, +Z, -X,-Y, -Z",
                     "Ingreso de textura", 0);
@@ -2747,7 +2746,7 @@ public class EditorMaterial extends javax.swing.JPanel {
             }
             if (c == 6) {
 
-                CubeMap tmp = new CubeMap(CubeMap.FORMATO_MAPA_CUBO,
+                EnvProbe tmp = new EnvProbe(EnvProbe.FORMATO_MAPA_CUBO,
                         textures[0],
                         textures[1],
                         textures[2],
@@ -2756,8 +2755,8 @@ public class EditorMaterial extends javax.swing.JPanel {
                         textures[5]);
 
                 activeMaterial
-                        .setMapaEntorno(new QProcesadorMipMap(tmp.getTexturaEntorno(), 5, QProcesadorMipMap.TIPO_BLUR));
-                activeMaterial.setTipoMapaEntorno(CubeMap.FORMATO_MAPA_CUBO);// mapa cubico
+                        .setEnvMap(new MipmapTexture(tmp.getEnvMap(), 5, MipmapTexture.TIPO_BLUR));
+                activeMaterial.setEnvMapType(EnvProbe.FORMATO_MAPA_CUBO);// mapa cubico
                 populateMaterialControl(activeMaterial);
                 tmp.destruir();
                 tmp = null;
@@ -2766,43 +2765,45 @@ public class EditorMaterial extends javax.swing.JPanel {
     }// GEN-LAST:event_btnEntornoMapCrearActionPerformed
 
     private void btnDispMapActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btnDispMapActionPerformed
-        if (activeMaterial != null) {
-            // chooser.setCurrentDirectory(new File("assets/"));
-            chooser.setFileFilter(
-                    new FileNameExtensionFilter("Archivos soportados", "png", "jpg", "jpeg", "bmp", "gif"));
-            if (chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
-                try {
-                    activeMaterial.setMapaDesplazamiento(new Texture(ImageIO.read(chooser.getSelectedFile())));
-                    populateMaterialControl(activeMaterial);
+        // if (activeMaterial != null) {
+        // // chooser.setCurrentDirectory(new File("assets/"));
+        // chooser.setFileFilter(
+        // new FileNameExtensionFilter("Archivos soportados", "png", "jpg", "jpeg",
+        // "bmp", "gif", "hdr"));
+        // if (chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
+        // try {
+        // activeMaterial.setMapaDesplazamiento(new
+        // Texture(ImageIO.read(chooser.getSelectedFile())));
+        // populateMaterialControl(activeMaterial);
 
-                } catch (IOException ex) {
-                    Logger.getLogger(Principal.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            }
-        }
+        // } catch (IOException ex) {
+        // Logger.getLogger(Principal.class.getName()).log(Level.SEVERE, null, ex);
+        // }
+        // }
+        // }
     }// GEN-LAST:event_btnDispMapActionPerformed
 
     private void btnEliminaMapaDispActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btnEliminaMapaDispActionPerformed
         if (activeMaterial != null) {
-            activeMaterial.clearDisplacementMap();
+            // activeMaterial.clearDisplacementMap();
             populateMaterialControl(activeMaterial);
         }
     }// GEN-LAST:event_btnEliminaMapaDispActionPerformed
 
     private void jButton7ActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jButton7ActionPerformed
-        try {
-            new FrmVistaPrevia(activeMaterial.getMapaDesplazamiento()).setVisible(true);
-        } catch (Exception e) {
-        }
+        // try {
+        // new FrmVistaPrevia(activeMaterial.getMapaDesplazamiento()).setVisible(true);
+        // } catch (Exception e) {
+        // }
     }// GEN-LAST:event_jButton7ActionPerformed
 
     private void btnAlphaMapActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btnAlphaMapActionPerformed
         if (activeMaterial != null) {
             chooser.setFileFilter(
-                    new FileNameExtensionFilter("Archivos soportados", "png", "jpg", "jpeg", "bmp", "gif"));
+                    new FileNameExtensionFilter("Archivos soportados", "png", "jpg", "jpeg", "bmp", "gif", "hdr"));
             if (chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
                 try {
-                    activeMaterial.setMapaTransparencia(new Texture(ImageIO.read(chooser.getSelectedFile())));
+                    activeMaterial.setAlphaMap(new Texture(ImageIO.read(chooser.getSelectedFile())));
                     populateMaterialControl(activeMaterial);
                 } catch (IOException ex) {
                     Logger.getLogger(Principal.class.getName()).log(Level.SEVERE, null, ex);
@@ -2820,28 +2821,28 @@ public class EditorMaterial extends javax.swing.JPanel {
 
     private void jButton6ActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jButton6ActionPerformed
         try {
-            new FrmVistaPrevia(activeMaterial.getMapaTransparencia()).setVisible(true);
+            new FrmVistaPrevia(activeMaterial.getAlphaMap()).setVisible(true);
         } catch (Exception e) {
         } // TODO add your handling code here:
     }// GEN-LAST:event_jButton6ActionPerformed
 
     private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jButton5ActionPerformed
         try {
-            new FrmVistaPrevia(activeMaterial.getMapaEntorno()).setVisible(true);
+            new FrmVistaPrevia(activeMaterial.getEnvMap()).setVisible(true);
         } catch (Exception e) {
         }
     }// GEN-LAST:event_jButton5ActionPerformed
 
     private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jButton4ActionPerformed
         try {
-            new FrmVistaPrevia(activeMaterial.getMapaNormal()).setVisible(true);
+            new FrmVistaPrevia(activeMaterial.getNormalMap()).setVisible(true);
         } catch (Exception e) {
         }
     }// GEN-LAST:event_jButton4ActionPerformed
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jButton3ActionPerformed
         try {
-            new FrmVistaPrevia(activeMaterial.getMapaEmisivo()).setVisible(true);
+            new FrmVistaPrevia(activeMaterial.getEmissiveMap()).setVisible(true);
         } catch (Exception e) {
         }
     }// GEN-LAST:event_jButton3ActionPerformed
@@ -2855,7 +2856,7 @@ public class EditorMaterial extends javax.swing.JPanel {
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jButton1ActionPerformed
         try {
-            new FrmVistaPrevia(activeMaterial.getMapaColor()).setVisible(true);
+            new FrmVistaPrevia(activeMaterial.getColorMap()).setVisible(true);
         } catch (Exception e) {
         }
     }// GEN-LAST:event_jButton1ActionPerformed
@@ -2863,12 +2864,12 @@ public class EditorMaterial extends javax.swing.JPanel {
     private void btnEntornoMapActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btnEntornoMapActionPerformed
         if (activeMaterial != null) {
             chooser.setFileFilter(
-                    new FileNameExtensionFilter("Archivos soportados", "png", "jpg", "jpeg", "bmp", "gif"));
+                    new FileNameExtensionFilter("Archivos soportados", "png", "jpg", "jpeg", "bmp", "gif", "hdr"));
             if (chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
                 try {
-                    activeMaterial.setMapaEntorno(new QProcesadorMipMap(
-                            new Texture(ImageIO.read(chooser.getSelectedFile())), 5, QProcesadorMipMap.TIPO_BLUR));
-                    activeMaterial.setTipoMapaEntorno(2);// por default HDRI
+                    activeMaterial.setEnvMap(new MipmapTexture(
+                            new Texture(ImageIO.read(chooser.getSelectedFile())), 5, MipmapTexture.TIPO_BLUR));
+                    activeMaterial.setEnvMapType(2);// por default HDRI
                     populateMaterialControl(activeMaterial);
                 } catch (IOException ex) {
                     Logger.getLogger(Principal.class.getName()).log(Level.SEVERE, null, ex);
@@ -2916,11 +2917,11 @@ public class EditorMaterial extends javax.swing.JPanel {
         if (activeMaterial != null) {
             // chooser.setCurrentDirectory(new File("assets/"));
             chooser.setFileFilter(
-                    new FileNameExtensionFilter("Archivos soportados", "png", "jpg", "jpeg", "bmp", "gif"));
+                    new FileNameExtensionFilter("Archivos soportados", "png", "jpg", "jpeg", "bmp", "gif", "hdr"));
             if (chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
 
                 try {
-                    activeMaterial.setMapaEmisivo(new Texture(ImageIO.read(chooser.getSelectedFile())));
+                    activeMaterial.setEmissiveMap(new Texture(ImageIO.read(chooser.getSelectedFile())));
                     populateMaterialControl(activeMaterial);
                     // if (activeMaterial.getMapaDifusa() != null) {
                     //
@@ -2938,7 +2939,7 @@ public class EditorMaterial extends javax.swing.JPanel {
         if (activeMaterial != null) {
             // chooser.setCurrentDirectory(new File("assets/"));
             chooser.setFileFilter(
-                    new FileNameExtensionFilter("Archivos soportados", "png", "jpg", "jpeg", "bmp", "gif"));
+                    new FileNameExtensionFilter("Archivos soportados", "png", "jpg", "jpeg", "bmp", "gif", "hdr"));
             if (chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
 
                 try {
@@ -2968,11 +2969,11 @@ public class EditorMaterial extends javax.swing.JPanel {
         if (activeMaterial != null) {
             // chooser.setCurrentDirectory(new File("assets/"));
             chooser.setFileFilter(
-                    new FileNameExtensionFilter("Archivos soportados", "png", "jpg", "jpeg", "bmp", "gif"));
+                    new FileNameExtensionFilter("Archivos soportados", "png", "jpg", "jpeg", "bmp", "gif", "hdr"));
             if (chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
 
                 try {
-                    activeMaterial.setMapaNormal(new Texture(ImageIO.read(chooser.getSelectedFile())));
+                    activeMaterial.setNormalMap(new Texture(ImageIO.read(chooser.getSelectedFile())));
                     populateMaterialControl(activeMaterial);
                     // if (activeMaterial.getMapaDifusa() != null) {
                     //
@@ -2992,12 +2993,12 @@ public class EditorMaterial extends javax.swing.JPanel {
 
             // chooser.setCurrentDirectory(new File("assets/"));
             chooser.setFileFilter(
-                    new FileNameExtensionFilter("Archivos soportados", "png", "jpg", "jpeg", "bmp", "gif"));
+                    new FileNameExtensionFilter("Archivos soportados", "png", "jpg", "jpeg", "bmp", "gif", "hdr"));
             if (chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
 
                 try {
                     activeMaterial
-                            .setMapaColor(new Texture(ImageIO.read(chooser.getSelectedFile())));
+                            .setColorMap(new Texture(ImageIO.read(chooser.getSelectedFile())));
                     populateMaterialControl(activeMaterial);
                     // if (activeMaterial.getMapaDifusa() != null) {
                     //
@@ -3025,7 +3026,7 @@ public class EditorMaterial extends javax.swing.JPanel {
 
     private void jButton15ActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jButton15ActionPerformed
         try {
-            new FrmVistaPrevia(activeMaterial.getMapaIrradiacion()).setVisible(true);
+            new FrmVistaPrevia(activeMaterial.getHdrMap()).setVisible(true);
         } catch (Exception e) {
         }
     }// GEN-LAST:event_jButton15ActionPerformed
@@ -3040,10 +3041,10 @@ public class EditorMaterial extends javax.swing.JPanel {
     private void btnIrrMapActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btnIrrMapActionPerformed
         if (activeMaterial != null) {
             chooser.setFileFilter(
-                    new FileNameExtensionFilter("Archivos soportados", "png", "jpg", "jpeg", "bmp", "gif"));
+                    new FileNameExtensionFilter("Archivos soportados", "png", "jpg", "jpeg", "bmp", "gif", "hdr"));
             if (chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
                 try {
-                    activeMaterial.setMapaIrradiacion(new Texture(ImageIO.read(chooser.getSelectedFile())));
+                    activeMaterial.setHdrMap(new Texture(ImageIO.read(chooser.getSelectedFile())));
                     populateMaterialControl(activeMaterial);
                 } catch (IOException ex) {
                     Logger.getLogger(Principal.class.getName()).log(Level.SEVERE, null, ex);
@@ -3055,7 +3056,7 @@ public class EditorMaterial extends javax.swing.JPanel {
     private void btnIrradiacionMapCrearActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btnIrradiacionMapCrearActionPerformed
         if (activeMaterial != null) {
             chooser.setFileFilter(
-                    new FileNameExtensionFilter("Archivos soportados", "png", "jpg", "jpeg", "bmp", "gif"));
+                    new FileNameExtensionFilter("Archivos soportados", "png", "jpg", "jpeg", "bmp", "gif", "hdr"));
 
             JOptionPane.showMessageDialog(this, "Debe ingresar las imágenes en este orden: +X, +Y, +Z, -X,-Y, -Z",
                     "Ingreso de textura", 0);
@@ -3072,7 +3073,7 @@ public class EditorMaterial extends javax.swing.JPanel {
             }
             if (c == 6) {
 
-                CubeMap tmp = new CubeMap(CubeMap.FORMATO_MAPA_CUBO,
+                EnvProbe tmp = new EnvProbe(EnvProbe.FORMATO_MAPA_CUBO,
                         textures[0],
                         textures[1],
                         textures[2],
@@ -3080,8 +3081,8 @@ public class EditorMaterial extends javax.swing.JPanel {
                         textures[4],
                         textures[5]);
 
-                activeMaterial.setMapaIrradiacion(tmp.getTexturaEntorno());
-                activeMaterial.setTipoMapaEntorno(CubeMap.FORMATO_MAPA_CUBO);// mapa cubico
+                activeMaterial.setHdrMap(tmp.getEnvMap());
+                activeMaterial.setEnvMapType(EnvProbe.FORMATO_MAPA_CUBO);// mapa cubico
                 populateMaterialControl(activeMaterial);
                 tmp.destruir();
                 tmp = null;
@@ -3156,7 +3157,7 @@ public class EditorMaterial extends javax.swing.JPanel {
     private javax.swing.JPanel jPanel16;
     private javax.swing.JPanel jPanel9;
     private javax.swing.JScrollPane jScrollPane6;
-    private javax.swing.JLabel lblEspecularidad;
+    // private javax.swing.JLabel lblEspecularidad;
     private javax.swing.JLabel lblMetalico;
     private javax.swing.JLabel lblNormalAmount;
     private javax.swing.JLabel lblNormalAmount2;
@@ -3183,7 +3184,7 @@ public class EditorMaterial extends javax.swing.JPanel {
     private javax.swing.JPanel pnlRugMap;
     private javax.swing.JPanel pnlVistaPrevia;
     private javax.swing.JSlider sldAlpha;
-    private javax.swing.JSlider sldEspecularidad;
+    // private javax.swing.JSlider sldEspecularidad;
     private javax.swing.JSlider sldMetalico;
     private javax.swing.JSlider sldRugosidad;
     private javax.swing.JSpinner spnFactorEmision;

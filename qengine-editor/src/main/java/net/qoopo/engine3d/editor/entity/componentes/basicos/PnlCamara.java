@@ -299,14 +299,14 @@ public class PnlCamara extends javax.swing.JPanel {
 
     private void btnEscogerActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btnEscogerActionPerformed
         // elimino los componentes usados para mover la camara
-        ComponentUtil.removeComponents(Principal.instancia.getRenderer().getCamara(), CameraController.class);
+        ComponentUtil.removeComponents(Principal.instancia.getRenderer().getCamera(), CameraController.class);
         camara.addComponent(new CameraController(camara));
         // camara.agregarComponente(new QCamaraOrbitar(camara));
         // camara.agregarComponente(new QCamaraPrimeraPersona(camara));
-        Principal.instancia.getRenderer().setCargando(true);
-        Principal.instancia.getRenderer().setCamara(camara);
+        Principal.instancia.getRenderer().setLoading(true);
+        Principal.instancia.getRenderer().setCamera(camara);
         Principal.instancia.getRenderer().resize();
-        Principal.instancia.getRenderer().setCargando(false);
+        Principal.instancia.getRenderer().setLoading(false);
     }// GEN-LAST:event_btnEscogerActionPerformed
 
     private void txtCamaraCercaKeyReleased(java.awt.event.KeyEvent evt) {// GEN-FIRST:event_txtCamaraCercaKeyReleased

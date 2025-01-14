@@ -7,7 +7,6 @@ package net.qoopo.engine.core.assets;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
@@ -40,6 +39,9 @@ public class AssetManager implements Serializable {
 
     private RendererFactory rendererFactory;
 
+    private Object defaultShader;
+    private Object envProbeShader;
+
     public static AssetManager get() {
         if (INSTANCE == null) {
             INSTANCE = new AssetManager();
@@ -56,7 +58,7 @@ public class AssetManager implements Serializable {
                     ((AudioBuffer) objeto).cleanup();
                 } else if (objeto instanceof Texture) {
                     logger.info(" Liberando recurso de textura..");
-                    ((Texture) objeto).destruir();
+                    ((Texture) objeto).destroy();
                 } else if (objeto instanceof Entity) {
                     logger.info(" Liberando recurso de textura..");
                     ((Entity) objeto).destruir();
@@ -113,7 +115,7 @@ public class AssetManager implements Serializable {
             text.loadTexture(ImgReader.read(file));
             agregarRecurso(clave, text);
             return text;
-        } catch (IOException ex) {
+        } catch (Exception ex) {
             System.out.println("Error al cargar la textura " + file.getAbsolutePath());
             ex.printStackTrace();
         }

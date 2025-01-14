@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package net.qoopo.engine.core.entity.component.cubemap;
+package net.qoopo.engine.core.entity.component.environment;
 
 import java.awt.Dimension;
 import java.awt.image.BufferedImage;
@@ -19,27 +19,31 @@ import net.qoopo.engine.core.entity.component.EntityComponent;
 import net.qoopo.engine.core.entity.component.UpdatableComponent;
 import net.qoopo.engine.core.entity.component.mesh.Mesh;
 import net.qoopo.engine.core.entity.component.mesh.primitive.Primitive;
-import net.qoopo.engine.core.material.basico.Material;
+import net.qoopo.engine.core.material.Material;
+import net.qoopo.engine.core.math.QColor;
 import net.qoopo.engine.core.math.QMath;
 import net.qoopo.engine.core.math.QVector3;
 import net.qoopo.engine.core.renderer.RenderEngine;
-import net.qoopo.engine.core.renderer.post.procesos.blur.QProcesadorBlur;
-import net.qoopo.engine.core.renderer.post.procesos.color.QProcesadorBloom;
+import net.qoopo.engine.core.renderer.post.filters.blur.BlurFilter;
+import net.qoopo.engine.core.renderer.post.filters.color.BloomFilter;
 import net.qoopo.engine.core.scene.Camera;
 import net.qoopo.engine.core.scene.Scene;
 import net.qoopo.engine.core.texture.Texture;
+import net.qoopo.engine.core.texture.procesador.MipmapTexture;
 import net.qoopo.engine.core.util.QGlobal;
 
 /**
- * Genera y gestiona un mapa cúbico * Permite la creación de un mapa cúbico
- * dinámico * Permite la generación de una imagen HDRI a partir de textures para
+ * Realiza la captura de un mapa de entorno
+ * Permite la creación de un mapa cúbico
+ * dinámico
+ * Permite la generación de una imagen HDRI a partir de textures para
  * cada lado
  *
  * @author alberto
  */
 @Getter
 @Setter
-public class CubeMap implements EntityComponent, UpdatableComponent {
+public class EnvProbe implements EntityComponent, UpdatableComponent {
 
     @Getter
     @Setter
@@ -54,18 +58,17 @@ public class CubeMap implements EntityComponent, UpdatableComponent {
      * Se realiza un Mapeo cubico, 6 textures uno por cada lado del cubo
      */
     transient private RenderEngine render;
-    private QVector3[] direcciones;
+    private QVector3[] faceDirections;
     private Texture[] textures;
-    private QVector3[] direccionesArriba;
+    private QVector3[] faceUps;
 
-    private int tipoSalida = FORMATO_MAPA_CUBO;
-    // private int tipoSalida = FORMATO_MAPA_HDRI;
-    // private Texture procEntorno;
-    private Texture procIrradiacion;
-    private Texture texturaEntorno;// esta textura es la union de las 6 textures renderizadas en el formato de
-                                   // cubemap o HDRI
-    private Texture texturaIrradiacion;// esta textura es la textura de salida despues de un proceso de blur, se usa
-                                       // como textur ade irradiacion
+    private int mapType = FORMATO_MAPA_CUBO;
+
+    private int lod = 4;
+    private Texture envMap;// esta textura es la union de las 6 textures renderizadas en el formato de
+                           // cubemap o HDRI
+    private Texture hdrMap;// esta textura es la textura de salida despues de un proceso de blur, se usa
+                           // como textura de irradiacion
 
     public String[] nombres = { "Arriba", "Abajo", "Frente", "Atras", "Izquierda", "Derecha" };
 
@@ -74,34 +77,30 @@ public class CubeMap implements EntityComponent, UpdatableComponent {
     private Dimension dimensionLado;
     private boolean dinamico;
 
-    // variables para el panel que lo contruye
-    private float factorReflexion = 1.0f;
-    private float indiceRefraccion = 1.52f;
-
     private boolean generarIrradiacion = false;
 
-    public CubeMap() {
+    public EnvProbe() {
         this(QGlobal.MAPA_CUPO_RESOLUCION);
     }
 
-    public CubeMap(int resolution) {
-        direcciones = new QVector3[6];
+    public EnvProbe(int resolution) {
+        faceDirections = new QVector3[6];
 
         // -------------------------------------
-        direcciones[1] = QVector3.of(0, 1, 0); // arriba
-        direcciones[0] = QVector3.of(0, -1, 0); // abajo
-        direcciones[3] = QVector3.of(0, 0, 1); // adelante
-        direcciones[2] = QVector3.of(0, 0, -1); // atras
-        direcciones[5] = QVector3.of(-1, 0, 0); // izquierda
-        direcciones[4] = QVector3.of(1, 0, 0); // derecha
+        faceDirections[0] = QVector3.of(0, -1, 0); // abajo
+        faceDirections[1] = QVector3.of(0, 1, 0); // arriba
+        faceDirections[2] = QVector3.of(0, 0, -1); // atras
+        faceDirections[3] = QVector3.of(0, 0, 1); // adelante
+        faceDirections[5] = QVector3.of(-1, 0, 0); // izquierda
+        faceDirections[4] = QVector3.of(1, 0, 0); // derecha
         // -------------------------------------
-        direccionesArriba = new QVector3[6];
-        direccionesArriba[0] = QVector3.of(0, 0, -1); // arriba
-        direccionesArriba[1] = QVector3.of(0, 0, 1); // abajo
-        direccionesArriba[2] = QVector3.of(0, 1, 0); // adelante
-        direccionesArriba[3] = QVector3.of(0, 1, 0); // atras
-        direccionesArriba[4] = QVector3.of(0, 1, 0); // izquierda
-        direccionesArriba[5] = QVector3.of(0, 1, 0); // derecha
+        faceUps = new QVector3[6];
+        faceUps[0] = QVector3.of(0, 0, -1); // arriba
+        faceUps[1] = QVector3.of(0, 0, 1); // abajo
+        faceUps[2] = QVector3.of(0, 1, 0); // adelante
+        faceUps[3] = QVector3.of(0, 1, 0); // atras
+        faceUps[4] = QVector3.of(0, 1, 0); // izquierda
+        faceUps[5] = QVector3.of(0, 1, 0); // derecha
 
         textures = new Texture[6];
         for (int i = 0; i < 6; i++) {
@@ -111,20 +110,14 @@ public class CubeMap implements EntityComponent, UpdatableComponent {
 
         // render = new QRender(null, null, resolucion, resolucion);
         render = AssetManager.get().getRendererFactory().createRenderEngine(null, null, null, resolution, resolution);
-        render.setEfectosPostProceso(null);
+        render.setFilterQueue(null);
         render.setShowStats(false);
         render.setRenderReal(false);
-        render.setCamara(new Camera("CubeMap"));
-        render.getCamara().setFOV((float) Math.toRadians(90.0f));// angulo de visión de 90 grados
-        // render.cambiarShader(3);//el shader de textura, un shader simple
-        // render.cambiarShader(4);//el shader de textura con iluminacion
-        // render.cambiarShader(5);//el shader con sombras
-        // render.cambiarShader(6);//el shader full
-        texturaEntorno = new Texture();
-        texturaIrradiacion = new Texture();
-        // procEntorno = new QProcesadorMipMap(texturaEntorno, 5,
-        // QProcesadorMipMap.TIPO_BLUR);
-
+        render.setCamera(new Camera("EnvProbe"));
+        if (AssetManager.get().getEnvProbeShader() != null)
+            render.setShader(AssetManager.get().getEnvProbeShader());
+        hdrMap = new Texture();
+        envMap = new MipmapTexture(new Texture(), lod, MipmapTexture.TIPO_BLUR);
         build(resolution);
     }
 
@@ -139,10 +132,10 @@ public class CubeMap implements EntityComponent, UpdatableComponent {
      * @param negativoX
      * @param negativoZ
      */
-    public CubeMap(int tipo, Texture positivoX, Texture positivoY, Texture positivoZ, Texture negativoX,
+    public EnvProbe(int tipo, Texture positivoX, Texture positivoY, Texture positivoZ, Texture negativoX,
             Texture negativoY, Texture negativoZ) {
-        this.size = positivoX.getAncho();
-        direcciones = new QVector3[6];
+        this.size = positivoX.getWidth();
+        faceDirections = new QVector3[6];
         textures = new Texture[6];
         textures[0] = positivoY;
         textures[1] = negativoY;
@@ -150,19 +143,21 @@ public class CubeMap implements EntityComponent, UpdatableComponent {
         textures[3] = negativoZ;
         textures[4] = negativoX;
         textures[5] = positivoX;
-        texturaEntorno = new Texture();
-        texturaIrradiacion = new Texture();
-
+        hdrMap = new Texture();
+        envMap = new MipmapTexture(new Texture(), lod, MipmapTexture.TIPO_BLUR);
         dimensionLado = null;
         dinamico = false;
-        tipoSalida = tipo;
+        mapType = tipo;
         updateTexture();
-        direccionesArriba = new QVector3[6];
+        faceUps = new QVector3[6];
     }
 
     public void build(int size) {
         this.size = size;
+        render.getCamera().setFOV((float) Math.toRadians(90.0f));// angulo de visión de 90 grados
+        render.getCamera().setFrustrumLejos(100.0f);
         render.setRenderReal(false);
+        render.setBackColor(QColor.WHITE);
         render.opciones.setForzarResolucion(true);
         render.opciones.setAncho(size);
         render.opciones.setAlto(size);
@@ -171,22 +166,19 @@ public class CubeMap implements EntityComponent, UpdatableComponent {
         render.opciones.setSombras(false);
         render.opciones.setDibujarLuces(false);
         render.opciones.setNormalMapping(false);
-        render.opciones.setDefferedShadding(false);
-        // render.opciones.setDefferedShadding(false);
+        render.opciones.setDefferedShadding(true);
         render.resize();
         dimensionLado = new Dimension(size, size);
         dinamico = false;
         actualizar = true;// obliga a actualizar el mapa
     }
 
-    public void aplicar(int tipo, float factorMetalico, float indiceRefraccion) {
-        setTipoSalida(tipo);
-        setFactorReflexion(factorMetalico);
-        setIndiceRefraccion(indiceRefraccion);
+    public void aplicar(int tipo) {
+        setMapType(tipo);
         List<Material> lst = new ArrayList<>();
         // ahora recorro todos los materiales del objeto y le agrego la textura de
         // reflexion
-        if (entity.getComponents() != null && !entity.getComponents().isEmpty()) {
+        if (entity != null && entity.getComponents() != null && !entity.getComponents().isEmpty()) {
             for (EntityComponent componente : entity.getComponents()) {
                 if (componente instanceof Mesh) {
                     for (Primitive poligono : ((Mesh) componente).primitiveList) {
@@ -201,13 +193,9 @@ public class CubeMap implements EntityComponent, UpdatableComponent {
         }
         if (!lst.isEmpty()) {
             for (Material mat : lst) {
-                mat.setMapaEntorno(texturaEntorno);
-                mat.setMapaIrradiacion(texturaIrradiacion);
-                mat.setMetalico(factorMetalico);
-                mat.setIndiceRefraccion(indiceRefraccion);
-                mat.setReflexion(factorMetalico > 0.0f);
-                mat.setRefraccion(indiceRefraccion > 0.0f);
-                mat.setTipoMapaEntorno(getTipoSalida());// mapa cubico o HDRI
+                mat.setEnvMap(envMap);
+                mat.setHdrMap(hdrMap);
+                mat.setEnvMapType(getMapType());// mapa cubico o HDRI
             }
         }
         actualizar = true;// obliga a actualizar el mapa
@@ -218,18 +206,26 @@ public class CubeMap implements EntityComponent, UpdatableComponent {
      *
      * @param posicion
      */
-    public void actualizarMapa(QVector3 posicion) {
+    public void update(QVector3 posicion) {
         logger.info("[>] Actualizando mapa de entorno");
         for (int i = 0; i < 6; i++) {
-            render.getCamara().lookAt(posicion, direcciones[i], direccionesArriba[i]);
-            render.update();
-            // render.shadeFragments();
-            // render.postRender();
-            textures[i].loadTexture(render.getFrameBuffer().getRendered());
-            logger.info("[>] Generado " + (i + 1) + "/" + 6);
+            // for (int i = 5; i >= 0; i--) {
+            updateFace(i, posicion);
         }
         updateTexture();
         logger.info("[>] Mapa de entorno generado");
+    }
+
+    /**
+     * Actualiza una cara del cubeMap
+     */
+    private void updateFace(int face, QVector3 posicion) {
+        logger.info("[>] Generado " + (face + 1) + "/" + 6);
+        render.getCamera().lookAt(posicion, faceDirections[face], faceUps[face]);
+        render.update();
+        render.shadeFragments();
+        // render.postRender();
+        textures[face].loadTexture(render.getFrameBuffer().getRendered());
     }
 
     /**
@@ -238,7 +234,7 @@ public class CubeMap implements EntityComponent, UpdatableComponent {
      *
      * @param mainRender
      */
-    public void actualizarMapa(RenderEngine mainRender) {
+    public void updateEnvMap(RenderEngine mainRender) {
         if (!mainRender.opciones.isMaterial()) {
             return;
         }
@@ -252,8 +248,10 @@ public class CubeMap implements EntityComponent, UpdatableComponent {
                 render.setScene(mainRender.getScene());
                 // seteo para q no se dibuje a la entity
                 entity.setToRender(false);
-                actualizarMapa(entity.getMatrizTransformacion(QGlobal.time).toTranslationVector());
+                update(entity.getMatrizTransformacion(QGlobal.time).toTranslationVector());
                 actualizar = false;
+            } catch (Exception e) {
+                e.printStackTrace();
             } finally {
                 // seteo para q se dibuje la entity en los demas renderes
                 entity.setToRender(dibujar);
@@ -266,29 +264,22 @@ public class CubeMap implements EntityComponent, UpdatableComponent {
      */
     private void updateTexture() {
         logger.info("[>] Actualizando textura");
-        switch (tipoSalida) {
+        switch (mapType) {
             case FORMATO_MAPA_CUBO:
             default:
-                texturaEntorno.loadTexture(buildCubeMap());
+                envMap.loadTexture(buildCubeMap());
                 break;
             case FORMATO_MAPA_HDRI:
-                texturaEntorno.loadTexture(buildHDRI(buildCubeMap()));
+                envMap.loadTexture(buildHDRI(buildCubeMap()));
                 break;
         }
 
-        // logger.info("[>] Generando mipmap");
-        // re-genera los mimpmaps
-        // procEntorno.generarMipMap(texturaEntorno);
-        // procEntorno.setNivel(1);
-
         if (generarIrradiacion) {
             logger.info("[>] Generando irradiacion");
-            QProcesadorBloom bloom = new QProcesadorBloom(texturaEntorno.getAncho() / 2, texturaEntorno.getAlto() / 2,
-                    0.6f);
-            QProcesadorBlur blur = new QProcesadorBlur(texturaEntorno.getAncho() / 2, texturaEntorno.getAlto() / 2, 20);
-            bloom.procesar(texturaEntorno);
-            blur.procesar(bloom.getBufferSalida());
-            texturaIrradiacion.loadTexture(blur.getBufferSalida().getImagen());
+            // envMap.getWidth() / 2, envMap.getHeight() / 2
+            BloomFilter bloom = new BloomFilter(0.6f);
+            BlurFilter blur = new BlurFilter(20);
+            hdrMap.loadTexture(blur.apply(bloom.apply(envMap)).getImagen());
         }
         // texturaIrradiacion.loadTexture(proc.getBufferSalida().getImagen());
     }
@@ -444,83 +435,20 @@ public class CubeMap implements EntityComponent, UpdatableComponent {
         return textures[i];
     }
 
-    public Texture getTexturaEntorno() {
-        return texturaEntorno;
-    }
-
-    public int getTipoSalida() {
-        return tipoSalida;
-    }
-
-    public void setTipoSalida(int tipoSalida) {
-        this.tipoSalida = tipoSalida;
-    }
-
     @Override
     public void destruir() {
-        texturaEntorno = null;
+        envMap = null;
         render = null;
         textures = null;
     }
 
-    public boolean isActualizar() {
-        return actualizar;
-    }
-
-    public void setActualizar(boolean actualizar) {
-        this.actualizar = actualizar;
-    }
-
-    public float getFactorReflexion() {
-        return factorReflexion;
-    }
-
-    public void setFactorReflexion(float factorReflexion) {
-        this.factorReflexion = factorReflexion;
-    }
-
-    public float getIndiceRefraccion() {
-        return indiceRefraccion;
-    }
-
-    public void setIndiceRefraccion(float indiceRefraccion) {
-        this.indiceRefraccion = indiceRefraccion;
-    }
-
-    public int getSize() {
-        return size;
-    }
-
-    public void setSize(int tamanio) {
-        this.size = tamanio;
-    }
-
-    public Texture getTexturaIrradiacion() {
-        return texturaIrradiacion;
-    }
-
-    public void setTexturaIrradiacion(Texture texturaIrradiacion) {
-        this.texturaIrradiacion = texturaIrradiacion;
-    }
-
-    // public void setProcIrradiacion(QProcesadorSimple procIrradiacion) {
-    // this.procIrradiacion = procIrradiacion;
-    // }
-    public boolean isGenerarIrradiacion() {
-        return generarIrradiacion;
-    }
-
-    public void setGenerarIrradiacion(boolean generarIrradiacion) {
-        this.generarIrradiacion = generarIrradiacion;
-    }
-
     @Override
-    public boolean isRequierepdate() {
+    public boolean isRequiereUpdate() {
         return actualizar;
     }
 
     @Override
     public void update(RenderEngine renderEngine, Scene scene) {
-        actualizarMapa(renderEngine);
+        updateEnvMap(renderEngine);
     }
 }

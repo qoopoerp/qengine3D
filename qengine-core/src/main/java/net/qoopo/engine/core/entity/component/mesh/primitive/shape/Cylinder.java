@@ -5,7 +5,7 @@
  */
 package net.qoopo.engine.core.entity.component.mesh.primitive.shape;
 
-import net.qoopo.engine.core.material.basico.Material;
+import net.qoopo.engine.core.material.Material;
 
 /**
  *

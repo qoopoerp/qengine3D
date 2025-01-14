@@ -6,7 +6,7 @@
 package net.qoopo.engine.renderer.shader.fragment.basico.parciales;
 
 import net.qoopo.engine.core.entity.component.mesh.primitive.Fragment;
-import net.qoopo.engine.core.material.basico.Material;
+import net.qoopo.engine.core.material.Material;
 import net.qoopo.engine.core.math.QColor;
 import net.qoopo.engine.core.renderer.RenderEngine;
 import net.qoopo.engine.renderer.shader.fragment.FragmentShader;
@@ -32,7 +32,7 @@ public class TexturedFragmentShader extends FragmentShader {
         if (fragment == null) {
             return null;
         }
-        if (!fragment.isDibujar()) {
+        if (!fragment.isDraw()) {
             return null;
         }
 
@@ -41,9 +41,9 @@ public class TexturedFragmentShader extends FragmentShader {
         // TOMA EL VALOR DE LA TRANSPARENCIA
         if (((Material) fragment.material).isTransparencia()) {
             // si tiene un mapa de transparencia
-            if (((Material) fragment.material).getMapaTransparencia() != null) {
+            if (((Material) fragment.material).getAlphaMap() != null) {
                 // es una imagen en blanco y negro, toma cualquier canal de color
-                transparencia = ((Material) fragment.material).getMapaTransparencia().getQColor(fragment.u, fragment.v).r;
+                transparencia = ((Material) fragment.material).getAlphaMap().getQColor(fragment.u, fragment.v).r;
             } else {
                 // toma el valor de transparencia del material
                 transparencia = ((Material) fragment.material).getTransAlfa();
@@ -52,19 +52,19 @@ public class TexturedFragmentShader extends FragmentShader {
             transparencia = 1;
         }
 
-        if (((Material) fragment.material).getMapaColor() == null || !render.opciones.isMaterial()) {
+        if (((Material) fragment.material).getColorMap() == null || !render.opciones.isMaterial()) {
             // si no hay textura usa el color del material
             color.set(fragment.material.getColor());
         } else {
 
             // si la textura no es proyectada (lo hace otro renderer) toma las coordenadas
             // ya calculadas
-            if (!((Material) fragment.material).getMapaColor().isProyectada()) {
-                colorDifuso = ((Material) fragment.material).getMapaColor().getQColor(fragment.u, fragment.v);
+            if (!((Material) fragment.material).getColorMap().isProyectada()) {
+                colorDifuso = ((Material) fragment.material).getColorMap().getQColor(fragment.u, fragment.v);
             } else {
-                colorDifuso = ((Material) fragment.material).getMapaColor().getQColor(
-                        (float) x / (float) render.getFrameBuffer().getAncho(),
-                        -(float) y / (float) render.getFrameBuffer().getAlto());
+                colorDifuso = ((Material) fragment.material).getColorMap().getQColor(
+                        (float) x / (float) render.getFrameBuffer().getWidth(),
+                        -(float) y / (float) render.getFrameBuffer().getHeight());
             }
             color.set(colorDifuso);
 

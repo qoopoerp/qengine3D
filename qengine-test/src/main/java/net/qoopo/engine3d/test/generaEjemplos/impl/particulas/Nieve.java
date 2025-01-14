@@ -7,7 +7,6 @@ package net.qoopo.engine3d.test.generaEjemplos.impl.particulas;
 
 import net.qoopo.engine.core.entity.Entity;
 import net.qoopo.engine.core.entity.component.mesh.primitive.Vertex;
-import net.qoopo.engine.core.entity.component.mesh.primitive.shape.Plane;
 import net.qoopo.engine.core.entity.component.particles.nieve.QEmisorNieve;
 import net.qoopo.engine.core.entity.component.physics.collision.detector.shape.primitivas.AABB;
 import net.qoopo.engine.core.math.QVector3;
@@ -36,9 +35,9 @@ public class Nieve extends MakeTestScene {
         emisor.addComponent(emisorNieve);
         mundo.addEntity(emisor);
 
-        Entity plano = new Entity("plano");
-        plano.addComponent(new Plane(10, 10));
-        mundo.addEntity(plano);
+        // Entity plano = new Entity("plano");
+        // plano.addComponent(new Plane(10, 10));
+        // mundo.addEntity(plano);
 
     }
 

@@ -106,16 +106,16 @@ public class QNodoColorReflexion extends ShaderNode {
                 // tm.vector3f1.set(currentPixel.ubicacion.getVector3());
                 tm.vector3f1.set(TransformationVectorUtil.transformarVector(
                         TransformationVectorUtil.transformarVectorInversa(pixel.ubicacion, pixel.entity,
-                                render.getCamara()),
+                                render.getCamera()),
                         pixel.entity).getVector3());
                 // ahora restamos la posicion de la camara a la posicion del mundo
-                tm.vector3f1.subtract(render.getCamara().getMatrizTransformacion(QGlobal.time).toTranslationVector());
+                tm.vector3f1.subtract(render.getCamera().getMatrizTransformacion(QGlobal.time).toTranslationVector());
                 tm.vector3f1.normalize();
                 // ************************************************************
                 // ****** REFLEXION
                 // ************************************************************
                 tm.vector3f3.set(QMath.reflejarVector(tm.vector3f1, tm.vector3f2));
-                color = TextureUtil.getColorMapaEntorno(tm.vector3f3, enTextura.getProcesadorTextura(),
+                color = TextureUtil.getEnviromentMapColor(tm.vector3f3, enTextura.getProcesadorTextura(),
                         tipoMapaEntorno);
             } catch (Exception e) {
                 // System.out.println("error reflexion " + e.getMessage());

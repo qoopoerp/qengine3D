@@ -37,7 +37,6 @@ import net.qoopo.engine.core.math.QMatriz3;
 import net.qoopo.engine.core.math.QMatriz4;
 import net.qoopo.engine.core.math.QVector2;
 import net.qoopo.engine.core.math.QVector3;
-import net.qoopo.engine.core.math.QVector4;
 import net.qoopo.engine.core.renderer.RenderEngine;
 import net.qoopo.engine.core.renderer.superficie.Superficie;
 import net.qoopo.engine.core.scene.Scene;
@@ -177,13 +176,13 @@ public class Java3DRenderer extends RenderEngine {
             TransformGroup perspectiva = universo.getViewingPlatform().getViewPlatformTransform();
             Transform3D transformPerspectiva = new Transform3D();
 
-            QVector3 camPosicion = camara.getMatrizTransformacion(System.currentTimeMillis()).toTranslationVector();
+            QVector3 camPosicion = camera.getMatrizTransformacion(System.currentTimeMillis()).toTranslationVector();
 
-            QVector3 objetivo = camPosicion.clone().add(camara.getDirection().clone().multiply(-1));
+            QVector3 objetivo = camPosicion.clone().add(camera.getDirection().clone().multiply(-1));
             transformPerspectiva.lookAt(
                     new Point3d(camPosicion.x, camPosicion.y, camPosicion.z),
                     new Point3d(objetivo.x, objetivo.y, objetivo.z),
-                    new Vector3d(camara.getUp().x, camara.getUp().y, camara.getUp().z));
+                    new Vector3d(camera.getUp().x, camera.getUp().y, camera.getUp().z));
             transformPerspectiva.invert();
             perspectiva.setTransform(transformPerspectiva);
         } catch (Exception e) {
@@ -571,11 +570,11 @@ public class Java3DRenderer extends RenderEngine {
         throw new UnsupportedOperationException("Unimplemented method 'renderEntity'");
     }
 
-    @Override
-    public void render() throws Exception {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'render'");
-    }
+    // @Override
+    // public void render() throws Exception {
+    // // TODO Auto-generated method stub
+    // throw new UnsupportedOperationException("Unimplemented method 'render'");
+    // }
 
     @Override
     public void shadeFragments() {
@@ -584,12 +583,10 @@ public class Java3DRenderer extends RenderEngine {
     }
 
     @Override
-    public void postRender() {
+    public void draw() {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'postRender'");
     }
-
-   
 
     // private void modificadoresTexturas() {
     // if (opciones.tipoVista == QOpcionesRenderer.VISTA_WIRE || !opciones.material)

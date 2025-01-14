@@ -75,7 +75,7 @@ public class PnlTerreno extends javax.swing.JPanel {
                         terreno.setTileSize(Float.valueOf(txtTamCelda.getText()));
                         terreno.setMinY(Float.valueOf(txtMinY.getText()));
                         terreno.setMaxY(Float.valueOf(txtMaxY.getText()));
-                        terreno.getMaterial().setMapaColor(textura);
+                        terreno.getMaterial().setColorMap(textura);
                         terreno.setOffset(Integer.valueOf(txtOffset.getText()));
                         terreno.build();
                 }

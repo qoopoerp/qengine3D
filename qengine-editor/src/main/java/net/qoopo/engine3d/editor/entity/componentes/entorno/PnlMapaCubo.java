@@ -9,10 +9,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.qoopo.engine.core.entity.component.EntityComponent;
-import net.qoopo.engine.core.entity.component.cubemap.CubeMap;
+import net.qoopo.engine.core.entity.component.environment.EnvProbe;
 import net.qoopo.engine.core.entity.component.mesh.Mesh;
 import net.qoopo.engine.core.entity.component.mesh.primitive.Primitive;
-import net.qoopo.engine.core.material.basico.Material;
+import net.qoopo.engine.core.material.Material;
 import net.qoopo.engine.core.util.QGlobal;
 import net.qoopo.engine.core.util.ComponentUtil;
 
@@ -22,17 +22,17 @@ import net.qoopo.engine.core.util.ComponentUtil;
  */
 public class PnlMapaCubo extends javax.swing.JPanel {
 
-    private CubeMap mapa;
+    private EnvProbe mapa;
 
     /**
      * Creates new form PnlMapaCubo
      *
      * @param mapa
      */
-    public PnlMapaCubo(CubeMap mapa) {
+    public PnlMapaCubo(EnvProbe mapa) {
         initComponents();
-        txtFactorReflexion.setText(String.valueOf(mapa.getFactorReflexion()));
-        txtFactorRefraccion.setText(String.valueOf(mapa.getIndiceRefraccion()));
+        // txtFactorReflexion.setText(String.valueOf(mapa.getFactorReflexion()));
+        // txtFactorRefraccion.setText(String.valueOf(mapa.getIndiceRefraccion()));
         txtResolucion.setText(String.valueOf(mapa.getSize()));
         chkIrradiacion.setSelected(mapa.isGenerarIrradiacion());
         this.mapa = mapa;
@@ -214,14 +214,14 @@ public class PnlMapaCubo extends javax.swing.JPanel {
         mapa.build(ancho);
         mapa.setGenerarIrradiacion(chkIrradiacion.isSelected());
         if (optMapaCubo.isSelected()) {
-            mapa.aplicar(CubeMap.FORMATO_MAPA_CUBO, factor, indice);
+            mapa.aplicar(EnvProbe.FORMATO_MAPA_CUBO);
         } else if (optHDRI.isSelected()) {
-            mapa.aplicar(CubeMap.FORMATO_MAPA_HDRI, factor, indice);
+            mapa.aplicar(EnvProbe.FORMATO_MAPA_HDRI);
         }
     }// GEN-LAST:event_btnAplicarActionPerformed
 
     private void btnQuitarActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btnQuitarActionPerformed
-        ComponentUtil.removeComponents(mapa.getEntity(), CubeMap.class);
+        ComponentUtil.removeComponents(mapa.getEntity(), EnvProbe.class);
         List<Material> lst = new ArrayList<>();
         // ahora recorro todos los materiales del objeto y le quito la textura de
         // reflexion
@@ -238,8 +238,8 @@ public class PnlMapaCubo extends javax.swing.JPanel {
         }
         for (Material mat : lst) {
             mat.clearEnviromentMap();
-            mat.setMetalico(0);
-            mat.setIndiceRefraccion(0);
+            mat.setRoughness(0);
+            mat.setIor(0);
         }
     }// GEN-LAST:event_btnQuitarActionPerformed
 

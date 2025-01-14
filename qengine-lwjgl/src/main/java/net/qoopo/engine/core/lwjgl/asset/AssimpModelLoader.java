@@ -62,7 +62,7 @@ import net.qoopo.engine.core.entity.component.physics.dinamica.QObjetoDinamico;
 import net.qoopo.engine.core.entity.component.physics.dinamica.QObjetoRigido;
 import net.qoopo.engine.core.entity.component.transform.QTransformacion;
 import net.qoopo.engine.core.material.AbstractMaterial;
-import net.qoopo.engine.core.material.basico.Material;
+import net.qoopo.engine.core.material.Material;
 import net.qoopo.engine.core.math.Cuaternion;
 import net.qoopo.engine.core.math.QColor;
 import net.qoopo.engine.core.math.QMatriz4;
@@ -70,7 +70,7 @@ import net.qoopo.engine.core.math.QRotacion;
 import net.qoopo.engine.core.math.QVector3;
 import net.qoopo.engine.core.scene.Camera;
 import net.qoopo.engine.core.texture.Texture;
-import net.qoopo.engine.core.texture.procesador.QProcesadorInvierte;
+import net.qoopo.engine.core.texture.procesador.InvertTexture;
 import net.qoopo.engine.core.util.mesh.NormalUtil;
 
 /**
@@ -937,28 +937,28 @@ public class AssimpModelLoader implements ModelLoader {
         material.setColorEspecular(specular);
 
         if (texturaColor != null) {
-            material.setMapaColor(texturaColor);
+            material.setColorMap(texturaColor);
         }
         if (texturaNormal != null) {
-            material.setMapaNormal(texturaNormal);
+            material.setNormalMap(texturaNormal);
         }
         if (texturaEmisivo != null) {
-            material.setMapaEmisivo(texturaEmisivo);
+            material.setEmissiveMap(texturaEmisivo);
         }
         if (texturaTransparencia != null) {
-            material.setMapaTransparencia(texturaTransparencia);
+            material.setAlphaMap(texturaTransparencia);
             material.setTransparencia(true);
         }
         if (texturaEspecular != null) {
             material.setMapaEspecular(texturaEspecular);
         }
         if (texturaMetalica != null) {
-            material.setMapaMetalico(texturaMetalica);
+            material.setMetallicMap(texturaMetalica);
         }
 
         if (texturaRugosidad != null) {
             // el inverso de la textura de brillo
-            material.setMapaRugosidad(new QProcesadorInvierte(texturaRugosidad));
+            material.setRoughnessMap(new InvertTexture(texturaRugosidad));
         }
         return material;
     }

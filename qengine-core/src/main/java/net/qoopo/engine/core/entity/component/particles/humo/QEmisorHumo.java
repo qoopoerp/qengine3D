@@ -16,11 +16,11 @@ import net.qoopo.engine.core.entity.component.particles.Particle;
 import net.qoopo.engine.core.entity.component.particles.ParticleEmissor;
 import net.qoopo.engine.core.entity.component.physics.collision.detector.shape.primitivas.AABB;
 import net.qoopo.engine.core.material.AbstractMaterial;
-import net.qoopo.engine.core.material.basico.Material;
+import net.qoopo.engine.core.material.Material;
 import net.qoopo.engine.core.math.QColor;
 import net.qoopo.engine.core.math.QVector3;
 import net.qoopo.engine.core.texture.Texture;
-import net.qoopo.engine.core.texture.procesador.QProcesadorAtlasSecuencial;
+import net.qoopo.engine.core.texture.procesador.AtlasSequentialTexture;
 import net.qoopo.engine.core.texture.util.MaterialUtil;
 import net.qoopo.engine.core.util.QGlobal;
 
@@ -55,8 +55,8 @@ public class QEmisorHumo extends ParticleEmissor {
         try {
 
             material = new Material();
-            QProcesadorAtlasSecuencial proc = new QProcesadorAtlasSecuencial(textura, 4, 4, 100);
-            material.setMapaColor(proc);
+            AtlasSequentialTexture proc = new AtlasSequentialTexture(textura, 4, 4, 100);
+            material.setColorMap(proc);
             material.setColorTransparente(QColor.BLACK);
             material.setTransparencia(true);
             material.setTransAlfa(0.90f);// el objeto tiene una transparencia

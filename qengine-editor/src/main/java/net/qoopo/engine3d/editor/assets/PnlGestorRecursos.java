@@ -20,7 +20,7 @@ import net.qoopo.engine.core.assets.AssetManager;
 import net.qoopo.engine.core.entity.Entity;
 import net.qoopo.engine.core.entity.component.mesh.Mesh;
 import net.qoopo.engine.core.lwjgl.audio.component.AudioBufferAL;
-import net.qoopo.engine.core.material.basico.Material;
+import net.qoopo.engine.core.material.Material;
 import net.qoopo.engine.core.texture.Texture;
 import net.qoopo.engine3d.editor.util.QArbolWrapper;
 import net.qoopo.engine3d.editor.util.Util;

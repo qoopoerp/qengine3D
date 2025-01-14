@@ -32,8 +32,8 @@ public class DefaultModelLoader implements ModelLoader {
             loader = new LoadModel3DSMax();
         } else if (file.getName().toLowerCase().endsWith("qengine")) {
             loader = new LoadModelQEngine();
-        } else if (file.getName().toLowerCase().endsWith("dae")) {
-            loader = new LoadModelDae();
+        // } else if (file.getName().toLowerCase().endsWith("dae")) {
+        //     loader = new LoadModelDae();
         } else if (file.getName().toLowerCase().endsWith("md5mesh")) {
             loader = new LoadModelMd5();
         } else if (file.getName().toLowerCase().endsWith("obj")) {

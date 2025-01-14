@@ -32,7 +32,7 @@ public class ImgReader {
         } catch (Exception e) {
             // si el archivo no existe apuntamos a la textura uv
             log.severe("[x] Error al cargar " + archivo.getAbsolutePath() + " --> " + e.getLocalizedMessage());
-            return ImageIO.read(ImgReader.class.getResourceAsStream("textures/uv.png"));
+            return ImageIO.read(ImgReader.class.getResourceAsStream("/textures/uv.png"));
         }
     }
 

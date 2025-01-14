@@ -16,7 +16,7 @@ import net.qoopo.engine.core.entity.component.mesh.util.QUnidadMedida;
 import net.qoopo.engine.core.entity.component.physics.collision.detector.shape.primitivas.QColisionCaja;
 import net.qoopo.engine.core.entity.component.physics.dinamica.QObjetoDinamico;
 import net.qoopo.engine.core.entity.component.physics.dinamica.QObjetoRigido;
-import net.qoopo.engine.core.material.basico.Material;
+import net.qoopo.engine.core.material.Material;
 import net.qoopo.engine.core.math.QVector3;
 import net.qoopo.engine.core.scene.Scene;
 import net.qoopo.engine.core.texture.Texture;

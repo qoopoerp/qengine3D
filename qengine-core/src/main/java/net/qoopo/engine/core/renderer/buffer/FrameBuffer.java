@@ -8,6 +8,8 @@ package net.qoopo.engine.core.renderer.buffer;
 import java.awt.image.BufferedImage;
 import java.util.Arrays;
 
+import lombok.Getter;
+import lombok.Setter;
 import net.qoopo.engine.core.entity.component.mesh.primitive.Fragment;
 import net.qoopo.engine.core.math.QColor;
 import net.qoopo.engine.core.texture.Texture;
@@ -18,7 +20,9 @@ import net.qoopo.engine.core.texture.Texture;
  * @author alberto
  */
 
-public class QFrameBuffer {
+@Getter
+@Setter
+public class FrameBuffer {
 
     // este buffer adicional tiene información de material, entity (transformación y
     // demas) por cada pixel
@@ -29,13 +33,13 @@ public class QFrameBuffer {
     // buffer de profundidad
     protected float[][] zBuffer;
     private float minimo = 0, maximo = 0;
-    private int ancho, alto;
+    private int width, height;
     // esta textura si es diferente de nulo, dibujamos sobre ella tambien
     protected Texture textura;
 
-    public QFrameBuffer(int ancho, int alto, Texture texturaSalida) {
-        this.ancho = ancho;
-        this.alto = alto;
+    public FrameBuffer(int ancho, int alto, Texture texturaSalida) {
+        this.width = ancho;
+        this.height = alto;
         zBuffer = new float[ancho][alto];
         bufferColor = new Texture(ancho, alto);
         pixelBuffer = new Fragment[ancho][alto];
@@ -50,7 +54,7 @@ public class QFrameBuffer {
     /**
      * Actualiza el bufferedimage y carga a la textura de salida
      */
-    public void actualizarTextura() {
+    public void updateOuputTexture() {
         if (textura != null) {
             textura.loadTexture(bufferColor.getQImagen());
         }
@@ -85,7 +89,7 @@ public class QFrameBuffer {
         cleanZBuffer();
         for (Fragment[] row : pixelBuffer) {
             for (int i = 0; i < row.length; i++) {
-                row[i].setDibujar(false);
+                row[i].setDraw(false);
             }
         }
     }
@@ -95,11 +99,11 @@ public class QFrameBuffer {
      *
      * @param color
      */
-    public void llenarColor(QColor color) {
-        bufferColor.llenarColor(color);
+    public void fill(QColor color) {
+        bufferColor.fill(color);
     }
 
-    public Fragment getPixel(int x, int y) {
+    public Fragment getFragment(int x, int y) {
         try {
             return pixelBuffer[x][y];
         } catch (Exception e) {
@@ -139,23 +143,7 @@ public class QFrameBuffer {
         bufferColor.setQColor(x, -y, color);
     }
 
-    public int getAncho() {
-        return ancho;
-    }
-
-    public void setAncho(int ancho) {
-        this.ancho = ancho;
-    }
-
-    public int getAlto() {
-        return alto;
-    }
-
-    public void setAlto(int alto) {
-        this.alto = alto;
-    }
-
-    public void calcularMaximosMinimosZBuffer() {
+    public void computeMaxMinZbuffer() {
         minimo = Float.POSITIVE_INFINITY;
         maximo = Float.NEGATIVE_INFINITY;
         for (int i = 0; i < zBuffer.length; i++) {
@@ -176,7 +164,7 @@ public class QFrameBuffer {
      *
      * @param farPlane diastancia maxima de la camara
      */
-    public void pintarMapaProfundidad(float farPlane) {
+    public void paintZBuffer(float farPlane) {
         try {
             float r = 0, g = 0, b = 0;
             for (int x = 0; x < zBuffer.length; x++) {
@@ -191,30 +179,6 @@ public class QFrameBuffer {
         }
     }
 
-    public Texture getTextura() {
-        return textura;
-    }
-
-    public void setTextura(Texture textura) {
-        this.textura = textura;
-    }
-
-    public float getMinimo() {
-        return minimo;
-    }
-
-    public void setMinimo(float minimo) {
-        this.minimo = minimo;
-    }
-
-    public float getMaximo() {
-        return maximo;
-    }
-
-    public void setMaximo(float maximo) {
-        this.maximo = maximo;
-    }
-
     /**
      * Realiza una copia de un buffer a otro con dimensiones diferentes
      *
@@ -223,25 +187,26 @@ public class QFrameBuffer {
      * @param alto
      * @return
      */
-    public static QFrameBuffer copiar(QFrameBuffer buffer, int ancho, int alto) {
+    public static FrameBuffer copy(FrameBuffer buffer, int ancho, int alto) {
         // QFrameBuffer nuevo = new QFrameBuffer(ancho, alto, buffer.getTextura());
-        QFrameBuffer nuevo = new QFrameBuffer(ancho, alto, null);
+        FrameBuffer nuevo = new FrameBuffer(ancho, alto, null);
         QColor color;
         try {
             // si es expandir
-            if (buffer.getAncho() < ancho) {
-                for (int x = 0; x < nuevo.getAncho(); x++) {
-                    for (int y = 0; y < nuevo.getAlto(); y++) {
-                        color = buffer.getColorNormalizado((float) x / nuevo.getAncho(), (float) y / nuevo.getAlto());
+            if (buffer.getWidth() < ancho) {
+                for (int x = 0; x < nuevo.getWidth(); x++) {
+                    for (int y = 0; y < nuevo.getHeight(); y++) {
+                        color = buffer.getColorNormalizado((float) x / nuevo.getWidth(), (float) y / nuevo.getHeight());
                         nuevo.setQColor(x, y, color);
                     }
                 }
             } else {
                 // si es encojer
-                for (int x = 0; x < buffer.getAncho(); x++) {
-                    for (int y = 0; y < buffer.getAlto(); y++) {
+                for (int x = 0; x < buffer.getWidth(); x++) {
+                    for (int y = 0; y < buffer.getHeight(); y++) {
                         color = buffer.getColor(x, y);
-                        nuevo.setQColorNormalizado((float) x / buffer.getAncho(), (float) y / buffer.getAlto(), color);
+                        nuevo.setQColorNormalizado((float) x / buffer.getWidth(), (float) y / buffer.getHeight(),
+                                color);
                     }
                 }
             }
@@ -250,14 +215,6 @@ public class QFrameBuffer {
         }
 
         return nuevo;
-    }
-
-    public Texture getBufferColor() {
-        return bufferColor;
-    }
-
-    public void setBufferColor(Texture bufferColor) {
-        this.bufferColor = bufferColor;
     }
 
 }

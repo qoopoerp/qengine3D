@@ -17,7 +17,7 @@ import net.qoopo.engine.core.entity.component.mesh.Mesh;
 import net.qoopo.engine.core.entity.component.mesh.primitive.Poly;
 import net.qoopo.engine.core.entity.component.mesh.primitive.Primitive;
 import net.qoopo.engine.core.entity.component.mesh.primitive.Vertex;
-import net.qoopo.engine.core.material.basico.Material;
+import net.qoopo.engine.core.material.Material;
 import net.qoopo.engine.core.math.QVector2;
 import net.qoopo.engine.core.math.QVector3;
 import net.qoopo.engine.core.util.QGlobal;
@@ -33,12 +33,10 @@ public class ExportModelObj implements ModelExporter {
             this.fileName = file.getName();
             this.parentFolder = file.getParentFile();
             file.createNewFile();
-
             exportMaterial(new FileOutputStream(new File(parentFolder, fileName.replace(".obj", ".mtl"))), entity);
             exportModel(new FileOutputStream(file), entity);
-
         } catch (Exception e) {
-            // TODO Auto-generated catch block
+
             e.printStackTrace();
         }
 
@@ -46,7 +44,6 @@ public class ExportModelObj implements ModelExporter {
 
     @Override
     public void exportModel(OutputStream output, Entity entity) {
-
         BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(output));
         try {
             /**
@@ -61,24 +58,24 @@ public class ExportModelObj implements ModelExporter {
                 writer.write("mtlib " + fileName.replace(".obj", ".mtl"));
                 writer.newLine();
             }
-
-            exportEntity(output, QVector3.zero, entity, writer, 0);
+            exportEntity(output, QVector3.zero, entity, writer, 0, 0, 0);
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
             try {
                 writer.flush();
             } catch (IOException e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             }
         }
     }
 
     private void exportEntity(OutputStream output, QVector3 parentLocation, Entity entity, BufferedWriter writer,
-            int vertextCount) {
+            int vertextCount, int uvCount, int normalCount) {
         try {
             int vertextCountLocal = 0;
+            int normalCountLocal = 0;
+            int uvCountLocal = 0;
             writer.write("o " + entity.getName());
             writer.newLine();
             for (EntityComponent component : entity.getComponents()) {
@@ -110,10 +107,8 @@ public class ExportModelObj implements ModelExporter {
                     // escribe las normales
                     for (QVector3 normal : mesh.normalList) {
                         // vertex.normal.normalize();
-                        writer.write(
-                                String.format("vn %.4f %.4f %.4f", normal.x, normal.y,
-                                        normal.z)
-                                        .replace(",", "."));
+                        writer.write(String.format("vn %.4f %.4f %.4f", normal.x, normal.y, normal.z)
+                                .replace(",", "."));
                         writer.newLine();
                     }
 
@@ -124,7 +119,6 @@ public class ExportModelObj implements ModelExporter {
                     String currentMaterialName = "";
                     Boolean currentSmooth = null;
                     for (Primitive poly : mesh.primitiveList) {
-
                         if (poly.material != null && !poly.material.getNombre().equals(currentMaterialName)) {
                             currentMaterialName = poly.material.getNombre();
                             writer.write("usemtl " + currentMaterialName);
@@ -135,29 +129,45 @@ public class ExportModelObj implements ModelExporter {
                             Poly polygon = (Poly) poly;
                             if (currentSmooth == null || currentSmooth != polygon.isSmooth()) {
                                 currentSmooth = polygon.isSmooth();
-                                writer.write("s " + currentSmooth);
+                                writer.write("s " + (currentSmooth ? "on" : "off"));
                                 writer.newLine();
                             }
                         }
 
                         writer.write("f");
+                        int curNormalIndex = 0;
+                        int curUVIndex = 0;
+                        int curIndex = 0;
                         for (int index : poly.vertexIndexList) {
+
+                            curNormalIndex = poly.normalIndexList[curIndex];
+                            curUVIndex = poly.uvIndexList[curIndex];
+
                             // indice de vertice/indice de texura /indice de normal
-                            writer.write(String.format(" %d/%d/%d", (index + vertextCount + vertextCountLocal + 1),
+                            writer.write(String.format(" %d/%d/%d",
                                     (index + vertextCount + vertextCountLocal + 1),
-                                    (index + vertextCount + vertextCountLocal + 1)));
+                                    (curUVIndex + vertextCount + uvCountLocal + 1),
+                                    (curNormalIndex + vertextCount + normalCountLocal + 1)));
+                            curIndex++;
                         }
                         writer.newLine();
                     }
                     vertextCountLocal += mesh.vertexList.length;
+                    uvCountLocal += mesh.uvList.length;
+                    normalCountLocal += mesh.normalList.length;
                 }
             }
 
             // ahora exporta los hijos como mallas independientes
 
             for (Entity child : entity.getChilds()) {
-                exportEntity(output, entity.getTransformacion().getTraslacion(), child, writer,
-                        vertextCount + vertextCountLocal);
+                exportEntity(output,
+                        entity.getTransformacion().getTraslacion(),
+                        child,
+                        writer,
+                        vertextCount + vertextCountLocal,
+                        uvCount + uvCountLocal,
+                        normalCount + normalCountLocal);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -197,47 +207,47 @@ public class ExportModelObj implements ModelExporter {
                 writer.write("newmtl " + material.getNombre());
                 writer.newLine();
                 writer.write("Kd " + String.format("%.3f %.3f %.3f", material.getColor().r,
-                        material.getColor().g, material.getColor().b));
+                        material.getColor().g, material.getColor().b).replace(",", "."));
                 writer.newLine();
                 // writer.write("Ks " + String.format("%.3f %.3f %.3f", QColor.WHITE.r,
                 // QColor.WHITE.g, QColor.WHITE.b));
                 writer.write("Kd " + String.format("%.3f %.3f %.3f", material.getColorEspecular().r,
                         material.getColorEspecular().g,
-                        material.getColorEspecular().b));
+                        material.getColorEspecular().b).replace(",", "."));
                 writer.newLine();
-                writer.write("Ns " + String.format("%d", material.getSpecularExponent()));
+                writer.write("Ns " + String.format("%d", material.getSpecularExponent()).replace(",", "."));
                 writer.newLine();
-                writer.write("d " + String.format("%.6f", material.getTransAlfa()));
+                writer.write("d " + String.format("%.6f", material.getTransAlfa()).replace(",", "."));
                 writer.newLine();
                 // mapas
-                if (material.getMapaColor() != null) {
-                    ImageIO.write(material.getMapaColor().getImagen(), "jpg",
-                            new File(parentFolder, material.getNombre() + "_kd.jpg"));
-                    writer.write("map_kd " + material.getNombre() + "_kd.jpg");
+                if (material.getColorMap() != null) {
+                    ImageIO.write(material.getColorMap().getImagen(), "png",
+                            new File(parentFolder, material.getNombre() + "_kd.png"));
+                    writer.write("map_kd " + material.getNombre() + "_kd.png");
                     writer.newLine();
                 }
-                if (material.getMapaNormal() != null) {
-                    ImageIO.write(material.getMapaNormal().getImagen(), "jpg",
-                            new File(parentFolder, material.getNombre() + "_normal.jpg"));
-                    writer.write("map_Bump " + material.getNombre() + "_normal.jpg");
+                if (material.getNormalMap() != null) {
+                    ImageIO.write(material.getNormalMap().getImagen(), "png",
+                            new File(parentFolder, material.getNombre() + "_normal.png"));
+                    writer.write("map_Bump " + material.getNombre() + "_normal.png");
                     writer.newLine();
                 }
-                if (material.getMapaRugosidad() != null) {
-                    ImageIO.write(material.getMapaRugosidad().getImagen(), "jpg",
-                            new File(parentFolder, material.getNombre() + "_ns.jpg"));
-                    writer.write("map_Ns " + material.getNombre() + "_ns.jpg");
+                if (material.getRoughnessMap() != null) {
+                    ImageIO.write(material.getRoughnessMap().getImagen(), "png",
+                            new File(parentFolder, material.getNombre() + "_ns.png"));
+                    writer.write("map_Ns " + material.getNombre() + "_ns.png");
                     writer.newLine();
                 }
-                if (material.getMapaMetalico() != null) {
-                    ImageIO.write(material.getMapaMetalico().getImagen(), "jpg",
-                            new File(parentFolder, material.getNombre() + "_refl.jpg"));
-                    writer.write("refl " + material.getNombre() + "_refl.jpg");
+                if (material.getMetallicMap() != null) {
+                    ImageIO.write(material.getMetallicMap().getImagen(), "png",
+                            new File(parentFolder, material.getNombre() + "_refl.png"));
+                    writer.write("refl " + material.getNombre() + "_refl.png");
                     writer.newLine();
                 }
-                if (material.getMapaTransparencia() != null) {
-                    ImageIO.write(material.getMapaMetalico().getImagen(), "jpg",
-                            new File(parentFolder, material.getNombre() + "_d.jpg"));
-                    writer.write("map_d " + material.getNombre() + "_d.jpg");
+                if (material.getAlphaMap() != null) {
+                    ImageIO.write(material.getMetallicMap().getImagen(), "png",
+                            new File(parentFolder, material.getNombre() + "_d.png"));
+                    writer.write("map_d " + material.getNombre() + "_d.png");
                     writer.newLine();
                 }
             }
@@ -249,7 +259,7 @@ public class ExportModelObj implements ModelExporter {
             try {
                 writer.flush();
             } catch (IOException e) {
-                // TODO Auto-generated catch block
+
                 e.printStackTrace();
             }
         }

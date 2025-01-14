@@ -28,11 +28,10 @@ public class TestLoadMd5 extends MakeTestScene {
                 try {
                         this.scene = mundo;
                         ModelLoader loadModel = new LoadModelMd5();
-                        // Cargador propio
                         List<File> archivos = new ArrayList<>();
                         archivos.add(new File("assets/models/md5/doom3/md5/characters/player/mocap/player.md5mesh"));
                         // monstuos
-                        archivos.add(new File("assets/models/md5/DOOM_MONSTERS/hellknight/monster.md5mesh"));
+                        archivos.add(new File("assets/models/md5/doom3_monsters/hellknight/monster.md5mesh"));
                         archivos.add(new File("assets/models/md5/bob/boblamp.md5mesh"));
                         archivos.add(new File("assets/models/md5/doom3/md5/monsters/mancubus/mancubus.md5mesh"));
                         archivos.add(new File("assets/models/md5/doom3/md5/monsters/imp/imp.md5mesh"));

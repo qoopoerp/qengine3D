@@ -21,7 +21,6 @@ public class AbstractMaterial implements Serializable {
 
     protected String nombre = "Material_";
 
-    // Color base del material
     protected QColor color = QColor.WHITE.clone();
 
     public String getNombre() {

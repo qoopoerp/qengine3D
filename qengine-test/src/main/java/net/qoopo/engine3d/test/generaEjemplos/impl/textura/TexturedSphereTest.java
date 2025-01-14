@@ -11,7 +11,7 @@ import net.qoopo.engine.core.assets.AssetManager;
 import net.qoopo.engine.core.entity.Entity;
 import net.qoopo.engine.core.entity.component.mesh.Mesh;
 import net.qoopo.engine.core.entity.component.mesh.primitive.shape.Sphere;
-import net.qoopo.engine.core.material.basico.Material;
+import net.qoopo.engine.core.material.Material;
 import net.qoopo.engine.core.renderer.RenderEngine;
 import net.qoopo.engine.core.scene.Scene;
 import net.qoopo.engine3d.test.generaEjemplos.MakeTestScene;
@@ -26,9 +26,9 @@ public class TexturedSphereTest extends MakeTestScene {
         this.scene = mundo;
 
         Material material = new Material();
-        material.setMapaColor(
+        material.setColorMap(
                 AssetManager.get().loadTexture("difusa", new File("assets/textures/solar_system/2k_earth_daymap.jpg")));
-        material.setMapaNormal(AssetManager.get().loadTexture("normal",
+        material.setNormalMap(AssetManager.get().loadTexture("normal",
                 new File("assets/textures/solar_system/2k_earth_normal_map.png")));
 
         Entity earth = new Entity("Tierra");

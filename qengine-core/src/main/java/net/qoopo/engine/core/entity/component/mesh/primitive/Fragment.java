@@ -18,7 +18,7 @@ import net.qoopo.engine.core.math.QVector4;
 @Setter
 public class Fragment implements Serializable {
 
-    private boolean dibujar = false;
+    private boolean draw = false;
     public float u, v;
     public QVector4 ubicacion = new QVector4();
     public QVector3 normal = QVector3.empty();

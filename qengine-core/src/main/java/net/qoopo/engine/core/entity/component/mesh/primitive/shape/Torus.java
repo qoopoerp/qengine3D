@@ -8,7 +8,7 @@ package net.qoopo.engine.core.entity.component.mesh.primitive.shape;
 import lombok.Getter;
 import lombok.Setter;
 import net.qoopo.engine.core.entity.component.mesh.primitive.Shape;
-import net.qoopo.engine.core.material.basico.Material;
+import net.qoopo.engine.core.material.Material;
 import net.qoopo.engine.core.util.array.IntArray;
 
 /**

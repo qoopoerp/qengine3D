@@ -10,7 +10,7 @@ import java.io.File;
 import net.qoopo.engine.core.assets.AssetManager;
 import net.qoopo.engine.core.entity.Entity;
 import net.qoopo.engine.core.entity.component.terrain.Terrain;
-import net.qoopo.engine.core.material.basico.Material;
+import net.qoopo.engine.core.material.Material;
 import net.qoopo.engine.core.renderer.RenderEngine;
 import net.qoopo.engine.core.scene.Scene;
 import net.qoopo.engine.core.texture.Texture;
@@ -30,11 +30,11 @@ public class TestTerrainHeightMap extends MakeTestScene {
                 Texture terrainTexture = AssetManager.get().loadTexture("terreno",
                                 "assets/textures/terrain/rocky_terrain/rocky_terrain_02_diff_4k.jpg");
                 Material materialTerrain = new Material(terrainTexture);
-                materialTerrain.setMapaNormal(AssetManager.get().loadTexture("terreno_normal",
+                materialTerrain.setNormalMap(AssetManager.get().loadTexture("terreno_normal",
                                 "assets/textures/terrain/rocky_terrain/rocky_terrain_02_nor_gl_4k.png"));
                 materialTerrain.setMapaEspecular(AssetManager.get().loadTexture("terreno_normal",
                                 "assets/textures/terrain/rocky_terrain/rocky_terrain_02_spec_4k.png"));
-                materialTerrain.setMapaRugosidad(AssetManager.get().loadTexture("terreno_normal",
+                materialTerrain.setRoughnessMap(AssetManager.get().loadTexture("terreno_normal",
                                 "assets/textures/terrain/rocky_terrain/rocky_terrain_02_rough_4k.png"));
 
                 Terrain terreno = new HeightMapTerrain(new File("assets/heightmaps/heightmap.png"), 1, -5, 15f,

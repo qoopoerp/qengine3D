@@ -22,11 +22,11 @@ import net.qoopo.engine.core.entity.component.physics.collision.detector.shape.p
 import net.qoopo.engine.core.entity.component.physics.collision.detector.shape.primitivas.QColisionCaja;
 import net.qoopo.engine.core.entity.component.physics.dinamica.QObjetoDinamico;
 import net.qoopo.engine.core.entity.component.physics.dinamica.QObjetoRigido;
-import net.qoopo.engine.core.material.basico.Material;
+import net.qoopo.engine.core.material.Material;
 import net.qoopo.engine.core.math.QColor;
 import net.qoopo.engine.core.math.QVector3;
 import net.qoopo.engine.core.texture.Texture;
-import net.qoopo.engine.core.texture.procesador.QProcesadorAtlasSecuencial;
+import net.qoopo.engine.core.texture.procesador.AtlasSequentialTexture;
 import net.qoopo.engine.core.texture.util.MaterialUtil;
 import net.qoopo.engine.core.util.QGlobal;
 
@@ -66,8 +66,8 @@ public class FireEmissor extends ParticleEmissor {
         try {
 
             material = new Material();
-            QProcesadorAtlasSecuencial proc = new QProcesadorAtlasSecuencial(textura, 8, 8, 10);
-            material.setMapaColor(proc);
+            AtlasSequentialTexture proc = new AtlasSequentialTexture(textura, 8, 8, 10);
+            material.setColorMap(proc);
             material.setColorTransparente(QColor.BLACK);
             material.setTransparencia(true);
 //            material.setTransAlfa(0.90f);// el objeto tiene una transparencia 

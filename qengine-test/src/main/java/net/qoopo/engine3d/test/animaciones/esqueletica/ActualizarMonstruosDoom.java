@@ -33,25 +33,25 @@ public class ActualizarMonstruosDoom {
     }
 
     public static void main(String[] args) {
-        serializar(new File("assets/models/md5/DOOM_MONSTERS/hellknight/monster.md5mesh"),
+        serializar(new File("assets/models/md5/doom3_monsters/hellknight/monster.md5mesh"),
                 "assets/models/qengine/doom/hellknight.qengine");
         serializar(new File("assets/models/md5/bob/boblamp.md5mesh"),
                 "assets/models/qengine/boblamp.qengine");
-        serializar(new File("assets/models/md5/DOOM_MONSTERS/cyberdemon/cyberdemon.md5mesh"),
+        serializar(new File("assets/models/md5/doom3_monsters/cyberdemon/cyberdemon.md5mesh"),
                 "assets/models/qengine/doom/cyberdemon.qengine");
-        serializar(new File("assets/models/md5/DOOM_MONSTERS/revenant/revenant.md5mesh"),
+        serializar(new File("assets/models/md5/doom3_monsters/revenant/revenant.md5mesh"),
                 "assets/models/qengine/doom/revenant.qengine");
-        serializar(new File("assets/models/md5/DOOM_MONSTERS/zfat/zfat.md5mesh"),
+        serializar(new File("assets/models/md5/doom3_monsters/zfat/zfat.md5mesh"),
                 "assets/models/qengine/doom/zfat.qengine");
-        serializar(new File("assets/models/md5/DOOM_MONSTERS/player/player.md5mesh"),
+        serializar(new File("assets/models/md5/doom3_monsters/player/player.md5mesh"),
                 "assets/models/qengine/doom/player.qengine");
-        serializar(new File("assets/models/md5/DOOM_MONSTERS/imp/imp.md5mesh"),
+        serializar(new File("assets/models/md5/doom3_monsters/imp/imp.md5mesh"),
                 "assets/models/qengine/doom/imp.qengine");
-        serializar(new File("assets/models/md5/DOOM_MONSTERS/pinky/pinky.md5mesh"),
+        serializar(new File("assets/models/md5/doom3_monsters/pinky/pinky.md5mesh"),
                 "assets/models/qengine/doom/pinky.qengine");
-        serializar(new File("assets/models/md5/DOOM_MONSTERS/trite/trite.md5mesh"),
+        serializar(new File("assets/models/md5/doom3_monsters/trite/trite.md5mesh"),
                 "assets/models/qengine/doom/trite.qengine");
-        serializar(new File("assets/models/md5/DOOM_MONSTERS/maggot3/maggot3.md5mesh"),
+        serializar(new File("assets/models/md5/doom3_monsters/maggot3/maggot3.md5mesh"),
                 "assets/models/qengine/doom/maggot3.qengine");
         serializar(
                 new File("assets/"

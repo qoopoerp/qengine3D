@@ -18,12 +18,11 @@ import net.qoopo.engine.core.entity.component.physics.collision.detector.shape.m
 import net.qoopo.engine.core.entity.component.physics.collision.detector.shape.primitivas.AABB;
 import net.qoopo.engine.core.entity.component.physics.dinamica.QObjetoDinamico;
 import net.qoopo.engine.core.entity.component.physics.dinamica.QObjetoRigido;
-import net.qoopo.engine.core.material.basico.Material;
+import net.qoopo.engine.core.material.Material;
 import net.qoopo.engine.core.math.QColor;
 import net.qoopo.engine.core.math.QVector3;
 import net.qoopo.engine.core.texture.Texture;
 import net.qoopo.engine.core.texture.util.MaterialUtil;
-import net.qoopo.engine.core.util.QGlobal;
 import net.qoopo.engine.core.util.ComponentUtil;
 import net.qoopo.engine.core.util.image.ImgReader;
 

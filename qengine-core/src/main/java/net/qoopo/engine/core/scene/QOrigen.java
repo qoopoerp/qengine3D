@@ -7,7 +7,7 @@ package net.qoopo.engine.core.scene;
 
 import net.qoopo.engine.core.entity.Entity;
 import net.qoopo.engine.core.entity.component.mesh.primitive.shape.Box;
-import net.qoopo.engine.core.material.basico.Material;
+import net.qoopo.engine.core.material.Material;
 import net.qoopo.engine.core.math.QColor;
 
 /**
@@ -31,15 +31,15 @@ public class QOrigen extends Entity {
 
             Material matX = new Material("x");
             matX.setColor(QColor.RED);
-            matX.setFactorEmision(1.0f);
+            matX.setEmision(1.0f);
 
             Material matY = new Material("y");
             matY.setColor(QColor.GREEN);
-            matY.setFactorEmision(1.0f);
+            matY.setEmision(1.0f);
 
             Material matZ = new Material("z");
             matZ.setColor(QColor.BLUE);
-            matZ.setFactorEmision(1.0f);
+            matZ.setEmision(1.0f);
 
             // Mesh mesh = new Mesh();
             // mesh.addVertex(0, 0, 0); // 0

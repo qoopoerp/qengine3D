@@ -23,6 +23,12 @@ public class QVector3 implements Serializable {
         z = 0.0f;
     }
 
+    public QVector3(float value) {
+        this.x = value;
+        this.y = value;
+        this.z = value;
+    }
+
     public QVector3(float x, float y, float z) {
         this.x = x;
         this.y = y;
@@ -382,6 +388,10 @@ public class QVector3 implements Serializable {
 
     public static QVector3 of(float x, float y, float z) {
         return new QVector3(x, y, z);
+    }
+
+    public static QVector3 of(float value) {
+        return new QVector3(value);
     }
 
     public static QVector3 of(Vertex vertice) {

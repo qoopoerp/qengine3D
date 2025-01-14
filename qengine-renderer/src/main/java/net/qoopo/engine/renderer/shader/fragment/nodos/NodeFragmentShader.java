@@ -27,7 +27,7 @@ public class NodeFragmentShader extends FragmentShader {
         if (pixel == null) {
             return null;
         }
-        if (!pixel.isDibujar()) {
+        if (!pixel.isDraw()) {
             return null;
         }
         QColor color = new QColor();// color default, blanco

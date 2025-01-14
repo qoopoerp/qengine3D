@@ -9,7 +9,7 @@ import lombok.Getter;
 import lombok.Setter;
 import net.qoopo.engine.core.entity.component.modifier.generate.InflateModifier;
 import net.qoopo.engine.core.entity.component.modifier.generate.SubdivisionModifier;
-import net.qoopo.engine.core.material.basico.Material;
+import net.qoopo.engine.core.material.Material;
 
 /**
  * Crea una esfera a partir de un cubo

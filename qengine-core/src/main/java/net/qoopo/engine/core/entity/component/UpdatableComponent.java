@@ -7,7 +7,7 @@ import net.qoopo.engine.core.scene.Scene;
  * Representaun componente que requiere ser actualizado en cada frame
  */
 public interface UpdatableComponent {
-    public default boolean isRequierepdate() {
+    public default boolean isRequiereUpdate() {
         return true;
     }
 

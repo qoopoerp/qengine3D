@@ -11,7 +11,7 @@ import net.qoopo.engine.core.engine.Engine;
 import net.qoopo.engine.core.entity.component.ligth.QDirectionalLigth;
 import net.qoopo.engine.core.math.QColor;
 import net.qoopo.engine.core.math.QVector3;
-import net.qoopo.engine.core.renderer.RenderEngine;
+import net.qoopo.engine.core.scene.Scene;
 import net.qoopo.engine3d.QEngine3D;
 import net.qoopo.engine3d.core.sky.QCielo;
 
@@ -23,7 +23,7 @@ import net.qoopo.engine3d.core.sky.QCielo;
 public class QMotorCicloDia extends Engine {
     private static Logger logger = Logger.getLogger("day-engine");
 
-    protected RenderEngine render;
+    protected Scene scene;
     /**
      * Cielo que se modificara para rotar las nubes y cambiar el color de
      * acuerdo a la hora. Y mezclar las textures para el cambio
@@ -44,9 +44,9 @@ public class QMotorCicloDia extends Engine {
     private final float angulo = 360 / 24;
     private final QVector3 direccionSolOriginal = QVector3.of(0, 1, 0);
 
-    public QMotorCicloDia(QCielo cielo, RenderEngine render, long duracionDiaEnSegundos, QDirectionalLigth sol,
+    public QMotorCicloDia(QCielo cielo, Scene scene, long duracionDiaEnSegundos, QDirectionalLigth sol,
             float horaInicial) {
-        this.render = render;
+        this.scene = scene;
         this.cielo = cielo;
         this.sol = sol;
         sol.getDirection().set(direccionSolOriginal);
@@ -110,16 +110,16 @@ public class QMotorCicloDia extends Engine {
                 if (horaDelDia < 12) {
                     // antes del medio dia
                     float v = maximo * (horaDelDia - 6) / 12 + minimo;
-                    render.getScene().setAmbientColor(new QColor(v, v, v));
+                    scene.setAmbientColor(new QColor(v, v, v));
                 } else {
                     float v = maximo - maximo * (horaDelDia - 12) / 12;
-                    render.getScene().setAmbientColor(new QColor(v, v, v));
+                    scene.setAmbientColor(new QColor(v, v, v));
                 }
 
                 // System.out.println("luz ambiente=" + render.ambient);
             } else {
                 // si es de noche seteo una iluminacin global minima
-                render.getScene().setAmbientColor(new QColor(minimo, minimo, minimo));
+                scene.setAmbientColor(new QColor(minimo, minimo, minimo));
                 sol.setEnable(false);
             }
 

@@ -31,39 +31,54 @@ public class TestLoadModel extends MakeTestScene {
                         // Cargador propio
                         List<File> archivos = new ArrayList<>();
 
-                        // ascii
-                        archivos.add(new File("assets/models/asc/torus.txt"));
-                        archivos.add(new File("assets/models/asc/ship.txt"));
-                        archivos.add(new File("assets/models/asc/head.txt"));
-                        archivos.add(new File("assets/models/asc/quake.txt"));
-                        // md5
-                        archivos.add(new File("assets/models/md5/doom3/md5/characters/player/mocap/player.md5mesh"));
-                        archivos.add(new File("assets/models/md5/DOOM_MONSTERS/hellknight/monster.md5mesh"));
-                        archivos.add(new File("assets/models/md5/bob/boblamp.md5mesh"));
-                        archivos.add(new File("assets/models/md5/doom3/md5/monsters/mancubus/mancubus.md5mesh"));
-                        archivos.add(new File("assets/models/md5/doom3/md5/monsters/imp/imp.md5mesh"));
+                        // // ----- ascii -------
+                        // archivos.add(new File("assets/models/asc/torus.txt"));
+                        // archivos.add(new File("assets/models/asc/ship.txt"));
+                        // archivos.add(new File("assets/models/asc/head.txt"));
+                        // archivos.add(new File("assets/models/asc/quake.txt"));
+                        // ----- md5 mesh -------
+                        // archivos.add(new
+                        // File("assets/models/md5/doom3/md5/characters/player/mocap/player.md5mesh"));
+                        // archivos.add(new
+                        // File("assets/models/md5/doom3_monsters/hellknight/monster.md5mesh"));
+                        // archivos.add(new File("assets/models/md5/bob/boblamp.md5mesh"));
+                        // archivos.add(new
+                        // File("assets/models/md5/doom3/md5/monsters/mancubus/mancubus.md5mesh"));
+                        // archivos.add(new
+                        // File("assets/models/md5/doom3/md5/monsters/imp/imp.md5mesh"));
 
-                        // wavefront obj
-                        archivos.add(new File("assets/models/obj/standford/bunny.obj"));
-                        archivos.add(new File("assets/models/obj/elephant.obj"));
-                        // archivos.add(new File("assets/models/obj/lion.obj"));
-                        archivos.add(new File("assets/models/obj/cyborg/cyborg.obj"));
-                        archivos.add(new File("assets/models/obj/caja_madera/box.obj"));
+                        // ----- wavefront obj -------
+                        // archivos.add(new File("assets/models/obj/bunny.obj"));
+                        archivos.add(new File("assets/models/obj/teapot.obj"));
+                        archivos.add(new File("assets/models/obj/meta.obj"));
+                        // archivos.add(new File("assets/models/obj/bunny.obj"));
+                        // archivos.add(new File("assets/models/obj/cube.obj"));
+                        // archivos.add(new File("assets/models/obj/dragon.obj"));
+                        // archivos.add(new File("assets/models/obj/lowPolyTree.obj"));
+                        // archivos.add(new File("assets/models/obj/caja_madera/box.obj"));
+                        // archivos.add(new File("assets/models/obj/cyborg/cyborg.obj"));
 
-                        // collada
-                        archivos.add(new File("assets/models/collada/vaquero_tuto/model.dae"));
+                        // ----- collada -------
+                        // archivos.add(new File("assets/models/collada/vaquero_tuto/model.dae"));
+                        // archivos.add(new File("assets/models/collada/bob_lamp_update.dae"));
 
-                        // //// //------- fbx ------------------
+                        // ------- fbx ---------
                         // archivos.add(new File("assets/models/fbx/mixamo/Shoved Reaction With
                         // Spin.fbx"));
+                        // archivos.add(new File("assets/models/fbx/basic/torus.fbx"));
+                        // archivos.add(new File("assets/models/fbx/basic/cube.fbx"));
+                        // archivos.add(new File("assets/models/fbx/basic/cone.fbx"));
+                        // archivos.add(new File("assets/models/fbx/basic/cilinder.fbx"));
+                        // archivos.add(new File("assets/models/fbx/basic/icosphere.fbx"));
+                        // archivos.add(new File("assets/models/fbx/basic/piramid.fbx"));
+                        // archivos.add(new
+                        // File("assets/models/fbx/nathan_animated_walking_fbx/rp_nathan_animated_003_walking.fbx"));
 
                         int space = 8;
                         int sections = 5;
                         for (int i = 0; i < archivos.size(); i++) {
                                 Entity entidad = loadModel.loadModel(archivos.get(i));
                                 entidad.move((i % sections) * space, 0, (i / sections) * space);
-                                // entidad.scale(0.05f, 0.05f, 0.05f);
-                                // entidad.rotate(Math.toRadians(-90), 0, 0);
                                 mundo.addEntity(entidad);
                         }
 

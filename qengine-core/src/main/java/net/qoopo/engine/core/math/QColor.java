@@ -30,6 +30,9 @@ public class QColor implements Serializable {
     public static final QColor DARK_GRAY = new QColor(Color.DARK_GRAY);
     public static final QColor BROWN = new QColor(1, 0.25f, 0.16f, 0.16f);
 
+    protected static final float gamma = 2.2f;
+    protected static final float gammaExp = 1.0f / gamma;
+
     public static QColor toQARGB(int rgb) {
         // return new QColor(1,
         // ((rgb >> 16) & 0xFF) / 255,
@@ -229,5 +232,23 @@ public class QColor implements Serializable {
 
     public QVector2 gb() {
         return new QVector2(g, b);
+    }
+
+    // /**
+    //  * Realiza la correción de gamma para la imagen final
+    //  */
+    // public void fixGamma() {
+    //     set(a, QMath.pow(r, gammaExp), QMath.pow(g, gammaExp),
+    //             QMath.pow(b, gammaExp));
+    // }
+
+    /**
+     * Agrega al color el componente Gamma util cuando se carga de imágenes
+     * convencionales
+     * 
+     */
+    public void addGamma() {
+        set(a, (float) Math.pow(r, gamma), (float) Math.pow(g, gamma),
+                (float) Math.pow(b, gamma));
     }
 }

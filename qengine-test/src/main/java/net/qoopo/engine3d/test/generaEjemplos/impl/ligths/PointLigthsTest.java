@@ -21,15 +21,15 @@ public class PointLigthsTest extends MakeTestScene {
 
     public void make(Scene mundo) {
         this.scene = mundo;
-        float d = 7;
-        int n = 1;
+        int nLigthsPerLine = 2;
+        float d = 10;
+        int n = nLigthsPerLine - 1;
         d = d * 2 / n;
         for (int i = 0; i <= n; i++) {
             for (int j = 0; j <= n; j++) {
                 Entity objeto = new Entity("Luz");
-                objeto.addComponent(new QPointLigth(3.0f, QColor.WHITE, 100, false, false));
-                // objeto.mover(i * d - ((n - 1) * d / 2), j * d - ((n - 1) * d / 2), 10);
-                objeto.move(i * d - (n * d / 2), j * d - (n * d / 2), 10);
+                objeto.addComponent(new QPointLigth(3.0f, QColor.WHITE, 50, false, false));
+                objeto.move(i * d - (n * d / 2), j * d - (n * d / 2), 5);
                 mundo.addEntity(objeto);
             }
         }

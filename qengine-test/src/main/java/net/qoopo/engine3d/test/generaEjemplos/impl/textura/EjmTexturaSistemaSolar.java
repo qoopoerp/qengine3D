@@ -11,12 +11,11 @@ import net.qoopo.engine.core.assets.AssetManager;
 import net.qoopo.engine.core.entity.Entity;
 import net.qoopo.engine.core.entity.component.mesh.Mesh;
 import net.qoopo.engine.core.entity.component.mesh.primitive.shape.Sphere;
-import net.qoopo.engine.core.material.basico.Material;
+import net.qoopo.engine.core.material.Material;
 import net.qoopo.engine.core.math.QVector3;
 import net.qoopo.engine.core.renderer.RenderEngine;
 import net.qoopo.engine.core.scene.Scene;
 import net.qoopo.engine.core.texture.util.MaterialUtil;
-import net.qoopo.engine.core.util.QGlobal;
 import net.qoopo.engine.core.util.mesh.NormalUtil;
 import net.qoopo.engine3d.test.generaEjemplos.MakeTestScene;
 
@@ -33,7 +32,7 @@ public class EjmTexturaSistemaSolar extends MakeTestScene {
                 Mesh universeGeometry = MaterialUtil.applyMaterial(new Sphere(20, 36), new Material(
                                 AssetManager.get().loadTexture("sol", new File(
                                                 "assets/textures/solar_system/2k_stars_milky_way.jpg"))));
-                ((Material) universeGeometry.primitiveList[0].material).setFactorEmision(1.0f);
+                ((Material) universeGeometry.primitiveList[0].material).setEmision(1.0f);
                 NormalUtil.invertirNormales(universeGeometry);
                 sky.addComponent(universeGeometry);
                 sky.move(QVector3.zero);
@@ -44,7 +43,7 @@ public class EjmTexturaSistemaSolar extends MakeTestScene {
                 Mesh geomeSol = MaterialUtil.applyMaterial(new Sphere(2, 36), new Material(
                                 AssetManager.get().loadTexture("sol",
                                                 new File("assets/textures/solar_system/2k_sun.jpg"))));
-                ((Material) geomeSol.primitiveList[0].material).setFactorEmision(1.0f);
+                ((Material) geomeSol.primitiveList[0].material).setEmision(1.0f);
                 sol.addComponent(geomeSol);
                 sol.move(QVector3.zero);
                 mundo.addEntity(sol);

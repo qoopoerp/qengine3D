@@ -6,7 +6,6 @@
 package net.qoopo.engine.renderer.shader.fragment.basico.parciales;
 
 import net.qoopo.engine.core.entity.component.mesh.primitive.Fragment;
-import net.qoopo.engine.core.material.basico.Material;
 import net.qoopo.engine.core.math.QColor;
 import net.qoopo.engine.core.renderer.RenderEngine;
 import net.qoopo.engine.renderer.shader.fragment.FragmentShader;
@@ -16,12 +15,14 @@ import net.qoopo.engine.renderer.shader.fragment.FragmentShader;
  * 
  * Shader simple, sin calculo de iluminacion ni textura
  * 
+ * Util en el modo wireframe
+ * 
  *
  * @author alberto
  */
-public class SimpleFragmetShader extends FragmentShader {
+public class OnlyColorFragmentShader extends FragmentShader {
 
-    public SimpleFragmetShader(RenderEngine render) {
+    public OnlyColorFragmentShader(RenderEngine render) {
         super(render);
     }
 
@@ -30,7 +31,7 @@ public class SimpleFragmetShader extends FragmentShader {
         if (pixel == null) {
             return null;
         }
-        if (!pixel.isDibujar()) {
+        if (!pixel.isDraw()) {
             return null;
         }
         // solo usa el color del material

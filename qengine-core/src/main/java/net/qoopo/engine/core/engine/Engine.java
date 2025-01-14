@@ -15,14 +15,13 @@ public abstract class Engine {
 
     protected static final DecimalFormat DF = new DecimalFormat("0.00");
 
-    //usada para medir subprocesos
+    // usada para medir subprocesos
     protected long ti;
     protected long ti2;
     protected boolean ejecutando = false;
 
     protected long tiempoPrevio;
 
-    //    protected long contadorFPS;
     public long getSubDelta() {
         ti2 = System.currentTimeMillis() - ti;
         ti = System.currentTimeMillis();

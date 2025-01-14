@@ -128,7 +128,7 @@ public class QNodoColorIluminacion extends ShaderNode {
                         if (proc != null && render.opciones.isSombras()) {
                             tv.vector3f1.set(pixel.ubicacion.getVector3());
                             factorSombra = proc.factorSombra(TransformationVectorUtil.transformarVectorInversa(tv.vector3f1,
-                                    pixel.entity, render.getCamara()), pixel.entity);
+                                    pixel.entity, render.getCamera()), pixel.entity);
                         }
 
                         if (luz instanceof QPointLigth || luz instanceof QSpotLigth) {

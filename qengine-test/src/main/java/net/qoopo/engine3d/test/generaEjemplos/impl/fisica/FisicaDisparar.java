@@ -14,7 +14,7 @@ import net.qoopo.engine.core.entity.component.physics.collision.detector.shape.p
 import net.qoopo.engine.core.entity.component.physics.collision.listeners.CollisionListener;
 import net.qoopo.engine.core.entity.component.physics.dinamica.QObjetoDinamico;
 import net.qoopo.engine.core.entity.component.physics.dinamica.QObjetoRigido;
-import net.qoopo.engine.core.material.basico.Material;
+import net.qoopo.engine.core.material.Material;
 import net.qoopo.engine.core.math.QColor;
 import net.qoopo.engine.core.math.QVector3;
 import net.qoopo.engine.core.renderer.RenderEngine;
@@ -63,14 +63,14 @@ public class FisicaDisparar extends MakeTestScene {
                 balon3Fisica.setMasa(2f, QVector3.zero.clone());
 
                 // nuevaFuerza = QUnidadMedida.velocidad(QVector3.of(0, 10, 0));
-                nuevaFuerza = render.getCamara().getDirection().clone().multiply(-1).normalize().multiply(50);
+                nuevaFuerza = render.getCamera().getDirection().clone().multiply(-1).normalize().multiply(50);
 
                 balon3Fisica.agregarFuerzas(nuevaFuerza);
 
                 nuevoBalon.addComponent(balon3Fisica);
-                nuevoBalon.move(render.getCamara().getTransformacion().getTraslacion().x,
-                        render.getCamara().getTransformacion().getTraslacion().y,
-                        render.getCamara().getTransformacion().getTraslacion().z);
+                nuevoBalon.move(render.getCamera().getTransformacion().getTraslacion().x,
+                        render.getCamera().getTransformacion().getTraslacion().y,
+                        render.getCamera().getTransformacion().getTraslacion().z);
                 scene.addEntity(nuevoBalon);
 
                 break;
@@ -89,14 +89,14 @@ public class FisicaDisparar extends MakeTestScene {
                 balon3Fisica.setMasa(1f, QVector3.zero.clone());
 
                 // nuevaFuerza = QUnidadMedida.velocidad(QVector3.of(0, 10, 0));
-                nuevaFuerza = render.getCamara().getDirection().clone().multiply(-1).normalize().multiply(50);
+                nuevaFuerza = render.getCamera().getDirection().clone().multiply(-1).normalize().multiply(50);
 
                 balon3Fisica.agregarFuerzas(nuevaFuerza);
 
                 nuevoBalon.addComponent(balon3Fisica);
-                nuevoBalon.move(render.getCamara().getTransformacion().getTraslacion().x,
-                        render.getCamara().getTransformacion().getTraslacion().y,
-                        render.getCamara().getTransformacion().getTraslacion().z);
+                nuevoBalon.move(render.getCamera().getTransformacion().getTraslacion().x,
+                        render.getCamera().getTransformacion().getTraslacion().y,
+                        render.getCamera().getTransformacion().getTraslacion().z);
 
                 nuevoBalon.addComponent(new CollisionListener() {
                     @Override

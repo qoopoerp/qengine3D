@@ -32,7 +32,7 @@ public class QDoomMonster {
 
         try {
             Entity monstruo = (Entity) AssetManager.get()
-                    .loadModel("assets/models/md5/DOOM_MONSTERS/hellknight/monster.md5mesh");
+                    .loadModel("assets/models/md5/doom3_monsters/hellknight/monster.md5mesh");
 
             // Carga de audios
             AudioBuffer qdemon_atacar = AssetManager.get()

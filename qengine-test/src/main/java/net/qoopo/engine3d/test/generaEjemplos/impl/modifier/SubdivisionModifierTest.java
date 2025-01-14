@@ -14,11 +14,10 @@ import net.qoopo.engine.core.entity.component.mesh.primitive.shape.Box;
 import net.qoopo.engine.core.entity.component.mesh.primitive.shape.GeoSphere;
 import net.qoopo.engine.core.entity.component.mesh.primitive.shape.IcoSphere;
 import net.qoopo.engine.core.entity.component.mesh.primitive.shape.SphereBox;
-import net.qoopo.engine.core.entity.component.mesh.primitive.shape.Torus;
 import net.qoopo.engine.core.entity.component.modifier.generate.InflateModifier;
 import net.qoopo.engine.core.entity.component.modifier.generate.SubdivisionModifier;
 import net.qoopo.engine.core.entity.component.movement.RotationEntityComponent;
-import net.qoopo.engine.core.material.basico.Material;
+import net.qoopo.engine.core.material.Material;
 import net.qoopo.engine.core.renderer.RenderEngine;
 import net.qoopo.engine.core.scene.Scene;
 import net.qoopo.engine.core.texture.Texture;
@@ -35,6 +34,10 @@ public class SubdivisionModifierTest extends MakeTestScene {
                 this.scene = scene;
                 Texture text = AssetManager.get().loadTexture("uvmpap", new File("assets/textures/uv.png"));
                 Material material = new Material(text);
+
+                // Material material = PbrUtil
+                // .loadPbrMaterial(new File("assets/textures/pbr/floor/Shades
+                // Tile/shades-tile-unity/"));
 
                 Mesh[] meshList = new Mesh[] { new Box(), new IcoSphere(1, 0), new GeoSphere(1, 0) };
 

@@ -8,9 +8,9 @@ package net.qoopo.engine3d.core.sky;
 import net.qoopo.engine.core.entity.Entity;
 import net.qoopo.engine.core.entity.component.mesh.Mesh;
 import net.qoopo.engine.core.entity.component.mesh.primitive.shape.Sphere;
-import net.qoopo.engine.core.material.basico.Material;
+import net.qoopo.engine.core.material.Material;
 import net.qoopo.engine.core.texture.Texture;
-import net.qoopo.engine.core.texture.procesador.QProcesadorMix;
+import net.qoopo.engine.core.texture.procesador.MixTexture;
 import net.qoopo.engine.core.texture.util.MaterialUtil;
 import net.qoopo.engine.core.util.mesh.NormalUtil;
 
@@ -23,7 +23,7 @@ public class SphereCielo extends QCielo {
     private Texture texturaDia;
     private Texture texturaNoche;
     private float radio;
-    private QProcesadorMix procesadorTextura;
+    private MixTexture procesadorTextura;
 
     public SphereCielo(Texture texturaDia, Texture texturaNoche, float radio) {
         this.texturaDia = texturaDia;
@@ -38,10 +38,10 @@ public class SphereCielo extends QCielo {
 //        QGeometria cieloG = new Sphere(radio, 8);
 //        QGeometria cieloG = new Sphere(radio, 4);
         Material material = new Material();
-        material.setFactorEmision(1);//finge emision de luz para no ser afectado por las luces
-        procesadorTextura = new QProcesadorMix(texturaDia, texturaNoche);
+        material.setEmision(1);//finge emision de luz para no ser afectado por las luces
+        procesadorTextura = new MixTexture(texturaDia, texturaNoche);
         procesadorTextura.setRazon(0);
-        material.setMapaColor(procesadorTextura);
+        material.setColorMap(procesadorTextura);
         MaterialUtil.applyMaterial(cieloG, material);
         NormalUtil.invertirNormales(cieloG);
         entity.addComponent(cieloG);
@@ -85,11 +85,11 @@ public class SphereCielo extends QCielo {
         this.radio = radio;
     }
 
-    public QProcesadorMix getProcesadorTextura() {
+    public MixTexture getProcesadorTextura() {
         return procesadorTextura;
     }
 
-    public void setProcesadorTextura(QProcesadorMix procesadorTextura) {
+    public void setProcesadorTextura(MixTexture procesadorTextura) {
         this.procesadorTextura = procesadorTextura;
     }
 

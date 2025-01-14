@@ -1,8 +1,15 @@
 package net.qoopo.engine.renderer;
 
+import java.io.File;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.logging.Logger;
 import java.util.stream.IntStream;
+
+import javax.imageio.ImageIO;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -23,26 +30,27 @@ import net.qoopo.engine.core.entity.component.mesh.primitive.Vertex;
 import net.qoopo.engine.core.entity.component.modifier.ModifierComponent;
 import net.qoopo.engine.core.entity.component.particles.Particle;
 import net.qoopo.engine.core.entity.component.particles.ParticleEmissor;
-import net.qoopo.engine.core.material.basico.Material;
+import net.qoopo.engine.core.material.Material;
 import net.qoopo.engine.core.math.QColor;
 import net.qoopo.engine.core.math.QMatriz4;
 import net.qoopo.engine.core.math.QVector2;
 import net.qoopo.engine.core.math.QVector3;
 import net.qoopo.engine.core.math.QVector4;
-import net.qoopo.engine.core.renderer.QOpcionesRenderer;
 import net.qoopo.engine.core.renderer.RenderEngine;
+import net.qoopo.engine.core.renderer.RenderOptions;
 import net.qoopo.engine.core.renderer.superficie.Superficie;
 import net.qoopo.engine.core.scene.Camera;
 import net.qoopo.engine.core.scene.Scene;
 import net.qoopo.engine.core.shadow.QProcesadorSombra;
+import net.qoopo.engine.core.texture.Texture;
 import net.qoopo.engine.core.util.ComponentUtil;
 import net.qoopo.engine.core.util.QGlobal;
 import net.qoopo.engine.renderer.raster.AbstractRaster;
 import net.qoopo.engine.renderer.raster.ParallelRaster;
 import net.qoopo.engine.renderer.shader.fragment.FragmentShader;
-import net.qoopo.engine.renderer.shader.fragment.FragmentShaderComponent;
-import net.qoopo.engine.renderer.shader.fragment.basico.StandardFramentShader;
+import net.qoopo.engine.renderer.shader.fragment.basico.StandardFragmentShader;
 import net.qoopo.engine.renderer.shader.vertex.DefaultVertexShader;
+import net.qoopo.engine.renderer.shader.vertex.VertexShader;
 import net.qoopo.engine.renderer.shader.vertex.VertexShaderComponent;
 import net.qoopo.engine.renderer.shadow.procesadores.QSombraCono;
 import net.qoopo.engine.renderer.shadow.procesadores.QSombraDireccional;
@@ -65,49 +73,42 @@ public class SoftwareRenderer extends RenderEngine {
     protected AbstractRaster raster;
     // El sombreador (el que calcula el color de cada pixel)
     protected FragmentShader shader;
-    // El sombreador default (el que calcula el color de cada pixel)
-    protected FragmentShader defaultShader;
 
     protected DefaultVertexShader vertexShader;
-    protected DefaultVertexShader defaultVertexShader;
 
     public SoftwareRenderer(Scene escena, Superficie superficie, int ancho, int alto) {
         super(escena, superficie, ancho, alto);
         raster = new ParallelRaster(this);
-        defaultShader = new StandardFramentShader(this);
+        shader = new StandardFragmentShader(this);
         vertexShader = new DefaultVertexShader();
-        defaultVertexShader = new DefaultVertexShader();
     }
 
     public SoftwareRenderer(Scene escena, String nombre, Superficie superficie, int ancho, int alto) {
         super(escena, nombre, superficie, ancho, alto);
         raster = new ParallelRaster(this);
-        defaultShader = new StandardFramentShader(this);
+        shader = new StandardFragmentShader(this);
         vertexShader = new DefaultVertexShader();
-        defaultVertexShader = new DefaultVertexShader();
     }
 
     @Override
     public long update() {
         try {
-            if (!isCargando()) {
+            if (!isLoading()) {
                 if (frameBuffer != null) {
-                    getSubDelta();
-                    setColorFondo(scene.getAmbientColor());// pintamos el fondo con el color ambiente
                     clean();
                     // logger.info("P1. Limpiar pantalla=" + getSubDelta());
                     updateLigths();
                     // logger.info("P2. Actualizar luces y sombras=" + getSubDelta());
                     render();
                     // logger.info("P3. Render=" + getSubDelta());
+                    postProcess();
                 }
             } else {
-                mostrarSplash();
+                showSplash();
             }
         } catch (Exception e) {
-            // logger.info("Error en el render=" + nombre);
+            logger.severe("Error en el render=" + name);
             e.printStackTrace();
-
         }
         poligonosDibujados = poligonosDibujadosTemp;
         tiempoPrevio = System.currentTimeMillis();
@@ -117,9 +118,9 @@ public class SoftwareRenderer extends RenderEngine {
     /**
      * Realiza la limpieza de pantalla
      */
-    protected void clean() {
+    public void clean() {
         frameBuffer.clean();
-        frameBuffer.llenarColor(colorFondo);// llena el buffer de color con el color indicado, dura 1ms
+        frameBuffer.fill(backColor);// llena el buffer de color con el color indicado, dura 1ms
     }
 
     /**
@@ -127,26 +128,30 @@ public class SoftwareRenderer extends RenderEngine {
      *
      * @throws Exception
      */
-    public void render() throws Exception {
+    private void render() throws Exception {
         poligonosDibujadosTemp = 0;
         try {
             // La Matriz de vista es la inversa de la matriz de la camara.
             // Esto es porque la camara siempre estara en el centro y movemos el mundo
             // en direccion contraria a la camara.
-            QMatriz4 matrizVista = camara.getMatrizTransformacion(QGlobal.time).invert();
-            QMatriz4 matrizVistaInvertidaBillboard = camara.getMatrizTransformacion(QGlobal.time);
+            QMatriz4 matrizVista = camera.getMatrizTransformacion(QGlobal.time).invert();
+            QMatriz4 matrizVistaInvertidaBillboard = camera.getMatrizTransformacion(QGlobal.time);
             // caras solidas
             scene.getEntities().stream()
                     .filter(entity -> entity.isToRender())
                     .parallel()
                     .forEach(entity -> renderEntity(entity, matrizVista, matrizVistaInvertidaBillboard, false));
+
+            shadeFragments();
             // caras transperentes
             scene.getEntities().stream()
                     .filter(entity -> entity.isToRender())
                     .parallel()
                     .forEach(entity -> renderEntity(entity, matrizVista, matrizVistaInvertidaBillboard, true));
+
+            shadeFragments();
         } catch (Exception e) {
-            System.out.println("Error render:" + nombre);
+            System.out.println("Error render:" + name);
             e.printStackTrace();
         }
     }
@@ -155,16 +160,16 @@ public class SoftwareRenderer extends RenderEngine {
      * Se encarga de pasar el fragment shader en caso de ser diferido
      */
     public void shadeFragments() {
-        if (!isCargando()) {
+        if (!isLoading()) {
             if (opciones.isDefferedShadding()) {
                 if (getFrameBuffer() != null) {
                     // toda la pantalla
                     // shadeFragments(0, getFrameBuffer().getAncho(), 0,
                     // getFrameBuffer().getAlto());
-                    // // divide la pantalla en secciones
+                    // divide la pantalla en secciones
                     int sections = 4;
-                    int widthSection = getFrameBuffer().getAncho() / sections;
-                    int heigthSection = getFrameBuffer().getAlto() / sections;
+                    int widthSection = getFrameBuffer().getWidth() / sections;
+                    int heigthSection = getFrameBuffer().getHeight() / sections;
                     // // // procesa cada seccion en paralelo
                     IntStream.range(0, sections)
                             .parallel()
@@ -179,25 +184,52 @@ public class SoftwareRenderer extends RenderEngine {
         }
     }
 
+    /**
+     * Renderiza una seccion del frmeBuffer
+     * 
+     * @param xFrom
+     * @param width
+     * @param yFrom
+     * @param height
+     */
     private void shadeFragments(int xFrom, int width, int yFrom, int height) {
-        if (!isCargando()) {
+        if (!isLoading()) {
             if (getFrameBuffer() != null && getShader() != null) {
                 for (int x = xFrom; x < xFrom + width; x++) {
                     for (int y = yFrom; y < yFrom + height; y++) {
-                        if (getFrameBuffer().getPixel(x, y).isDibujar())
-                            getFrameBuffer().setQColor(x, y,
-                                    getShader().shadeFragment(
-                                            getFrameBuffer().getPixel(x, y), x, y));
+                        if (getFrameBuffer().getFragment(x, y).isDraw()) {
+                            try { // busca un shader para esta entidad
+                                FragmentShader shader = getShader();
+
+                                // if (getFrameBuffer().getPixel(x, y).entity != null) {
+                                // FragmentShaderComponent qshader = (FragmentShaderComponent)
+                                // ComponentUtil.getComponent(
+                                // getFrameBuffer().getPixel(x, y).entity,
+                                // FragmentShaderComponent.class);
+
+                                // if (qshader != null && qshader.getShader() != null) {
+                                // shader = qshader.getShader();
+                                // }
+                                // shader.setRender(this);
+                                // }
+
+                                getFrameBuffer().setQColor(x, y,
+                                        shader.shadeFragment(
+                                                getFrameBuffer().getFragment(x, y), x, y));
+                                getFrameBuffer().getFragment(x, y).setDraw(false);
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                        }
                     }
                 }
             }
         }
     }
 
-    public void postRender() {
-        if (!isCargando()) {
+    public void draw() {
+        if (!isLoading()) {
             if (frameBuffer != null) {
-                efectosPostProcesamiento();
                 if (renderReal) {
                     showStats(frameBuffer.getRendered().getGraphics());
                 }
@@ -241,7 +273,7 @@ public class SoftwareRenderer extends RenderEngine {
             return;
         }
         // salta el dibujo de la camara que esta usando el render
-        if (entity instanceof Camera && entity.equals(this.camara)) {
+        if (entity instanceof Camera && entity.equals(this.camera)) {
             return;
         }
 
@@ -255,34 +287,58 @@ public class SoftwareRenderer extends RenderEngine {
         // vision de la camara
         matVistaModelo = matrizVista.mult(matrizModelo);
 
-        // busca un shader personalizado
-        FragmentShaderComponent qshader = (FragmentShaderComponent) ComponentUtil.getComponent(entity,
-                FragmentShaderComponent.class);
-        if (qshader != null && qshader.getShader() != null) {
-            setShader(qshader.getShader());
-        } else {
-            setShader(defaultShader);
-        }
-        getShader().setRender(this);
+        // // busca un shader personalizado
+        // FragmentShaderComponent qshader = (FragmentShaderComponent)
+        // ComponentUtil.getComponent(entity,
+        // FragmentShaderComponent.class);
+
+        // FragmentShader shader = this.shader;
+        // if (qshader != null && qshader.getShader() != null) {
+        // shader = qshader.getShader();
+        // }
+        // shader.setRender(this);
 
         // busca un vertexShader personalizado
         VertexShaderComponent vertexShaderComponent = (VertexShaderComponent) ComponentUtil.getComponent(entity,
                 VertexShaderComponent.class);
+        VertexShader tmpVertexShader = this.vertexShader;
         if (vertexShaderComponent != null && vertexShaderComponent.getShader() != null) {
-            setVertexShader(vertexShaderComponent.getShader());
-        } else {
-            setVertexShader(defaultVertexShader);
+            tmpVertexShader = vertexShaderComponent.getShader();
         }
 
+        final VertexShader vertexShader = tmpVertexShader;
+
         entity.actualizarRotacionBillboard(matrizVistaInvertidaBillboard);
+
+        // componentes - como particulas o CubeMaps
+        ParticleEmissor emisor = null;
+        for (EntityComponent component : entity.getComponents()) {
+            if (component instanceof UpdatableComponent) {
+                if (((UpdatableComponent) component).isRequiereUpdate())
+                    ((UpdatableComponent) component).update(this, scene);
+                // particulas
+            } else if (component instanceof ParticleEmissor) {
+                emisor = (ParticleEmissor) component;
+                emisor.emitir(EngineTime.deltaNano);
+                for (Particle particula : emisor.getParticulasNuevas()) {
+                    scene.addEntity(particula.objeto);
+                }
+            }
+            // for (Particle particula : emisor.getParticulasEliminadas()) {
+            // escena.eliminarGeometria(particula.objeto);
+            // particula.objeto.renderizar=false;
+            // modificado = true;
+            // }
+            // agrego las particulas nueva y elimino las viejas
+        }
 
         // primero ejecuta los componentes y modificadores
         entity.getComponents(Mesh.class)
                 .stream()
-                .parallel()
+                // .parallel()
                 .forEach(comp -> {
                     Mesh mesh = (Mesh) comp;
-                    ParticleEmissor emisor = null;
+
                     if (mesh != null) {
                         // actualizo la marca de tiempo, solo se usa para saber si se debe volver a
                         // calcular los modificadores
@@ -302,29 +358,13 @@ public class SoftwareRenderer extends RenderEngine {
                         if (tmpMesh == null || tmpMesh.getTimeMark() != mesh.getTimeMark()) {
                             logger.info("Actualizando malla por modificadores " + entity.getName());
                             tmpMesh = mesh.clone();// no destructivo, las modificaciones se realizan sobre la copia
+                            tmpMesh.setEntity(entity);
                         }
-
+                        // aplica modificadores
                         for (EntityComponent component : entity.getComponents()) {
                             if (component instanceof ModifierComponent) {
                                 ((ModifierComponent) component).apply(tmpMesh);
                             }
-                            if (component instanceof UpdatableComponent) {
-                                if (((UpdatableComponent) component).isRequierepdate())
-                                    ((UpdatableComponent) component).update(this, scene);
-                                // particulas
-                            } else if (component instanceof ParticleEmissor) {
-                                emisor = (ParticleEmissor) component;
-                                emisor.emitir(EngineTime.deltaNano);
-                                for (Particle particula : emisor.getParticulasNuevas()) {
-                                    scene.addEntity(particula.objeto);
-                                }
-                            }
-                            // for (Particle particula : emisor.getParticulasEliminadas()) {
-                            // escena.eliminarGeometria(particula.objeto);
-                            // particula.objeto.renderizar=false;
-                            // modificado = true;
-                            // }
-                            // agrego las particulas nueva y elimino las viejas
                         }
 
                         mesh.setCacheMesh(tmpMesh);
@@ -334,7 +374,7 @@ public class SoftwareRenderer extends RenderEngine {
 
                         // rasterizacion caras
                         List.of(modifiedMesh.primitiveList).stream()
-                                .parallel()
+                                // .parallel()
                                 .forEach(primitive -> {
                                     if (primitive.material == null
                                             // q no tengra transparencia cuando tiene el tipo de material basico
@@ -416,7 +456,7 @@ public class SoftwareRenderer extends RenderEngine {
 
                                             poligonosDibujadosTemp++;
                                             raster.raster(matVistaModelo, bufferVertices, primitive, opciones
-                                                    .getTipoVista() == QOpcionesRenderer.VISTA_WIRE
+                                                    .getTipoVista() == RenderOptions.VISTA_WIRE
                                                     || primitive.mesh.type == Mesh.GEOMETRY_TYPE_WIRE);
                                         } catch (Exception ex) {
                                             logger.severe("[X] Error al dibujar entidad : " + entity.getName()
@@ -435,22 +475,30 @@ public class SoftwareRenderer extends RenderEngine {
     /**
      * Ejecuta los efectosPotProcesamiento
      */
-    private void efectosPostProcesamiento() {
-        if (efectosPostProceso != null) {
-            // try {
-            // ImageIO.write(frameBuffer.getRendered(), "png", new
-            // File("/home/alberto/testSalidaAntes_" + sf.format(new Date()) + ".png"));
-            // } catch (IOException ex) {
-            //
-            // }
-            frameBuffer.setBufferColor(efectosPostProceso.ejecutar(frameBuffer.getBufferColor()));
-            // frameBuffer.actualizarTextura();
-            // try {
-            // ImageIO.write(frameBuffer.getRendered(), "png", new
-            // File("/home/alberto/testSalidaDespues_" + sf.format(new Date()) + ".png"));
-            // } catch (IOException ex) {
-            //
-            // }
+    private void postProcess() {
+        if (filterQueue != null) {
+            Texture inputTexture = frameBuffer.getBufferColor();
+
+            AtomicReference<Texture> textureWrapper = new AtomicReference<Texture>(inputTexture);
+            SimpleDateFormat sf = new SimpleDateFormat("yyyyMMddHHmmss");
+            filterQueue.forEach(filter -> {
+                try {
+                    ImageIO.write(textureWrapper.get().getImagen(), "png",
+                            new File("/tmp/filter_0_" + sf.format(new Date()) + ".png"));
+                } catch (IOException ex) {
+
+                }
+                textureWrapper.set(filter.apply(textureWrapper.get()));
+                try {
+                    ImageIO.write(textureWrapper.get().getImagen(), "png",
+                            new File("/tmp/filter_1_" + sf.format(new Date()) + ".png"));
+                } catch (IOException ex) {
+
+                }
+            });
+
+            frameBuffer.setBufferColor(textureWrapper.get());
+            frameBuffer.updateOuputTexture();
         }
     }
 
@@ -494,7 +542,7 @@ public class SoftwareRenderer extends RenderEngine {
                                 // entity, camara));
                                 // actualiza la dirección de la luz
                                 direccionLuzEspacioCamara = TransformationVectorUtil
-                                        .transformarVectorNormal(direccionLuzEspacioCamara, entity, camara);
+                                        .transformarVectorNormal(direccionLuzEspacioCamara, entity, camera);
                                 direccionLuzMapaSombra = TransformationVectorUtil.transformarVectorNormal(
                                         direccionLuzMapaSombra,
                                         entity.getMatrizTransformacion(QGlobal.time));
@@ -513,22 +561,22 @@ public class SoftwareRenderer extends RenderEngine {
                                         if (luz instanceof QDirectionalLigth) {
                                             if (QGlobal.SOMBRAS_DIRECCIONALES_CASCADA) {
                                                 proc = new QSombraDireccionalCascada(QGlobal.SOMBRAS_CASCADAS_TAMANIO,
-                                                        scene, (QDirectionalLigth) componente, camara,
+                                                        scene, (QDirectionalLigth) componente, camera,
                                                         luz.getResolucionMapaSombra(), luz.getResolucionMapaSombra());
                                             } else {
                                                 proc = new QSombraDireccional(scene, (QDirectionalLigth) componente,
-                                                        camara, luz.getResolucionMapaSombra(),
+                                                        camera, luz.getResolucionMapaSombra(),
                                                         luz.getResolucionMapaSombra());
                                             }
                                             // logger.info("Creado pocesador de sombra Direccional con clave "
                                             // + entity.getName());
                                         } else if (luz instanceof QPointLigth) {
-                                            proc = new QSombraOmnidireccional(scene, (QPointLigth) componente, camara,
+                                            proc = new QSombraOmnidireccional(scene, (QPointLigth) componente, camera,
                                                     luz.getResolucionMapaSombra(), luz.getResolucionMapaSombra());
                                             // logger.info("Creado pocesador de sombra Omnidireccional con clave "
                                             // + entity.getName());
                                         } else if (luz instanceof QSpotLigth) {
-                                            proc = new QSombraCono(scene, (QSpotLigth) componente, camara,
+                                            proc = new QSombraCono(scene, (QSpotLigth) componente, camera,
                                                     luz.getResolucionMapaSombra(), luz.getResolucionMapaSombra());
                                             // logger.info("Creado pocesador de sombra Cónica con clave "
                                             // + entity.getName());
@@ -598,9 +646,9 @@ public class SoftwareRenderer extends RenderEngine {
                 if (entity.isToRender()) {
                     for (EntityComponent componente : entity.getComponents()) {
                         if (componente instanceof QLigth) {
-                            tmp = TransformationVectorUtil.transformarVector(QVector3.zero, entity, camara);
-                            camara.getCoordenadasPantalla(ubicacionLuz, new QVector4(tmp, 1), frameBuffer.getAncho(),
-                                    frameBuffer.getAlto());
+                            tmp = TransformationVectorUtil.transformarVector(QVector3.zero, entity, camera);
+                            camera.getCoordenadasPantalla(ubicacionLuz, new QVector4(tmp, 1), frameBuffer.getWidth(),
+                                    frameBuffer.getHeight());
                             if ((ubicacionLuz.x - mouseLocation.x)
                                     * (ubicacionLuz.x - mouseLocation.x)
                                     + (ubicacionLuz.y - mouseLocation.y)
@@ -633,7 +681,7 @@ public class SoftwareRenderer extends RenderEngine {
             // }
             // metodo donde tomo las coordenadas de pantalla del cursor y veo en buffer el
             // pixel
-            Fragment pixel = frameBuffer.getPixel((int) mouseLocation.x, (int) mouseLocation.y);
+            Fragment pixel = frameBuffer.getFragment((int) mouseLocation.x, (int) mouseLocation.y);
             if (pixel != null) {
                 return pixel.entity;
             }
@@ -661,14 +709,6 @@ public class SoftwareRenderer extends RenderEngine {
         this.shader = shader;
     }
 
-    public FragmentShader getDefaultShader() {
-        return defaultShader;
-    }
-
-    public void setDefaultShader(FragmentShader defaultShader) {
-        this.defaultShader = defaultShader;
-    }
-
     public AbstractRaster getRaster() {
         return raster;
     }
@@ -685,6 +725,13 @@ public class SoftwareRenderer extends RenderEngine {
     @Override
     public void render(QMatriz4 matViewModel, QVertexBuffer bufferVertices, Primitive primitiva, boolean wire) {
         raster.raster(matViewModel, bufferVertices, primitiva, wire);
+    }
+
+    public void setShader(Object shader) {
+        if (shader instanceof FragmentShader) {
+            this.shader = (FragmentShader) shader;
+            this.shader.setRender(this);
+        }
     }
 
 }

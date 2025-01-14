@@ -18,20 +18,15 @@ import java.util.List;
 import javax.swing.JFrame;
 import javax.swing.WindowConstants;
 
+import lombok.Getter;
+import lombok.Setter;
 import net.qoopo.engine.core.animation.AnimationEngine;
 import net.qoopo.engine.core.assets.AssetManager;
 import net.qoopo.engine.core.audio.AudioEngine;
 import net.qoopo.engine.core.engine.Engine;
 import net.qoopo.engine.core.engine.EngineTime;
-import net.qoopo.engine.core.entity.Entity;
-import net.qoopo.engine.core.entity.component.EntityComponent;
-import net.qoopo.engine.core.entity.component.UpdatableComponent;
 import net.qoopo.engine.core.entity.component.gui.QTecladoReceptor;
 import net.qoopo.engine.core.entity.component.ligth.QDirectionalLigth;
-import net.qoopo.engine.core.entity.component.mesh.Mesh;
-import net.qoopo.engine.core.entity.component.modifier.ModifierComponent;
-import net.qoopo.engine.core.entity.component.particles.Particle;
-import net.qoopo.engine.core.entity.component.particles.ParticleEmissor;
 import net.qoopo.engine.core.ia.IAEngine;
 import net.qoopo.engine.core.input.QInputManager;
 import net.qoopo.engine.core.lwjgl.audio.LwjglAudioLoader;
@@ -49,6 +44,7 @@ import net.qoopo.engine.core.util.image.ImgUtil;
 import net.qoopo.engine.java3d.renderer.Java3DRenderer;
 import net.qoopo.engine.jbullet.JBulletPhysicsEngine;
 import net.qoopo.engine.renderer.SoftwareRenderer;
+import net.qoopo.engine.renderer.shader.fragment.basico.parciales.LigthFragmenShader;
 import net.qoopo.engine3d.core.asset.model.DefaultModelLoader;
 import net.qoopo.engine3d.core.sky.QCielo;
 import net.qoopo.engine3d.core.util.Accion;
@@ -65,6 +61,8 @@ import net.qoopo.engine3d.engines.render.GuiUTIL;
  *
  * @author alberto
  */
+@Getter
+@Setter
 public class QEngine3D extends Engine implements Runnable {
 
     // private static Logger logger = Logger.getLogger("test");
@@ -93,11 +91,12 @@ public class QEngine3D extends Engine implements Runnable {
     private Scene scene;
     // motores
     private PhysicsEngine physicsEngine = null;// el motor de fisica
-    private RenderEngine renderEngine = null; // motor de renderizado
+    // private RenderEngine renderEngine = null; // motor de renderizado
     private AudioEngine audioEngine = null;
     private AnimationEngine animationEngine = null;// el motor que procesa las animaciones
-    private List<RenderEngine> rendererList = null; // lista de renderizadores, en caso de un editor puede usar varios
-                                                    // renderers
+    private List<RenderEngine> rendererList = new ArrayList<>(); // lista de renderizadores, en caso de un editor puede
+                                                                 // usar varios
+    // renderers
     private QMotorCicloDia motorDiaNoche = null;// el motor que procesa el ciclo de dia y noche
     private IAEngine motorInteligencia = null;
 
@@ -127,6 +126,7 @@ public class QEngine3D extends Engine implements Runnable {
             }
 
         });
+        AssetManager.get().setEnvProbeShader(new LigthFragmenShader(null));
     }
 
     public QEngine3D() {
@@ -179,11 +179,8 @@ public class QEngine3D extends Engine implements Runnable {
                 startAI();
             }
 
-            renderEngine.start();
-            if (rendererList != null && !rendererList.isEmpty()) {
-                for (RenderEngine rend : rendererList) {
-                    rend.start();
-                }
+            for (RenderEngine rend : rendererList) {
+                rend.start();
             }
 
             // el motor de dianoche siempre se ejecuta independientemente
@@ -243,13 +240,10 @@ public class QEngine3D extends Engine implements Runnable {
                 physicsEngine.update();
             }
 
-            if (rendererList != null && !rendererList.isEmpty()) {
-                rendererList.forEach(renderer -> renderer.update());
-            } else {
-                if (renderEngine != null) {
-                    renderEngine.update();
-                }
-            }
+            rendererList.forEach(renderer -> {
+                renderer.setBackColor(scene.getAmbientColor());// pintamos el fondo con el color ambiente
+                renderer.update();
+            });
 
             // ejecuta acciones de usuario
             if (customActions != null && !customActions.isEmpty()) {
@@ -258,20 +252,15 @@ public class QEngine3D extends Engine implements Runnable {
                 }
             }
 
-            // termina el render
-            if (rendererList != null && !rendererList.isEmpty()) {
-                rendererList.forEach(renderer -> {
-                    renderer.shadeFragments();
-                    renderer.postRender();
-                });
-            } else {
-                if (renderEngine != null) {
-                    renderEngine.shadeFragments();
-                    renderEngine.postRender();
-                }
-            }
+            // termina el render y sombrea los fragmentos puestos por las acciones del
+            // usuario
+            rendererList.forEach(renderer -> {
+                renderer.shadeFragments();
+                renderer.draw();
+            });
+
             // elimina las entidades que estan marcadas para eliminarse (no vivas)
-            scene.eliminarEntidadesNoVivas();
+            scene.removeDeathEntities();
             EngineTime.update();
         } catch (Exception e) {
             e.printStackTrace();
@@ -326,14 +315,6 @@ public class QEngine3D extends Engine implements Runnable {
 
     public void setPhysicsEngine(PhysicsEngine motorFisica) {
         this.physicsEngine = motorFisica;
-    }
-
-    public RenderEngine getRenderEngine() {
-        return renderEngine;
-    }
-
-    public void setRenderEngine(RenderEngine renderer) {
-        this.renderEngine = renderer;
     }
 
     /**
@@ -423,7 +404,7 @@ public class QEngine3D extends Engine implements Runnable {
      * @param horaInicial
      */
     public void configDayCycle(QCielo cielo, long intervalo, QDirectionalLigth sol, float horaInicial) {
-        motorDiaNoche = new QMotorCicloDia(cielo, getRenderEngine(), intervalo, sol, horaInicial);
+        motorDiaNoche = new QMotorCicloDia(cielo, scene, intervalo, sol, horaInicial);
     }
 
     public void stopDayCycle() {
@@ -487,7 +468,7 @@ public class QEngine3D extends Engine implements Runnable {
 
     @Override
     public void stop() {
-        getRenderEngine().setCargando(true);
+        // getRenderEngine().setLoading(true);
         AssetManager.get().free();
         detenerFisica();
         stopAnimation();
@@ -540,6 +521,7 @@ public class QEngine3D extends Engine implements Runnable {
             GuiUTIL.centrarVentana(ventana);
         }
 
+        RenderEngine renderEngine;
         switch (tipoRenderer) {
             default:
             case RenderEngine.RENDER_INTERNO:
@@ -554,66 +536,11 @@ public class QEngine3D extends Engine implements Runnable {
         }
 
         renderEngine.opciones.setForzarResolucion(true);
-        renderEngine.setCamara(camara);
+        renderEngine.setCamera(camara);
         renderEngine.resize();
+        getRendererList().add(renderEngine);
         ventana.setVisible(true);
         ventana.pack();
-    }
-
-    public String getTitulo() {
-        return titulo;
-    }
-
-    public void setTitulo(String titulo) {
-        this.titulo = titulo;
-    }
-
-    public boolean isIniciarFisica() {
-        return iniciarFisica;
-    }
-
-    public void setIniciarFisica(boolean iniciarFisica) {
-        this.iniciarFisica = iniciarFisica;
-    }
-
-    public boolean isIniciarAnimaciones() {
-        return iniciarAnimaciones;
-    }
-
-    public void setIniciarAnimaciones(boolean iniciarAnimaciones) {
-        this.iniciarAnimaciones = iniciarAnimaciones;
-    }
-
-    public boolean isIniciarDiaNoche() {
-        return iniciarDiaNoche;
-    }
-
-    public void setIniciarDiaNoche(boolean iniciarDiaNoche) {
-        this.iniciarDiaNoche = iniciarDiaNoche;
-    }
-
-    public boolean isIniciarAudio() {
-        return iniciarAudio;
-    }
-
-    public void setIniciarAudio(boolean iniciarAudio) {
-        this.iniciarAudio = iniciarAudio;
-    }
-
-    public boolean isIniciarInteligencia() {
-        return iniciarInteligencia;
-    }
-
-    public void setIniciarInteligencia(boolean iniciarInteligencia) {
-        this.iniciarInteligencia = iniciarInteligencia;
-    }
-
-    public IAEngine getMotorInteligencia() {
-        return motorInteligencia;
-    }
-
-    public void setMotorInteligencia(IAEngine motorInteligencia) {
-        this.motorInteligencia = motorInteligencia;
     }
 
     /**
@@ -635,39 +562,6 @@ public class QEngine3D extends Engine implements Runnable {
 
             }
         });
-    }
-
-
-    public List<RenderEngine> getRendererList() {
-        return rendererList;
-    }
-
-    public void setRendererList(List<RenderEngine> rendererList) {
-        this.rendererList = rendererList;
-    }
-
-    public List<Accion> getCustomActions() {
-        return customActions;
-    }
-
-    public void setCustomActions(List<Accion> accionesEjecucion) {
-        this.customActions = accionesEjecucion;
-    }
-
-    public boolean isModificando() {
-        return modificando;
-    }
-
-    public void setModificando(boolean modificando) {
-        this.modificando = modificando;
-    }
-
-    public float getHoraDelDia() {
-        return horaDelDia;
-    }
-
-    public void setHoraDelDia(float horaDelDia) {
-        this.horaDelDia = horaDelDia;
     }
 
 }

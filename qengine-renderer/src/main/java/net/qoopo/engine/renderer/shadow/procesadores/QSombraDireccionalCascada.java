@@ -37,7 +37,7 @@ public class QSombraDireccionalCascada extends QProcesadorSombra {
                 renderSombra[i].setCascada_indice(i + 1);
                 // renderSombra[i].setCascada_indice(i);
                 renderSombra[i].setCascada_tamanio(numeroCascadas);
-                renderSombra[i].setNombre("Cascada " + (i + 1));
+                renderSombra[i].setName("Cascada " + (i + 1));
                 renderSombra[i].resize();
                 renderSombra[i].clean();
             } catch (Exception e) {

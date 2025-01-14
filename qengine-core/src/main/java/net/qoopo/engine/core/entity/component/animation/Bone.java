@@ -5,8 +5,13 @@
  */
 package net.qoopo.engine.core.entity.component.animation;
 
+import lombok.Getter;
+import lombok.Setter;
+import net.qoopo.engine.core.assets.model.ModelLoader;
+import net.qoopo.engine.core.assets.model.waveobject.LoadModelObj;
 import net.qoopo.engine.core.entity.Entity;
-import net.qoopo.engine.core.entity.component.mesh.primitive.shape.Box;
+import net.qoopo.engine.core.entity.component.EntityComponent;
+import net.qoopo.engine.core.entity.component.mesh.Mesh;
 import net.qoopo.engine.core.math.QMatriz4;
 
 /**
@@ -15,6 +20,8 @@ import net.qoopo.engine.core.math.QMatriz4;
  *
  * @author alberto
  */
+@Getter
+@Setter
 public class Bone extends Entity {
 
     public int indice = -1;
@@ -28,67 +35,42 @@ public class Bone extends Entity {
     private long cached_time_inversa = 0;
 
     public Bone() {
-        agregarGeometria();
+        loadMesh();
     }
 
     public Bone(String name) {
         super(name, false);
-        agregarGeometria();
+        loadMesh();
     }
 
     public Bone(int indice, String name) {
         super(name, false);
         this.indice = indice;
-        agregarGeometria();
+        loadMesh();
     }
 
     public Bone(int indice) {
         this.indice = indice;
-        agregarGeometria();
+        loadMesh();
     }
 
     /**
      * Esta geometria es para pruebas
      */
-    private void agregarGeometria() {
+    private void loadMesh() {
 
-        // LoadModel loadModel = new LoadModelObj();
-        // QEntity ent =
-        // loadModel.loadModel(QGizmoTraslacion.class.getResourceAsStream("/models/bone/bone.obj"));
-        // for (QEntity child : ent.getChilds()) {
-        // addComponent(QUtilComponentes.getMesh(child));
-        // }
+        ModelLoader loadModel = new LoadModelObj();
+        Entity ent = loadModel.loadModel(Bone.class.getResourceAsStream("/models/bone/bone.obj"));
+        for (Entity child : ent.getChilds()) {
+            for (EntityComponent component : child.getComponents(Mesh.class)) {
+                addComponent(component);
+            }
+        }
 
-        addComponent(new Box(1, 1, 1));
-        addComponent(new Box(0.1f, 0.1f, 0.1f));
-        addComponent(new Box(0.5f, 0.1f, 0.1f));
+        // addComponent(new Box(1, 1, 1));
+        // addComponent(new Box(0.1f, 0.1f, 0.1f));
+        // addComponent(new Box(0.5f, 0.1f, 0.1f));
 
-        // public static final Mesh GEOMETRIA_BONE_CUERPO = QUtilComponentes.getMesh(
-        // CargaWaveObject.cargarWaveObject(QBone.class.getResourceAsStream("/modelos/bone/bone.obj")).get(0));
-        // public static final Mesh GEOMETRIA_BONE_B1 = QUtilComponentes.getMesh(
-        // CargaWaveObject.cargarWaveObject(QBone.class.getResourceAsStream("/modelos/bone/bone.obj")).get(1));
-        // public static final Mesh GEOMETRIA_BONE_B2 = QUtilComponentes.getMesh(
-        // CargaWaveObject.cargarWaveObject(QBone.class.getResourceAsStream("/modelos/bone/bone.obj")).get(2));
-        // addComponent(GEOMETRIA_BONE_CUERPO);
-        // addComponent(GEOMETRIA_BONE_B1);
-        // addComponent(GEOMETRIA_BONE_B2);
-
-    }
-
-    public int getIndice() {
-        return indice;
-    }
-
-    public void setIndice(int indice) {
-        this.indice = indice;
-    }
-
-    public QMatriz4 getTransformacionInversa() {
-        return transformacionInversa;
-    }
-
-    public void setTransformacionInversa(QMatriz4 transformacionInversa) {
-        this.transformacionInversa = transformacionInversa;
     }
 
     /**

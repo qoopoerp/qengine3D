@@ -14,7 +14,7 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-public class QOpcionesRenderer {
+public class RenderOptions {
 
     public static final int VISTA_WIRE = 0;
     public static final int VISTA_FLAT = 1;
@@ -35,13 +35,13 @@ public class QOpcionesRenderer {
     // si es diferido, pinta despues al finalizar el raster
     private boolean defferedShadding = true;
 
-    public QOpcionesRenderer() {
+    public RenderOptions() {
         tipoVista = VISTA_PHONG;
         material = true;
         sombras = false;
     }
 
-    public QOpcionesRenderer(boolean material, boolean sombras) {
+    public RenderOptions(boolean material, boolean sombras) {
         this.material = material;
         this.sombras = sombras;
     }

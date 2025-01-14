@@ -5,17 +5,19 @@
  */
 package net.qoopo.engine.renderer.shader.fragment.basico.parciales;
 
-import net.qoopo.engine.core.entity.component.ligth.QIluminacion;
 import net.qoopo.engine.core.entity.component.mesh.primitive.Fragment;
-import net.qoopo.engine.core.material.basico.Material;
+import net.qoopo.engine.core.material.Material;
 import net.qoopo.engine.core.math.QColor;
 import net.qoopo.engine.core.math.QVector3;
 import net.qoopo.engine.core.renderer.RenderEngine;
 import net.qoopo.engine.renderer.shader.fragment.FragmentShader;
 
 /**
- * 3. 
+ * 3.
  * Shader con sombrado de phong. sin Textura
+ * 
+ * Util para el modelado donde no se debe tomar en cuenta la iluminacion ni
+ * materiales
  *
  * @author alberto
  */
@@ -26,35 +28,36 @@ public class PhongFramentShader extends FragmentShader {
     }
 
     @Override
-    public QColor shadeFragment(Fragment pixel, int x, int y) {
-        if (pixel == null) {
+    public QColor shadeFragment(Fragment fragment, int x, int y) {
+        if (fragment == null) {
             return null;
         }
-        if (!pixel.isDibujar()) {
+        if (!fragment.isDraw()) {
             return null;
         }
-
         QColor color = new QColor();// color default, blanco
-        QIluminacion iluminacion = new QIluminacion();
-
         // No procesa textura , usa el color del material
-        color.set(pixel.material.getColor());
-        calcularIluminacion(iluminacion, pixel);
-        color.scale(iluminacion.getColorAmbiente());
-        color.addLocal(iluminacion.getColorLuz());
+        color.set(fragment.material.getColor());
+        computeLighting(fragment, color);
         return color;
     }
 
-    protected void calcularIluminacion(QIluminacion iluminacion, Fragment fragment) {
+    protected void computeLighting(Fragment fragment, QColor color) {
         fragment.normal.normalize();
-        QVector3 tmpPixelPos = QVector3.empty();
-        // toma en cuenta la luz ambiente
-        iluminacion.setColorAmbiente(render.getScene().getAmbientColor().clone());
-        iluminacion.setColorLuz(QColor.BLACK.clone());
-        tmpPixelPos.set(fragment.ubicacion.getVector3());
-        tmpPixelPos.normalize();
-        // Iluminacion default no toma en cuenta las luces del entorno
-        iluminacion.getColorAmbiente().add(-tmpPixelPos.dot(fragment.normal));
+
+        // si tiene emision , lo ilumina con eso
+        if (fragment.material instanceof Material && ((Material) fragment.material).getEmision() > 0) {
+            Material material = (Material) fragment.material;
+            color.scale(material.getEmision());
+        } else {
+            QVector3 tmpPixelPos = fragment.ubicacion.getVector3();
+            tmpPixelPos.normalize();
+            // Iluminacion default no toma en cuenta las luces del entorno
+            color.scale(render.getScene().getAmbientColor().clone().add(-tmpPixelPos.dot(fragment.normal)));
+            // Agrega color de la luz.
+            // color.addLocal(iluminacion.getColorLuz());
+        }
+
     }
 
 }

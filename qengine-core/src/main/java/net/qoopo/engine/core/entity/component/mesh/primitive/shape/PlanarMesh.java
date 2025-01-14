@@ -11,7 +11,8 @@ import java.util.logging.Logger;
 import net.qoopo.engine.core.entity.component.mesh.Mesh;
 import net.qoopo.engine.core.entity.component.mesh.generator.height.HeightsGenerator;
 import net.qoopo.engine.core.entity.component.mesh.primitive.Shape;
-import net.qoopo.engine.core.material.basico.Material;
+import net.qoopo.engine.core.material.Material;
+import net.qoopo.engine.core.util.array.IntArray;
 
 /**
  * Genera una malla en un plano que puede alterar sus vertices en función de un
@@ -33,6 +34,7 @@ public class PlanarMesh extends Shape {
     private int eje = EJE_Z;
 
     private HeightsGenerator heightsGenerator;
+    private boolean triangles = true;
 
     public PlanarMesh(float ancho, float largo, float seccionesAncho, float seccionesLargo) {
         name = "Malla";
@@ -63,6 +65,21 @@ public class PlanarMesh extends Shape {
         this.largo = largo;
         this.delta = ancho / seccionesAncho;
         this.delta2 = largo / seccionesLargo;
+        if (wire) {
+            type = Mesh.GEOMETRY_TYPE_WIRE;
+        }
+        build();
+    }
+
+    public PlanarMesh(boolean triangles, boolean wire, float ancho, float largo, float seccionesAncho,
+            float seccionesLargo) {
+        name = "Malla";
+        this.ancho = ancho;
+        material = new Material("Malla");
+        this.largo = largo;
+        this.delta = ancho / seccionesAncho;
+        this.delta2 = largo / seccionesLargo;
+        this.triangles = triangles;
         if (wire) {
             type = Mesh.GEOMETRY_TYPE_WIRE;
         }
@@ -186,7 +203,6 @@ public class PlanarMesh extends Shape {
                             this.addVertex(x, height, z);
                             // textures uv
                             addUV(((float) x + ancho / 2) / ancho, 1.0f - ((float) z + largo / 2) / largo);
-
                         }
                     }
                     break;
@@ -202,7 +218,6 @@ public class PlanarMesh extends Shape {
                             this.addVertex(x, z, height);
                             // textures uv
                             addUV(((float) x + ancho / 2) / ancho, ((float) z + largo / 2) / largo);
-
                         }
                     }
                     break;
@@ -214,29 +229,44 @@ public class PlanarMesh extends Shape {
             for (int j = 0; j < planosLargo - 1; j++) {
                 for (int i = 0; i < planosAncho - 1; i++) {
                     try {
-                        this.addPoly(material,
-                                new int[] {
-                                        j * planosAncho + i,
-                                        j * planosAncho + planosAncho + i,
-                                        j * planosAncho + i + 1
+                        if (triangles) {
+                            this.addPoly(material,
+                                    IntArray.of(
+                                            j * planosAncho + i,
+                                            j * planosAncho + planosAncho + i,
+                                            j * planosAncho + i + 1),
+                                    IntArray.of(0, 0, 0),
+                                    IntArray.of(
+                                            j * planosAncho + i,
+                                            j * planosAncho + planosAncho + i,
+                                            j * planosAncho + i + 1));
+                            this.addPoly(material,
+                                    IntArray.of(
+                                            j * planosAncho + i + 1,
+                                            j * planosAncho + planosAncho + i,
+                                            j * planosAncho + planosAncho + i + 1),
+                                    IntArray.of(0, 0, 0),
+                                    IntArray.of(
+                                            j * planosAncho + i + 1,
+                                            j * planosAncho + planosAncho + i,
+                                            j * planosAncho + planosAncho + i + 1));
+                        } else {
+                            // quads
+                            this.addPoly(material,
+                                    IntArray.of(
+                                            j * planosAncho + i,
+                                            j * planosAncho + planosAncho + i,
+                                            j * planosAncho + planosAncho + i + 1,
+                                            j * planosAncho + i + 1
 
-                                }, new int[] { 0, 0, 0 },
-                                new int[] {
-                                        j * planosAncho + i,
-                                        j * planosAncho + planosAncho + i,
-                                        j * planosAncho + i + 1
-
-                                });
-                        this.addPoly(material,
-                                new int[] {
-                                        j * planosAncho + i + 1,
-                                        j * planosAncho + planosAncho + i,
-                                        j * planosAncho + planosAncho + i + 1 },
-                                new int[] { 0, 0, 0 },
-                                new int[] {
-                                        j * planosAncho + i + 1,
-                                        j * planosAncho + planosAncho + i,
-                                        j * planosAncho + planosAncho + i + 1 });
+                                    ),
+                                    IntArray.of(0, 0, 0, 0),
+                                    IntArray.of(
+                                            j * planosAncho + i,
+                                            j * planosAncho + planosAncho + i,
+                                            j * planosAncho + planosAncho + i + 1,
+                                            j * planosAncho + i + 1));
+                        }
                     } catch (Exception ex) {
                         Logger.getLogger(PlanarMesh.class.getName()).log(Level.SEVERE, null, ex);
                     }

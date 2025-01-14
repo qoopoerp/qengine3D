@@ -6,12 +6,12 @@
 package net.qoopo.engine.renderer.shader.fragment.proxy;
 
 import net.qoopo.engine.core.entity.component.mesh.primitive.Fragment;
-import net.qoopo.engine.core.material.basico.Material;
+import net.qoopo.engine.core.material.Material;
 import net.qoopo.engine.core.material.node.MaterialNode;
 import net.qoopo.engine.core.math.QColor;
 import net.qoopo.engine.core.renderer.RenderEngine;
 import net.qoopo.engine.renderer.shader.fragment.FragmentShader;
-import net.qoopo.engine.renderer.shader.fragment.basico.StandardFramentShader;
+import net.qoopo.engine.renderer.shader.fragment.basico.StandardFragmentShader;
 import net.qoopo.engine.renderer.shader.fragment.nodos.NodeFragmentShader;
 
 /**
@@ -27,7 +27,7 @@ public class QFullProxyShader extends FragmentShader {
 
     public QFullProxyShader(RenderEngine render) {
         super(render);
-        basico = new StandardFramentShader(render);
+        basico = new StandardFragmentShader(render);
         // basico = new QPBRShader(render);
         nodos = new NodeFragmentShader(render);
     }

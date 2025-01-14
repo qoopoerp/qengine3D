@@ -51,7 +51,7 @@ public class QSombraOmnidireccional extends QProcesadorSombra {
         for (int i = 0; i < 6; i++) {
             renderSombras[i] = new SoftwareShadowRender(SoftwareShadowRender.NO_DIRECCIONALES, mundo, luz, camaraRender, ancho,
                     alto, direcciones[i], direccionesArriba[i]);
-            renderSombras[i].setNombre(nombres[i]);
+            renderSombras[i].setName(nombres[i]);
             renderSombras[i].resize();
             renderSombras[i].clean();
         }

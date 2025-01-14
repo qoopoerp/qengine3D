@@ -1032,7 +1032,7 @@ final public class QMath {
      */
     public static QVector3 fresnelSchlick(float HdotV, QVector3 F0) {
         // return F0 +(1.0 - F0) * pow(1.0 - dot(H,V), 5.0);
-        return F0.clone().add(QVector3.unitario_xyz.clone().subtract(F0).multiply(QMath.pow(1.0f - HdotV, 5.0f)));
+        return F0.clone().add(QVector3.of(1.0f).subtract(F0).multiply(QMath.pow(1.0f - HdotV, 5.0f)));
     }
 
     /**
@@ -1069,19 +1069,20 @@ final public class QMath {
         return a2 / Math.max(denom, 0.00001f);// previene la division por cero
     }
 
-    // public static float GeometrySchlickGGX(float NdotV, float roughness) {
-    // float r = (roughness + 1.0f);
-    // float k = (r * r) / 8.0f;
-    // return NdotV / (NdotV * (1.0f - k) + k);
-    // }
-    // public static float GeometrySmith(QVector3 N, QVector3 V, QVector3 L, float
-    // roughness) {
-    // float NdotV = (float) Math.max(N.dot(V), 0.0);
-    // float NdotL = (float) Math.max(N.dot(L), 0.0);
-    // float ggx2 = GeometrySchlickGGX(NdotV, roughness);
-    // float ggx1 = GeometrySchlickGGX(NdotL, roughness);
-    // return ggx1 * ggx2;
-    // }
+    public static float GeometrySchlickGGX(float NdotV, float roughness) {
+        float r = (roughness + 1.0f);
+        float k = (r * r) / 8.0f;
+        return NdotV / (NdotV * (1.0f - k) + k);
+    }
+
+    public static float GeometrySmith(QVector3 N, QVector3 V, QVector3 L, float roughness) {
+        float NdotV = (float) Math.max(N.dot(V), 0.0);
+        float NdotL = (float) Math.max(N.dot(L), 0.0);
+        float ggx2 = GeometrySchlickGGX(NdotV, roughness);
+        float ggx1 = GeometrySchlickGGX(NdotL, roughness);
+        return ggx1 * ggx2;
+    }
+
     /**
      * Combination of the GGX and Schlick-Beckmann approximation known as
      * Schlick-GGX
@@ -1101,13 +1102,13 @@ final public class QMath {
         return ggx1 * ggx2;
     }
 
-    public static QVector3 EnvBRDFApprox(QVector3 specularColor, float rugosidoad, float NoV) {
+    public static QVector3 EnvBRDFApprox(QVector3 kS, float roughness, float NoV) {
         QVector4 c0 = new QVector4(-1, -0.0275f, -0.572f, 0.022f);
         QVector4 c1 = new QVector4(1, 0.0425f, 1.04f, -0.04f);
-        QVector4 r = c0.multiply(rugosidoad).add(c1);
+        QVector4 r = c0.multiply(roughness).add(c1);
         float a004 = Math.min(r.x * r.x, (float) Math.pow(2, -9.28f * NoV)) * r.x + r.y;
         QVector2 AB = new QVector2(-1.04f, 1.04f).multiply(a004).add(new QVector2(r.z, r.w));
-        return specularColor.multiply(AB.x).add(AB.y);
+        return kS.multiply(AB.x).add(AB.y);
     }
 
     /**
@@ -1210,4 +1211,8 @@ final public class QMath {
         return rVal;
     }
 
+    public static double round(double value, int places) {
+        double scale = Math.pow(10, places);
+        return Math.round(value * scale) / scale;
+    }
 }

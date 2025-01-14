@@ -9,7 +9,7 @@ import java.io.File;
 
 import net.qoopo.engine.core.assets.AssetManager;
 import net.qoopo.engine.core.entity.Entity;
-import net.qoopo.engine.core.entity.component.cubemap.CubeMap;
+import net.qoopo.engine.core.entity.component.environment.EnvProbe;
 import net.qoopo.engine.core.entity.component.mesh.primitive.shape.Box;
 import net.qoopo.engine.core.entity.component.mesh.primitive.shape.Sphere;
 import net.qoopo.engine.core.entity.component.mesh.primitive.shape.Teapot;
@@ -84,13 +84,13 @@ public class NodosVarios extends MakeTestScene {
         // reflejos
         // reflejos con pbr
         Entity tetera = new Entity("Tetera");
-        CubeMap mapa2 = new CubeMap(QGlobal.MAPA_CUPO_RESOLUCION);
+        EnvProbe mapa2 = new EnvProbe(QGlobal.MAPA_CUPO_RESOLUCION);
 
         // QGeometria esfera2 = new Sphere(1);
         MaterialNode mat5 = new MaterialNode("Reflexion");
 
-        QNodoColorReflexion nodoreflexion = new QNodoColorReflexion(mapa2.getTexturaEntorno());
-        nodoreflexion.setTipoMapaEntorno(CubeMap.FORMATO_MAPA_CUBO);
+        QNodoColorReflexion nodoreflexion = new QNodoColorReflexion(mapa2.getEnvMap());
+        nodoreflexion.setTipoMapaEntorno(EnvProbe.FORMATO_MAPA_CUBO);
         QNodoColorIluminacion nodoDifuso = new QNodoColorIluminacion();
 
         // enlace que une la salida de la textura con con difuso
@@ -105,7 +105,7 @@ public class NodosVarios extends MakeTestScene {
         tetera.addComponent(MaterialUtil.applyMaterial(new Teapot(), mat5));
         tetera.addComponent(mapa2);
         tetera.move(2, 0.5f, 0);
-        mapa2.aplicar(CubeMap.FORMATO_MAPA_CUBO, 1, 0);
+        mapa2.aplicar(EnvProbe.FORMATO_MAPA_CUBO);
 
         mundo.addEntity(tetera);
 

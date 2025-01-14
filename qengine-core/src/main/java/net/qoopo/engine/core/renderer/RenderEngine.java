@@ -23,8 +23,8 @@ import net.qoopo.engine.core.input.QDefaultListener;
 import net.qoopo.engine.core.math.QColor;
 import net.qoopo.engine.core.math.QMatriz4;
 import net.qoopo.engine.core.math.QVector2;
-import net.qoopo.engine.core.renderer.buffer.QFrameBuffer;
-import net.qoopo.engine.core.renderer.post.flujos.QRenderEfectos;
+import net.qoopo.engine.core.renderer.buffer.FrameBuffer;
+import net.qoopo.engine.core.renderer.post.FilterTexture;
 import net.qoopo.engine.core.renderer.superficie.Superficie;
 import net.qoopo.engine.core.scene.Camera;
 import net.qoopo.engine.core.scene.QClipPane;
@@ -68,13 +68,13 @@ public abstract class RenderEngine extends Engine {
         }
     }
 
-    protected String nombre = "Default";
+    protected String name = "Default";
     /**
      * Indica al renderer que se esta cargando, para lo cual muestra una imagen
      * en cada render en lugar de procesar el escena
      */
-    private boolean cargando = false;
-    protected QColor colorFondo = QColor.BLACK;
+    private boolean loading = false;
+    protected QColor backColor = QColor.BLACK;
 
     /**
      * Esta variable indica si se puede interactuar con el renderer Hay casos
@@ -93,11 +93,11 @@ public abstract class RenderEngine extends Engine {
     /**
      * La cámara actual para la toma de la escena
      */
-    protected Camera camara;
+    protected Camera camera;
     /**
      * Las opciones con las que se renderiza
      */
-    public QOpcionesRenderer opciones = new QOpcionesRenderer();
+    public RenderOptions opciones = new RenderOptions();
     /**
      * Contiene los vértices y polígonos resultado de la transformación
      */
@@ -114,7 +114,7 @@ public abstract class RenderEngine extends Engine {
     /**
      * Buffer donde se dibuja, antes de efectos
      */
-    protected QFrameBuffer frameBuffer;
+    protected FrameBuffer frameBuffer;
     /**
      * Buffer resultado de los efecto post procesamiento
      */
@@ -146,7 +146,7 @@ public abstract class RenderEngine extends Engine {
     // protected ArrayList<Poly> listaCarasTransparente = new ArrayList<>();
     protected boolean tomar;
 
-    protected QRenderEfectos efectosPostProceso;
+    protected List<FilterTexture> filterQueue = new ArrayList<>();
 
     protected boolean forzarActualizacionMapaSombras = false;
 
@@ -162,7 +162,7 @@ public abstract class RenderEngine extends Engine {
     public RenderEngine(Scene escena, String nombre, Superficie superficie, int ancho, int alto) {
         System.out.println("instanciando nuevo rendered -> " + nombre);
         this.scene = escena;
-        this.nombre = nombre;
+        this.name = nombre;
         this.superficie = superficie;
         this.opciones.setAncho(ancho);
         this.opciones.setAlto(alto);
@@ -178,6 +178,10 @@ public abstract class RenderEngine extends Engine {
         prepararInputListener();
 
         entidadOrigen = new QOrigen();
+    }
+
+    public void setShader(Object shader) {
+
     }
 
     /**
@@ -196,7 +200,7 @@ public abstract class RenderEngine extends Engine {
                 ancho = this.getSuperficie().getComponente().getWidth();
                 alto = this.getSuperficie().getComponente().getHeight();
             } else {
-                System.out.println("Render:" + nombre + " no hay superficie. Seteando resolucion default 800x600");
+                System.out.println("Render:" + name + " no hay superficie. Seteando resolucion default 800x600");
                 ancho = 800;
                 alto = 600;
             }
@@ -210,11 +214,11 @@ public abstract class RenderEngine extends Engine {
             alto = 600;
         }
 
-        if (camara != null) {
-            camara.setRadioAspecto(ancho, alto);
+        if (camera != null) {
+            camera.setRadioAspecto(ancho, alto);
         }
 
-        frameBuffer = new QFrameBuffer(ancho, alto, textura);
+        frameBuffer = new FrameBuffer(ancho, alto, textura);
     }
 
     /**
@@ -225,36 +229,12 @@ public abstract class RenderEngine extends Engine {
      */
     public abstract Entity selectEntity(QVector2 mouseLocation);
 
-    public Superficie getSuperficie() {
-        return superficie;
-    }
-
-    public void setSuperficie(Superficie superficie) {
-        this.superficie = superficie;
-    }
-
     public float getCameraRotationZ() {
-        return camara.getTransformacion().getRotacion().getAngulos().getAnguloZ();
+        return camera.getTransformacion().getRotacion().getAngulos().getAnguloZ();
     }
 
     public void setCameraRotationZ(float rotateZ) {
-        this.camara.getTransformacion().getRotacion().rotarZ(rotateZ);
-    }
-
-    public Camera getCamara() {
-        return camara;
-    }
-
-    public void setCamara(Camera camara) {
-        this.camara = camara;
-    }
-
-    public Scene getScene() {
-        return scene;
-    }
-
-    public void setScene(Scene escena) {
-        this.scene = escena;
+        this.camera.getTransformacion().getRotacion().rotarZ(rotateZ);
     }
 
     protected void prepararInputListener() {
@@ -264,7 +244,7 @@ public abstract class RenderEngine extends Engine {
     }
 
     protected void agregarListeners(Component componente) {
-        System.out.println("[+] Agregando listener a " + nombre);
+        System.out.println("[+] Agregando listener a " + name);
         componente.addMouseMotionListener(QDefaultListener.INSTANCIA);
         componente.addMouseWheelListener(QDefaultListener.INSTANCIA);
         componente.addMouseListener(QDefaultListener.INSTANCIA);
@@ -279,30 +259,6 @@ public abstract class RenderEngine extends Engine {
 
     protected void rendererFocusLost(java.awt.event.FocusEvent evt) {
 
-    }
-
-    public String getNombre() {
-        return nombre;
-    }
-
-    public void setNombre(String nombre) {
-        this.nombre = nombre;
-    }
-
-    public boolean isShowStats() {
-        return showStats;
-    }
-
-    public void setShowStats(boolean renderEstadisticas) {
-        this.showStats = renderEstadisticas;
-    }
-
-    public QFrameBuffer getFrameBuffer() {
-        return frameBuffer;
-    }
-
-    public void setFrameBuffer(QFrameBuffer frameBuffer) {
-        this.frameBuffer = frameBuffer;
     }
 
     /**
@@ -326,7 +282,7 @@ public abstract class RenderEngine extends Engine {
             g.fillRect(0, 0, 170, 130);
             g.setColor(Color.orange);
             g.setFont(new Font("Arial", Font.BOLD, 10));
-            g.drawString(nombre != null ? nombre : "", 10, 10);
+            g.drawString(name != null ? name : "", 10, 10);
             g.setColor(Color.white);
             g.setFont(new Font("Arial", Font.PLAIN, 10));
             g.drawString(ancho + "x" + alto, 10, 20);
@@ -335,23 +291,23 @@ public abstract class RenderEngine extends Engine {
             g.drawString("FPS Raster________: " + DF.format(getFPS()), 10, 50);
             g.drawString("Delta Raster (ms)_: " + DF.format(getDelta()), 10, 60);
             g.drawString("Pol_______________: " + poligonosDibujados, 10, 70);
-            g.drawString("T. Vista     : " + (opciones.getTipoVista() == QOpcionesRenderer.VISTA_FLAT ? "FLAT"
-                    : (opciones.getTipoVista() == QOpcionesRenderer.VISTA_PHONG ? "PHONG"
-                            : (opciones.getTipoVista() == QOpcionesRenderer.VISTA_WIRE ? "WIRE" : "N/A"))),
+            g.drawString("T. Vista     : " + (opciones.getTipoVista() == RenderOptions.VISTA_FLAT ? "FLAT"
+                    : (opciones.getTipoVista() == RenderOptions.VISTA_PHONG ? "PHONG"
+                            : (opciones.getTipoVista() == RenderOptions.VISTA_WIRE ? "WIRE" : "N/A"))),
                     10, 80);
             g.drawString("Material     : " + (opciones.isMaterial() ? "ON" : "OFF"), 10, 90);
             g.drawString("Sombras      : " + (opciones.isSombras() ? "ON" : "OFF"), 10, 100);
             // g.drawString("Hora del día :" + QEngine3D.INSTANCIA.getHoraDelDia(), 10,
             // 110);
-            g.drawString("Cam (X;Y;Z)  : (" + DF.format(camara.getTransformacion().getTraslacion().x) + ";"
-                    + DF.format(camara.getTransformacion().getTraslacion().y) + ";"
-                    + DF.format(camara.getTransformacion().getTraslacion().z) + ")", 10, 120);
+            g.drawString("Cam (X;Y;Z)  : (" + DF.format(camera.getTransformacion().getTraslacion().x) + ";"
+                    + DF.format(camera.getTransformacion().getTraslacion().y) + ";"
+                    + DF.format(camera.getTransformacion().getTraslacion().z) + ")", 10, 120);
             g.drawString("Ang (X;Y;Z)  : ("
-                    + DF.format(Math.toDegrees(camara.getTransformacion().getRotacion().getAngulos().getAnguloX()))
+                    + DF.format(Math.toDegrees(camera.getTransformacion().getRotacion().getAngulos().getAnguloX()))
                     + ";"
-                    + DF.format(Math.toDegrees(camara.getTransformacion().getRotacion().getAngulos().getAnguloY()))
+                    + DF.format(Math.toDegrees(camera.getTransformacion().getRotacion().getAngulos().getAnguloY()))
                     + ";"
-                    + DF.format(Math.toDegrees(camara.getTransformacion().getRotacion().getAngulos().getAnguloZ()))
+                    + DF.format(Math.toDegrees(camera.getTransformacion().getRotacion().getAngulos().getAnguloZ()))
                     + ")", 10, 130);
         }
         // gf.drawImage(g., 0, 0, this.getSuperficie().getComponente().getWidth(),
@@ -363,7 +319,7 @@ public abstract class RenderEngine extends Engine {
     /**
      * Muestra una imagen splash
      */
-    protected void mostrarSplash() {
+    protected void showSplash() {
         if (renderReal && imageSplash != null) {
             if (this.getSuperficie() != null
                     && this.getSuperficie().getComponente() != null
@@ -394,70 +350,6 @@ public abstract class RenderEngine extends Engine {
         }
     }
 
-    public QClipPane getPanelClip() {
-        return panelClip;
-    }
-
-    public void setPanelClip(QClipPane panelClip) {
-        this.panelClip = panelClip;
-    }
-
-    public List<QLigth> getLitgths() {
-        return litgths;
-    }
-
-    public void setLitgths(List<QLigth> luces) {
-        this.litgths = luces;
-    }
-
-    public boolean isCargando() {
-        return cargando;
-    }
-
-    public void setCargando(boolean cargando) {
-        this.cargando = cargando;
-    }
-
-    public QRenderEfectos getEfectosPostProceso() {
-        return efectosPostProceso;
-    }
-
-    public void setEfectosPostProceso(QRenderEfectos efectosPostProceso) {
-        this.efectosPostProceso = efectosPostProceso;
-    }
-
-    public boolean isForzarActualizacionMapaSombras() {
-        return forzarActualizacionMapaSombras;
-    }
-
-    public void setForzarActualizacionMapaSombras(boolean forzarActualizacionMapaSombras) {
-        this.forzarActualizacionMapaSombras = forzarActualizacionMapaSombras;
-    }
-
-    public QColor getColorFondo() {
-        return colorFondo;
-    }
-
-    public void setColorFondo(QColor colorFondo) {
-        this.colorFondo = colorFondo;
-    }
-
-    public boolean isInteractuar() {
-        return interactuar;
-    }
-
-    public void setInteractuar(boolean interactuar) {
-        this.interactuar = interactuar;
-    }
-
-    public boolean isRenderReal() {
-        return renderReal;
-    }
-
-    public void setRenderReal(boolean renderReal) {
-        this.renderReal = renderReal;
-    }
-
     // public abstract AbstractRaster(QMotorRender render);
     /**
      *
@@ -479,14 +371,30 @@ public abstract class RenderEngine extends Engine {
     public abstract void renderEntity(Entity entity, QMatriz4 matrizVista, QMatriz4 matrizVistaInvertidaBillboard,
             boolean transparentes);
 
-    public abstract void render() throws Exception;
+    // public abstract void render() throws Exception;
 
     public abstract void shadeFragments();
 
-    public abstract void postRender();
+    public abstract void draw();
+
+    public void clean() {
+
+    }
 
     public void endUpdate() {
 
+    }
+
+    public void addFilter(FilterTexture filter) {
+        getFilterQueue().add(filter);
+    }
+
+    public void removeFilter(FilterTexture filter) {
+        getFilterQueue().remove(filter);
+    }
+
+    public void clearFilters() {
+        getFilterQueue().clear();
     }
 
 }

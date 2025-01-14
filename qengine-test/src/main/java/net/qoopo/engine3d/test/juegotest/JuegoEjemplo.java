@@ -19,7 +19,7 @@ import net.qoopo.engine.core.entity.component.physics.vehiculo.QRueda;
 import net.qoopo.engine.core.entity.component.physics.vehiculo.QVehiculo;
 import net.qoopo.engine.core.entity.component.physics.vehiculo.QVehiculoControl;
 import net.qoopo.engine.core.lwjgl.audio.component.SoundListenerAL;
-import net.qoopo.engine.core.material.basico.Material;
+import net.qoopo.engine.core.material.Material;
 import net.qoopo.engine.core.math.QColor;
 import net.qoopo.engine.core.math.QVector3;
 import net.qoopo.engine.core.scene.Camera;
@@ -63,13 +63,12 @@ public class JuegoEjemplo {
                 // motor.configurarRenderer(800, 600, cam, false);
                 // motor.setIniciarFisica(false);
                 motor.configRenderer(800, 600, cam);
-                motor.getRenderEngine().setCargando(true);
                 configurarCielo(motor);
                 motor.start();
 
                 cargarNivelPersonaje(motor, cam);
 
-                motor.getRenderEngine().setCargando(false);
+                
                 System.out.println("Listo");
         }
 

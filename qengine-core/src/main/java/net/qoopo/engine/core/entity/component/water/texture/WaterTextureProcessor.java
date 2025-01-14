@@ -151,19 +151,19 @@ public class WaterTextureProcessor extends Texture {
     }
 
     @Override
-    public void destruir() {
+    public void destroy() {
         if (textura != null) {
-            textura.destruir();
+            textura.destroy();
             textura = null;
         }
 
         if (texturaA != null) {
-            texturaA.destruir();
+            texturaA.destroy();
             texturaA = null;
         }
 
         if (texturaB != null) {
-            texturaB.destruir();
+            texturaB.destroy();
             texturaB = null;
         }
     }

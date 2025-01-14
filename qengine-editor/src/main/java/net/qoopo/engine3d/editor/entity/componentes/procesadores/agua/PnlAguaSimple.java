@@ -13,7 +13,7 @@ import net.qoopo.engine.core.entity.component.mesh.Mesh;
 import net.qoopo.engine.core.entity.component.mesh.primitive.Primitive;
 import net.qoopo.engine.core.entity.component.water.Water;
 import net.qoopo.engine.core.entity.component.water.WaterDuDv;
-import net.qoopo.engine.core.material.basico.Material;
+import net.qoopo.engine.core.material.Material;
 import net.qoopo.engine.core.math.QColor;
 import net.qoopo.engine.core.texture.util.MaterialUtil;
 import net.qoopo.engine.core.util.ComponentUtil;
@@ -147,8 +147,8 @@ public class PnlAguaSimple extends javax.swing.JPanel {
         // puedo agregar la razon que sea necesaria no afectara a la textura de
         // reflexixon porq esta calcula las coordenadas UV en tiempo de renderizado
 
-        material.setMapaNormal(agua.getTextNormal());
-        material.setMapaColor(agua.getOutputTexture());
+        material.setNormalMap(agua.getTextNormal());
+        material.setColorMap(agua.getOutputTexture());
 
         List<Material> lst = new ArrayList<>();
         // ahora recorro todos los materiales del objeto y le agrego la textura de

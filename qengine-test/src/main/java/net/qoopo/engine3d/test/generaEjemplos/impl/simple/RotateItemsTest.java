@@ -25,37 +25,12 @@ public class RotateItemsTest extends MakeTestScene {
         try {
             this.scene = mundo;
 
-            // uso esta lista en lugar del mundo par arotar.. para rotar solo aquellas
-            // entidades creadas antes de llamar a esta clase.. y asi evitar rotar las
-            // posteriores como terrenos o pisos que no desean ser rotados
-            // List<Entity> lista = new ArrayList<>();
-
             for (Entity entidad : mundo.getEntities()) {
                 if (!(entidad instanceof Camera)) {
                     // lista.add(entidad);
                     entidad.addComponent(new RotationEntityComponent());
                 }
             }
-
-            // Thread hilo = new Thread(new Runnable() {
-            // @Override
-            // public void run() {
-
-            // float angulo = 0;
-
-            // while (true) {
-            // try {
-            // Thread.sleep(100);
-            // } catch (InterruptedException ex) {
-            // }
-            // for (Entity entidad : lista) {
-            // entidad.rotate(angulo, angulo, angulo);
-            // }
-            // angulo += (float) Math.toRadians(10);
-            // }
-            // }
-            // });
-            // hilo.start();
 
         } catch (Exception ex) {
             Logger.getLogger(RotateItemsTest.class.getName()).log(Level.SEVERE, null, ex);

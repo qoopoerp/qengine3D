@@ -14,7 +14,7 @@ import java.util.List;
 import net.qoopo.engine.core.entity.Entity;
 import net.qoopo.engine.core.entity.component.mesh.Mesh;
 import net.qoopo.engine.core.entity.component.mesh.primitive.Poly;
-import net.qoopo.engine.core.material.basico.Material;
+import net.qoopo.engine.core.material.Material;
 import net.qoopo.engine3d.core.asset.model.studiomax.util.Model3DS;
 import net.qoopo.engine3d.core.asset.model.studiomax.util.ModelLoader;
 import net.qoopo.engine3d.core.asset.model.studiomax.util.ModelObject;

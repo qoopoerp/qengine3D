@@ -14,13 +14,13 @@ import net.qoopo.engine.core.entity.component.mesh.primitive.Poly;
 import net.qoopo.engine.core.entity.component.mesh.primitive.Primitive;
 import net.qoopo.engine.core.entity.component.mesh.primitive.QVertexBuffer;
 import net.qoopo.engine.core.entity.component.mesh.primitive.Vertex;
-import net.qoopo.engine.core.material.basico.Material;
+import net.qoopo.engine.core.material.Material;
 import net.qoopo.engine.core.math.QMath;
 import net.qoopo.engine.core.math.QMatriz4;
 import net.qoopo.engine.core.math.QVector2;
 import net.qoopo.engine.core.math.QVector3;
 import net.qoopo.engine.core.math.QVector4;
-import net.qoopo.engine.core.renderer.QOpcionesRenderer;
+import net.qoopo.engine.core.renderer.RenderOptions;
 import net.qoopo.engine.core.util.TempVars;
 import net.qoopo.engine.core.util.array.Vector2Array;
 import net.qoopo.engine.core.util.array.Vector3Array;
@@ -62,7 +62,7 @@ public class ParallelRaster implements AbstractRaster {
             uvList[i] = new QVector2();
         }
 
-        ClippedData clippedData = AbstractRaster.clipping(render.getCamara(), indices, indices, indices, vertex,
+        ClippedData clippedData = AbstractRaster.clipping(render.getCamera(), indices, indices, indices, vertex,
                 normales, uvList);
         // List<Vertex> clippedVertex =List.of(vertex);
         for (int i = 0; i < clippedData.getVertexList().size() - 1; i++) {
@@ -119,41 +119,35 @@ public class ParallelRaster implements AbstractRaster {
             if (poligono.vertexIndexList.length >= 3) {
                 // QVector3 toCenter=poligono.getCenterCopy().location.getVector3();
 
-                // // Rasterizacion (dibujo de los puntos del plano)
-                // for (int i = 1; i < vertexBuffer.getVerticesTransformados().length - 1; i++)
-                // {
-                // v1 = vertexBuffer.getVerticesTransformados()[0];
-                // v2 = vertexBuffer.getVerticesTransformados()[i];
-                // v3 = vertexBuffer.getVerticesTransformados()[i + 1];
+                // Rasterizacion (dibujo de los puntos del plano)
+                // for (int i = 1; i < vertexBuffer.getVertexList().length - 1; i++) {
+                // v1 = vertexBuffer.getVertexList()[0];
+                // v2 = vertexBuffer.getVertexList()[i];
+                // v3 = vertexBuffer.getVertexList()[i + 1];
 
-                // rasterLine(poligono, v1, v2);
-                // rasterLine(poligono, v1, v3);
-                // rasterLine(poligono, v2, v3);
+                // rasterLine(matViewModel, poligono, v1, v2);
+                // rasterLine(matViewModel, poligono, v1, v3);
+                // rasterLine(matViewModel, poligono, v2, v3);
                 // }
 
-                ClippedData clippedData = AbstractRaster.clipping(render.getCamara(),
+                ClippedData clippedData = AbstractRaster.clipping(render.getCamera(),
                         poligono.vertexIndexList,
                         poligono.normalIndexList,
                         poligono.uvIndexList,
-                        vertexBuffer.getVertexList(), vertexBuffer.getNormalList(), vertexBuffer.getUvList());
+                        vertexBuffer.getVertexList(), vertexBuffer.getNormalList(),
+                        vertexBuffer.getUvList());
 
                 // Rasterizacion (dibujo de los puntos del plano)
                 // Separo en triangulos sin importar cuantos puntos tenga
-                for (int i = 1; i < clippedData.getVertexList().size() - 1; i++) {
-                    v1 = clippedData.getVertexList().get(0);
-                    v2 = clippedData.getVertexList().get(i);
-                    v3 = clippedData.getVertexList().get(i + 1);
-
+                for (int i = 0; i < clippedData.getVertexList().size() - 1; i++) {
+                    v1 = clippedData.getVertexList().get(i);
+                    v2 = clippedData.getVertexList().get(i + 1);
                     // si el triangulo no esta en el campo de vision, pasamos y no dibujamos
-                    if (!render.getCamara().isVisible(v1) &&
-                            !render.getCamara().isVisible(v2)
-                            && !render.getCamara().isVisible(v3)) {
+                    if (!render.getCamera().isVisible(v1) &&
+                            !render.getCamera().isVisible(v2)) {
                         continue;
                     }
-
-                    rasterLine(matViewModel, poligono, v1, v2);
-                    rasterLine(matViewModel, poligono, v1, v3);
-                    rasterLine(matViewModel, poligono, v2, v3);
+                    rasterLine(matViewModel, poligono, v1, v2);                    
                 }
             }
             // }
@@ -184,7 +178,7 @@ public class ParallelRaster implements AbstractRaster {
                     return; // salta el dibujo de caras traseras
                 }
 
-                ClippedData clippedData = AbstractRaster.clipping(render.getCamara(),
+                ClippedData clippedData = AbstractRaster.clipping(render.getCamera(),
                         poly.vertexIndexList,
                         poly.normalIndexList,
                         poly.uvIndexList,
@@ -209,8 +203,8 @@ public class ParallelRaster implements AbstractRaster {
                     QVector2 v3uv = clippedData.getUvList().get(i + 1);
 
                     // si el triangulo no esta en el campo de vision, pasamos y no dibujamos
-                    if (!render.getCamara().isVisible(v1) && !render.getCamara().isVisible(v2)
-                            && !render.getCamara().isVisible(v3)) {
+                    if (!render.getCamera().isVisible(v1) && !render.getCamera().isVisible(v2)
+                            && !render.getCamera().isVisible(v3)) {
                         continue;
                     }
                     rasterTriangle(matViewModel, v1, v2, v3, v1Normal, v2Normal, v3Normal, v1uv, v2uv, v3uv, poly);
@@ -248,12 +242,12 @@ public class ParallelRaster implements AbstractRaster {
         // valido si el punto proyectado esta dentro del rango de vision de la Camara
         if ((screenPojected[0].x < 0 && screenPojected[1].x < 0 && screenPojected[2].x < 0)
                 || (screenPojected[0].y < 0 && screenPojected[1].y < 0 && screenPojected[2].y < 0)
-                || (screenPojected[0].x > render.getFrameBuffer().getAncho()
-                        && screenPojected[1].x > render.getFrameBuffer().getAncho()
-                        && screenPojected[2].x > render.getFrameBuffer().getAncho())
-                || (screenPojected[0].y > render.getFrameBuffer().getAlto()
-                        && screenPojected[1].y > render.getFrameBuffer().getAlto()
-                        && screenPojected[2].y > render.getFrameBuffer().getAlto())) {
+                || (screenPojected[0].x > render.getFrameBuffer().getWidth()
+                        && screenPojected[1].x > render.getFrameBuffer().getWidth()
+                        && screenPojected[2].x > render.getFrameBuffer().getWidth())
+                || (screenPojected[0].y > render.getFrameBuffer().getHeight()
+                        && screenPojected[1].y > render.getFrameBuffer().getHeight()
+                        && screenPojected[2].y > render.getFrameBuffer().getHeight())) {
             render.poligonosDibujados--;
             return;
         }
@@ -479,8 +473,8 @@ public class ParallelRaster implements AbstractRaster {
         QVector3 currentNormal = new QVector3();// t.vector3f3;
         try {
             for (int x = (int) startX; x < endX; x++) {
-                if (x >= 0 && y >= 0 && render.getFrameBuffer().getAncho() > x
-                        && render.getFrameBuffer().getAlto() > y) {
+                if (x >= 0 && y >= 0 && render.getFrameBuffer().getWidth() > x
+                        && render.getFrameBuffer().getHeight() > y) {
                     QVector3 bar = tempVar.vector3f8;
                     // Hallamos las coordenadas baricéntricas del punto v4 respecto al triángulo pa,
                     // pb, pc
@@ -649,7 +643,7 @@ public class ParallelRaster implements AbstractRaster {
     protected void prepareFragment(QVector3 up, QVector3 rigth, QMatriz4 matViewModel, Primitive poly,
             Vertex currentVertex,
             QVector3 currentNormal, QVector2 currentUV, int x, int y) {
-        if (x > 0 && x < render.getFrameBuffer().getAncho() && y > 0 && y < render.getFrameBuffer().getAlto()) {
+        if (x > 0 && x < render.getFrameBuffer().getWidth() && y > 0 && y < render.getFrameBuffer().getHeight()) {
             if (validateZBuffer(x, y, currentVertex.location.z)) {
                 // si no es suavizado se copia la normal de la cara para dibujar con Flat
                 // Shadded
@@ -659,7 +653,7 @@ public class ParallelRaster implements AbstractRaster {
                 if (poly instanceof Poly) {
                     if (poly.mesh.type == Mesh.GEOMETRY_TYPE_WIRE
                             || !(((Poly) poly).isSmooth()
-                                    && (render.opciones.getTipoVista() >= QOpcionesRenderer.VISTA_PHONG)
+                                    && (render.opciones.getTipoVista() >= RenderOptions.VISTA_PHONG)
                                     || render.opciones.isForzarSuavizado())) {
                         currentNormal.set(((Poly) poly).getNormalCopy());
                     }
@@ -671,7 +665,7 @@ public class ParallelRaster implements AbstractRaster {
                         if (!render.getPanelClip()
                                 .esVisible(TransformationVectorUtil.transformarVector(
                                         TransformationVectorUtil.transformarVectorInversa(currentVertex.location,
-                                                poly.mesh.getEntity(), render.getCamara()),
+                                                poly.mesh.getEntity(), render.getCamera()),
                                         poly.mesh.getEntity()))) {
                             return;
                         }
@@ -679,10 +673,10 @@ public class ParallelRaster implements AbstractRaster {
                 } catch (Exception e) {
                 }
 
-                Fragment fragment = render.getFrameBuffer().getPixel(x, y);
+                Fragment fragment = render.getFrameBuffer().getFragment(x, y);
                 if (fragment != null) {
 
-                    fragment.setDibujar(true);
+                    fragment.setDraw(true);
                     fragment.ubicacion.set(currentVertex.location);
                     fragment.normal.set(currentNormal);
                     fragment.material = poly.material;
@@ -733,7 +727,6 @@ public class ParallelRaster implements AbstractRaster {
 
     }
 
-
     private QVector2[] projectVertices(Vertex... v) {
         // obtenemos los puntos proyectados en la pantalla
         QVector4[] locations = new QVector4[v.length];
@@ -752,8 +745,8 @@ public class ParallelRaster implements AbstractRaster {
             screenPojected[i] = new QVector2();
         }
         for (int i = 0; i < v.length; i++) {
-            render.getCamara().getCoordenadasPantalla(screenPojected[i], v[i],
-                    render.getFrameBuffer().getAncho(), render.getFrameBuffer().getAlto());
+            render.getCamera().getCoordenadasPantalla(screenPojected[i], v[i],
+                    render.getFrameBuffer().getWidth(), render.getFrameBuffer().getHeight());
         }
         return screenPojected;
     }

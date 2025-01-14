@@ -17,6 +17,8 @@ public class QGlobal {
 
     public static long time = 0;
 
+    public static boolean ENABLE_GAMMA_FIX = false;
+
     public static final float MOTOR_RENDER_FPS = 60f;
 
     // esta gravedad representa a la gravedad en el motor, se calcula en funcion d

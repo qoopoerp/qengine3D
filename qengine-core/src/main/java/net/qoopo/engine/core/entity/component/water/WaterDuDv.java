@@ -5,7 +5,7 @@ import lombok.Setter;
 import net.qoopo.engine.core.assets.AssetManager;
 import net.qoopo.engine.core.entity.component.mesh.primitive.shape.Plane;
 import net.qoopo.engine.core.entity.component.water.texture.WaterTextureProcessor;
-import net.qoopo.engine.core.material.basico.Material;
+import net.qoopo.engine.core.material.Material;
 import net.qoopo.engine.core.math.QColor;
 import net.qoopo.engine.core.renderer.RenderEngine;
 import net.qoopo.engine.core.scene.Scene;
@@ -49,8 +49,8 @@ public class WaterDuDv extends Water {
         material = new Material("water");
         material.setColor(new QColor(1, 0, 0, 0.7f));
         material.setSpecularExponent(64);
-        material.setMapaNormal(getTextNormal());
-        material.setMapaColor(getOutputTexture());
+        material.setNormalMap(getTextNormal());
+        material.setColorMap(getOutputTexture());
 
         mesh = new Plane(width, height);
 
@@ -80,7 +80,7 @@ public class WaterDuDv extends Water {
     public void destruir() {
         super.destruir();
         if (textNormal != null) {
-            textNormal.destruir();
+            textNormal.destroy();
             textNormal = null;
         }
     }

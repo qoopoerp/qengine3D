@@ -7,7 +7,7 @@ package net.qoopo.engine3d.test.juegotest.generadores;
 
 import net.qoopo.engine.core.entity.Entity;
 import net.qoopo.engine.core.entity.component.mesh.primitive.shape.Plane;
-import net.qoopo.engine.core.material.basico.Material;
+import net.qoopo.engine.core.material.Material;
 import net.qoopo.engine.core.math.QColor;
 import net.qoopo.engine.core.texture.Texture;
 import net.qoopo.engine.core.texture.util.MaterialUtil;
@@ -37,7 +37,7 @@ public class GenMonitores {
 
         Entity pantalla = new Entity("pantalla");
         Material pantallMat = new Material();
-        pantallMat.setMapaColor(textura);
+        pantallMat.setColorMap(textura);
         // pantallMat.setColor(new QColor(1, 0.2f, 0.2f, 0.2f));
         pantallMat.setColor(QColor.BROWN);
         pantalla.addComponent(MaterialUtil.applyMaterial(new Plane(3 * 600 / 800, 3), pantallMat));

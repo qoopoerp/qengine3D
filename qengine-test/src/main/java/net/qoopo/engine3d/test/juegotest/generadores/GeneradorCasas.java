@@ -16,7 +16,7 @@ import net.qoopo.engine.core.entity.component.mesh.primitive.shape.Cone;
 import net.qoopo.engine.core.entity.component.mesh.primitive.shape.Plane;
 import net.qoopo.engine.core.entity.component.particles.humo.QEmisorHumo;
 import net.qoopo.engine.core.entity.component.physics.collision.detector.shape.primitivas.AABB;
-import net.qoopo.engine.core.material.basico.Material;
+import net.qoopo.engine.core.material.Material;
 import net.qoopo.engine.core.math.QColor;
 import net.qoopo.engine.core.texture.Texture;
 import net.qoopo.engine.core.texture.util.MaterialUtil;

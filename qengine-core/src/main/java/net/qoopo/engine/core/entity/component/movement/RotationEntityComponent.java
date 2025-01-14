@@ -25,7 +25,7 @@ public class RotationEntityComponent implements EntityComponent, UpdatableCompon
     private Entity entity;
 
     private float radiansX = 0.0f;
-    private float radiansY = (float) Math.toRadians(0.05f);
+    private float radiansY = (float) Math.toRadians(0.01f);
     private float radiansZ = 0.0f;
 
     private float totalX = 0;

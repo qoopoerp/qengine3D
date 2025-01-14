@@ -27,7 +27,7 @@ import net.qoopo.engine.core.scene.Scene;
 import net.qoopo.engine.core.util.QGlobal;
 import net.qoopo.engine.renderer.SoftwareRenderer;
 import net.qoopo.engine.renderer.raster.ParallelRaster;
-import net.qoopo.engine.renderer.shader.fragment.basico.parciales.SimpleFragmetShader;
+import net.qoopo.engine.renderer.shader.fragment.basico.parciales.OnlyColorFragmentShader;
 import net.qoopo.engine.renderer.util.TransformationVectorUtil;
 
 /**
@@ -76,48 +76,48 @@ public class SoftwareShadowRender extends SoftwareRenderer {
     public SoftwareShadowRender(int tipo, Scene escena, QDirectionalLigth luz, Camera camaraRender, int ancho,
             int alto) {
         this(tipo, escena, luz, ancho, alto);
-        camara = new Camera("RenderSombraDireccional");
-        camara.frustrumLejos = camaraRender.frustrumLejos;
-        camara.setOrtogonal(true);
-        camara.setEscalaOrtogonal(100);
-        camara.setRadioAspecto(ancho, alto);
-        camara.setToRender(false);
+        camera = new Camera("RenderSombraDireccional");
+        camera.frustrumLejos = camaraRender.frustrumLejos;
+        camera.setOrtogonal(true);
+        camera.setEscalaOrtogonal(100);
+        camera.setRadioAspecto(ancho, alto);
+        camera.setToRender(false);
         this.camaraRender = camaraRender;
         setDireccion(luz.getDirection());
         raster = new ParallelRaster(this);
-        shader = new SimpleFragmetShader(this);
+        shader = new OnlyColorFragmentShader(this);
     }
 
     public SoftwareShadowRender(int tipo, Scene escena, QSpotLigth luz, Camera camaraRender, int ancho, int alto) {
         this(tipo, escena, luz, ancho, alto);
-        camara = new Camera("RenderSombraQLuzSpot");
-        camara.frustrumLejos = Math.min(luz.radio, camaraRender.frustrumLejos);
-        camara.setOrtogonal(false);
-        camara.setFOV(luz.getAnguloExterno());
-        camara.setRadioAspecto(ancho, alto);
-        camara.setToRender(false);
+        camera = new Camera("RenderSombraQLuzSpot");
+        camera.frustrumLejos = Math.min(luz.radio, camaraRender.frustrumLejos);
+        camera.setOrtogonal(false);
+        camera.setFOV(luz.getAnguloExterno());
+        camera.setRadioAspecto(ancho, alto);
+        camera.setToRender(false);
         this.camaraRender = camaraRender;
         setDireccion(luz.getDirection());
         raster = new ParallelRaster(this);
-        shader = new SimpleFragmetShader(this);
+        shader = new OnlyColorFragmentShader(this);
     }
 
     public SoftwareShadowRender(int tipo, Scene escena, QPointLigth luz, Camera camaraRender, int ancho, int alto,
             QVector3 direccion, QVector3 arriba) {
         this(tipo, escena, luz, ancho, alto);
-        camara = new Camera("RenderSombraQLuzPuntual");
-        camara.frustrumLejos = Math.min(luz.radio, camaraRender.frustrumLejos);
-        camara.setOrtogonal(false);
+        camera = new Camera("RenderSombraQLuzPuntual");
+        camera.frustrumLejos = Math.min(luz.radio, camaraRender.frustrumLejos);
+        camera.setOrtogonal(false);
         // como es un mapeo cubico el angulo sera de 90 grados, 360grados de vision para
         // 4
-        camara.setFOV((float) Math.toRadians(90));
-        camara.setRadioAspecto(ancho, alto);
-        camara.setToRender(false);
+        camera.setFOV((float) Math.toRadians(90));
+        camera.setRadioAspecto(ancho, alto);
+        camera.setToRender(false);
         this.camaraRender = camaraRender;
         setDireccion(direccion);
         vArriba = arriba;
         raster = new ParallelRaster(this);
-        shader = new SimpleFragmetShader(this);
+        shader = new OnlyColorFragmentShader(this);
     }
 
     @Override
@@ -162,7 +162,7 @@ public class SoftwareShadowRender extends SoftwareRenderer {
                 // la camara se puede mover al ser adjunta a una entity
                 centro = camaraRender.getMatrizTransformacion(QGlobal.time).toTranslationVector();
                 if (!cascada) {
-                    camara.setEscalaOrtogonal(Math.abs(camaraRender.frustrumLejos - camaraRender.frustrumCerca) / 2);
+                    camera.setEscalaOrtogonal(Math.abs(camaraRender.frustrumLejos - camaraRender.frustrumCerca) / 2);
                     radio = Math.abs(camaraRender.frustrumLejos - camaraRender.frustrumCerca) / 2;
                     // modifico el centro para que sea el centro de frustrum de visión de la caḿara
                     // por lo tanto aumento un vector de dimensión igual a la distancia del
@@ -194,7 +194,7 @@ public class SoftwareShadowRender extends SoftwareRenderer {
                             + (camaraRender.frustrumLejos - camaraRender.frustrumCerca) * IDM;
                     distanciaCascada = log * QGlobal.lambda + uniform * (1.0f - QGlobal.lambda);
                     distanciaCascada = distanciaCascada / 2;
-                    camara.setEscalaOrtogonal(Math.abs(distanciaCascada) / 2);
+                    camera.setEscalaOrtogonal(Math.abs(distanciaCascada) / 2);
                     radio = distanciaCascada;
                     // }
                     // modifico el centro para que sea el centro de la sección del frustrum de
@@ -203,11 +203,11 @@ public class SoftwareShadowRender extends SoftwareRenderer {
                 }
                 // la posicion de la luz
                 posicion = centro.clone().add(normalDireccion.multiply(radio));
-                camara.lookAtTarget(posicion, centro, vArriba);
+                camera.lookAtTarget(posicion, centro, vArriba);
                 break;
             case SoftwareShadowRender.NO_DIRECCIONALES:
                 // LUCES NO DIRECCIONALES
-                camara.lookAt(luz.getEntity().getMatrizTransformacion(QGlobal.time).toTranslationVector(),
+                camera.lookAt(luz.getEntity().getMatrizTransformacion(QGlobal.time).toTranslationVector(),
                         normalDireccion, vArriba);
                 break;
         }
@@ -250,11 +250,11 @@ public class SoftwareShadowRender extends SoftwareRenderer {
         try {
             float factorVentana = 0.5f;
             if (ventana == null) {
-                ventana = new JFrame(this.nombre);
-                ventana.setSize((int) (frameBuffer.getAncho() * factorVentana),
-                        (int) (frameBuffer.getAlto() * factorVentana));
-                ventana.setPreferredSize(new Dimension((int) (frameBuffer.getAncho() * factorVentana),
-                        (int) (frameBuffer.getAlto() * factorVentana)));
+                ventana = new JFrame(this.name);
+                ventana.setSize((int) (frameBuffer.getWidth() * factorVentana),
+                        (int) (frameBuffer.getHeight() * factorVentana));
+                ventana.setPreferredSize(new Dimension((int) (frameBuffer.getWidth() * factorVentana),
+                        (int) (frameBuffer.getHeight() * factorVentana)));
                 ventana.setLayout(new BorderLayout());
                 ventana.setResizable(false);
                 panelDibujo = new JPanel();
@@ -263,10 +263,10 @@ public class SoftwareShadowRender extends SoftwareRenderer {
                 ventana.pack();
             }
             if (frameBuffer != null) {
-                frameBuffer.pintarMapaProfundidad(camara.frustrumLejos);
+                frameBuffer.paintZBuffer(camera.frustrumLejos);
                 BufferedImage bi = frameBuffer.getRendered();
-                panelDibujo.getGraphics().drawImage(bi, 0, 0, (int) (frameBuffer.getAncho() * factorVentana),
-                        (int) (frameBuffer.getAlto() * factorVentana), null);
+                panelDibujo.getGraphics().drawImage(bi, 0, 0, (int) (frameBuffer.getWidth() * factorVentana),
+                        (int) (frameBuffer.getHeight() * factorVentana), null);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -278,28 +278,22 @@ public class SoftwareShadowRender extends SoftwareRenderer {
      *
      *
      */
-    @Override
-    public void render() {    
+    // @Override
+    private void render() {    
         poligonosDibujadosTemp = 0;
         try {
             // La Matriz de vista es la inversa de la matriz de la camara.
             // Esto es porque la camara siempre estara en el centro y movemos el mundo
             // en direccion contraria a la camara.
-            QMatriz4 matrizVista = camara.getMatrizTransformacion(QGlobal.time).invert();
-            QMatriz4 matrizVistaInvertidaBillboard = camara.getMatrizTransformacion(QGlobal.time);
+            QMatriz4 matrizVista = camera.getMatrizTransformacion(QGlobal.time).invert();
+            QMatriz4 matrizVistaInvertidaBillboard = camera.getMatrizTransformacion(QGlobal.time);
             // caras solidas
             scene.getEntities().stream()
                     .filter(entity -> entity.isToRender())
                     .parallel()
                     .forEach(entity -> renderEntity(entity, matrizVista, matrizVistaInvertidaBillboard, false));
-            // // caras transperentes
-            // escena.getEntities().stream()
-            // .filter(entity -> entity.isToRender())
-            // .parallel()
-            // .forEach(entity -> renderEntity(entity, matrizVista,
-            // matrizVistaInvertidaBillboard, true));
         } catch (Exception e) {
-            System.out.println("Error render:" + nombre);
+            System.out.println("Error render:" + name);
             e.printStackTrace();
         }
 
@@ -317,7 +311,7 @@ public class SoftwareShadowRender extends SoftwareRenderer {
             poligonosDibujados = poligonosDibujadosTemp;
             // como no tengo normalizadas las coordenadas z necesito estos valores para que
             // el factor acne seal el 10% de esta diferencia
-            frameBuffer.calcularMaximosMinimosZBuffer();
+            frameBuffer.computeMaxMinZbuffer();
             factorAcne = (frameBuffer.getMaximo() - frameBuffer.getMinimo()) * 0.1f;
             if (QGlobal.SOMBRAS_DEBUG_PINTAR) {
                 pintarMapa();
@@ -342,14 +336,14 @@ public class SoftwareShadowRender extends SoftwareRenderer {
         QVector2 punto = new QVector2();
         try {
             if (frameBuffer != null) {
-                vector = TransformationVectorUtil.transformarVector(vector, entity, camara);
-                camara.getCoordenadasPantalla(punto, new QVector4(vector, 1), getFrameBuffer().getAncho(),
-                        getFrameBuffer().getAlto());
+                vector = TransformationVectorUtil.transformarVector(vector, entity, camera);
+                camera.getCoordenadasPantalla(punto, new QVector4(vector, 1), getFrameBuffer().getWidth(),
+                        getFrameBuffer().getHeight());
                 // si el punto no esta en mi campo de vision
                 if ((punto.x < 0)
                         || (punto.y < 0)
-                        || (punto.x > getFrameBuffer().getAncho())
-                        || (punto.y > getFrameBuffer().getAlto())) {
+                        || (punto.x > getFrameBuffer().getWidth())
+                        || (punto.y > getFrameBuffer().getHeight())) {
                     factor = 0;
                 } else {
                     // metodo donde sale la sombra pixelada

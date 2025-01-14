@@ -11,14 +11,16 @@ import net.qoopo.engine.core.entity.component.ligth.QLigth;
 import net.qoopo.engine.core.entity.component.ligth.QPointLigth;
 import net.qoopo.engine.core.entity.component.ligth.QSpotLigth;
 import net.qoopo.engine.core.entity.component.mesh.primitive.Fragment;
-import net.qoopo.engine.core.material.basico.Material;
+import net.qoopo.engine.core.material.Material;
 import net.qoopo.engine.core.math.QColor;
 import net.qoopo.engine.core.math.QMath;
+import net.qoopo.engine.core.math.QMatriz4;
 import net.qoopo.engine.core.math.QVector3;
 import net.qoopo.engine.core.renderer.RenderEngine;
 import net.qoopo.engine.core.shadow.QProcesadorSombra;
+import net.qoopo.engine.core.texture.Texture;
 import net.qoopo.engine.core.texture.TextureUtil;
-import net.qoopo.engine.core.texture.procesador.QProcesadorMipMap;
+import net.qoopo.engine.core.texture.procesador.MipmapTexture;
 import net.qoopo.engine.core.util.QGlobal;
 import net.qoopo.engine.core.util.TempVars;
 import net.qoopo.engine.renderer.shader.fragment.FragmentShader;
@@ -30,18 +32,9 @@ import net.qoopo.engine.renderer.util.TransformationVectorUtil;
  *
  * @author alberto
  */
-public class StandardFramentShader extends FragmentShader {
+public class StandardFragmentShader extends FragmentShader {
 
-    private QColor colorEspecular = QColor.WHITE.clone();
-    private QColor colorReflejo;
-    private QColor colorRefraccion;
-    private QColor colorEntorno = QColor.WHITE.clone();
-    // private QColor colorDesplazamiento;
-
-    private float factorMetalico = 0;
-    private float factorFresnel = 0;
-
-    public StandardFramentShader(RenderEngine render) {
+    public StandardFragmentShader(RenderEngine render) {
         super(render);
     }
 
@@ -50,63 +43,58 @@ public class StandardFramentShader extends FragmentShader {
         if (fragment == null) {
             return null;
         }
-        if (!fragment.isDibujar()) {
+        if (!fragment.isDraw()) {
             return null;
         }
 
-        QColor color = new QColor();// color default, blanco
-
         Material material = (Material) fragment.material;
 
-        /**
-         * ********************************************************************************
-         * COLOR DIFUSO /BASE
-         * ********************************************************************************
-         */
-        if (material.getMapaColor() == null || !render.opciones.isMaterial()) {
-            // si no hay textura usa el color del material
-            color.set(material.getColor());
-        } else {
-            if (!material.getMapaColor().isProyectada()) {
-                // si la textura no es proyectada (lo hace otro renderer) toma las coordenadas
-                // ya calculadas
-                color = material.getMapaColor().getQColor(fragment.u, fragment.v);
-            } else {
-                // si es proyectada se asume que la textura es el resultado de un renderizador
-                // por lo tanto coresponde a una pantalla y debemos tomar las mismas coordenadas
-                // que llegan en X y Y, sin embargo las coordenadas UV estan normalizadas de 0 a
-                // 1
-                // por lo tanto convertimos las coordeandas XyY a coordenadas UV
-                color = material.getMapaColor().getQColor((float) x / (float) render.getFrameBuffer().getAncho(),
-                        -(float) y / (float) render.getFrameBuffer().getAlto());
-            }
+        // *********************************************************************************************
+        // ****** VECTOR VISION
+        // *********************************************************************************************
+        // para obtener el vector vision quitamos la transformacion de la ubicacion y
+        // volvemos a calcularla en las coordenadas del mundo
+        // como la iluminacion la calculamos en el sistema de coordeandas de la camara,
+        // el vector vision corresponde a la coordenada del pixel (invertido)
+        QVector3 V = fragment.ubicacion.getVector3();
+        V.invert();// Cam-WordPos
+        V.normalize();
 
-            // si se configuro un color transparente para la textura
-            // solo activa la transparencia si tiene el canal alfa
-            if (color.a < 1 || (material.isTransparencia() && material.getColorTransparente() != null
-                    && color.toRGB() == material.getColorTransparente().toRGB())) {
-                return null;
-            }
-        }
+        // *********************************************************************************************
+        // ****** VECTOR VISION
+        // *********************************************************************************************
+        // para obtener el vector vision quitamos la transformacion de la ubicacion y
+        // volvemos a calcularla en las coordenadas del mundo
+        // tm.vector3f1.set(currentPixel.ubicacion.getVector3());
+        // QVector3 V = TransformationVectorUtil.transformarVector(
+        // TransformationVectorUtil.transformarVectorInversa(fragment.ubicacion,
+        // fragment.entity,
+        // render.getCamera()),
+        // fragment.entity).getVector3();
+        // // ahora restamos la posicion de la camara a la posicion del mundo
+        // V.subtract(render.getCamera().getMatrizTransformacion(QGlobal.time).toTranslationVector());
+        // V.normalize();
 
-        // tomo el valor del mapa especular, si existe
-        // es usado en el calculo de la iluminacion y en el reflejo/refraccion del
-        // entorno
-        if (material.getMapaEspecular() != null) {
-            colorEspecular = material.getMapaEspecular().getQColor(fragment.u, fragment.v);
-        } else {
-            colorEspecular = material.getColorEspecular();// QColor.WHITE;// equivale a multiplicar por 1
-        }
+        // *********************************************************************************************
+        // ****** VECTOR NORMAL
+        // *********************************************************************************************
+        QVector3 N = fragment.normal;
+        N.normalize();
+        // la normal del pixel en el espacio mundial, se usara para tomar el color del
+        // mapa de irradiacion, quitamos la transformacion de la ubicacion y volvemos a
+        // calcularla en las coordenadas del mundo *
+        QVector3 N2 = (TransformationVectorUtil.transformarVectorNormal(
+                TransformationVectorUtil.transformarVectorNormalInversa(fragment.normal, fragment.entity,
+                        render.getCamera()),
+                fragment.entity != null ? fragment.entity.getMatrizTransformacion(QGlobal.time)
+                        : QMatriz4.IDENTITY));
+        N2.normalize();
 
-        if (material.getMapaMetalico() != null) {
-            factorMetalico = material.getMapaMetalico().getQColor(fragment.u, fragment.v).r;
-        } else {
-            factorMetalico = material.getMetalico();
-        }
-
+        QColor color = getColorBase(fragment, x, y);
         computeNormal(fragment);
-        computeEnviromentColor(fragment, color);
+        computeEnviromentColor(fragment, N2, V, material.getEnvMap(), color);
         computeLighting(fragment, color);
+        // color.fixGamma();
 
         // ***********************************************************
         // ****** TRANSPARENCIA
@@ -114,26 +102,24 @@ public class StandardFramentShader extends FragmentShader {
         // //TOMA EL VALOR DE LA TRANSPARENCIA
         if (material.isTransparencia()) {
             // si tiene un mapa de transparencia
-            float transparencia = 0;
-            if (material.getMapaTransparencia() != null) {
+            float alpha = 0;
+            if (material.getAlphaMap() != null) {
                 // es una imagen en blanco y negro, toma cualquier canal de color
-                transparencia = material.getMapaTransparencia().getQColor(fragment.u, fragment.v).r;
+                alpha = material.getAlphaMap().getQColor(fragment.u, fragment.v).r;
             } else {
                 // toma el valor de transparencia del material
-                transparencia = material.getTransAlfa();
+                alpha = material.getTransAlfa();
             }
-            if (material.isTransparencia() && transparencia < 1) {
+            if (alpha < 1) {
                 QColor tmp = render.getFrameBuffer().getColor(x, y);// el color actual en el buffer para mezclarlo
-                color.r = (1 - transparencia) * tmp.r + transparencia * color.r;
-                color.g = (1 - transparencia) * tmp.g + transparencia * color.g;
-                color.b = (1 - transparencia) * tmp.b + transparencia * color.b;
+                color.r = (1 - alpha) * tmp.r + alpha * color.r;
+                color.g = (1 - alpha) * tmp.g + alpha * color.g;
+                color.b = (1 - alpha) * tmp.b + alpha * color.b;
                 tmp = null;
             }
-
         }
 
         //
-        // //lugar de la reflexion despues de la iluminacion
         // //calculo la niebla al final del calculo de iluminacion
         // try {
         // if (QEscena.INSTANCIA != null) {
@@ -149,6 +135,41 @@ public class StandardFramentShader extends FragmentShader {
     }
 
     /**
+     * ********************************************************************************
+     * COLOR DIFUSO /BASE
+     * ********************************************************************************
+     */
+    private QColor getColorBase(Fragment fragment, int x, int y) {
+
+        Material material = (Material) fragment.material;
+        QColor colorBase = new QColor();// color default, blanco
+
+        if (material.getColorMap() == null || !render.opciones.isMaterial()) {
+            // si no hay textura usa el color del material
+            colorBase.set(material.getColor());
+        } else {
+            if (!material.getColorMap().isProyectada()) {
+                // si la textura no es proyectada (lo hace otro renderer) toma las coordenadas
+                // ya calculadas
+                colorBase = material.getColorMap().getQColor(fragment.u, fragment.v);
+                // corrijo canal de material albedo (Gamma)
+                if (QGlobal.ENABLE_GAMMA_FIX)
+                    colorBase.addGamma();
+            } else {
+                // si es proyectada se asume que la textura es el resultado de un renderizador
+                // por lo tanto coresponde a una pantalla y debemos tomar las mismas coordenadas
+                // que llegan en X y Y, sin embargo las coordenadas UV estan normalizadas de 0 a
+                // 1
+                // por lo tanto convertimos las coordeandas XyY a coordenadas UV
+                colorBase = material.getColorMap().getQColor((float) x / (float) render.getFrameBuffer().getWidth(),
+                        -(float) y / (float) render.getFrameBuffer().getHeight());
+            }
+        }
+
+        return colorBase;
+    }
+
+    /**
      * Si hay un mapa normal, recalcula la normal
      * 
      * @param fragment
@@ -157,7 +178,7 @@ public class StandardFramentShader extends FragmentShader {
         Material material = (Material) fragment.material;
         // normal map
         // modifica la normal en funcion del mapa normal
-        if (material.getMapaNormal() != null && render.opciones.isNormalMapping()) {
+        if (material.getNormalMap() != null && render.opciones.isNormalMapping()) {
 
             // normales en el espacio de objeto (se necesita la matriz vistaModelo para
             // calcular la normal nuevamnte)
@@ -168,11 +189,14 @@ public class StandardFramentShader extends FragmentShader {
             // tmpNormal.set(fragment.matViewModel.mult(tmpNormal));
             // fragment.normal.set(tmpNormal.getVector3().normalize());
 
-            QVector3 normalMap = material.getMapaNormal().getQColor(fragment.u, fragment.v).rgb();
-            // normalMap.multiply(2).add(-1).normalize();
-            fragment.up.multiply(normalMap.y * 2 - 1);
-            fragment.right.multiply(normalMap.x * 2 - 1);
-            fragment.normal.multiply(normalMap.z * 2 - 1);
+            QVector3 normalMap = material.getNormalMap().getQColor(fragment.u, fragment.v).rgb();
+            // fragment.up.multiply(normalMap.y * 2 - 1);
+            // fragment.right.multiply(normalMap.x * 2 - 1);
+            // fragment.normal.multiply(normalMap.z * 2 - 1);
+            normalMap.multiply(2).add(-1).normalize();
+            fragment.up.multiply(normalMap.y);
+            fragment.right.multiply(normalMap.x);
+            fragment.normal.multiply(normalMap.z);
             fragment.normal.add(fragment.up, fragment.right);
             fragment.normal.normalize();
         }
@@ -192,39 +216,57 @@ public class StandardFramentShader extends FragmentShader {
         float distanciaLuz;
         QVector3 tmpPixelPos = QVector3.empty();
         QIluminacion iluminacion = new QIluminacion();
-
-        // La iluminacion se calcula en el sistema de coordenadas de la camara
-        fragment.normal.normalize();
-        iluminacion.setColorLuz(QColor.BLACK.clone());
-        Material material = (Material) fragment.material;
-        // usa el mapa de iluminacion con el ambiente
-        if (material.getMapaEmisivo() != null && render.opciones.isMaterial()) {
-            QColor colorEmisivo = material.getMapaEmisivo().getQColor(fragment.u, fragment.v);
-            iluminacion.setColorAmbiente(colorEmisivo.clone().add(render.getScene().getAmbientColor()));
-        } else {
-            // si tiene factor de emision toma ese valor solamente
-            if (material.getFactorEmision() > 0) {
-                float factorEmision = material.getFactorEmision();
-                iluminacion.setColorAmbiente(new QColor(factorEmision, factorEmision, factorEmision));
-                return;// no hago mas calculos
-            } else {
-                iluminacion.setColorAmbiente(render.getScene().getAmbientColor().clone());
-            }
-        }
-
         TempVars tv = TempVars.get();
         try {
+
+            Material material = (Material) fragment.material;
+
+            QColor colorEspecular;
+
+            // tomo el valor del mapa especular, si existe
+            // es usado en el calculo de la iluminacion y en el reflejo/refraccion del
+            // entorno
+            if (material.getMapaEspecular() != null) {
+                colorEspecular = material.getMapaEspecular().getQColor(fragment.u, fragment.v);
+            } else {
+                colorEspecular = material.getColorEspecular();// QColor.WHITE;// equivale a multiplicar por 1
+            }
+
+            // La iluminacion se calcula en el sistema de coordenadas de la camara
+            fragment.normal.normalize();
+            iluminacion.setColorLuz(QColor.BLACK.clone());
+
+            // usa el mapa de iluminacion con el ambiente
+            if (material.getEmissiveMap() != null && render.opciones.isMaterial()) {
+                QColor colorEmisivo = material.getEmissiveMap().getQColor(fragment.u, fragment.v);
+                iluminacion.setColorAmbiente(colorEmisivo.clone().add(render.getScene().getAmbientColor()));
+            } else {
+                // si tiene factor de emision toma ese valor solamente
+                if (material.getEmision() > 0) {
+                    float factorEmision = material.getEmision();
+                    iluminacion.setColorAmbiente(new QColor(factorEmision, factorEmision,
+                            factorEmision));
+                    return;// no hago mas calculos
+                    // QColor colorEmisivo = new QColor(material.getFactorEmision(),
+                    // material.getFactorEmision(),
+                    // material.getFactorEmision());
+                    // iluminacion.setColorAmbiente(colorEmisivo.clone().add(render.getScene().getAmbientColor()));
+                } else {
+                    iluminacion.setColorAmbiente(render.getScene().getAmbientColor().clone());
+                }
+            }
+
             float factorSombra = 1;// 1= no sombra
             float ao = 1;// factor de oclusion ambiental con el mapa SAO
-            float rugosidad = material.getRugosidad();
-            if (render.opciones.isMaterial() && material.getMapaRugosidad() != null) {
-                rugosidad = material.getMapaRugosidad().getQColor(fragment.u, fragment.v).r;
+            float rugosidad = material.getRoughness();
+            if (render.opciones.isMaterial() && material.getRoughnessMap() != null) {
+                rugosidad = material.getRoughnessMap().getQColor(fragment.u, fragment.v).r;
             }
 
             float reflectancia = 1.0f - rugosidad;
 
-            if (render.opciones.isMaterial() && material.getMapaSAO() != null) {
-                ao = material.getMapaSAO().getQColor(fragment.u, fragment.v).r;
+            if (render.opciones.isMaterial() && material.getAoMap() != null) {
+                ao = material.getAoMap().getQColor(fragment.u, fragment.v).r;
             }
 
             // solo si hay luces y si las opciones de la vista tiene activado el material
@@ -236,7 +278,7 @@ public class StandardFramentShader extends FragmentShader {
                         QProcesadorSombra proc = luz.getSombras();
                         if (proc != null && render.opciones.isSombras() && material.isSombrasRecibir()) {
                             factorSombra = proc.factorSombra(TransformationVectorUtil.transformarVectorInversa(
-                                    fragment.ubicacion.getVector3(), fragment.entity, render.getCamara()),
+                                    fragment.ubicacion.getVector3(), fragment.entity, render.getCamera()),
                                     fragment.entity);
                         }
 
@@ -247,7 +289,7 @@ public class StandardFramentShader extends FragmentShader {
                             // luz.entity.getTransformacion().getTraslacion().z);
                             vectorLuz.set(fragment.ubicacion.getVector3().clone().subtract(
                                     TransformationVectorUtil.transformarVector(QVector3.zero, luz.getEntity(),
-                                            render.getCamara())));
+                                            render.getCamera())));
                             distanciaLuz = vectorLuz.length();
                             // solo toma en cuenta a los puntos q estan en el area de afectacion
                             if (distanciaLuz > luz.radio) {
@@ -321,99 +363,83 @@ public class StandardFramentShader extends FragmentShader {
      *
      * @param fragment
      */
-    private void computeEnviromentColor(Fragment fragment, QColor color) {
+    private void computeEnviromentColor(Fragment fragment, QVector3 N, QVector3 V, Texture enviromentMap,
+            QColor color) {
         // Reflexion y refraccion del entorno (en caso de materiales con refraccion
         // (transparentes)
         Material material = (Material) fragment.material;
+
+        float roughness = material.getRoughness();
+        float metallic = material.getMetallic();
+        if (render.opciones.isMaterial() && material.getRoughnessMap() != null) {
+            roughness = material.getRoughnessMap().getQColor(fragment.u, fragment.v).r;
+        }
+        if (render.opciones.isMaterial() && material.getMetallicMap() != null) {
+            metallic = material.getMetallicMap().getQColor(fragment.u, fragment.v).r;
+        }
+
         // verifica que el mimap del mapa de entorno este en nivel 1
-        if (material.getMapaEntorno() instanceof QProcesadorMipMap) {
-            int nivel = ((QProcesadorMipMap) material.getMapaEntorno()).getNivel();
+        if (material.getEnvMap() instanceof MipmapTexture) {
+            int nivel = ((MipmapTexture) material.getEnvMap()).getLevel();
             if (nivel != 1) {
-                ((QProcesadorMipMap) material.getMapaEntorno()).setNivel(1);
+                ((MipmapTexture) material.getEnvMap()).setLevel(1);
             }
         }
 
-        if (render.opciones.isMaterial()
-                && // esta activada la opción de material
-                material.getMapaEntorno() != null // tiene un mapa de entorno
-                && (material.isReflexion() || material.isRefraccion()) // tien habilitada la reflexión y/o la refración
-        ) {
-            TempVars tm = TempVars.get();
+        if (render.opciones.isMaterial() && enviromentMap != null
+                && (material.isReflexion() || material.isRefraccion())) {
             try {
 
-                // *********************************************************************************************
-                // ****** VECTOR NORMAL
-                // *********************************************************************************************
-                // la normal del pixel, quitamos la transformacion de la ubicacion y volvemos a
-                // calcularla en las coordenadas del mundo
-                // tm.vector3f2.set(pixel.normal);
-                tm.vector3f2.set(TransformationVectorUtil.transformarVectorNormal(
-                        TransformationVectorUtil.transformarVectorNormalInversa(fragment.normal, fragment.entity,
-                                render.getCamara()),
-                        fragment.entity.getMatrizTransformacion(QGlobal.time)));
-                tm.vector3f2.normalize();
+                // según la rugosidad del material cambia el nivel del mipmap
+                if (enviromentMap instanceof MipmapTexture) {
+                    float niveles = (float) ((MipmapTexture) enviromentMap).getMaxLevel();
+                    ((MipmapTexture) enviromentMap).setLevel((int) (niveles * roughness));
+                }
 
-                // *********************************************************************************************
-                // ****** VECTOR VISION
-                // *********************************************************************************************
-                // para obtener el vector vision quitamos la transformacion de la ubicacion y
-                // volvemos a calcularla en las coordenadas del mundo
-                // tm.vector3f1.set(currentPixel.ubicacion.getVector3());
-                tm.vector3f1.set(TransformationVectorUtil.transformarVector(
-                        TransformationVectorUtil.transformarVectorInversa(fragment.ubicacion, fragment.entity,
-                                render.getCamara()),
-                        fragment.entity).getVector3());
-                // ahora restamos la posicion de la camara a la posicion del mundo
-                tm.vector3f1.subtract(render.getCamara().getMatrizTransformacion(QGlobal.time).toTranslationVector());
-                tm.vector3f1.normalize();
+                QColor colorReflejo;
+                QColor colorRefraccion;
+                QColor colorEntorno = null;
 
                 // ************************************************************
                 // ****** REFLEXION
                 // ************************************************************
                 if (material.isReflexion()) {
-                    tm.vector3f3.set(QMath.reflejarVector(tm.vector3f1, tm.vector3f2));
-                    colorReflejo = TextureUtil.getColorMapaEntorno(tm.vector3f3, material.getMapaEntorno(),
-                            material.getTipoMapaEntorno());
-                    // colorReflejo = QTexturaUtil.getColorMapaEntorno(tm.vector3f2,
-                    // material.getMapaEntorno(), material.getTipoMapaEntorno());
+                    QVector3 reflejo = QMath.reflejarVector(V, N);
+                    colorReflejo = TextureUtil.getEnviromentMapColor(reflejo, enviromentMap, material.getEnvMapType());
                 } else {
                     colorReflejo = null;
                 }
                 // ***********************************************************
                 // ****** REFRACCION
                 // ***********************************************************
-                if (material.isRefraccion() && material.getIndiceRefraccion() > 0) {
-                    tm.vector3f4.set(QMath.refractarVector(tm.vector3f1, tm.vector3f2, material.getIndiceRefraccion()));
-                    colorRefraccion = TextureUtil.getColorMapaEntorno(tm.vector3f4, material.getMapaEntorno(),
-                            material.getTipoMapaEntorno());
+                if (material.isRefraccion() && material.getIor() > 0) {
+                    QVector3 refraccion = QMath.refractarVector(V, N, material.getIor());
+                    colorRefraccion = TextureUtil.getEnviromentMapColor(refraccion, enviromentMap,
+                            material.getEnvMapType());
                 } else {
                     colorRefraccion = null;
                 }
-                // APLICACION DEL COLOR DEL ENTORNO
 
                 // mezclo el color de reflexion con el de refraccion
                 if (colorReflejo != null && colorRefraccion != null) {
-                    factorFresnel = QMath.factorFresnel(tm.vector3f1, tm.vector3f2, 0);
-                    // factorFresnel = QMath.factorFresnel(tm.vector3f2, tm.vector3f1, 0);
+                    float factorFresnel = QMath.factorFresnel(V, N, material.getIor());
                     colorEntorno = QMath.mix(colorRefraccion, colorReflejo, factorFresnel);
-                    // colorEntorno.r = QMath.mix(colorRefraccion.r, colorReflejo.r, factorFresnel);
-                    // colorEntorno.g = QMath.mix(colorRefraccion.g, colorReflejo.g, factorFresnel);
-                    // colorEntorno.b = QMath.mix(colorRefraccion.b, colorReflejo.b, factorFresnel);
+                    // color.set(colorEntorno);
+                    color.set(QMath.mix(color, colorEntorno, (float) Math.min(Math.max(metallic, 0.0f), 1.0f)));
                 } else if (colorReflejo != null) {
-                    colorEntorno = colorReflejo.clone();
+                    // solo reflejo
+                    color.set(QMath.mix(color, colorReflejo, (float) Math.min(Math.max(metallic, 0.0f), 1.0f)));
+                    // colorEntorno = colorReflejo;
                 } else if (colorRefraccion != null) {
-                    colorEntorno = colorRefraccion.clone();
+                    // solo refraccion
+                    color.set(QMath.mix(color, colorRefraccion,
+                            (float) Math.min(Math.max(metallic, 0.0f), 1.0f)));
+                    // colorEntorno = colorRefraccion;
                 }
-
-                // mezcla el color del entorno
-                // color.r = QMath.mix(color.r, colorEntorno.r, Math.min(factorMetalico,0.9f));
-                // color.g = QMath.mix(color.g, colorEntorno.g, Math.min(factorMetalico,0.9f));
-                // color.b = QMath.mix(color.b, colorEntorno.b, Math.min(factorMetalico,0.9f));
-                color = QMath.mix(color, colorEntorno, Math.min(factorMetalico, 0.9f));
             } catch (Exception e) {
-                // System.out.println("error reflexion " + e.getMessage());
+                System.out.println("error reflexion " + e.getMessage());
             } finally {
-                tm.release();
+
             }
         }
     }

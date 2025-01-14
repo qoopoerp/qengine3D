@@ -140,7 +140,7 @@ public class Scene implements Serializable {
         return entities;
     }
 
-    public void eliminarEntidadesNoVivas() {
+    public void removeDeathEntities() {
         blocked = true;
         synchronized (this) {
             List<Entity> tmp = new ArrayList<>();

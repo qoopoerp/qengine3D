@@ -10,7 +10,7 @@ import java.io.File;
 import net.qoopo.engine.core.assets.AssetManager;
 import net.qoopo.engine.core.entity.Entity;
 import net.qoopo.engine.core.entity.component.mesh.primitive.shape.Box;
-import net.qoopo.engine.core.material.basico.Material;
+import net.qoopo.engine.core.material.Material;
 import net.qoopo.engine.core.material.node.MaterialNode;
 import net.qoopo.engine.core.material.node.core.QNodoEnlace;
 import net.qoopo.engine.core.material.node.core.output.MaterialOutputNode;
@@ -38,9 +38,9 @@ public class NodosSimple2 extends MakeTestScene {
 
         // con textura (BASICO)
         Material mat1 = new Material();
-        mat1.setMapaColor(
+        mat1.setColorMap(
                 AssetManager.get().loadTexture("difusa", new File("assets/textures/testNormal/test1-color.jpg")));
-        mat1.setMapaNormal(
+        mat1.setNormalMap(
                 AssetManager.get().loadTexture("normal", new File("assets/textures/testNormal/test1-normal.jpg")));
 
         Entity cubo1 = new Entity("text BAS");

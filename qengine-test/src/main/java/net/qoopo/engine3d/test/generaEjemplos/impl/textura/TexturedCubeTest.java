@@ -10,7 +10,7 @@ import java.io.File;
 import net.qoopo.engine.core.assets.AssetManager;
 import net.qoopo.engine.core.entity.Entity;
 import net.qoopo.engine.core.entity.component.mesh.primitive.shape.Box;
-import net.qoopo.engine.core.material.basico.Material;
+import net.qoopo.engine.core.material.Material;
 import net.qoopo.engine.core.renderer.RenderEngine;
 import net.qoopo.engine.core.scene.Scene;
 import net.qoopo.engine.core.texture.util.MaterialUtil;
@@ -30,8 +30,8 @@ public class TexturedCubeTest extends MakeTestScene {
         // AssetManager.get().loadTexture("difusa", new
         // File("assets/textures/uv.png")));
 
-        material.setMapaColor(AssetManager.get().loadTexture("difusa", new File("assets/textures/rock.png")));
-        material.setMapaNormal(AssetManager.get().loadTexture("normal", new File("assets/textures/rock_normals.png")));
+        material.setColorMap(AssetManager.get().loadTexture("difusa", new File("assets/textures/rock.png")));
+        material.setNormalMap(AssetManager.get().loadTexture("normal", new File("assets/textures/rock_normals.png")));
 
         cubo.addComponent(MaterialUtil.applyMaterial(new Box(2), material));
         cubo.move(-5, 0, 0);

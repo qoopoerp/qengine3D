@@ -67,9 +67,9 @@ public class OpenGlRenderer extends RenderEngine {
     @Override
     public void start() {
         try {
-            ventana = new QGlVentana(nombre, opciones.getAncho(), opciones.getAlto(), true);
+            ventana = new QGlVentana(name, opciones.getAncho(), opciones.getAlto(), true);
             ventana.init();
-            ventana.setClearColor(colorFondo.r, colorFondo.g, colorFondo.b, 0.0f);
+            ventana.setClearColor(backColor.r, backColor.g, backColor.b, 0.0f);
 
             // superficie.getComponente().getParent().add(canvas3D);
             // superficie.getComponente().getParent().remove(superficie.getComponente());
@@ -199,11 +199,11 @@ public class OpenGlRenderer extends RenderEngine {
         throw new UnsupportedOperationException("Unimplemented method 'renderEntity'");
     }
 
-    @Override
-    public void render() throws Exception {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'render'");
-    }
+    // @Override
+    // public void render() throws Exception {
+    //     // TODO Auto-generated method stub
+    //     throw new UnsupportedOperationException("Unimplemented method 'render'");
+    // }
 
     @Override
     public void shadeFragments() {
@@ -212,7 +212,7 @@ public class OpenGlRenderer extends RenderEngine {
     }
 
     @Override
-    public void postRender() {
+    public void draw() {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'postRender'");
     }

@@ -13,8 +13,9 @@ import net.qoopo.engine.core.entity.component.animation.Skeleton;
 import net.qoopo.engine.core.entity.component.mesh.Mesh;
 import net.qoopo.engine.core.entity.component.mesh.primitive.Poly;
 import net.qoopo.engine.core.entity.component.mesh.primitive.Vertex;
+import net.qoopo.engine.core.entity.component.mesh.primitive.shape.PlanarMesh;
 import net.qoopo.engine.core.entity.component.physics.collision.detector.shape.primitivas.AABB;
-import net.qoopo.engine.core.material.basico.Material;
+import net.qoopo.engine.core.material.Material;
 import net.qoopo.engine.core.math.QColor;
 import net.qoopo.engine.core.math.QMatriz4;
 import net.qoopo.engine.core.math.QVector2;
@@ -23,6 +24,8 @@ import net.qoopo.engine.core.renderer.RenderEngine;
 import net.qoopo.engine.core.scene.QOrigen;
 import net.qoopo.engine.core.util.QGlobal;
 import net.qoopo.engine.core.util.TempVars;
+import net.qoopo.engine.renderer.shader.fragment.FragmentShaderComponent;
+import net.qoopo.engine.renderer.shader.fragment.basico.parciales.OnlyColorFragmentShader;
 import net.qoopo.engine.renderer.shader.vertex.DefaultVertexShader;
 import net.qoopo.engine.renderer.shader.vertex.VertexShader;
 import net.qoopo.engine3d.core.input.control.gizmo.Gizmo;
@@ -70,26 +73,28 @@ public class EditorRenderer {
 
         private VertexShader vertexShader = new DefaultVertexShader();
 
+        private Entity gridEntity;
+
         static {
                 matX = new Material("x");
                 matX.setColor(QColor.RED);
-                matX.setFactorEmision(0.85f);
+                matX.setEmision(0.85f);
 
                 matY = new Material("y");
                 matY.setColor(QColor.GREEN);
-                matY.setFactorEmision(0.85f);
+                matY.setEmision(0.85f);
 
                 matZ = new Material("z");
                 matZ.setColor(QColor.BLUE);
-                matZ.setFactorEmision(0.85f);
+                matZ.setEmision(0.85f);
 
                 matGrid = new Material("grid");
                 matGrid.setColor(QColor.LIGHT_GRAY);
-                matGrid.setFactorEmision(0.85f);
+                matGrid.setEmision(0.85f);
 
                 matSeleccion = new Material("matSeleccion");
                 matSeleccion.setColor(QColor.YELLOW);
-                matSeleccion.setFactorEmision(1.0f);
+                matSeleccion.setEmision(1.0f);
         }
 
         public EditorRenderer(RenderEngine renderEngine) {
@@ -102,7 +107,7 @@ public class EditorRenderer {
                 polHueso = new Poly(new Mesh());
                 Material matHueso = new Material("matHueso");
                 matHueso.setColor(QColor.GRAY);
-                matHueso.setFactorEmision(0.15f);
+                matHueso.setEmision(0.15f);
                 polHueso.material = matHueso;
                 polGrid = new Poly(new Mesh());
                 polGrid.material = matGrid;
@@ -117,6 +122,8 @@ public class EditorRenderer {
                 this.rotateGizmo = new RotateGizmo();
                 this.scaleGizmo = new ScaleGizmo();
                 this.origen = new QOrigen();
+
+                createGridEntity();
         }
 
         public void render() {
@@ -125,7 +132,7 @@ public class EditorRenderer {
                         renderSelectedBox();
                         renderGizmos();
                         renderAxis();
-                        // renderSkeleton();
+                        renderSkeleton();
                 }
         }
 
@@ -138,84 +145,86 @@ public class EditorRenderer {
                         // La Matriz de vista es la inversa de la matriz de la camara.
                         // Esto es porque la camara siempre estara en el centro y movemos el mundo
                         // en direccion contraria a la camara.
-                        QMatriz4 matrizVista = renderer.getCamara().getMatrizTransformacion(QGlobal.time).invert();
-                        QMatriz4 matrizVistaInvertidaBillboard = renderer.getCamara()
+                        QMatriz4 matrizVista = renderer.getCamera().getMatrizTransformacion(QGlobal.time).invert();
+                        QMatriz4 matrizVistaInvertidaBillboard = renderer.getCamera()
                                         .getMatrizTransformacion(QGlobal.time);
 
-                        // La matriz vistaModelo es el resultado de multiplicar la matriz de vista por
-                        // la matriz del modelo
-                        // De esta forma es la matriz que se usa para transformar el modelo a las
-                        // coordenadas del mundo
-                        // luego de estas coordenadas se transforma a las coordenadas de la camara
-                        QMatriz4 matVistaModelo;
+                        renderer.renderEntity(origen, matrizVista, matrizVistaInvertidaBillboard, false);
+                        renderer.renderEntity(origen, matrizVista, matrizVistaInvertidaBillboard, true);
 
-                        // La matriz modelo contiene la información del modelo
-                        // Traslación, rotacion (en su propio eje ) y escala
-                        QMatriz4 matrizModelo;
+                        // // La matriz vistaModelo es el resultado de multiplicar la matriz de vista
+                        // por
+                        // // la matriz del modelo
+                        // // De esta forma es la matriz que se usa para transformar el modelo a las
+                        // // coordenadas del mundo
+                        // // luego de estas coordenadas se transforma a las coordenadas de la camara
+                        // QMatriz4 matVistaModelo;
 
-                        // Matriz de modelo
-                        // obtiene la matriz de informacion concatenada con los padres
-                        matrizModelo = origen.getMatrizTransformacion(QGlobal.time);
+                        // // La matriz modelo contiene la información del modelo
+                        // // Traslación, rotacion (en su propio eje ) y escala
+                        // QMatriz4 matrizModelo;
 
-                        // ------------------------------------------------------------
-                        // MAtriz VistaModelo
-                        // obtiene la matriz de transformacion del objeto combinada con la matriz de
-                        // vision de la camara
-                        matVistaModelo = matrizVista.mult(matrizModelo);
+                        // // Matriz de modelo
+                        // // obtiene la matriz de informacion concatenada con los padres
+                        // matrizModelo = origen.getMatrizTransformacion(QGlobal.time);
 
-                        QVector3 normal = QVector3.unitario_y.clone();
-                        QVector2 uv = new QVector2();
-                        QColor color = QColor.WHITE;
+                        // // ------------------------------------------------------------
+                        // // MAtriz VistaModelo
+                        // // obtiene la matriz de transformacion del objeto combinada con la matriz de
+                        // // vision de la camara
+                        // matVistaModelo = matrizVista.mult(matrizModelo);
 
-                        TempVars t = TempVars.get();
-                        try {
-                                renderer.renderEntity(origen, matrizVista, matrizVistaInvertidaBillboard, false);
-                                renderer.renderEntity(origen, matrizVista, matrizVistaInvertidaBillboard, true);
+                        // QVector3 normal = QVector3.unitario_y.clone();
+                        // QVector2 uv = new QVector2();
+                        // QColor color = QColor.WHITE;
 
-                                // // ejes
-                                // t.vertex1.set(origen.getTransformacion().getTraslacion().x,
-                                // origen.getTransformacion().getTraslacion().y,
-                                // origen.getTransformacion().getTraslacion().z,
-                                // 1);
+                        // TempVars t = TempVars.get();
+                        // try {
 
-                                // t.vertex2.set(origen.getTransformacion().getTraslacion().x + 1,
-                                // origen.getTransformacion().getTraslacion().y,
-                                // origen.getTransformacion().getTraslacion().z,
-                                // 1);
+                        // // ejes
+                        // t.vertex1.set(origen.getTransformacion().getTraslacion().x,
+                        // origen.getTransformacion().getTraslacion().y,
+                        // origen.getTransformacion().getTraslacion().z,
+                        // 1);
 
-                                // t.vertex3.set(origen.getTransformacion().getTraslacion().x,
-                                // origen.getTransformacion().getTraslacion().y + 1,
-                                // origen.getTransformacion().getTraslacion().z,
-                                // 1);
+                        // t.vertex2.set(origen.getTransformacion().getTraslacion().x + 1,
+                        // origen.getTransformacion().getTraslacion().y,
+                        // origen.getTransformacion().getTraslacion().z,
+                        // 1);
 
-                                // t.vertex4.set(origen.getTransformacion().getTraslacion().x,
-                                // origen.getTransformacion().getTraslacion().y,
-                                // origen.getTransformacion().getTraslacion().z + 1,
-                                // 1);
+                        // t.vertex3.set(origen.getTransformacion().getTraslacion().x,
+                        // origen.getTransformacion().getTraslacion().y + 1,
+                        // origen.getTransformacion().getTraslacion().z,
+                        // 1);
 
-                                // renderer.renderLine(polEjeX,
-                                // vertexShader.apply(t.vertex1, normal, uv, color,
-                                // matVistaModelo),
-                                // vertexShader.apply(t.vertex2, normal, uv, color,
-                                // matVistaModelo));
+                        // t.vertex4.set(origen.getTransformacion().getTraslacion().x,
+                        // origen.getTransformacion().getTraslacion().y,
+                        // origen.getTransformacion().getTraslacion().z + 1,
+                        // 1);
 
-                                // renderer.renderLine(polEjeY,
-                                // vertexShader.apply(t.vertex1, normal, uv, color,
-                                // matVistaModelo),
-                                // vertexShader.apply(t.vertex3, normal, uv, color,
-                                // matVistaModelo));
+                        // renderer.renderLine(polEjeX,
+                        // vertexShader.apply(t.vertex1, normal, uv, color,
+                        // matVistaModelo),
+                        // vertexShader.apply(t.vertex2, normal, uv, color,
+                        // matVistaModelo));
 
-                                // renderer.renderLine(polEjeZ,
-                                // vertexShader.apply(t.vertex1, normal, uv, color,
-                                // matVistaModelo),
-                                // vertexShader.apply(t.vertex4, normal, uv, color,
-                                // matVistaModelo));
+                        // renderer.renderLine(polEjeY,
+                        // vertexShader.apply(t.vertex1, normal, uv, color,
+                        // matVistaModelo),
+                        // vertexShader.apply(t.vertex3, normal, uv, color,
+                        // matVistaModelo));
 
-                        } catch (Exception e) {
-                                e.printStackTrace();
-                        } finally {
-                                t.release();
-                        }
+                        // renderer.renderLine(polEjeZ,
+                        // vertexShader.apply(t.vertex1, normal, uv, color,
+                        // matVistaModelo),
+                        // vertexShader.apply(t.vertex4, normal, uv, color,
+                        // matVistaModelo));
+
+                        // } catch (Exception e) {
+                        // e.printStackTrace();
+                        // } finally {
+                        // t.release();
+                        // }
                 }
         }
 
@@ -228,7 +237,20 @@ public class EditorRenderer {
                         // La Matriz de vista es la inversa de la matriz de la camara.
                         // Esto es porque la camara siempre estara en el centro y movemos el mundo
                         // en direccion contraria a la camara.
-                        QMatriz4 matrizVista = renderer.getCamara().getMatrizTransformacion(QGlobal.time).invert();
+                        QMatriz4 matrizVista = renderer.getCamera().getMatrizTransformacion(QGlobal.time).invert();
+                        QMatriz4 matrizVistaInvertidaBillboard = renderer.getCamera()
+                                        .getMatrizTransformacion(QGlobal.time);
+                        renderer.renderEntity(gridEntity, matrizVista, matrizVistaInvertidaBillboard, false);
+                }
+        }
+
+        private void renderGridLinebyLine() {
+                if (renderer.opciones.isDibujarGrid()) {
+
+                        // La Matriz de vista es la inversa de la matriz de la camara.
+                        // Esto es porque la camara siempre estara en el centro y movemos el mundo
+                        // en direccion contraria a la camara.
+                        QMatriz4 matrizVista = renderer.getCamera().getMatrizTransformacion(QGlobal.time).invert();
 
                         // La matriz vistaModelo es el resultado de multiplicar la matriz de vista por
                         // la matriz del modelo
@@ -259,7 +281,7 @@ public class EditorRenderer {
                                         t.vertex1.set((-secciones / 2 + i) * espacio, 0, maxCoordenada, 1);
                                         t.vertex2.set((-secciones / 2 + i) * espacio, 0, -maxCoordenada, 1);
 
-                                        renderer.renderLine(matVistaModelo,polGrid,
+                                        renderer.renderLine(matVistaModelo, polGrid,
                                                         vertexShader.apply(t.vertex1, normal, uv, color,
                                                                         matVistaModelo),
                                                         vertexShader.apply(t.vertex2, normal, uv, color,
@@ -270,7 +292,7 @@ public class EditorRenderer {
                                         t.vertex1.set(maxCoordenada, 0, (-secciones / 2 + i) * espacio, 1);
                                         t.vertex2.set(-maxCoordenada, 0, (-secciones / 2 + i) * espacio, 1);
 
-                                        renderer.renderLine(matVistaModelo,polGrid,
+                                        renderer.renderLine(matVistaModelo, polGrid,
                                                         vertexShader.apply(t.vertex1, normal, uv, color,
                                                                         matVistaModelo),
                                                         vertexShader.apply(t.vertex2, normal, uv, color,
@@ -281,7 +303,7 @@ public class EditorRenderer {
                                         t.vertex1.set(maxCoordenada, 0, 0.001f, 1);
                                         t.vertex2.set(-maxCoordenada, 0, 0.001f, 1);
 
-                                        renderer.renderLine(matVistaModelo,polSeleccion,
+                                        renderer.renderLine(matVistaModelo, polSeleccion,
                                                         vertexShader.apply(t.vertex1, normal, uv, color,
                                                                         matVistaModelo),
                                                         vertexShader.apply(t.vertex2, normal, uv, color,
@@ -292,7 +314,7 @@ public class EditorRenderer {
                                         t.vertex1.set(0, 0.001f, maxCoordenada, 1);
                                         t.vertex2.set(0, 0.001f, -maxCoordenada, 1);
 
-                                        renderer.renderLine(matVistaModelo,polSeleccion,
+                                        renderer.renderLine(matVistaModelo, polSeleccion,
                                                         vertexShader.apply(t.vertex1, normal, uv, color,
                                                                         matVistaModelo),
                                                         vertexShader.apply(t.vertex2, normal, uv, color,
@@ -306,19 +328,23 @@ public class EditorRenderer {
                 }
         }
 
+        /**
+         * Dibuja los esqueletos
+         */
         private void renderSkeleton() {
                 // ------------------------------------ ESQUELETOS
                 // ------------------------------------
                 // dibuja los esqueletos
-                TempVars t = TempVars.get();
+
                 try {
-                        // QMatriz4 matTransformacion;
-                        // los demas procesos de dibujo usan el bufferVertices, por lo tanto lo cambio
-                        // temporalmente con el de los gizmos
-                        // bufferVerticesTMP = bufferVertices;
-                        // bufferVertices = bufferVertices2;
-                        // una entity que contiene a los huesos para mostrarlos, aplicamos la misma
-                        // transofmraicon de la entity original
+
+                        QMatriz4 matrizVista = renderer.getCamera()
+                                        .getMatrizTransformacion(QGlobal.time)
+                                        .invert();
+                        QMatriz4 matrizVistaInvertidaBillboard = renderer
+                                        .getCamera()
+                                        .getMatrizTransformacion(QGlobal.time);
+
                         Entity entidadTmp = null;
                         for (Entity entity : renderer.getScene().getEntities()) {
                                 for (EntityComponent componente : entity.getComponents()) {
@@ -328,7 +354,7 @@ public class EditorRenderer {
                                                         if (esqueleto.isSuperponer()) {
                                                                 renderer.getFrameBuffer().cleanZBuffer();
                                                         }
-                                                        List<Entity> lista = new ArrayList<>();
+                                                        List<Entity> boneList = new ArrayList<>();
                                                         // entity falsa usada para corregir la transformacion de la
                                                         // entity y mostrar
                                                         // los huesos acordes a esta transformacion
@@ -345,24 +371,19 @@ public class EditorRenderer {
                                                                 if (hueso.getParent() == null) {
                                                                         Bone hueson = hueso.clone();
                                                                         entidadTmp.addChild(hueson);
-                                                                        hueson.toLista(lista);
+                                                                        hueson.toLista(boneList);
                                                                 }
                                                         }
-                                                        // for (Entity ent : lista) {
-                                                        // TransformationVectorUtil.transformar(ent,
-                                                        // renderer.getCamara(),
-                                                        // t.bufferVertices1, vertexShader);
-                                                        // for (QPrimitiva poligono :
-                                                        // t.bufferVertices1.getPoligonosTransformados()) {
-                                                        // renderer.raster(t.bufferVertices1, poligono, false);
-                                                        // }
-                                                        // }
+                                                        for (Entity bone : boneList) {
+                                                                renderer.renderEntity(bone, matrizVista,
+                                                                                matrizVistaInvertidaBillboard, false);
+                                                        }
                                                 }
                                         }
                                 }
                         }
                 } finally {
-                        t.release();
+
                 }
         }
 
@@ -377,7 +398,7 @@ public class EditorRenderer {
                         // La Matriz de vista es la inversa de la matriz de la camara.
                         // Esto es porque la camara siempre estara en el centro y movemos el mundo
                         // en direccion contraria a la camara.
-                        QMatriz4 matrizVista = renderer.getCamara().getMatrizTransformacion(QGlobal.time).invert();
+                        QMatriz4 matrizVista = renderer.getCamera().getMatrizTransformacion(QGlobal.time).invert();
 
                         // La matriz vistaModelo es el resultado de multiplicar la matriz de vista por
                         // la matriz del modelo
@@ -468,17 +489,17 @@ public class EditorRenderer {
                                                 // t.vector4f1.set(TransformationVectorUtil.transformarVector(t.vector4f1,
                                                 // entidadSeleccionado, renderer.getCamara()));
 
-                                                renderer.renderLine(matVistaModelo,polSeleccion,
+                                                renderer.renderLine(matVistaModelo, polSeleccion,
                                                                 vertexShader.apply(t.vertex1, normal, uv, color,
                                                                                 matVistaModelo),
                                                                 vertexShader.apply(t.vertex2, normal, uv, color,
                                                                                 matVistaModelo));
-                                                renderer.renderLine(matVistaModelo,polSeleccion,
+                                                renderer.renderLine(matVistaModelo, polSeleccion,
                                                                 vertexShader.apply(t.vertex1, normal, uv, color,
                                                                                 matVistaModelo),
                                                                 vertexShader.apply(t.vertex3, normal, uv, color,
                                                                                 matVistaModelo));
-                                                renderer.renderLine(matVistaModelo,polSeleccion,
+                                                renderer.renderLine(matVistaModelo, polSeleccion,
                                                                 vertexShader.apply(t.vertex1, normal, uv, color,
                                                                                 matVistaModelo),
                                                                 vertexShader.apply(t.vertex4, normal, uv, color,
@@ -501,17 +522,17 @@ public class EditorRenderer {
                                                                 tmp.aabMaximo.location.z,
                                                                 tmp.aabMaximo.location.w);
 
-                                                renderer.renderLine(matVistaModelo,polSeleccion,
+                                                renderer.renderLine(matVistaModelo, polSeleccion,
                                                                 vertexShader.apply(t.vertex1, normal, uv, color,
                                                                                 matVistaModelo),
                                                                 vertexShader.apply(t.vertex2, normal, uv, color,
                                                                                 matVistaModelo));
-                                                renderer.renderLine(matVistaModelo,polSeleccion,
+                                                renderer.renderLine(matVistaModelo, polSeleccion,
                                                                 vertexShader.apply(t.vertex1, normal, uv, color,
                                                                                 matVistaModelo),
                                                                 vertexShader.apply(t.vertex3, normal, uv, color,
                                                                                 matVistaModelo));
-                                                renderer.renderLine(matVistaModelo,polSeleccion,
+                                                renderer.renderLine(matVistaModelo, polSeleccion,
                                                                 vertexShader.apply(t.vertex1, normal, uv, color,
                                                                                 matVistaModelo),
                                                                 vertexShader.apply(t.vertex4, normal, uv, color,
@@ -533,17 +554,17 @@ public class EditorRenderer {
                                                                 tmp.aabMinimo.location.z,
                                                                 tmp.aabMaximo.location.w);
 
-                                                renderer.renderLine(matVistaModelo,polSeleccion,
+                                                renderer.renderLine(matVistaModelo, polSeleccion,
                                                                 vertexShader.apply(t.vertex1, normal, uv, color,
                                                                                 matVistaModelo),
                                                                 vertexShader.apply(t.vertex2, normal, uv, color,
                                                                                 matVistaModelo));
-                                                renderer.renderLine(matVistaModelo,polSeleccion,
+                                                renderer.renderLine(matVistaModelo, polSeleccion,
                                                                 vertexShader.apply(t.vertex1, normal, uv, color,
                                                                                 matVistaModelo),
                                                                 vertexShader.apply(t.vertex3, normal, uv, color,
                                                                                 matVistaModelo));
-                                                renderer.renderLine(matVistaModelo,polSeleccion,
+                                                renderer.renderLine(matVistaModelo, polSeleccion,
                                                                 vertexShader.apply(t.vertex1, normal, uv, color,
                                                                                 matVistaModelo),
                                                                 vertexShader.apply(t.vertex4, normal, uv, color,
@@ -566,17 +587,17 @@ public class EditorRenderer {
                                                                 tmp.aabMinimo.location.z,
                                                                 tmp.aabMaximo.location.w);
 
-                                                renderer.renderLine(matVistaModelo,polSeleccion,
+                                                renderer.renderLine(matVistaModelo, polSeleccion,
                                                                 vertexShader.apply(t.vertex1, normal, uv, color,
                                                                                 matVistaModelo),
                                                                 vertexShader.apply(t.vertex2, normal, uv, color,
                                                                                 matVistaModelo));
-                                                renderer.renderLine(matVistaModelo,polSeleccion,
+                                                renderer.renderLine(matVistaModelo, polSeleccion,
                                                                 vertexShader.apply(t.vertex1, normal, uv, color,
                                                                                 matVistaModelo),
                                                                 vertexShader.apply(t.vertex3, normal, uv, color,
                                                                                 matVistaModelo));
-                                                renderer.renderLine(matVistaModelo,polSeleccion,
+                                                renderer.renderLine(matVistaModelo, polSeleccion,
                                                                 vertexShader.apply(t.vertex1, normal, uv, color,
                                                                                 matVistaModelo),
                                                                 vertexShader.apply(t.vertex4, normal, uv, color,
@@ -602,17 +623,17 @@ public class EditorRenderer {
                                                                 tmp.aabMinimo.location.z,
                                                                 tmp.aabMinimo.location.w);
 
-                                                renderer.renderLine(matVistaModelo,polSeleccion,
+                                                renderer.renderLine(matVistaModelo, polSeleccion,
                                                                 vertexShader.apply(t.vertex1, normal, uv, color,
                                                                                 matVistaModelo),
                                                                 vertexShader.apply(t.vertex2, normal, uv, color,
                                                                                 matVistaModelo));
-                                                renderer.renderLine(matVistaModelo,polSeleccion,
+                                                renderer.renderLine(matVistaModelo, polSeleccion,
                                                                 vertexShader.apply(t.vertex1, normal, uv, color,
                                                                                 matVistaModelo),
                                                                 vertexShader.apply(t.vertex3, normal, uv, color,
                                                                                 matVistaModelo));
-                                                renderer.renderLine(matVistaModelo,polSeleccion,
+                                                renderer.renderLine(matVistaModelo, polSeleccion,
                                                                 vertexShader.apply(t.vertex1, normal, uv, color,
                                                                                 matVistaModelo),
                                                                 vertexShader.apply(t.vertex4, normal, uv, color,
@@ -636,17 +657,17 @@ public class EditorRenderer {
                                                                 tmp.aabMinimo.location.z,
                                                                 tmp.aabMinimo.location.w);
 
-                                                renderer.renderLine(matVistaModelo,polSeleccion,
+                                                renderer.renderLine(matVistaModelo, polSeleccion,
                                                                 vertexShader.apply(t.vertex1, normal, uv, color,
                                                                                 matVistaModelo),
                                                                 vertexShader.apply(t.vertex2, normal, uv, color,
                                                                                 matVistaModelo));
-                                                renderer.renderLine(matVistaModelo,polSeleccion,
+                                                renderer.renderLine(matVistaModelo, polSeleccion,
                                                                 vertexShader.apply(t.vertex1, normal, uv, color,
                                                                                 matVistaModelo),
                                                                 vertexShader.apply(t.vertex3, normal, uv, color,
                                                                                 matVistaModelo));
-                                                renderer.renderLine(matVistaModelo,polSeleccion,
+                                                renderer.renderLine(matVistaModelo, polSeleccion,
                                                                 vertexShader.apply(t.vertex1, normal, uv, color,
                                                                                 matVistaModelo),
                                                                 vertexShader.apply(t.vertex4, normal, uv, color,
@@ -670,17 +691,17 @@ public class EditorRenderer {
                                                                 tmp.aabMaximo.location.z,
                                                                 tmp.aabMinimo.location.w);
 
-                                                renderer.renderLine(matVistaModelo,polSeleccion,
+                                                renderer.renderLine(matVistaModelo, polSeleccion,
                                                                 vertexShader.apply(t.vertex1, normal, uv, color,
                                                                                 matVistaModelo),
                                                                 vertexShader.apply(t.vertex2, normal, uv, color,
                                                                                 matVistaModelo));
-                                                renderer.renderLine(matVistaModelo,polSeleccion,
+                                                renderer.renderLine(matVistaModelo, polSeleccion,
                                                                 vertexShader.apply(t.vertex1, normal, uv, color,
                                                                                 matVistaModelo),
                                                                 vertexShader.apply(t.vertex3, normal, uv, color,
                                                                                 matVistaModelo));
-                                                renderer.renderLine(matVistaModelo,polSeleccion,
+                                                renderer.renderLine(matVistaModelo, polSeleccion,
                                                                 vertexShader.apply(t.vertex1, normal, uv, color,
                                                                                 matVistaModelo),
                                                                 vertexShader.apply(t.vertex4, normal, uv, color,
@@ -740,9 +761,9 @@ public class EditorRenderer {
                                 // La Matriz de vista es la inversa de la matriz de la camara.
                                 // Esto es porque la camara siempre estara en el centro y movemos el mundo
                                 // en direccion contraria a la camara.
-                                QMatriz4 matrizVista = renderer.getCamara().getMatrizTransformacion(QGlobal.time)
+                                QMatriz4 matrizVista = renderer.getCamera().getMatrizTransformacion(QGlobal.time)
                                                 .invert();
-                                QMatriz4 matrizVistaInvertidaBillboard = renderer.getCamara()
+                                QMatriz4 matrizVistaInvertidaBillboard = renderer.getCamera()
                                                 .getMatrizTransformacion(QGlobal.time);
 
                                 // La matriz vistaModelo es el resultado de multiplicar la matriz de vista por
@@ -792,7 +813,7 @@ public class EditorRenderer {
 
                                         float gizmoSize = 0.06f;
                                         float scale = (float) (gizmoSize *
-                                                        (renderer.getCamara().getMatrizTransformacion(QGlobal.time)
+                                                        (renderer.getCamera().getMatrizTransformacion(QGlobal.time)
                                                                         .toTranslationVector()
                                                                         .add(currentGizmo
                                                                                         .getMatrizTransformacion(
@@ -800,7 +821,7 @@ public class EditorRenderer {
                                                                                         .toTranslationVector()
                                                                                         .multiply(-1.0f))
                                                                         .length()
-                                                                        / Math.tan(renderer.getCamara().getFOV()
+                                                                        / Math.tan(renderer.getCamera().getFOV()
                                                                                         / 2.0f)));
                                         currentGizmo.scale(scale, scale, scale);
 
@@ -830,19 +851,19 @@ public class EditorRenderer {
                                                         currentGizmo.getTransformacion().getTraslacion().z + 1,
                                                         1);
 
-                                        renderer.renderLine(matVistaModelo,polEjeX,
+                                        renderer.renderLine(matVistaModelo, polEjeX,
                                                         vertexShader.apply(t.vertex1, normal, uv, color,
                                                                         matVistaModelo),
                                                         vertexShader.apply(t.vertex2, normal, uv, color,
                                                                         matVistaModelo));
 
-                                        renderer.renderLine(matVistaModelo,polEjeY,
+                                        renderer.renderLine(matVistaModelo, polEjeY,
                                                         vertexShader.apply(t.vertex1, normal, uv, color,
                                                                         matVistaModelo),
                                                         vertexShader.apply(t.vertex3, normal, uv, color,
                                                                         matVistaModelo));
 
-                                        renderer.renderLine(matVistaModelo,polEjeZ,
+                                        renderer.renderLine(matVistaModelo, polEjeZ,
                                                         vertexShader.apply(t.vertex1, normal, uv, color,
                                                                         matVistaModelo),
                                                         vertexShader.apply(t.vertex4, normal, uv, color,
@@ -858,4 +879,56 @@ public class EditorRenderer {
                 }
         }
 
+        /**
+         * Crea la entidad que representa a la grid
+         */
+        private void createGridEntity() {
+                gridEntity = new Entity("grid");
+                Mesh gridMesh = new Mesh();
+                try {
+                        gridMesh = new PlanarMesh(false, true, 50, 50, 50, 50);
+                        gridMesh.applyMaterial(matGrid);
+                        // int secciones = 50;
+                        // float espacio = 1.0f;
+                        // float maxCoordenada = espacio * secciones / 2.0f;
+                        // // lineas paralelas en el eje de X
+                        // int index = 0;
+                        // for (int i = 0; i <= secciones; i++) {
+                        // gridMesh.addVertex((-secciones / 2 + i) * espacio, 0.0f, maxCoordenada);
+                        // gridMesh.addVertex((-secciones / 2 + i) * espacio, 0.0f, -maxCoordenada);
+                        // gridMesh.addLine(index, index + 1);
+                        // index++;
+                        // }
+                        // // lineas paralelas en el eje Z
+                        // for (int i = 0; i <= secciones; i++) {
+                        // gridMesh.addVertex(maxCoordenada, 0, (-secciones / 2 + i) * espacio);
+                        // gridMesh.addVertex(-maxCoordenada, 0, (-secciones / 2 + i) * espacio);
+                        // gridMesh.addLine(index, index + 1);
+                        // index++;
+                        // }
+
+                        // gridMesh.applyMaterial(matGrid);
+
+                        // // el eje de X
+                        // {
+                        // gridMesh.addVertex(maxCoordenada, 0, 0.001f);
+                        // gridMesh.addVertex(-maxCoordenada, 0, 0.001f);
+                        // gridMesh.addLine(matX, index, index + 1);
+                        // index++;
+                        // }
+                        // // el eje de Z
+                        // {
+                        // gridMesh.addVertex(0, 0.001f, maxCoordenada);
+                        // gridMesh.addVertex(0, 0.001f, -maxCoordenada);
+                        // gridMesh.addLine(matZ, index, index + 1);
+                        // index++;
+                        // }
+
+                } catch (Exception e) {
+                        e.printStackTrace();
+                } finally {
+                        gridEntity.addComponent(gridMesh);
+                        gridEntity.addComponent(new FragmentShaderComponent(new OnlyColorFragmentShader(null)));
+                }
+        }
 }

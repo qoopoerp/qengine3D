@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
+import lombok.Getter;
 import net.qoopo.engine.core.entity.component.EntityComponent;
 import net.qoopo.engine.core.entity.component.mesh.Mesh;
 import net.qoopo.engine.core.entity.component.transform.QTransformacion;
@@ -43,7 +44,7 @@ public class Entity implements Serializable {
 
     protected final List<EntityComponent> components = new ArrayList<>();
 
-    // unico componente que no esta en la lista, todos necesitan este componente
+    // unico componente que no esta en la lista, todos necesitan este componente    
     protected QTransformacion transformacion = new QTransformacion();
     protected String name;
     protected Entity parent;

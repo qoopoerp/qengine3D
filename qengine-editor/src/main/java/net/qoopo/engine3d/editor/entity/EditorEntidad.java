@@ -31,7 +31,7 @@ import net.qoopo.engine.core.entity.component.EntityComponent;
 import net.qoopo.engine.core.entity.component.animation.AnimationComponent;
 import net.qoopo.engine.core.entity.component.animation.AnimationStorageComponent;
 import net.qoopo.engine.core.entity.component.animation.Skeleton;
-import net.qoopo.engine.core.entity.component.cubemap.CubeMap;
+import net.qoopo.engine.core.entity.component.environment.EnvProbe;
 import net.qoopo.engine.core.entity.component.ligth.QDirectionalLigth;
 import net.qoopo.engine.core.entity.component.ligth.QLigth;
 import net.qoopo.engine.core.entity.component.ligth.QPointLigth;
@@ -87,7 +87,7 @@ import net.qoopo.engine.core.entity.component.water.WaterDuDv;
 import net.qoopo.engine.core.lwjgl.audio.component.SoundEmissorAL;
 import net.qoopo.engine.core.lwjgl.audio.component.SoundListenerAL;
 import net.qoopo.engine.core.material.AbstractMaterial;
-import net.qoopo.engine.core.material.basico.Material;
+import net.qoopo.engine.core.material.Material;
 import net.qoopo.engine.core.material.node.MaterialNode;
 import net.qoopo.engine.core.math.QColor;
 import net.qoopo.engine.core.math.QVector3;
@@ -300,7 +300,7 @@ public class EditorEntidad extends javax.swing.JPanel {
         itmMapaCubo.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                entity.addComponent(new CubeMap(QGlobal.MAPA_CUPO_RESOLUCION));
+                entity.addComponent(new EnvProbe(QGlobal.MAPA_CUPO_RESOLUCION));
                 editarEntidad(entity);
             }
         });
@@ -682,7 +682,7 @@ public class EditorEntidad extends javax.swing.JPanel {
             Camera camara = new Camera("Material");
             camara.lookAtTarget(QVector3.of(10, 10, 10), QVector3.of(0, 0, 0), QVector3.of(0, 1, 0));
             camara.frustrumLejos = 20.0f;
-            renderVistaPrevia.setCamara(camara);
+            renderVistaPrevia.setCamera(camara);
             Entity luz = new Entity("luz");
             luz.addComponent(new QDirectionalLigth(QVector3.of(-1, -1, -1)));
 
@@ -854,8 +854,8 @@ public class EditorEntidad extends javax.swing.JPanel {
                 pnlListaComponentes.add(new PnlAguaSimple((WaterDuDv) componente));
             } else if (componente instanceof PlanarReflection) {
                 pnlListaComponentes.add(new PnlEspejo());
-            } else if (componente instanceof CubeMap) {
-                pnlListaComponentes.add(new PnlMapaCubo((CubeMap) componente));
+            } else if (componente instanceof EnvProbe) {
+                pnlListaComponentes.add(new PnlMapaCubo((EnvProbe) componente));
             } else if (componente instanceof QObjetoRigido) {
                 pnlListaComponentes.add(new PnlFisicoRigido((QObjetoRigido) componente));
             } else if (componente instanceof QVehiculo) {

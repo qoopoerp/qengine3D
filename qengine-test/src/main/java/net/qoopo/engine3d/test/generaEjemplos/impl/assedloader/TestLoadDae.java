@@ -11,16 +11,11 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import net.qoopo.engine.core.assets.AssetManager;
 import net.qoopo.engine.core.assets.model.ModelLoader;
 import net.qoopo.engine.core.entity.Entity;
-import net.qoopo.engine.core.entity.component.EntityComponent;
-import net.qoopo.engine.core.entity.component.mesh.Mesh;
 import net.qoopo.engine.core.load.collada.thinmatrix.LoadModelDae;
-import net.qoopo.engine.core.material.basico.Material;
 import net.qoopo.engine.core.renderer.RenderEngine;
 import net.qoopo.engine.core.scene.Scene;
-import net.qoopo.engine.core.texture.Texture;
 import net.qoopo.engine3d.test.generaEjemplos.MakeTestScene;
 
 /**
@@ -35,38 +30,28 @@ public class TestLoadDae extends MakeTestScene {
 
             ModelLoader loadModel = new LoadModelDae();
 
-            Texture texture = AssetManager.get().loadTexture("difusa",
-                    new File("assets/models/collada/vaquero_tuto/diffuse.png"));
-            Material material = new Material(texture);
+            // Texture texture = AssetManager.get().loadTexture("difusa",
+            // new File("assets/models/collada/vaquero_tuto/diffuse.png"));
+            // Material material = new Material(texture);
 
-            File archivo = new File("assets/models/collada/vaquero_tuto/model.dae");
+            // File archivo = new File("assets/models/collada/vaquero_tuto/model.dae");
 
-            Entity entidad = loadModel.loadModel(archivo);
+            // Entity entidad = loadModel.loadModel(archivo);
 
-            // cambio la textura de las geometria cargadas
-            for (EntityComponent comp : entidad.getComponents()) {
-                if (comp instanceof Mesh) {
-                    ((Mesh) comp).applyMaterial(material);
-                }
-            }
-            entidad.rotate(Math.toRadians(-90), 0, 0);
-            entidad.move(-5, 0, 0);
-            mundo.addEntity(entidad);
-
-            List<File> archivos = new ArrayList<>();
+            // // cambio la textura de las geometria cargadas
+            // for (EntityComponent comp : entidad.getComponents()) {
+            // if (comp instanceof Mesh) {
+            // ((Mesh) comp).applyMaterial(material);
+            // }
+            // }
+            // entidad.rotate(Math.toRadians(-90), 0, 0);
+            // entidad.move(-5, 0, 0);
+            // mundo.addEntity(entidad);
 
             // //---------------- collada ---------------------------
-            archivos.add(new File("assets/models/collada/vaquero_tuto/model.dae"));
-            // archivos.add(new File("assets/"+
-            // "models/collada/animaciones_mixamo/crisys/Samba Dancing.dae"));
-            // archivos.add(new File("assets/"+
-            // "models/collada/animaciones_mixamo/swat/Taunt/Taund.dae"));
-            //// //colada Bot-Y
-            // archivos.add(new File("assets/"+
-            // "models/collada/animaciones_mixamo/Bot-Y/Idle.dae"));
-            // archivos.add(new File("assets/"+
-            // "models/collada/animaciones_mixamo/Bot-Y/Boxing.dae"));
-
+            List<File> archivos = new ArrayList<>();
+            // archivos.add(new File("assets/models/collada/vaquero_tuto/model.dae"));
+            archivos.add(new File("assets/models/collada/bob_lamp_update.dae"));
             int i = 0;
             for (int y = 0; y < 5; y++) {
                 for (int x = 0; x < 5; x++) {

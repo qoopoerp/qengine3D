@@ -37,7 +37,7 @@ public class TestLoadAssimp extends MakeTestScene {
 
             // ------------------------ md5 --------------------------------
             // archivos.add(new File("assets/models/md5/doom3/md5/monsters/hellknight/hellknight.md5mesh"));
-            // archivos.add(new File("assets/models/md5/DOOM_MONSTERS/hellknight/monster.md5mesh"));
+            // archivos.add(new File("assets/models/md5/doom3_monsters/hellknight/monster.md5mesh"));
             // archivos.add(new File("assets/models/md5/bob/boblamp.md5mesh"));
             // archivos.add(new File("assets/models/md5/doom3/md5/monsters/mancubus/mancubus.md5mesh"));
             // archivos.add(new File("assets/models/md5/doom3/md5/monsters/imp/imp.md5mesh"));
@@ -75,7 +75,7 @@ public class TestLoadAssimp extends MakeTestScene {
             // archivos.add(new File("assets/models/collada/mixamo/Bot-Y/Idle.dae"));
             // archivos.add(new File("assets/models/collada/mixamo/Bot-Y/Boxing.dae"));
             //// //------- fbx ------------------
-            // archivos.add(new File("assets/models/fbx/mixamo/Shoved Reaction With Spin.fbx"));
+            archivos.add(new File("assets/models/fbx/mixamo/Shoved Reaction With Spin.fbx"));
             // archivos.add(new File("assets/models/fbx/mixamo/Bot-Y/Idle.fbx"));
             // archivos.add(new File("assets/models/fbx/mixamo/Bot-Y/Boxing.fbx"));
             // archivos.add(new File("assets/models/fbx/mixamo/Bot-Y/Mutant Punch.fbx"));
