@@ -92,7 +92,7 @@ public class QImage implements Serializable {
         setPixel(x, y, color.toRGB());
     }
 
-    public void llenarColor(QColor color) {
+    public void fill(QColor color) {
         Arrays.fill(data, color.toRGB());
     }
 

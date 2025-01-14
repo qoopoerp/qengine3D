@@ -12,15 +12,15 @@ import net.qoopo.engine.core.math.QColor;
 import net.qoopo.engine.core.texture.Texture;
 
 /**
- * Este procesador es un proxy simple sin aplicar ningun proceso
+ * Este procesador invierte los valores de la textura
  *
  * @author alberto
  */
-public class QProcesadorInvierte extends Texture {
+public class InvertTexture extends Texture {
 
     private Texture textura;
 
-    public QProcesadorInvierte(Texture textura) {
+    public InvertTexture(Texture textura) {
         this.textura = textura;
     }
 
@@ -34,7 +34,6 @@ public class QProcesadorInvierte extends Texture {
 
     @Override
     public int getARGB(float x, float y) {
-        // return textura.getARGB(x, y);
         return QColor.toQARGB(textura.getARGB(x, y)).invert().toARGB();
     }
 
@@ -42,21 +41,6 @@ public class QProcesadorInvierte extends Texture {
     public QColor getQColor(float x, float y) {
         return textura.getQColor(x, y).invert();
     }
-
-    // @Override
-    // public float getNormalX(float x, float y) {
-    // return 1.0f - textura.getNormalX(x, y);
-    // }
-
-    // @Override
-    // public float getNormalY(float x, float y) {
-    // return 1.0f - textura.getNormalY(x, y);
-    // }
-
-    // @Override
-    // public float getNormalZ(float x, float y) {
-    // return 1.0f - textura.getNormalZ(x, y);
-    // }
 
     @Override
     public BufferedImage getImagen(Dimension size) {
@@ -73,9 +57,9 @@ public class QProcesadorInvierte extends Texture {
     }
 
     @Override
-    public void destruir() {
+    public void destroy() {
         if (textura != null) {
-            textura.destruir();
+            textura.destroy();
             textura = null;
         }
     }

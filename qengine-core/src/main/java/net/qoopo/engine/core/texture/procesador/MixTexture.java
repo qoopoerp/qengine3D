@@ -17,7 +17,7 @@ import net.qoopo.engine.core.texture.Texture;
  *
  * @author alberto
  */
-public class QProcesadorMix extends Texture {
+public class MixTexture extends Texture {
 
     private Texture texturaA;
     private Texture texturaB;
@@ -25,7 +25,7 @@ public class QProcesadorMix extends Texture {
 
     private float razon = 0;
 
-    public QProcesadorMix(Texture texturaA, Texture texturaB) {
+    public MixTexture(Texture texturaA, Texture texturaB) {
         this.texturaA = texturaA;
         this.texturaB = texturaB;
         this.textura = new Texture();
@@ -65,24 +65,6 @@ public class QProcesadorMix extends Texture {
         return QMath.mix(texturaA.getQColor(x, y), texturaB.getQColor(x, y), razon);
     }
 
-    // @Override
-    // public float getNormalX(float x, float y) {
-    // return QMath.mix(texturaA.getNormalX(x, y), texturaB.getNormalX(x, y),
-    // razon);
-    // }
-
-    // @Override
-    // public float getNormalY(float x, float y) {
-    // return QMath.mix(texturaA.getNormalY(x, y), texturaB.getNormalY(x, y),
-    // razon);
-    // }
-
-    // @Override
-    // public float getNormalZ(float x, float y) {
-    // return QMath.mix(texturaA.getNormalZ(x, y), texturaB.getNormalZ(x, y),
-    // razon);
-    // }
-
     @Override
     public BufferedImage getImagen(Dimension size) {
         return textura.getImagen(size);
@@ -94,20 +76,20 @@ public class QProcesadorMix extends Texture {
     }
 
     @Override
-    public void destruir() {
+    public void destroy() {
 
         if (textura != null) {
-            textura.destruir();
+            textura.destroy();
             textura = null;
         }
 
         if (texturaA != null) {
-            texturaA.destruir();
+            texturaA.destroy();
             texturaA = null;
         }
 
         if (texturaB != null) {
-            texturaB.destruir();
+            texturaB.destroy();
             texturaB = null;
         }
     }

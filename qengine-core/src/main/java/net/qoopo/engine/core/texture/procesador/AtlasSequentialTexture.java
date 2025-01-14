@@ -18,7 +18,7 @@ import net.qoopo.engine.core.texture.Texture;
  *
  * @author alberto
  */
-public class QProcesadorAtlasSecuencial extends Texture {
+public class AtlasSequentialTexture extends Texture {
     private Texture textura;
     private float filas = 1;
     private float columnas = 1;
@@ -33,7 +33,7 @@ public class QProcesadorAtlasSecuencial extends Texture {
     float anchoCelda;
     float altoCelda;
 
-    public QProcesadorAtlasSecuencial(Texture textura, int filas, int columnas, long tiempo_ms) {
+    public AtlasSequentialTexture(Texture textura, int filas, int columnas, long tiempo_ms) {
         this.textura = textura;
         this.filas = filas;
         this.columnas = columnas;
@@ -163,9 +163,9 @@ public class QProcesadorAtlasSecuencial extends Texture {
     }
 
     @Override
-    public void destruir() {
+    public void destroy() {
         if (textura != null) {
-            textura.destruir();
+            textura.destroy();
             textura = null;
         }
     }

@@ -10,7 +10,7 @@ import net.qoopo.engine.core.entity.component.mesh.primitive.Poly;
 import net.qoopo.engine.core.entity.component.mesh.primitive.Primitive;
 import net.qoopo.engine.core.entity.component.mesh.primitive.Shape;
 import net.qoopo.engine.core.material.AbstractMaterial;
-import net.qoopo.engine.core.material.basico.Material;
+import net.qoopo.engine.core.material.Material;
 import net.qoopo.engine.core.math.QColor;
 
 /**
@@ -53,7 +53,7 @@ public class MaterialUtil {
             material.setTransAlfa(alpha);
             material.setColor(colorDifuso);
             material.setColorEspecular(colorEspecular);
-            material.setFactorEmision(factorEmisionLuz);
+            material.setEmision(factorEmisionLuz);
             material.setSpecularExponent(specularExponent);
         } catch (Exception e) {
             e.printStackTrace();
@@ -69,7 +69,7 @@ public class MaterialUtil {
             material.setTransAlfa(alpha);
             material.setColor(new QColor(1, r, g, b));
             material.setColorEspecular(new QColor(1, rS, gS, bS));
-            material.setFactorEmision(factorEmisionLuz);
+            material.setEmision(factorEmisionLuz);
             material.setSpecularExponent(specularExponent);
         } catch (Exception e) {
             e.printStackTrace();

@@ -7,7 +7,7 @@ package net.qoopo.engine.core.texture;
 
 import java.awt.image.BufferedImage;
 
-import net.qoopo.engine.core.entity.component.cubemap.CubeMap;
+import net.qoopo.engine.core.entity.component.environment.EnvProbe;
 import net.qoopo.engine.core.math.QColor;
 import net.qoopo.engine.core.math.QMath;
 import net.qoopo.engine.core.math.QVector3;
@@ -19,13 +19,15 @@ import net.qoopo.engine.core.math.QVector3;
  */
 public class TextureUtil {
 
-    public static QColor getColorMapaEntorno(QVector3 vector, Texture mapaEntorno, int tipoMapaEntorno) {
+    public static QColor getEnviromentMapColor(QVector3 vector, Texture mapaEntorno, int tipoMapaEntorno) {
+        if (mapaEntorno == null)
+            return QColor.BLACK;
         switch (tipoMapaEntorno) {
-            case CubeMap.FORMATO_MAPA_CUBO:
-                return getColorTexturaCubeMap(vector, mapaEntorno);
-            case CubeMap.FORMATO_MAPA_HDRI:
+            case EnvProbe.FORMATO_MAPA_CUBO:
+                return getCubemapTextureColor(vector, mapaEntorno);
+            case EnvProbe.FORMATO_MAPA_HDRI:
             default:
-                return getColorTexturaHDRI(vector, mapaEntorno);
+                return getHdriTextureColor(vector, mapaEntorno);
         }
     }
 
@@ -37,7 +39,7 @@ public class TextureUtil {
      * @param mapaEntorno
      * @return
      */
-    public static QColor getColorTexturaHDRI(QVector3 vector, Texture mapaEntorno) {
+    public static QColor getHdriTextureColor(QVector3 vector, Texture mapaEntorno) {
         try {
             BufferedImage img = mapaEntorno.getImagen();
             int hdriWidth = img.getWidth();
@@ -59,7 +61,7 @@ public class TextureUtil {
      * @param mapaEntorno
      * @return
      */
-    public static QColor getColorTexturaCubeMap(QVector3 vector, Texture mapaEntorno) {
+    public static QColor getCubemapTextureColor(QVector3 vector, Texture mapaEntorno) {
         try {
 
             float absX = QMath.abs(vector.x);
@@ -152,7 +154,7 @@ public class TextureUtil {
             v = v * factorV + vOffset;
             return mapaEntorno.getQColor(u, v);
         } catch (Exception e) {
-            e.printStackTrace();
+            // e.printStackTrace();
             return QColor.BLACK;
         }
     }
@@ -165,7 +167,7 @@ public class TextureUtil {
      * @param mapaEntorno
      * @return
      */
-    public static QColor getColorTexturaCubeMap(QVector3 vector, Texture[] mapaEntorno) {
+    public static QColor getCubemapTextureColor(QVector3 vector, Texture[] mapaEntorno) {
         try {
             float absX = QMath.abs(vector.x);
             float absY = QMath.abs(vector.y);

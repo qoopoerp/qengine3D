@@ -19,7 +19,7 @@ import net.qoopo.engine.core.texture.Texture;
  *
  * @author alberto
  */
-public class QProcesadorSecuencial extends Texture {
+public class SequentialTexture extends Texture {
 
     private Texture textura;// es la textura actual, se usa una aparte porq en las transiciones puede ser el
                              // resultado de 2 textures mezcladas
@@ -28,7 +28,7 @@ public class QProcesadorSecuencial extends Texture {
     private int contador = 0;
     private long t_anterior = -1;
 
-    public QProcesadorSecuencial(long tiempo_ms) {
+    public SequentialTexture(long tiempo_ms) {
         this.tiempo_ms = tiempo_ms;
         textures = new ArrayList<>();
         t_anterior = -1;
@@ -126,15 +126,15 @@ public class QProcesadorSecuencial extends Texture {
     }
 
     @Override
-    public void destruir() {
+    public void destroy() {
         for (Texture tex : textures) {
-            tex.destruir();
+            tex.destroy();
         }
         textures.clear();
         textures = null;
 
         if (textura != null) {
-            textura.destruir();
+            textura.destroy();
             textura = null;
         }
     }

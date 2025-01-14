@@ -17,7 +17,7 @@ import net.qoopo.engine.core.texture.Texture;
  *
  * @author alberto
  */
-public class QProcesadorAtlas extends Texture {
+public class AtlasTexture extends Texture {
 
     private Texture texturaAtlas;
     private Texture textura;
@@ -27,7 +27,7 @@ public class QProcesadorAtlas extends Texture {
     private int fila = 1;
     private int col = 1;
 
-    public QProcesadorAtlas(Texture textura, int filas, int columnas) {
+    public AtlasTexture(Texture textura, int filas, int columnas) {
         this.texturaAtlas = textura;
         this.textura = new Texture();
         this.filas = filas;
@@ -68,7 +68,7 @@ public class QProcesadorAtlas extends Texture {
 
     @Override
     public void procesar() {
-        Dimension size = new Dimension(texturaAtlas.getAncho(), texturaAtlas.getAlto());
+        Dimension size = new Dimension(texturaAtlas.getWidth(), texturaAtlas.getHeight());
         int anchoCelda = size.width / columnas;
         int altoCelda = size.height / filas;
         int x = col * anchoCelda;
@@ -121,9 +121,9 @@ public class QProcesadorAtlas extends Texture {
     }
 
     @Override
-    public void destruir() {
+    public void destroy() {
         if (texturaAtlas != null) {
-            texturaAtlas.destruir();
+            texturaAtlas.destroy();
             texturaAtlas = null;
         }
     }

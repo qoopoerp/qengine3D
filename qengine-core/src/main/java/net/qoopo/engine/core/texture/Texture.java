@@ -9,7 +9,6 @@ import static net.qoopo.engine.core.math.QMath.rotateNumber;
 
 import java.awt.Dimension;
 import java.awt.image.BufferedImage;
-import java.beans.Transient;
 import java.io.Serializable;
 
 import lombok.Getter;
@@ -24,7 +23,10 @@ import net.qoopo.engine.core.math.QColor;
 @Setter
 public class Texture implements Serializable {
 
-    transient public Object objetoJava3D;
+    /**
+     * Puntero a un objeto de otra plataforma que lo necesite, como opengl o java3d
+     */
+    transient public Object transientObject;
 
     private QImage imagen;
 
@@ -36,8 +38,8 @@ public class Texture implements Serializable {
     // solo tenemos la bandera por logistica
     protected boolean proyectada = false;
 
-    private int ancho = 0;
-    private int alto = 0;
+    private int width = 0;
+    private int height = 0;
 
     // sera usado para obtener coordenadas diferentes de las solicitadas por el
     // renderer
@@ -95,15 +97,15 @@ public class Texture implements Serializable {
     }
 
     public void loadTexture(QImage img) {
-        ancho = img.getAncho();
-        alto = img.getAlto();
+        width = img.getAncho();
+        height = img.getAlto();
         this.imagen = img;
     }
 
     public void loadTexture(BufferedImage img) {
         try {
-            ancho = img.getWidth();
-            alto = img.getHeight();
+            width = img.getWidth();
+            height = img.getHeight();
             if (imagen == null) {
                 imagen = new QImage(img);
             } else {
@@ -129,7 +131,8 @@ public class Texture implements Serializable {
             y += offsetY;
             x *= muestrasU;
             y *= muestrasV;
-            return imagen.getPixel(rotateNumber((int) (x * ancho), ancho), rotateNumber((int) ((1 - y) * alto), alto));
+            return imagen.getPixel(rotateNumber((int) (x * width), width),
+                    rotateNumber((int) ((1 - y) * height), height));
         } catch (Exception e) {
             return (0 << 24 + 0 << 16 + 0 << 8 + 0);
         }
@@ -150,8 +153,8 @@ public class Texture implements Serializable {
             y += offsetY;
             x *= muestrasU;
             y *= muestrasV;
-            return imagen.getPixelQARGB(rotateNumber((int) (x * ancho), ancho),
-                    rotateNumber((int) ((1 - y) * alto), alto));
+            return imagen.getPixelQARGB(rotateNumber((int) (x * width), width),
+                    rotateNumber((int) ((1 - y) * height), height));
         } catch (Exception e) {
             return new QColor((0 << 24) / 255.0f, (0 << 16) / 255.0f, (0 << 8) / 255.0f, 0);
         }
@@ -172,7 +175,8 @@ public class Texture implements Serializable {
             y += offsetY;
             x *= muestrasU;
             y *= muestrasV;
-            imagen.setPixel(rotateNumber((int) (x * ancho), ancho), rotateNumber((int) ((1 - y) * alto), alto), argb);
+            imagen.setPixel(rotateNumber((int) (x * width), width), rotateNumber((int) ((1 - y) * height), height),
+                    argb);
         } catch (Exception e) {
 
         }
@@ -193,7 +197,8 @@ public class Texture implements Serializable {
             y += offsetY;
             x *= muestrasU;
             y *= muestrasV;
-            imagen.setPixel(rotateNumber((int) (x * ancho), ancho), rotateNumber((int) ((1 - y) * alto), alto), color);
+            imagen.setPixel(rotateNumber((int) (x * width), width), rotateNumber((int) ((1 - y) * height), height),
+                    color);
         } catch (Exception e) {
 
         }
@@ -282,103 +287,17 @@ public class Texture implements Serializable {
         return newImage;
     }
 
-    public void destruir() {
+    public void destroy() {
         imagen.destruir();
         imagen = null;
     }
 
-    public void llenarColor(QColor color) {
-        imagen.llenarColor(color);
+    public void fill(QColor color) {
+        imagen.fill(color);
     }
 
     public void procesar() {
 
     }
-
-    // public float getRInterpolated(float x, float y) {
-    // x *= signoX;
-    // y *= signoY;
-    // x += offsetX;
-    // y += offsetY;
-    // c0 = getR(x, y);
-    // c1 = getR(x + 1f / ancho, y);
-    // c2 = getR(x + 1f / ancho, y + 1f / alto);
-    // c3 = getR(x, y + 1f / alto);
-    // alphaX = (x * ancho) % 1;
-    // alphaY = (y * alto) % 1;
-    // return (1 - alphaY) * (alphaX * c1 + (1 - alphaX) * c0) + alphaY * (alphaX *
-    // c2 + (1 - alphaX) * c3);
-    // }
-    //
-    // public float getGInterpolated(float x, float y) {
-    // x *= signoX;
-    // y *= signoY;
-    // x += offsetX;
-    // y += offsetY;
-    // c0 = getG(x, y);
-    // c1 = getG(x + 1f / ancho, y);
-    // c2 = getG(x + 1f / ancho, y + 1f / alto);
-    // c3 = getG(x, y + 1f / alto);
-    // alphaX = (x * ancho) % 1;
-    // alphaY = (y * alto) % 1;
-    // return (1 - alphaY) * (alphaX * c1 + (1 - alphaX) * c0) + alphaY * (alphaX *
-    // c2 + (1 - alphaX) * c3);
-    // }
-
-    // public float getBInterpolated(float x, float y) {
-    // x *= signoX;
-    // y *= signoY;
-    // x += offsetX;
-    // y += offsetY;
-    // c0 = getB(x, y);
-    // c1 = getB(x + 1f / ancho, y);
-    // c2 = getB(x + 1f / ancho, y + 1f / alto);
-    // c3 = getB(x, y + 1f / alto);
-    // alphaX = (x * ancho) % 1;
-    // alphaY = (y * alto) % 1;
-    // return (1 - alphaY) * (alphaX * c1 + (1 - alphaX) * c0) + alphaY * (alphaX *
-    // c2 + (1 - alphaX) * c3);
-    // }
-
-    // public float getNormalXInterpolated(float x, float y) {
-    // c0 = getNormalX(x, y);
-    // c1 = getNormalX(x + 1f / ancho, y);
-    // c2 = getNormalX(x + 1f / ancho, y + 1f / alto);
-    // c3 = getNormalX(x, y + 1f / alto);
-    // alphaX = (x * ancho) % 1;
-    // alphaY = (y * ancho) % 1;
-    // return (1 - alphaY) * (alphaX * c1 + (1 - alphaX) * c0) + alphaY * (alphaX *
-    // c2 + (1 - alphaX) * c3);
-    // }
-
-    // public float getNormalYInterpolated(float x, float y) {
-    // x *= signoX;
-    // y *= signoY;
-    // x += offsetX;
-    // y += offsetY;
-    // c0 = getNormalY(x, y);
-    // c1 = getNormalY(x + 1f / ancho, y);
-    // c2 = getNormalY(x + 1f / ancho, y + 1f / alto);
-    // c3 = getNormalY(x, y + 1f / alto);
-    // alphaX = (x * ancho) % 1;
-    // alphaY = (y * ancho) % 1;
-    // return (1 - alphaY) * (alphaX * c1 + (1 - alphaX) * c0) + alphaY * (alphaX *
-    // c2 + (1 - alphaX) * c3);
-    // }
-
-    // public float getNormalZInterpolated(float x, float y) {
-    // x *= signoX;
-    // y *= signoY;
-    // x += offsetX;
-    // y += offsetY;
-    // c0 = getNormalZ(x, y);
-    // c1 = getNormalZ(x + 1f / ancho, y);
-    // c2 = getNormalZ(x + 1f / ancho, y + 1f / alto);
-    // c3 = getNormalZ(x, y + 1f / alto);
-    // alphaX = (x * ancho) % 1;
-    // alphaY = (y * ancho) % 1;
-    // return (1 - alphaY) * (alphaX * c1 + (1 - alphaX) * c0) + alphaY * (alphaX *
-    // c2 + (1 - alphaX) * c3);
-    // }
 
 }
