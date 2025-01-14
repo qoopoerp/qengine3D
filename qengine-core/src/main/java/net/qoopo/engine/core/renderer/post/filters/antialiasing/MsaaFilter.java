@@ -3,10 +3,10 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package net.qoopo.engine.core.renderer.post.procesos.antialiasing;
+package net.qoopo.engine.core.renderer.post.filters.antialiasing;
 
 import net.qoopo.engine.core.math.QColor;
-import net.qoopo.engine.core.renderer.post.procesos.QPostProceso;
+import net.qoopo.engine.core.renderer.post.FilterTexture;
 import net.qoopo.engine.core.texture.Texture;
 
 /**
@@ -14,21 +14,25 @@ import net.qoopo.engine.core.texture.Texture;
  *
  * @author alberto
  */
-public class QMSAA extends QPostProceso {
+public class MsaaFilter implements FilterTexture {
 
     private int muestras = 4;
 
-    public QMSAA(int ancho, int alto, int muestras) {
+    public MsaaFilter() {
+
+    }
+
+    public MsaaFilter(int muestras) {
         this.muestras = muestras;
-        bufferSalida = new Texture(ancho, alto);
     }
 
     @Override
-    public void procesar(Texture... buffer) {
+    public Texture apply(Texture... buffer) {
         QColor color;
+        Texture output = new Texture(buffer[0].getWidth(), buffer[0].getHeight());
         try {
-            for (int x = 0; x < buffer[0].getAncho(); x++) {
-                for (int y = 0; y < buffer[0].getAlto(); y++) {
+            for (int x = 0; x < buffer[0].getWidth(); x++) {
+                for (int y = 0; y < buffer[0].getHeight(); y++) {
                     color = buffer[0].getColor(x, y);
                     for (int row = -1; row <= 1; ++row) {
                         for (int col = -1; col <= 1; ++col) {
@@ -39,14 +43,15 @@ public class QMSAA extends QPostProceso {
                         }
                     }
                     color.scaleLocal(1.0f / 9.0f);
-                    bufferSalida.setQColor(bufferSalida.getAncho() * x / buffer[0].getAncho(),
-                            bufferSalida.getAlto() * y / buffer[0].getAlto(), color);
+                    output.setQColor(output.getWidth() * x / buffer[0].getWidth(),
+                            output.getHeight() * y / buffer[0].getHeight(), color);
                 }
             }
         } catch (Exception e) {
 
         }
-        // bufferSalida.actualizarTextura();
+        return output;
+
     }
 
 }

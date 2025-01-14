@@ -3,10 +3,10 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package net.qoopo.engine.core.renderer.post.procesos.color;
+package net.qoopo.engine.core.renderer.post.filters.color;
 
 import net.qoopo.engine.core.math.QColor;
-import net.qoopo.engine.core.renderer.post.procesos.QPostProceso;
+import net.qoopo.engine.core.renderer.post.FilterTexture;
 import net.qoopo.engine.core.texture.Texture;
 
 /**
@@ -15,24 +15,25 @@ import net.qoopo.engine.core.texture.Texture;
  *
  * @author alberto
  */
-public class QProcesadorCel extends QPostProceso {
+public class CelShadeFilter implements FilterTexture {
 
     // divido a 4 rangos del brillo
     private int niveles = 4;
 
-    public QProcesadorCel(int ancho, int alto) {
-        bufferSalida = new Texture(ancho, alto);
+    public CelShadeFilter() {
+
     }
 
     @Override
-    public void procesar(Texture... buffer) {
+    public Texture apply(Texture... buffer) {
         QColor color;
         float brillo;
         float f = 0;
         float fb = 1.0f / niveles;
+        Texture output = new Texture(buffer[0].getWidth(), buffer[0].getHeight());
         try {
-            for (int x = 0; x < buffer[0].getAncho(); x++) {
-                for (int y = 0; y < buffer[0].getAlto(); y++) {
+            for (int x = 0; x < buffer[0].getWidth(); x++) {
+                for (int y = 0; y < buffer[0].getHeight(); y++) {
                     color = buffer[0].getColor(x, y);
                     brillo = color.r * 0.2126f + color.g * 0.7152f + color.b * 0.0722f;
                     // f= (float) ((Math.floor(brillo/fb))*fb);
@@ -41,7 +42,7 @@ public class QProcesadorCel extends QPostProceso {
                     // if (brillo < 0.7f) {
                     // color = QColor.BLACK;
                     // }
-                    bufferSalida.setQColor(x, y, color);
+                    output.setQColor(x, y, color);
                     // bufferSalida.setQColorNormalizado((float) x / buffer[0].getAncho(), (float) y
                     // / buffer[0].getAlto(), color);
                 }
@@ -49,7 +50,8 @@ public class QProcesadorCel extends QPostProceso {
         } catch (Exception e) {
 
         }
-        // bufferSalida.actualizarTextura();
+        return output;
+
     }
 
 }

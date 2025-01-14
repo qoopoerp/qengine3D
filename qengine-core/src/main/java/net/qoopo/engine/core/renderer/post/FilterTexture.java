@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package net.qoopo.engine.core.renderer.post.flujos;
+package net.qoopo.engine.core.renderer.post;
 
 import net.qoopo.engine.core.texture.Texture;
 
@@ -11,7 +11,7 @@ import net.qoopo.engine.core.texture.Texture;
  *
  * @author alberto
  */
-public abstract class QRenderEfectos {
+public interface FilterTexture {
 
-    public abstract Texture ejecutar(Texture buffer);
+    public Texture apply(Texture... buffer);
 }

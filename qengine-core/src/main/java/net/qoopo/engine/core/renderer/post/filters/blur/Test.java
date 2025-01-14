@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package net.qoopo.engine.core.renderer.post.procesos.blur;
+package net.qoopo.engine.core.renderer.post.filters.blur;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -13,7 +13,7 @@ import java.util.logging.Logger;
 
 import javax.imageio.ImageIO;
 
-import net.qoopo.engine.core.renderer.post.procesos.test.FiltroBalanceBlanco;
+import net.qoopo.engine.core.renderer.post.filters.test.FiltroBalanceBlanco;
 import net.qoopo.engine.core.util.image.ImgReader;
 
 /**
@@ -31,7 +31,7 @@ public class Test {
             int n = 8;
 
             for (int i = 1; i <= n; i++) {
-                img1 = QProcesadorBlur.transposedHBlur(QProcesadorBlur.transposedHBlur(img1));
+                img1 = BlurFilter.transposedHBlur(BlurFilter.transposedHBlur(img1));
                 // img1 = QProcesadorBlur.transposedHBlur(img1);
             }
 

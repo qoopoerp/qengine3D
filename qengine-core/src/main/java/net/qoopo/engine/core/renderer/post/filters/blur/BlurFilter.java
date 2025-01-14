@@ -3,12 +3,12 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package net.qoopo.engine.core.renderer.post.procesos.blur;
+package net.qoopo.engine.core.renderer.post.filters.blur;
 
 import java.awt.image.BufferedImage;
 
 import net.qoopo.engine.core.math.QColor;
-import net.qoopo.engine.core.renderer.post.procesos.QPostProceso;
+import net.qoopo.engine.core.renderer.post.FilterTexture;
 import net.qoopo.engine.core.texture.Texture;
 
 /**
@@ -16,7 +16,7 @@ import net.qoopo.engine.core.texture.Texture;
  *
  * @author alberto
  */
-public class QProcesadorBlur extends QPostProceso {
+public class BlurFilter implements FilterTexture {
 
     // private static float[] pesos = {0.00598f, 0.060626f, 0.241843f, 0.383103f,
     // 0.241843f, 0.060626f, 0.00598f};
@@ -33,9 +33,8 @@ public class QProcesadorBlur extends QPostProceso {
     private static final int KERNEL_SIZE = 11;
     // private static final int MITAD = KERNEL_SIZE / 2;
     private static final int MITAD = 5;
-    private float ESCALA = 0.25f;
+    private float escala = 0.25f;
     private int repeticiones = 1;
-    private int ancho = -1, alto = -1;
 
     // 31
     // private static float[] pesos = {0.000001f, 0.000003f, 0.000012f, 0.000048f,
@@ -47,34 +46,39 @@ public class QProcesadorBlur extends QPostProceso {
     // private static int mitad = 15;
     private boolean usarEscala = false;
 
-    public QProcesadorBlur(float escala, int repeticiones) {
-        this.ESCALA = escala;
+    public BlurFilter(float escala, int repeticiones) {
+        this.escala = escala;
         this.repeticiones = repeticiones;
         usarEscala = true;
     }
 
-    public QProcesadorBlur(int ancho, int alto, int repeticiones) {
-        this.ancho = ancho;
-        this.alto = alto;
+    public BlurFilter(int repeticiones) {
         this.repeticiones = repeticiones;
         usarEscala = false;
     }
 
+    public BlurFilter() {
+        usarEscala = false;
+    }
+
     @Override
-    public void procesar(Texture... buffer) {
+    public Texture apply(Texture... buffer) {
+        Texture output = new Texture();
         try {
-            bufferSalida = new Texture();
-            bufferSalida.loadTexture(buffer[0].getImagen());
+            int ancho = buffer[0].getWidth();
+            int alto = buffer[0].getHeight();
+            output.loadTexture(buffer[0].getImagen());
             if (usarEscala) {
-                ancho = (int) (bufferSalida.getAncho() * ESCALA);
-                alto = (int) (bufferSalida.getAlto() * ESCALA);
+                ancho = (int) (output.getWidth() * escala);
+                alto = (int) (output.getHeight() * escala);
             }
             for (int i = 1; i <= repeticiones; i++) {
-                bufferSalida = transpuestodHBlur(transpuestodHBlur(bufferSalida, ancho, alto), alto, ancho);
+                output = transpuestodHBlur(transpuestodHBlur(output, ancho, alto), alto, ancho);
             }
         } catch (Exception e) {
 
         }
+        return output;
     }
 
     // https://stackoverflow.com/questions/43743998/how-to-make-smooth-blur-effect-in-java
@@ -83,15 +87,15 @@ public class QProcesadorBlur extends QPostProceso {
         Texture salida = new Texture(alto, ancho);
         QColor pixel = new QColor();
         // horizontal blur, transpose result
-        for (int y = 0; y < textura.getAlto(); y++) {
-            for (int x = 0; x < textura.getAncho(); x++) {
+        for (int y = 0; y < textura.getHeight(); y++) {
+            for (int x = 0; x < textura.getWidth(); x++) {
                 pixel.set(1, 0, 0, 0);
                 for (int dx = 0; dx < KERNEL_SIZE; dx++) {
                     pixel = pixel.add(textura.getColor(x + dx - MITAD, y).scale(PESOS[dx]));
                 }
                 // transpose result!
-                salida.setQColor((salida.getAncho() * y) / textura.getAlto(),
-                        (salida.getAlto() * x) / textura.getAncho(), pixel);
+                salida.setQColor((salida.getWidth() * y) / textura.getHeight(),
+                        (salida.getHeight() * x) / textura.getWidth(), pixel);
             }
         }
         return salida;
@@ -123,29 +127,4 @@ public class QProcesadorBlur extends QPostProceso {
         return temp;
     }
 
-    // public static BufferedImage transposedHBlur(BufferedImage im) {
-    // int height = im.getHeight();
-    // int width = im.getWidth();
-    // // result is transposed, so the width/height are swapped
-    // BufferedImage temp = new BufferedImage(height, width,
-    // BufferedImage.TYPE_INT_RGB);
-    // float[] k = {0.00598f, 0.060626f, 0.241843f, 0.383103f, 0.241843f, 0.060626f,
-    // 0.00598f};
-    // // horizontal blur, transpose result
-    // for (int y = 0; y < height; y++) {
-    // for (int x = 3; x < width - 3; x++) {
-    // float r = 0, g = 0, b = 0;
-    // for (int i = 0; i < 7; i++) {
-    // int pixel = im.getRGB(x + i - 3, y);
-    // b += (pixel & 0xFF) * k[i];
-    // g += ((pixel >> 8) & 0xFF) * k[i];
-    // r += ((pixel >> 16) & 0xFF) * k[i];
-    // }
-    // int p = (int) b + ((int) g << 8) + ((int) r << 16);
-    // // transpose result!
-    // temp.setRGB(y, x, p);
-    // }
-    // }
-    // return temp;
-    // }
 }
