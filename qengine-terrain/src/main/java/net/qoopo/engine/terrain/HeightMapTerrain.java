@@ -207,7 +207,7 @@ public class HeightMapTerrain extends Terrain {
     // }
 
     @Override
-    public void destruir() {
+    public void destroy() {
     }
 
 }

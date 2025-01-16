@@ -79,8 +79,8 @@ public class QObjetoRigido extends QObjetoDinamico {
     public void actualizarMovimiento(float deltaTime) {
         if (tipoDinamico == QObjetoDinamico.DINAMICO || tipoDinamico == QObjetoDinamico.CINEMATICO) {
             actualizarVelocidad(deltaTime);
-            // transformacion.getTraslacion().add(velocidadLinear);
-            entity.move(entity.getTransformacion().getTraslacion().clone().add(velocidadLinear));
+            // transformacion.getLocation().add(velocidadLinear);
+            entity.move(entity.getTransform().getLocation().clone().add(velocidadLinear));
             // luego llamo al metodo para indicar que su movimeinto fue actualizado
             entity.comprobarMovimiento();
         }

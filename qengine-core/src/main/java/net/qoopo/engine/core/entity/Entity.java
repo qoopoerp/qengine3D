@@ -8,7 +8,7 @@ import java.util.List;
 import lombok.Getter;
 import net.qoopo.engine.core.entity.component.EntityComponent;
 import net.qoopo.engine.core.entity.component.mesh.Mesh;
-import net.qoopo.engine.core.entity.component.transform.QTransformacion;
+import net.qoopo.engine.core.entity.component.transform.Transform;
 import net.qoopo.engine.core.math.Cuaternion;
 import net.qoopo.engine.core.math.QMatriz3;
 import net.qoopo.engine.core.math.QMatriz4;
@@ -30,9 +30,9 @@ public class Entity implements Serializable {
 
     public static void printTree(Entity entity, String espacios) {
         System.out.println(espacios + entity.name);
-        QTransformacion tg = new QTransformacion();
-        tg.desdeMatrix(entity.getMatrizTransformacion(System.currentTimeMillis()));
-        System.out.println(espacios + "TL [" + entity.transformacion.toString() + "]");
+        Transform tg = new Transform();
+        tg.fromMatrix(entity.getMatrizTransformacion(System.currentTimeMillis()));
+        System.out.println(espacios + "TL [" + entity.transform.toString() + "]");
         System.out.println(espacios + "TG [" + tg.toString() + "]");
         espacios += "    ";
         if (entity.getChilds() != null) {
@@ -45,7 +45,7 @@ public class Entity implements Serializable {
     protected final List<EntityComponent> components = new ArrayList<>();
 
     // unico componente que no esta en la lista, todos necesitan este componente    
-    protected QTransformacion transformacion = new QTransformacion();
+    protected Transform transform = new Transform();
     protected String name;
     protected Entity parent;
     protected List<Entity> childs = new ArrayList<>();
@@ -126,7 +126,7 @@ public class Entity implements Serializable {
     public Entity clone() {
         // no clono los componentes
         Entity nuevo = new Entity(name, false);
-        nuevo.transformacion = this.transformacion.clone();
+        nuevo.transform = this.transform.clone();
         for (EntityComponent comp : components) {
             if (comp instanceof Mesh) {
                 nuevo.addComponent(((Mesh) comp).clone());
@@ -136,7 +136,7 @@ public class Entity implements Serializable {
     }
 
     public void move(float x, float y, float z) {
-        this.transformacion.getTraslacion().set(x, y, z);
+        this.transform.getLocation().set(x, y, z);
     }
 
     public void move(QVector3 nuevaPosicion) {
@@ -144,15 +144,15 @@ public class Entity implements Serializable {
     }
 
     public void scale(QVector3 vector) {
-        transformacion.getEscala().set(vector);
+        transform.getScale().set(vector);
     }
 
     public void scale(float x, float y, float z) {
-        transformacion.getEscala().set(x, y, z);
+        transform.getScale().set(x, y, z);
     }
 
     public void scale(float valor) {
-        transformacion.getEscala().set(valor, valor, valor);
+        transform.getScale().set(valor, valor, valor);
     }
 
     public void rotate(double angX, double angY, double angZ) {
@@ -160,60 +160,60 @@ public class Entity implements Serializable {
     }
 
     public void rotate(float angX, float angY, float angZ) {
-        transformacion.getRotacion().rotarX(angX);
-        transformacion.getRotacion().rotarY(angY);
-        transformacion.getRotacion().rotarZ(angZ);
+        transform.getRotation().rotarX(angX);
+        transform.getRotation().rotarY(angY);
+        transform.getRotation().rotarZ(angZ);
     }
 
     public void aumentarX(float aumento) {
-        this.transformacion.getTraslacion().x += aumento;
+        this.transform.getLocation().x += aumento;
     }
 
     public void aumentarY(float aumento) {
-        this.transformacion.getTraslacion().y += aumento;
+        this.transform.getLocation().y += aumento;
 
     }
 
     public void aumentarZ(float aumento) {
-        this.transformacion.getTraslacion().z += aumento;
+        this.transform.getLocation().z += aumento;
     }
 
     public void aumentarEscalaX(float aumento) {
-        this.transformacion.getEscala().x += aumento;
+        this.transform.getScale().x += aumento;
     }
 
     public void aumentarEscalaY(float aumento) {
-        this.transformacion.getEscala().y += aumento;
+        this.transform.getScale().y += aumento;
 
     }
 
     public void aumentarEscalaZ(float aumento) {
-        this.transformacion.getEscala().z += aumento;
+        this.transform.getScale().z += aumento;
 
     }
 
     public void aumentarRotX(float aumento) {
-        this.transformacion.getRotacion().aumentarRotX(aumento);
+        this.transform.getRotation().aumentarRotX(aumento);
     }
 
     public void aumentarRotY(float aumento) {
-        this.transformacion.getRotacion().aumentarRotY(aumento);
+        this.transform.getRotation().aumentarRotY(aumento);
     }
 
     public void aumentarRotZ(float aumento) {
-        this.transformacion.getRotacion().aumentarRotZ(aumento);
+        this.transform.getRotation().aumentarRotZ(aumento);
     }
 
     public QVector3 getDirection() {
-        return transformacion.getRotacion().getCuaternion().getRotationColumn(Cuaternion.DIRECCION);
+        return transform.getRotation().getCuaternion().getRotationColumn(Cuaternion.DIRECCION);
     }
 
     public QVector3 getLeft() {
-        return transformacion.getRotacion().getCuaternion().getRotationColumn(Cuaternion.IZQUIERDA);
+        return transform.getRotation().getCuaternion().getRotationColumn(Cuaternion.IZQUIERDA);
     }
 
     public QVector3 getUp() {
-        return transformacion.getRotacion().getCuaternion().getRotationColumn(Cuaternion.ARRIBA);
+        return transform.getRotation().getCuaternion().getRotationColumn(Cuaternion.ARRIBA);
     }
 
     /**
@@ -223,7 +223,7 @@ public class Entity implements Serializable {
      * @param valor
      */
     public void moveForward(float valor) {
-        QVector3 tmp = transformacion.getTraslacion().clone();
+        QVector3 tmp = transform.getLocation().clone();
         tmp.add(getDirection().multiply(-valor));
         move(tmp);
         // la diferencia la suma a los hijos
@@ -235,7 +235,7 @@ public class Entity implements Serializable {
      * @param valor
      */
     public void moveLeft(float valor) {
-        QVector3 tmp = transformacion.getTraslacion().clone();
+        QVector3 tmp = transform.getLocation().clone();
         tmp.add(getLeft().multiply(valor));
         move(tmp);
     }
@@ -246,7 +246,7 @@ public class Entity implements Serializable {
      * @param valor
      */
     public void moveUp(float valor) {
-        QVector3 tmp = transformacion.getTraslacion().clone();
+        QVector3 tmp = transform.getLocation().clone();
         tmp.add(getUp().multiply(valor));
         move(tmp);
     }
@@ -297,10 +297,10 @@ public class Entity implements Serializable {
         if (isBillboard()) {
             TempVars tv = TempVars.get();
             try {
-                transformacion.getRotacion().actualizarCuaternion();
+                transform.getRotation().actualizarCuaternion();
 
                 tv.vector3f1.set(camaraVista.toTranslationVector());
-                tv.vector3f1.add(this.transformacion.getTraslacion().clone().multiply(-1));
+                tv.vector3f1.add(this.transform.getLocation().clone().multiply(-1));
                 // tv.vector3f1.normalize();
                 // transformacion.getRotacion().getCuaternion().tv.vect1At(tv.vector3f1,
                 // getArriba());
@@ -325,9 +325,9 @@ public class Entity implements Serializable {
                 orient.set(2, 0, -xzp.x);
                 orient.set(2, 1, xzp.z * -tv.vector3f1.y);
                 orient.set(2, 2, xzp.z * cosp);
-                transformacion.getRotacion().getCuaternion().fromRotationMatrix(orient);
+                transform.getRotation().getCuaternion().fromRotationMatrix(orient);
 
-                transformacion.getRotacion().actualizarAngulos();
+                transform.getRotation().actualizarAngulos();
             } finally {
                 tv.release();
             }
@@ -337,10 +337,10 @@ public class Entity implements Serializable {
     public QMatriz4 getMatrizTransformacion(long time) {
         try {
             if (time != cached_time || cachedMatriz == null) {
-                if (transformacion == null) {
-                    transformacion = new QTransformacion();
+                if (transform == null) {
+                    transform = new Transform();
                 }
-                cachedMatriz = transformacion.toTransformMatriz();
+                cachedMatriz = transform.toMatrix();
                 cached_time = time;
                 if (parent != null) {
                     cachedMatriz = parent.getMatrizTransformacion(time).mult(cachedMatriz);
@@ -374,10 +374,10 @@ public class Entity implements Serializable {
 
     public void destruir() {
         try {
-            transformacion = null;
+            transform = null;
             if (components != null) {
                 for (EntityComponent comp : components) {
-                    comp.destruir();
+                    comp.destroy();
                 }
             }
             components.clear();
@@ -412,12 +412,12 @@ public class Entity implements Serializable {
         }
     }
 
-    public QTransformacion getTransformacion() {
-        return transformacion;
+    public Transform getTransform() {
+        return transform;
     }
 
-    public void setTransformacion(QTransformacion transformacion) {
-        this.transformacion = transformacion;
+    public void setTransform(Transform transformacion) {
+        this.transform = transformacion;
     }
 
     public boolean isToRender() {

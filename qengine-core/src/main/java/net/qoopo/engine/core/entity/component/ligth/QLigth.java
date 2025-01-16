@@ -100,7 +100,7 @@ public abstract class QLigth implements EntityComponent {
     }
 
     @Override
-    public void destruir() {
+    public void destroy() {
         color = null;
     }
 

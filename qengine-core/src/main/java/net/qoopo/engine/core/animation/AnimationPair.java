@@ -8,7 +8,7 @@ package net.qoopo.engine.core.animation;
 import java.io.Serializable;
 
 import net.qoopo.engine.core.entity.Entity;
-import net.qoopo.engine.core.entity.component.transform.QTransformacion;
+import net.qoopo.engine.core.entity.component.transform.Transform;
 
 /**
  *
@@ -17,12 +17,12 @@ import net.qoopo.engine.core.entity.component.transform.QTransformacion;
 public class AnimationPair implements Serializable {
 
     private Entity entity;
-    private QTransformacion transformacion;
+    private Transform transformacion;
 
     public AnimationPair() {
     }
 
-    public AnimationPair(Entity entity, QTransformacion transformacion) {
+    public AnimationPair(Entity entity, Transform transformacion) {
         this.entity = entity;
         this.transformacion = transformacion;
     }
@@ -35,11 +35,11 @@ public class AnimationPair implements Serializable {
         this.entity = entity;
     }
 
-    public QTransformacion getTransformacion() {
+    public Transform getTransformacion() {
         return transformacion;
     }
 
-    public void setTransformacion(QTransformacion transformacion) {
+    public void setTransformacion(Transform transformacion) {
         this.transformacion = transformacion;
     }
 

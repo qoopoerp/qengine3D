@@ -23,7 +23,7 @@ public abstract class CollisionListener implements EntityComponent {
     public abstract void colision(Entity ob1, Entity ob2);
 
     @Override
-    public void destruir() {
+    public void destroy() {
     }
 
 }

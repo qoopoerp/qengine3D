@@ -217,7 +217,6 @@ public abstract class RenderEngine extends Engine {
         if (camera != null) {
             camera.setRadioAspecto(ancho, alto);
         }
-
         frameBuffer = new FrameBuffer(ancho, alto, textura);
     }
 
@@ -230,11 +229,11 @@ public abstract class RenderEngine extends Engine {
     public abstract Entity selectEntity(QVector2 mouseLocation);
 
     public float getCameraRotationZ() {
-        return camera.getTransformacion().getRotacion().getAngulos().getAnguloZ();
+        return camera.getTransform().getRotation().getAngulos().getAnguloZ();
     }
 
     public void setCameraRotationZ(float rotateZ) {
-        this.camera.getTransformacion().getRotacion().rotarZ(rotateZ);
+        this.camera.getTransform().getRotation().rotarZ(rotateZ);
     }
 
     protected void prepararInputListener() {
@@ -266,10 +265,13 @@ public abstract class RenderEngine extends Engine {
      *
      * @param g
      */
-    protected void showStats(Graphics g) {
+    protected void showStats(Texture texture) {
         if (showStats && renderReal) {
+
             int ancho = 0;
             int alto = 0;
+
+            Graphics g = texture.getImagen().getGraphics();
 
             if (opciones.isForzarResolucion()) {
                 ancho = opciones.getAncho();
@@ -299,15 +301,15 @@ public abstract class RenderEngine extends Engine {
             g.drawString("Sombras      : " + (opciones.isSombras() ? "ON" : "OFF"), 10, 100);
             // g.drawString("Hora del día :" + QEngine3D.INSTANCIA.getHoraDelDia(), 10,
             // 110);
-            g.drawString("Cam (X;Y;Z)  : (" + DF.format(camera.getTransformacion().getTraslacion().x) + ";"
-                    + DF.format(camera.getTransformacion().getTraslacion().y) + ";"
-                    + DF.format(camera.getTransformacion().getTraslacion().z) + ")", 10, 120);
+            g.drawString("Cam (X;Y;Z)  : (" + DF.format(camera.getTransform().getLocation().x) + ";"
+                    + DF.format(camera.getTransform().getLocation().y) + ";"
+                    + DF.format(camera.getTransform().getLocation().z) + ")", 10, 120);
             g.drawString("Ang (X;Y;Z)  : ("
-                    + DF.format(Math.toDegrees(camera.getTransformacion().getRotacion().getAngulos().getAnguloX()))
+                    + DF.format(Math.toDegrees(camera.getTransform().getRotation().getAngulos().getAnguloX()))
                     + ";"
-                    + DF.format(Math.toDegrees(camera.getTransformacion().getRotacion().getAngulos().getAnguloY()))
+                    + DF.format(Math.toDegrees(camera.getTransform().getRotation().getAngulos().getAnguloY()))
                     + ";"
-                    + DF.format(Math.toDegrees(camera.getTransformacion().getRotacion().getAngulos().getAnguloZ()))
+                    + DF.format(Math.toDegrees(camera.getTransform().getRotation().getAngulos().getAnguloZ()))
                     + ")", 10, 130);
         }
         // gf.drawImage(g., 0, 0, this.getSuperficie().getComponente().getWidth(),

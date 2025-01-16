@@ -14,7 +14,7 @@ import net.qoopo.engine.core.animation.AnimationFrame;
 import net.qoopo.engine.core.animation.AnimationPair;
 import net.qoopo.engine.core.entity.Entity;
 import net.qoopo.engine.core.entity.component.EntityComponent;
-import net.qoopo.engine.core.entity.component.transform.QTransformacion;
+import net.qoopo.engine.core.entity.component.transform.Transform;
 import net.qoopo.engine.core.math.QMatriz4;
 import net.qoopo.engine.core.util.QGlobal;
 
@@ -76,11 +76,11 @@ public class AnimationComponent implements EntityComponent {
         animacion.setNombre("Pose");
         animacion.setLoop(true);
         AnimationFrame qFrame = new AnimationFrame(0.00f);
-        for (Bone hueso : esqueleto.getHuesos()) {
-            QMatriz4 mat4 = hueso.getTransformacion().toTransformMatriz();
-            QTransformacion transformacion = new QTransformacion();
-            transformacion.desdeMatrix(mat4);
-            qFrame.agregarPar(new AnimationPair(hueso, transformacion));
+        for (Bone hueso : esqueleto.getBones()) {
+            QMatriz4 mat4 = hueso.getTransform().toMatrix();
+            Transform transformacion = new Transform();
+            transformacion.fromMatrix(mat4);
+            qFrame.addPair(new AnimationPair(hueso, transformacion));
         }
         animacion.addFrame(qFrame);
         return animacion;
@@ -153,8 +153,8 @@ public class AnimationComponent implements EntityComponent {
         }
 
         // ahora recorremos los pares para cambiar la posicion y rotacion de cada uno
-        frame.getParesModificarAnimacion().forEach(par -> {
-            par.getEntidad().setTransformacion(par.getTransformacion());
+        frame.getAnimationPairList().forEach(par -> {
+            par.getEntidad().setTransform(par.getTransformacion());
         });
     }
 
@@ -183,14 +183,14 @@ public class AnimationComponent implements EntityComponent {
      */
     private AnimationFrame interpolar(AnimationFrame previo, AnimationFrame siguiente, float progresion) {
         AnimationFrame nuevo = new AnimationFrame(tiempo);
-        for (int i = 0; i < previo.getParesModificarAnimacion().size(); i++) {
-            if (siguiente.getParesModificarAnimacion().size() > i) {
+        for (int i = 0; i < previo.getAnimationPairList().size(); i++) {
+            if (siguiente.getAnimationPairList().size() > i) {
                 // si tiene el mismo tama;o (deberia ser asi)
-                Entity hueso = previo.getParesModificarAnimacion().get(i).getEntidad();
-                QTransformacion origen = previo.getParesModificarAnimacion().get(i).getTransformacion();
-                QTransformacion destino = siguiente.getParesModificarAnimacion().get(i).getTransformacion();
-                if (siguiente.getParesModificarAnimacion().get(i).getEntidad().getName().equals(hueso.getName())) {
-                    nuevo.agregarPar(new AnimationPair(hueso, QTransformacion.interpolar(origen, destino, progresion)));
+                Entity bone = previo.getAnimationPairList().get(i).getEntidad();
+                Transform origen = previo.getAnimationPairList().get(i).getTransformacion();
+                Transform destino = siguiente.getAnimationPairList().get(i).getTransformacion();
+                if (siguiente.getAnimationPairList().get(i).getEntidad().getName().equals(bone.getName())) {
+                    nuevo.addPair(new AnimationPair(bone, Transform.interpolate(origen, destino, progresion)));
                 } else {
                     System.out.println(
                             "ERROR AL INTERPOLAR, LAS ENTIDADES NO ESTAN EN LAS MISMAS POSICIONES EN LOS DOS KEYFRAMES");
@@ -287,7 +287,7 @@ public class AnimationComponent implements EntityComponent {
     }
 
     @Override
-    public void destruir() {
+    public void destroy() {
         try {
             for (AnimationFrame frame : listaFrames) {
                 frame.destruir();

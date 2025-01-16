@@ -57,7 +57,7 @@ public class QEmisorHumo extends ParticleEmissor {
             material = new Material();
             AtlasSequentialTexture proc = new AtlasSequentialTexture(textura, 4, 4, 100);
             material.setColorMap(proc);
-            material.setColorTransparente(QColor.BLACK);
+            material.setAlphaColour(QColor.BLACK);
             material.setTransparencia(true);
             material.setTransAlfa(0.90f);// el objeto tiene una transparencia
         } catch (Exception e) {
@@ -121,7 +121,7 @@ public class QEmisorHumo extends ParticleEmissor {
 
             //si ya paso su tiempo de vida o ya esta fuera del ambito en la altura
             if ((System.currentTimeMillis() - particula.getTiempoCreacion()) > particula.getTiempoVida()
-                    || (particula.objeto.getTransformacion().getTraslacion().y > ambito.aabMaximo.location.y)) {
+                    || (particula.objeto.getTransform().getLocation().y > ambito.aabMaximo.location.y)) {
                 particulasEliminadas.add(particula);
                 actuales--;
                 particula.objeto.setToRender(false);
@@ -144,7 +144,7 @@ public class QEmisorHumo extends ParticleEmissor {
             float dx = velocidad.x * delta;
             float dy = velocidad.y * delta;
             float dz = velocidad.z * delta;
-            QVector3 pos = particula.objeto.getTransformacion().getTraslacion();
+            QVector3 pos = particula.objeto.getTransform().getLocation();
 
             particula.objeto.move(pos.x + dx, pos.y + dy, pos.z + dz);
 
@@ -183,7 +183,7 @@ public class QEmisorHumo extends ParticleEmissor {
     }
 
     @Override
-    public void destruir() {
+    public void destroy() {
         textura = null;
     }
 }

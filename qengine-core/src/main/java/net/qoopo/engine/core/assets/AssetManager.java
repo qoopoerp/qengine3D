@@ -71,11 +71,11 @@ public class AssetManager implements Serializable {
         }
     }
 
-    public void agregarRecurso(String clave, Object valor) {
+    public void addResource(String clave, Object valor) {
         mapa.put(clave, valor);
     }
 
-    public Object getRecurso(String clave) {
+    public Object getResource(String clave) {
         return mapa.get(clave);
     }
 
@@ -83,12 +83,16 @@ public class AssetManager implements Serializable {
         return loadTexture(clave, new File(file));
     }
 
+    public Entity getModel(String clave) {
+        return (Entity) getResource(clave);
+    }
+
     public Texture getTextura(String clave) {
-        return (Texture) getRecurso(clave);
+        return (Texture) getResource(clave);
     }
 
     public AudioBuffer getAudio(String clave) {
-        return (AudioBuffer) getRecurso(clave);
+        return (AudioBuffer) getResource(clave);
     }
 
     public AudioBuffer loadAudio(String file, String clave) {
@@ -98,23 +102,44 @@ public class AssetManager implements Serializable {
     public AudioBuffer loadAudio(File file, String clave) {
         AudioBuffer bufferAudio = null;
         try {
-            logger.info(" Cargando audio " + file.getAbsolutePath());
-            bufferAudio = audioLoader.load(file);
-            agregarRecurso(clave, bufferAudio);
-
+            if (!mapa.containsKey(clave)) {
+                logger.info(" Cargando audio " + file.getAbsolutePath());
+                bufferAudio = audioLoader.load(file);
+                addResource(clave, bufferAudio);
+            } else {
+                return getAudio(clave);
+            }
         } catch (Exception ex) {
             ex.printStackTrace();
         }
         return bufferAudio;
     }
 
+    public Texture loadTexture(File file) {
+        try {
+            return loadTexture(file.getAbsolutePath(), file);
+        } catch (Exception ex) {
+            System.out.println("Error al cargar la textura " + file.getAbsolutePath());
+            ex.printStackTrace();
+        }
+        return null;
+    }
+
+    public Texture loadTexture(String file) {
+        return loadTexture(new File(file));
+    }
+
     public Texture loadTexture(String clave, File file) {
         try {
-            Texture text = new Texture();
-            logger.info("  Cargando textura " + file.getName());
-            text.loadTexture(ImgReader.read(file));
-            agregarRecurso(clave, text);
-            return text;
+            if (!mapa.containsKey(clave)) {
+                Texture text = new Texture();
+                logger.info("  Cargando textura " + file.getName());
+                text.loadTexture(ImgReader.read(file));
+                addResource(clave, text);
+                return text;
+            } else {
+                return getTextura(clave);
+            }
         } catch (Exception ex) {
             System.out.println("Error al cargar la textura " + file.getAbsolutePath());
             ex.printStackTrace();
@@ -123,15 +148,23 @@ public class AssetManager implements Serializable {
     }
 
     public Entity loadModel(File file) throws FileNotFoundException {
-        Entity entity = modelLoader.loadModel(file);
-        agregarRecurso(entity.getName(), entity);
-        return entity;
+        if (!mapa.containsKey(file.getAbsolutePath())) {
+            Entity entity = modelLoader.loadModel(file);
+            addResource(file.getAbsolutePath(), entity);
+            return entity;
+        } else {
+            return getModel(file.getAbsolutePath());
+        }
     }
 
     public Entity loadModel(String file) throws FileNotFoundException {
-        Entity entity = modelLoader.loadModel(new File(file));
-        agregarRecurso(entity.getName(), entity);
-        return entity;
+        if (!mapa.containsKey(file)) {
+            Entity entity = modelLoader.loadModel(new File(file));
+            addResource(file, entity);
+            return entity;
+        } else {
+            return getModel(file);
+        }
     }
 
 }

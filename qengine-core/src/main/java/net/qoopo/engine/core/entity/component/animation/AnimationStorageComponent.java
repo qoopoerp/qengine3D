@@ -44,7 +44,7 @@ public class AnimationStorageComponent implements EntityComponent {
     }
 
     @Override
-    public void destruir() {
+    public void destroy() {
         animaciones.clear();
     }
 

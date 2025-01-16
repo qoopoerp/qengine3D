@@ -40,7 +40,7 @@ public class FragmentShaderComponent implements EntityComponent {
     }
 
     @Override
-    public void destruir() {
+    public void destroy() {
         shader = null;
     }
 

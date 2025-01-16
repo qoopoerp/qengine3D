@@ -80,7 +80,7 @@ public class Bone extends Entity {
      */
     public void calcularTransformacionInversa(QMatriz4 parentBindTransform) {
         try {
-            QMatriz4 mat = parentBindTransform.mult(transformacion.toTransformMatriz());
+            QMatriz4 mat = parentBindTransform.mult(transform.toMatrix());
             try {
                 transformacionInversa = mat.invert();
             } catch (Exception e) {
@@ -104,7 +104,7 @@ public class Bone extends Entity {
 
     public Bone clone() {
         Bone nuevo = new Bone(indice, name);
-        nuevo.transformacion = this.transformacion.clone();
+        nuevo.transform = this.transform.clone();
         nuevo.transformacionInversa = this.transformacionInversa.clone();
         // hijos
         if (this.getChilds() != null && !this.getChilds().isEmpty()) {
@@ -128,7 +128,7 @@ public class Bone extends Entity {
         try {
             if (time != cached_time_inversa || cachedMatrizConInversa == null) {
                 cached_time_inversa = time;
-                cachedMatrizConInversa = transformacion.toTransformMatriz();
+                cachedMatrizConInversa = transform.toMatrix();
                 if (super.getParent() != null) {
                     // toma la transformacion anidada de los padres y multiplicamos por la
                     // transformacion local

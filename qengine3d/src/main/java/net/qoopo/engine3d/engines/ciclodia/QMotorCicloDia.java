@@ -174,7 +174,7 @@ public class QMotorCicloDia extends Engine {
         QEngine3D.INSTANCIA.setHoraDelDia(horaDelDia);
 
         logger.info("MDN-->" + DF.format(getFPS()) + " FPS");
-        tiempoPrevio = System.currentTimeMillis();
-        return tiempoPrevio;
+        beforeTime = System.currentTimeMillis();
+        return beforeTime;
     }
 }

@@ -78,7 +78,7 @@ public class PlanarReflection implements EntityComponent, UpdatableComponent {
         if (metodo == 1) {
             // metoo uno con la camara fija en el espejo
             try {
-                render.getCamera().lookAt(entity.getTransformacion().getTraslacion(), entity.getDirection(),
+                render.getCamera().lookAt(entity.getTransform().getLocation(), entity.getDirection(),
                         entity.getUp().clone());
             } catch (Exception e) {
                 e.printStackTrace();
@@ -88,13 +88,13 @@ public class PlanarReflection implements EntityComponent, UpdatableComponent {
             // el vector del rayo de vision
             QVector3 vision = QVector3.empty();
             vision.set(
-                    entity.getTransformacion().getTraslacion().x
-                            - mainRender.getCamera().getTransformacion().getTraslacion().x,
-                    entity.getTransformacion().getTraslacion().y
-                            - mainRender.getCamera().getTransformacion().getTraslacion().y,
-                    entity.getTransformacion().getTraslacion().z
-                            - mainRender.getCamera().getTransformacion().getTraslacion().z);
-            // entity.transformacion.getTraslacion().clone().add(camara.transformacion.getTraslacion().clone().multiply(-1));
+                    entity.getTransform().getLocation().x
+                            - mainRender.getCamera().getTransform().getLocation().x,
+                    entity.getTransform().getLocation().y
+                            - mainRender.getCamera().getTransform().getLocation().y,
+                    entity.getTransform().getLocation().z
+                            - mainRender.getCamera().getTransform().getLocation().z);
+            // entity.transformacion.getLocation().clone().add(camara.transformacion.getLocation().clone().multiply(-1));
             // http://di002.edv.uniovi.es/~rr/Tema5.pdf
             // QVector3 rayoReflejado = vision.add(
             // entity.getDireccion().clone().multiply(vision.clone().dot(entity.getDireccion().clone())).multiply(-2)
@@ -105,17 +105,17 @@ public class PlanarReflection implements EntityComponent, UpdatableComponent {
             try {
                 // hasta ahorita tengo el rayo reflejado, pero necesito que este en la posicion
                 // contraria
-                QVector3 nuevaPos = entity.getTransformacion().getTraslacion().clone()
+                QVector3 nuevaPos = entity.getTransform().getLocation().clone()
                         .add(rayoReflejado.multiply(0.25f));
                 // ya tenemos en la posicion correcta pero hay un problema, esta renderizando a
                 // su propia geometia y colapsa la vision (ya se corrigio con la bandera de
                 // renderizar)
 
-                render.getCamera().lookAtTarget(nuevaPos, entity.getTransformacion().getTraslacion().clone(),
+                render.getCamera().lookAtTarget(nuevaPos, entity.getTransform().getLocation().clone(),
                         entity.getUp().clone());
 
                 // render.setPanelClip(new ClipPane(entity.getDireccion(),
-                // -entity.transformacion.getTraslacion().length()));
+                // -entity.transformacion.getLocation().length()));
                 // plano de recorte para no ver el espejo tapando
                 // render.getCamara().frustrumCerca = rayoReflejado.length();
             } catch (Exception e) {
@@ -130,7 +130,7 @@ public class PlanarReflection implements EntityComponent, UpdatableComponent {
     }
 
     @Override
-    public void destruir() {
+    public void destroy() {
     }
 
 }

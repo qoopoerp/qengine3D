@@ -144,7 +144,7 @@ public class OpenGlRenderer extends RenderEngine {
     @Override
     public long update() {
         long ti;
-        tiempoPrevio = System.currentTimeMillis();
+        beforeTime = System.currentTimeMillis();
 
         // ventana.setClearColor(colorFondo.r, colorFondo.g, colorFondo.b, 0.0f);
         clear();
@@ -172,7 +172,7 @@ public class OpenGlRenderer extends RenderEngine {
 
         ventana.update();
         // System.out.println("render: " + nombre + " renderizado t=" + tiempoPrevio);
-        return tiempoPrevio;
+        return beforeTime;
     }
 
     @Override

@@ -162,8 +162,8 @@ public class EditorMaterial extends javax.swing.JPanel {
             renderVistaPrevia.getScene().addEntity(entidadVistaPrevia);
             pnlDiffuseColor.setBackground(material.getColor().getColor());
             // pnlSpecularColor.setBackground(material.getColorEspecular().getColor());
-            if (material.getColorTransparente() != null) {
-                pnlAlphaColor.setBackground(material.getColorTransparente().getColor());
+            if (material.getAlphaColour() != null) {
+                pnlAlphaColor.setBackground(material.getAlphaColour().getColor());
             } else {
                 pnlAlphaColor.setBackground(Color.BLACK);
             }
@@ -294,8 +294,8 @@ public class EditorMaterial extends javax.swing.JPanel {
     private Entity crearTestCubo(Material material) {
         ComponentUtil.removeComponents(entidadVistaPrevia, Mesh.class);
         entidadVistaPrevia.addComponent(MaterialUtil.applyMaterial(new Box(1.0f), material));
-        entidadVistaPrevia.getTransformacion().getRotacion().getCuaternion().set(0, 0, 0, 1);
-        entidadVistaPrevia.getTransformacion().getRotacion().actualizarAngulos();
+        entidadVistaPrevia.getTransform().getRotation().getCuaternion().set(0, 0, 0, 1);
+        entidadVistaPrevia.getTransform().getRotation().actualizarAngulos();
         entidadVistaPrevia.scale(1, 1, 1);
         return entidadVistaPrevia;
     }
@@ -303,8 +303,8 @@ public class EditorMaterial extends javax.swing.JPanel {
     private Entity crearTestEsfera(Material material) {
         ComponentUtil.removeComponents(entidadVistaPrevia, Mesh.class);
         entidadVistaPrevia.addComponent(MaterialUtil.applyMaterial(new Sphere(.5f), material));
-        entidadVistaPrevia.getTransformacion().getRotacion().getCuaternion().set(0, 0, 0, 1);
-        entidadVistaPrevia.getTransformacion().getRotacion().actualizarAngulos();
+        entidadVistaPrevia.getTransform().getRotation().getCuaternion().set(0, 0, 0, 1);
+        entidadVistaPrevia.getTransform().getRotation().actualizarAngulos();
         entidadVistaPrevia.scale(1, 1, 1);
         return entidadVistaPrevia;
     }
@@ -312,8 +312,8 @@ public class EditorMaterial extends javax.swing.JPanel {
     private Entity crearTetera(Material material) {
         ComponentUtil.removeComponents(entidadVistaPrevia, Mesh.class);
         entidadVistaPrevia.addComponent(MaterialUtil.applyMaterial(new Teapot(), material));
-        entidadVistaPrevia.getTransformacion().getRotacion().getCuaternion().set(0, 0, 0, 1);
-        entidadVistaPrevia.getTransformacion().getRotacion().actualizarAngulos();
+        entidadVistaPrevia.getTransform().getRotation().getCuaternion().set(0, 0, 0, 1);
+        entidadVistaPrevia.getTransform().getRotation().actualizarAngulos();
         entidadVistaPrevia.scale(0.5f, 0.5f, 0.5f);
         return entidadVistaPrevia;
     }
@@ -328,7 +328,7 @@ public class EditorMaterial extends javax.swing.JPanel {
             // pnlSpecularColor.getBackground().getRed() / 255.0f,
             // (float) pnlSpecularColor.getBackground().getGreen() / 255.0f,
             // (float) pnlSpecularColor.getBackground().getBlue() / 255.0f));
-            activeMaterial.setColorTransparente(new QColor(1, (float) pnlAlphaColor.getBackground().getRed() / 255.0f,
+            activeMaterial.setAlphaColour(new QColor(1, (float) pnlAlphaColor.getBackground().getRed() / 255.0f,
                     (float) pnlAlphaColor.getBackground().getGreen() / 255.0f,
                     (float) pnlAlphaColor.getBackground().getBlue() / 255.0f));
 
@@ -2720,7 +2720,7 @@ public class EditorMaterial extends javax.swing.JPanel {
 
                 activeMaterial.setColorMap(tmp.getEnvMap());
                 populateMaterialControl(activeMaterial);
-                tmp.destruir();
+                tmp.destroy();
                 tmp = null;
             }
         }
@@ -2758,7 +2758,7 @@ public class EditorMaterial extends javax.swing.JPanel {
                         .setEnvMap(new MipmapTexture(tmp.getEnvMap(), 5, MipmapTexture.TIPO_BLUR));
                 activeMaterial.setEnvMapType(EnvProbe.FORMATO_MAPA_CUBO);// mapa cubico
                 populateMaterialControl(activeMaterial);
-                tmp.destruir();
+                tmp.destroy();
                 tmp = null;
             }
         }
@@ -3084,7 +3084,7 @@ public class EditorMaterial extends javax.swing.JPanel {
                 activeMaterial.setHdrMap(tmp.getEnvMap());
                 activeMaterial.setEnvMapType(EnvProbe.FORMATO_MAPA_CUBO);// mapa cubico
                 populateMaterialControl(activeMaterial);
-                tmp.destruir();
+                tmp.destroy();
                 tmp = null;
             }
         }

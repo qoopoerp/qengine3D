@@ -52,7 +52,7 @@ public class SubdivisionModifier implements ModifierComponent {
     }
 
     @Override
-    public void destruir() {
+    public void destroy() {
 
     }
 
@@ -103,7 +103,7 @@ public class SubdivisionModifier implements ModifierComponent {
         QVector3[] normalListPrevious = Arrays.copyOf(mesh.normalList, mesh.normalList.length);
         QVector2[] uvListPrevious = Arrays.copyOf(mesh.uvList, mesh.uvList.length);
 
-        mesh.destruir();
+        mesh.destroy();
         int c = 0;
         try {
             for (Primitive primitive : primitiveListPrevious) {
@@ -334,7 +334,7 @@ public class SubdivisionModifier implements ModifierComponent {
         Primitive[] primitiveListPrevious = Arrays.copyOf(mesh.primitiveList, mesh.primitiveList.length);
         QVector3[] normalListPrevious = Arrays.copyOf(mesh.normalList, mesh.normalList.length);
         QVector2[] uvListPrevious = Arrays.copyOf(mesh.uvList, mesh.uvList.length);
-        mesh.destruir();
+        mesh.destroy();
         int descartados = 0;
         int c = 0;
         try {

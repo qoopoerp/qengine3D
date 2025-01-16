@@ -1,7 +1,5 @@
 package net.qoopo.engine.core.lwjgl.asset;
 
-import static org.lwjgl.assimp.Assimp.AI_MATKEY_COLOR_DIFFUSE;
-import static org.lwjgl.assimp.Assimp.AI_MATKEY_COLOR_SPECULAR;
 import static org.lwjgl.assimp.Assimp.aiImportFile;
 import static org.lwjgl.assimp.Assimp.aiTextureType_NONE;
 
@@ -43,6 +41,7 @@ import org.lwjgl.assimp.Assimp;
 
 import net.qoopo.engine.core.animation.AnimationFrame;
 import net.qoopo.engine.core.animation.AnimationPair;
+import net.qoopo.engine.core.assets.AssetManager;
 import net.qoopo.engine.core.assets.model.ModelLoader;
 import net.qoopo.engine.core.entity.Entity;
 import net.qoopo.engine.core.entity.component.EntityComponent;
@@ -60,7 +59,7 @@ import net.qoopo.engine.core.entity.component.physics.collision.detector.Collisi
 import net.qoopo.engine.core.entity.component.physics.collision.detector.shape.mallas.QColisionMallaConvexa;
 import net.qoopo.engine.core.entity.component.physics.dinamica.QObjetoDinamico;
 import net.qoopo.engine.core.entity.component.physics.dinamica.QObjetoRigido;
-import net.qoopo.engine.core.entity.component.transform.QTransformacion;
+import net.qoopo.engine.core.entity.component.transform.Transform;
 import net.qoopo.engine.core.material.AbstractMaterial;
 import net.qoopo.engine.core.material.Material;
 import net.qoopo.engine.core.math.Cuaternion;
@@ -71,7 +70,6 @@ import net.qoopo.engine.core.math.QVector3;
 import net.qoopo.engine.core.scene.Camera;
 import net.qoopo.engine.core.texture.Texture;
 import net.qoopo.engine.core.texture.procesador.InvertTexture;
-import net.qoopo.engine.core.util.mesh.NormalUtil;
 
 /**
  * Permite la carga de vaiors formatos de modelos 3D usando la librer[ia ASSIMP.
@@ -79,6 +77,8 @@ import net.qoopo.engine.core.util.mesh.NormalUtil;
  * @author alberto
  */
 public class AssimpModelLoader implements ModelLoader {
+
+    private static Logger logger = Logger.getLogger("Assimp-model-loader");
 
     @Override
     public Entity loadModel(InputStream stream) {
@@ -96,7 +96,7 @@ public class AssimpModelLoader implements ModelLoader {
     public Entity loadModel(File file) throws FileNotFoundException {
         List<Entity> lista = new ArrayList<>();
         try {
-            lista = cargarAssimpItems(file.getAbsolutePath(), file.getParent());
+            lista = loadAssimpItems(file.getAbsolutePath(), file.getParent());
         } catch (Exception e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -121,12 +121,12 @@ public class AssimpModelLoader implements ModelLoader {
      * @return
      * @throws Exception
      */
-    private List<Entity> cargarAssimpItems(String resourcePath, String texturesDir) throws Exception {
+    private List<Entity> loadAssimpItems(String resourcePath, String texturesDir) throws Exception {
         // return AssimpLoader.cargarAssimpItems(resourcePath, texturesDir,
         // Assimp.aiProcess_GenSmoothNormals | Assimp.aiProcess_JoinIdenticalVertices |
         // Assimp.aiProcess_Triangulate | Assimp.aiProcess_FixInfacingNormals |
         // Assimp.aiProcess_LimitBoneWeights);
-        return cargarAssimpItems(resourcePath, texturesDir, Assimp.aiProcess_GenSmoothNormals
+        return loadAssimpItems(resourcePath, texturesDir, Assimp.aiProcess_GenSmoothNormals
                 | Assimp.aiProcess_JoinIdenticalVertices | Assimp.aiProcess_Triangulate);
     }
 
@@ -139,12 +139,12 @@ public class AssimpModelLoader implements ModelLoader {
      * @return
      * @throws Exception
      */
-    private List<Entity> cargarAssimpItems(String rutaArchivo, String texturesDir, int flags) throws Exception {
-        System.out.println("Cargando Recurso con ASSIMP");
+    private List<Entity> loadAssimpItems(String rutaArchivo, String texturesDir, int flags) throws Exception {
+        logger.info("[+] Cargando modelo con ASSIMP [ " + rutaArchivo + " ]");
 
         File f = new File(rutaArchivo);
         if (!f.exists()) {
-            System.out.println("Archivo no existe");
+            logger.severe(" [-] Archivo no existe");
         }
 
         AIScene aiScene = aiImportFile(rutaArchivo, flags);
@@ -153,12 +153,12 @@ public class AssimpModelLoader implements ModelLoader {
             throw new Exception("Error al cargar escena");
         }
 
-        System.out.println("    Mallas:" + aiScene.mNumMeshes());
-        System.out.println("    Animaciones:" + aiScene.mNumAnimations());
-        System.out.println("    Camaras:" + aiScene.mNumCameras());
-        System.out.println("    Luces:" + aiScene.mNumLights());
-        System.out.println("    Materiales:" + aiScene.mNumMaterials());
-        System.out.println("    Texturas:" + aiScene.mNumTextures());
+        logger.info("  >  Mallas:" + aiScene.mNumMeshes());
+        logger.info("  >  Animaciones:" + aiScene.mNumAnimations());
+        logger.info("  >  Camaras:" + aiScene.mNumCameras());
+        logger.info("  >  Luces:" + aiScene.mNumLights());
+        logger.info("  >  Materiales:" + aiScene.mNumMaterials());
+        logger.info("  >  Texturas:" + aiScene.mNumTextures());
 
         List<Entity> entidades = new ArrayList<>();
         AINode aiNodoRaiz = aiScene.mRootNode();
@@ -173,202 +173,162 @@ public class AssimpModelLoader implements ModelLoader {
             AIMaterial aiMaterial = AIMaterial.create(aiMaterials.get(i));
             mapaMateriales.put(indice, loadMaterial(aiMaterial, texturesDir));
         }
-        PointerBuffer aiMeshes = aiScene.mMeshes();
-        // PointerBuffer aiCameras = aiScene.mCameras();
-        // PointerBuffer aiLights = aiScene.mLights();
-        // PointerBuffer aiAnimations = aiScene.mAnimations();
-        // PointerBuffer aiTextures = aiScene.mTextures();
 
-        entidades.add(procesarNodo(aiScene, aiNodoRaiz, nodoRaiz, aiMeshes, mapaMateriales));
+        entidades.add(procesarNodo(aiScene, aiNodoRaiz, nodoRaiz, mapaMateriales));
 
+        logger.info("[+] Modelo cargado [ " + rutaArchivo + " ]");
         return entidades;
     }
 
     /**
-     * Cada aiNodeAnim contiene los estados de la animacion (Frames) de un solo
-     * hueso
+     * Crea una estructura de nodos simple basada en la estructura de nodos de
+     * la escena. Se usa para encontrar los nodos de la escena y almacenar sus
+     * transformaciones y relacionar con sus padres e hijos
      *
-     * @param aiNodeAnim
-     * @param boneList
-     * @param nodoRaiz
-     * @param rootTransformation
-     * @param duracionTotalAnimacion
-     * @param esqueleto
+     * @param aiNode
+     * @param parentNode
      * @return
      */
-    private List<AnimationFrame> contruirFrames(AINodeAnim aiNodeAnim, float duracionTotalAnimacion,
-            Skeleton esqueleto, Entity objeto) {
-        int numFrames = aiNodeAnim.mNumPositionKeys();
-        // Cada frame deberia tener configurado el tiempo, sin embargo al no encontrarlo
-        // asignamos equitativamente el tiempo para cada frame
-        float duracion = (float) duracionTotalAnimacion / numFrames;
-        List<AnimationFrame> frameList = new ArrayList<>();
+    private Node procesarJerarquiaNodos(AINode aiNode, Node parentNode) {
+        String nodeName = aiNode.mName().dataString();
+        Node node = new Node(nodeName, parentNode, aiNode);
 
-        AIVectorKey.Buffer positionKeys = aiNodeAnim.mPositionKeys();
-        AIVectorKey.Buffer scalingKeys = aiNodeAnim.mScalingKeys();
-        AIQuatKey.Buffer rotationKeys = aiNodeAnim.mRotationKeys();
-
-        for (int iFrame = 0; iFrame < numFrames; iFrame++) {
-            AnimationFrame qFrame = new AnimationFrame(duracion * iFrame);
-            Entity hueso = null;
-
-            if (esqueleto != null) {
-                hueso = esqueleto.getBone(aiNodeAnim.mNodeName().dataString());
-            } else {
-                if (objeto.getName().contains(aiNodeAnim.mNodeName().dataString())) {
-                    hueso = objeto;
-                }
-            }
-
-            if (hueso != null) {
-                QTransformacion transformacion = new QTransformacion(QRotacion.CUATERNION);
-                if (positionKeys != null && positionKeys.hasRemaining()) {
-                    try {
-                        // AIVectorKey aiVecKey = ;
-                        AIVector3D vec = positionKeys.get(iFrame).mValue();
-                        transformacion.getTraslacion().set(vec.x(), vec.y(), vec.z());
-                        if (iFrame < aiNodeAnim.mNumScalingKeys()) {
-                            if (scalingKeys != null && scalingKeys.hasRemaining()) {
-                                // aiVecKey = scalingKeys.get(i);
-                                vec = scalingKeys.get(iFrame).mValue();
-                                transformacion.getEscala().set(vec.x(), vec.y(), vec.z());
-                            }
-                        }
-                    } catch (Exception e) {
-                        System.out.println(
-                                "error cargando posicion y escala, no transformacion para el frame solicitado");
-                    }
-                }
-                if (rotationKeys != null && rotationKeys.hasRemaining()) {
-                    try {
-                        AIQuatKey quatKey = rotationKeys.get(iFrame);
-                        AIQuaternion aiQuat = quatKey.mValue();
-                        Cuaternion quat = new Cuaternion(aiQuat.x(), aiQuat.y(), aiQuat.z(), aiQuat.w());
-                        transformacion.getRotacion().setCuaternion(quat);
-                    } catch (Exception e) {
-                        System.out.println("error cargando rotacion, no transformacion para el frame solicitado");
-                    }
-                }
-
-                qFrame.agregarPar(new AnimationPair(hueso, transformacion));
-                frameList.add(qFrame);
-            }
+        int numChildren = aiNode.mNumChildren();
+        PointerBuffer aiChildren = aiNode.mChildren();
+        for (int i = 0; i < numChildren; i++) {
+            AINode aiChildNode = AINode.create(aiChildren.get(i));
+            Node childNode = procesarJerarquiaNodos(aiChildNode, node);
+            node.addChild(childNode);
         }
 
-        return frameList;
+        return node;
     }
 
     /**
-     * Crea un hueso para el esqueleto
+     * Crea un material desde un material de Assimp
      *
-     * @param id
-     * @param nodo
-     * @param esqueleto
-     * @param maxId
-     * @return
-     */
-    private Bone crearHueso(int id, Node nodo, Skeleton esqueleto, Integer maxId,
-            Integer contadorNodosSinPadre) {
-        Bone hueso = new Bone(id, nodo.getName());
-        QMatriz4 matriz = nodo.getTransformacion();
-        hueso.setTransformacion(new QTransformacion(QRotacion.CUATERNION));
-        hueso.getTransformacion().desdeMatrix(matriz);
-        Node nodoPadre = nodo.getParent();
-        if (nodoPadre != null) {
-            // codigo agregado para corregir carga de los modelos MD5 y collada, se debe
-            // buscar la manera de evitar agregar los nodos que no son de los huesos
-            // if (!nodoPadre.getName().equals("<MD5_Hierarchy>")
-            // && !nodoPadre.getName().equals("Scene")
-            // && !nodoPadre.getName().equals("RootNode")) {
-            Bone huesoPadre = esqueleto.getBone(nodoPadre.getName());
-            if (huesoPadre != null) {
-                huesoPadre.addChild(hueso);
-            } else {
-                if (contadorNodosSinPadre < 1) {
-                    contadorNodosSinPadre++;
-                    maxId++;
-                    System.out.println("NO SE ENCUENTRA EL HUESO PADRE CON EL NOMBRE:{" + nodoPadre.getName()
-                            + "} para el Hijo :{" + nodo.getName() + "} " + "[" + contadorNodosSinPadre
-                            + "]. Se crea un nuevo hueso para el padre no encontrado");
-                    // agrego un hueso , el padre que no se encuentra
-                    Bone nuevoHuesoPadre = crearHueso(maxId, nodoPadre, esqueleto, maxId, contadorNodosSinPadre);
-                    esqueleto.agregarHueso(nuevoHuesoPadre);
-                    nuevoHuesoPadre.addChild(hueso);
-                } else {
-                    System.out.println("NO SE ENCUENTRA EL HUESO PADRE CON EL NOMBRE:{" + nodoPadre.getName()
-                            + "} para el Hijo :{" + nodo.getName() + "} " + "[" + contadorNodosSinPadre
-                            + "]. Se salta la creacion por limite alcanzado");
-                }
-            }
-            // }
-        }
-        return hueso;
-    }
-
-    /**
-     * Crea un esqueleto a partir del esqueleto de la lista de bones cargados
-     * previamente al procesar las mallas
+     * @param aiMaterial
      *
-     * @param aiMesh
-     * @param nodoRaiz
+     * @param texturesDir
      * @return
+     * @throws Exception
      */
-    private Skeleton loadSkeleton(List<AssimpBone> boneList, Node nodoRaiz) {
-        Skeleton esqueleto = new Skeleton();
-        esqueleto.setHuesos(new ArrayList<>());
-        // debemos ordenar la lista para agregar primero los nodos que tienen menos
-        // padres
-        // paso 1, obtener la ruta de la jerarquia
-        for (AssimpBone bone : boneList) {
-            AIBone aiBone = bone.getAiBone();
-            Node nodo = nodoRaiz.findByName(aiBone.mName().dataString());
-            bone.setRutaJerarquia(nodo.getRuta());
-        }
-        // paso 2 ordeno
-        Collections.sort(boneList, new Comparator<AssimpBone>() {
-            @Override
-            public int compare(AssimpBone t, AssimpBone t1) {
-                return t.getRutaJerarquia().compareTo(t1.getRutaJerarquia());
-            }
-        });
+    protected AbstractMaterial loadMaterial(AIMaterial aiMaterial, String texturesDir) throws Exception {
+        AIColor4D colour = AIColor4D.create();
 
-        // System.out.println("Lista ordenada");
-        // for (Bone bone : boneList) {
-        // System.out.println(bone.getRutaJerarquia());
-        // }
-        Integer maxId = boneList.size();
-        Integer contadorNodosSinPadre = 0;// para comprobar que no se agreguen nodos vacios hasta la raiz.
-        for (AssimpBone bone : boneList) {
-            Node nodo = nodoRaiz.findByName(bone.getBoneName());
-            esqueleto.agregarHueso(crearHueso(bone.getBoneId(), nodo, esqueleto, maxId, contadorNodosSinPadre));
+        Material material = new Material();
+
+        int result = 0;
+        QColor diffuse = QColor.WHITE;
+        result = Assimp.aiGetMaterialColor(aiMaterial, Assimp.AI_MATKEY_COLOR_DIFFUSE, aiTextureType_NONE, 0, colour);
+        if (result == 0) {
+            diffuse = new QColor(colour.a(), colour.r(), colour.g(), colour.b());
+            material.setColor(diffuse);
         }
-        esqueleto.calcularMatricesInversas();
-        //
-        // System.out.println("Esqueleto Creado");
-        // for (QHueso hueso : esqueleto.getHuesos()) {
-        // if (hueso.getPadre() == null) {
-        // Entity.imprimirArbolEntidad(hueso, "");
+
+        QColor specular = QColor.WHITE;
+        result = Assimp.aiGetMaterialColor(aiMaterial, Assimp.AI_MATKEY_COLOR_SPECULAR, aiTextureType_NONE, 0, colour);
+        if (result == 0) {
+            specular = new QColor(colour.a(), colour.r(), colour.g(), colour.b());
+            material.setColorEspecular(specular);
+        }
+
+        QColor emissiveColour = QColor.WHITE;
+        result = Assimp.aiGetMaterialColor(aiMaterial, Assimp.AI_MATKEY_COLOR_EMISSIVE, aiTextureType_NONE, 0, colour);
+        if (result == 0) {
+            emissiveColour = new QColor(colour.a(), colour.r(), colour.g(), colour.b());
+            material.setEmision(emissiveColour.r);
+        }
+
+        QColor alphaColour = QColor.WHITE;
+        result = Assimp.aiGetMaterialColor(aiMaterial, Assimp.AI_MATKEY_COLOR_TRANSPARENT, aiTextureType_NONE, 0,
+                colour);
+        if (result == 0) {
+            alphaColour = new QColor(colour.a(), colour.r(), colour.g(), colour.b());
+            material.setTransAlfa(alphaColour.r);
+            material.setAlphaColour(alphaColour);
+        }
+
+        // QColor ambient = QColor.WHITE;
+        // result = Assimp.aiGetMaterialColor(aiMaterial, AI_MATKEY_COLOR_AMBIENT,
+        // aiTextureType_NONE, 0, colour);
+        // if (result == 0) {
+        // ambient = new QColor(colour.a(), colour.r(), colour.g(), colour.b());
         // }
-        // }
-        return esqueleto;
+
+        // Mapas (Texturas)
+
+        Texture texture = null;
+
+        // textura difusa
+        texture = loadTexture(aiMaterial, Assimp.aiTextureType_DIFFUSE, texturesDir);
+        material.setColorMap(texture);
+        // textura normal
+        texture = loadTexture(aiMaterial, Assimp.aiTextureType_NORMALS, texturesDir);
+        material.setNormalMap(texture);
+        // textura emisiva/lightmap
+        texture = loadTexture(aiMaterial, Assimp.aiTextureType_EMISSIVE, texturesDir);
+        if (texture == null) {
+            texture = loadTexture(aiMaterial, Assimp.aiTextureType_LIGHTMAP, texturesDir);
+        }
+        material.setEmissiveMap(texture);
+
+        // textura transparencia
+        texture = loadTexture(aiMaterial, Assimp.aiTextureType_OPACITY, texturesDir);
+        if (texture != null) {
+            material.setAlphaMap(texture);
+            material.setTransparencia(true);
+        }
+        // textura especular
+        texture = loadTexture(aiMaterial, Assimp.aiTextureType_SPECULAR, texturesDir);
+        material.setMapaEspecular(texture);
+        // textura metalness
+        texture = loadTexture(aiMaterial, Assimp.aiTextureType_METALNESS, texturesDir);
+        if (texture == null)
+            texture = loadTexture(aiMaterial, Assimp.aiTextureType_REFLECTION,
+                    texturesDir);
+        material.setMetallicMap(texture);
+
+        // textura de brillo (lo transofrma a rugosidad invirtiendolo)
+        texture = loadTexture(aiMaterial, Assimp.aiTextureType_SHININESS, texturesDir);
+        if (texture != null) {
+            // el inverso de la textura de brillo
+            material.setRoughnessMap(new InvertTexture(texture));
+        }
+
+        // // textura de entorno
+        // texture = loadTexture(aiMaterial, Assimp.aiTextureType_REFLECTION,
+        // texturesDir);
+        // material.setEnvMap(texture);
+
+        // textura AO
+        texture = loadTexture(aiMaterial, Assimp.aiTextureType_AMBIENT_OCCLUSION, texturesDir);
+        material.setAoMap(texture);
+
+        return material;
     }
 
     /**
      * Procesa cada nodo de la jerarquia de nodos de la escena. Por cada nodo
      * crea un esqueleto. Si en la escena hay un solo esqueleto y es compartido
      * por varios nodos de la escena, se creara un esqueleto para cada nodo
-     *
+     * 
      * @param aiScene
      * @param aiNodo
      * @param nodoRaiz
      * @param aiMeshes
+     * @param aiCameras
+     * @param aiLights
+     * @param aiAnimations
+     * @param aiTextures
      * @param mapaMateriales
      * @return
      */
-    private Entity procesarNodo(AIScene aiScene, AINode aiNodo, Node nodoRaiz, PointerBuffer aiMeshes,
+    private Entity procesarNodo(AIScene aiScene, AINode aiNodo, Node nodoRaiz,
             Map<Integer, AbstractMaterial> mapaMateriales) {
+
         String nombre = aiNodo.mName().dataString();
-        System.out.println("Procesando Nodo:" + nombre);
+        logger.info("Procesando Nodo:" + nombre);
         Entity entity = null;
 
         // ***************************************************************
@@ -381,6 +341,7 @@ public class AssimpModelLoader implements ModelLoader {
                 AICamera aiCamera = AICamera.create(aiCamaras.get(i));
                 if (nombre.contains(aiCamera.mName().dataString())) {
                     // crea el componente camara
+                    logger.info("Procesando cámara: " + aiCamera.mName().dataString());
                     entity = new Camera(nombre);
                     Camera camara = (Camera) entity;
                     camara.setFOV(aiCamera.mHorizontalFOV());
@@ -396,14 +357,16 @@ public class AssimpModelLoader implements ModelLoader {
         }
 
         // Transformacion
-        entity.setTransformacion(new QTransformacion(QRotacion.CUATERNION));
-        entity.getTransformacion().desdeMatrix(AssimpModelLoader.toMatrix(aiNodo.mTransformation()));
+        entity.setTransform(new Transform(QRotacion.CUATERNION));
+        entity.getTransform().fromMatrix(AssimpModelLoader.toMatrix(aiNodo.mTransformation()));
 
         Skeleton esqueleto = null;
 
         // ***************************************************************
         // ***** MALLAS, ESQUELETO Y ANIMACIONES
         // ***************************************************************
+        PointerBuffer aiMeshes = aiScene.mMeshes();
+
         List<AssimpBone> boneList = new ArrayList<>();
         int numMallas = aiNodo.mNumMeshes();
         IntBuffer aiMeshesLocal = aiNodo.mMeshes();
@@ -425,7 +388,7 @@ public class AssimpModelLoader implements ModelLoader {
         }
         // ****************** ESQUELETO ********************************
         if (!boneList.isEmpty()) {
-            // System.out.println("Lista de huesos encontrados " + boneList.size());
+            // logger.info("Lista de huesos encontrados " + boneList.size());
             esqueleto = loadSkeleton(boneList, nodoRaiz);
             entity.addComponent(esqueleto);
 
@@ -508,11 +471,180 @@ public class AssimpModelLoader implements ModelLoader {
             PointerBuffer bufferHijos = aiNodo.mChildren();
             for (int i = 0; i < hijos; i++) {
                 AINode nodoHijo = AINode.create(bufferHijos.get(i));
-                entity.addChild(procesarNodo(aiScene, nodoHijo, nodoRaiz, aiMeshes, mapaMateriales));
+                entity.addChild(procesarNodo(aiScene, nodoHijo, nodoRaiz, mapaMateriales));
             }
         }
 
         return entity;
+    }
+
+    /**
+     * Cada aiNodeAnim contiene los estados de la animacion (Frames) de un solo
+     * hueso
+     *
+     * @param aiNodeAnim
+     * @param boneList
+     * @param nodoRaiz
+     * @param rootTransformation
+     * @param duracionTotalAnimacion
+     * @param esqueleto
+     * @return
+     */
+    private List<AnimationFrame> contruirFrames(AINodeAnim aiNodeAnim, float duracionTotalAnimacion,
+            Skeleton esqueleto, Entity objeto) {
+        int numFrames = aiNodeAnim.mNumPositionKeys();
+        // Cada frame deberia tener configurado el tiempo, sin embargo al no encontrarlo
+        // asignamos equitativamente el tiempo para cada frame
+        float duracion = (float) duracionTotalAnimacion / numFrames;
+        List<AnimationFrame> frameList = new ArrayList<>();
+
+        AIVectorKey.Buffer positionKeys = aiNodeAnim.mPositionKeys();
+        AIVectorKey.Buffer scalingKeys = aiNodeAnim.mScalingKeys();
+        AIQuatKey.Buffer rotationKeys = aiNodeAnim.mRotationKeys();
+
+        for (int iFrame = 0; iFrame < numFrames; iFrame++) {
+            AnimationFrame qFrame = new AnimationFrame(duracion * iFrame);
+            Entity hueso = null;
+
+            if (esqueleto != null) {
+                hueso = esqueleto.getBone(aiNodeAnim.mNodeName().dataString());
+            } else {
+                if (objeto.getName().contains(aiNodeAnim.mNodeName().dataString())) {
+                    hueso = objeto;
+                }
+            }
+
+            if (hueso != null) {
+                Transform transformacion = new Transform(QRotacion.CUATERNION);
+                if (positionKeys != null && positionKeys.hasRemaining()) {
+                    try {
+                        // AIVectorKey aiVecKey = ;
+                        AIVector3D vec = positionKeys.get(iFrame).mValue();
+                        transformacion.getLocation().set(vec.x(), vec.y(), vec.z());
+                        if (iFrame < aiNodeAnim.mNumScalingKeys()) {
+                            if (scalingKeys != null && scalingKeys.hasRemaining()) {
+                                vec = scalingKeys.get(iFrame).mValue();
+                                transformacion.getScale().set(vec.x(), vec.y(), vec.z());
+                            }
+                        }
+                    } catch (Exception e) {
+                        logger.severe("[X] Error cargando posicion y escala, no transformacion para el frame solicitado");
+                    }
+                }
+                if (rotationKeys != null && rotationKeys.hasRemaining()) {
+                    try {
+                        AIQuatKey quatKey = rotationKeys.get(iFrame);
+                        AIQuaternion aiQuat = quatKey.mValue();
+                        Cuaternion quat = new Cuaternion(aiQuat.x(), aiQuat.y(), aiQuat.z(), aiQuat.w());
+                        transformacion.getRotation().setCuaternion(quat);
+                    } catch (Exception e) {
+                        logger.severe("[X] Error cargando rotacion, no transformacion para el frame solicitado");
+                    }
+                }
+
+                qFrame.addPair(new AnimationPair(hueso, transformacion));
+                frameList.add(qFrame);
+            }
+        }
+
+        return frameList;
+    }
+
+    /**
+     * Crea un hueso para el esqueleto
+     *
+     * @param id
+     * @param nodo
+     * @param esqueleto
+     * @param maxId
+     * @return
+     */
+    private Bone crearHueso(int id, Node nodo, Skeleton esqueleto, Integer maxId,
+            Integer contadorNodosSinPadre) {
+        Bone hueso = new Bone(id, nodo.getName());
+        QMatriz4 matriz = nodo.getTransformacion();
+        hueso.setTransform(new Transform(QRotacion.CUATERNION));
+        hueso.getTransform().fromMatrix(matriz);
+        Node nodoPadre = nodo.getParent();
+        if (nodoPadre != null) {
+            // codigo agregado para corregir carga de los modelos MD5 y collada, se debe
+            // buscar la manera de evitar agregar los nodos que no son de los huesos
+            // if (!nodoPadre.getName().equals("<MD5_Hierarchy>")
+            // && !nodoPadre.getName().equals("Scene")
+            // && !nodoPadre.getName().equals("RootNode")) {
+            Bone huesoPadre = esqueleto.getBone(nodoPadre.getName());
+            if (huesoPadre != null) {
+                huesoPadre.addChild(hueso);
+            } else {
+                // if (contadorNodosSinPadre < 0) {
+                // contadorNodosSinPadre++;
+                // maxId++;
+                // logger.info("NO SE ENCUENTRA EL HUESO PADRE CON EL NOMBRE:{" +
+                // nodoPadre.getName()
+                // + "} para el Hijo :{" + nodo.getName() + "} " + "[" + contadorNodosSinPadre
+                // + "]. Se crea un nuevo hueso para el padre no encontrado");
+                // // agrego un hueso , el padre que no se encuentra
+                // Bone nuevoHuesoPadre = crearHueso(maxId, nodoPadre, esqueleto, maxId,
+                // contadorNodosSinPadre);
+                // esqueleto.agregarHueso(nuevoHuesoPadre);
+                // nuevoHuesoPadre.addChild(hueso);
+                // } else {
+                logger.warning("[!] NO SE ENCUENTRA EL HUESO PADRE CON EL NOMBRE:{" + nodoPadre.getName()
+                        + "} para el Hijo :{" + nodo.getName() + "} " + "[" + contadorNodosSinPadre
+                        + "].");
+                // }
+            }
+            // }
+        }
+        return hueso;
+    }
+
+    /**
+     * Crea un esqueleto a partir del esqueleto de la lista de bones cargados
+     * previamente al procesar las mallas
+     *
+     * @param aiMesh
+     * @param nodoRaiz
+     * @return
+     */
+    private Skeleton loadSkeleton(List<AssimpBone> boneList, Node nodoRaiz) {
+        Skeleton esqueleto = new Skeleton();
+        esqueleto.setBones(new ArrayList<>());
+        // debemos ordenar la lista para agregar primero los nodos que tienen menos
+        // padres
+        // paso 1, obtener la ruta de la jerarquia
+        for (AssimpBone bone : boneList) {
+            AIBone aiBone = bone.getAiBone();
+            Node nodo = nodoRaiz.findByName(aiBone.mName().dataString());
+            bone.setRutaJerarquia(nodo.getRuta());
+        }
+        // paso 2 ordeno
+        Collections.sort(boneList, new Comparator<AssimpBone>() {
+            @Override
+            public int compare(AssimpBone t, AssimpBone t1) {
+                return t.getRutaJerarquia().compareTo(t1.getRutaJerarquia());
+            }
+        });
+
+        // logger.info("Lista ordenada");
+        // for (Bone bone : boneList) {
+        // logger.info(bone.getRutaJerarquia());
+        // }
+        Integer maxId = boneList.size();
+        Integer contadorNodosSinPadre = 0;// para comprobar que no se agreguen nodos vacios hasta la raiz.
+        for (AssimpBone bone : boneList) {
+            Node nodo = nodoRaiz.findByName(bone.getBoneName());
+            esqueleto.addBone(crearHueso(bone.getBoneId(), nodo, esqueleto, maxId, contadorNodosSinPadre));
+        }
+        esqueleto.calcularMatricesInversas();
+        //
+        // logger.info("Esqueleto Creado");
+        // for (QHueso hueso : esqueleto.getHuesos()) {
+        // if (hueso.getPadre() == null) {
+        // Entity.imprimirArbolEntidad(hueso, "");
+        // }
+        // }
+        return esqueleto;
     }
 
     /**
@@ -546,10 +678,10 @@ public class AssimpModelLoader implements ModelLoader {
             if (nombreAnimacion == null || nombreAnimacion.isEmpty()) {
                 nombreAnimacion = "Anima_Default_" + duracion;
             }
-            System.out.println("            Animacion :" + nombreAnimacion);
-            System.out.println("                Duracion (ticks):" + aiAnimation.mDuration());
-            System.out.println("                Ticks por segundo:" + aiAnimation.mTicksPerSecond());
-            System.out.println("                Duracion (s):" + duracion);
+            logger.info("            Animacion :" + nombreAnimacion);
+            logger.info("                Duracion (ticks):" + aiAnimation.mDuration());
+            logger.info("                Ticks por segundo:" + aiAnimation.mTicksPerSecond());
+            logger.info("                Duracion (s):" + duracion);
 
             // aiAnimation.mDuration()
             // Calculate transformation matrices for each node
@@ -588,8 +720,8 @@ public class AssimpModelLoader implements ModelLoader {
                         if (mapa.get(k).size() > j) {
                             AnimationFrame frameHueso = mapa.get(k).get(j);
                             tiempo = Math.max(tiempo, frameHueso.getMarcaTiempo());
-                            for (AnimationPair par : frameHueso.getParesModificarAnimacion()) {
-                                frame.agregarPar(par);
+                            for (AnimationPair par : frameHueso.getAnimationPairList()) {
+                                frame.addPair(par);
                             }
                         }
                     }
@@ -634,6 +766,7 @@ public class AssimpModelLoader implements ModelLoader {
             // si no lo encontro, lo agrega
             if (bone == null) {
                 int id = boneList.size();
+                // logger.info(" -> loading aBone " + aiBone.mName().dataString());
                 bone = new AssimpBone(id, aiBone.mName().dataString(),
                         AssimpModelLoader.toMatrix(aiBone.mOffsetMatrix()),
                         aiBone);
@@ -690,7 +823,7 @@ public class AssimpModelLoader implements ModelLoader {
      */
     private Mesh loadMesh(AIMesh aiMesh, Map<Integer, AbstractMaterial> mapaMateriales,
             List<AssimpBone> boneList) {
-        System.out.println("  Procesando malla:" + aiMesh.mName().dataString());
+        logger.info("  Procesando malla:" + aiMesh.mName().dataString());
         Mesh malla = new Mesh();
         malla.name = aiMesh.mName().dataString();
         AbstractMaterial material;
@@ -699,59 +832,16 @@ public class AssimpModelLoader implements ModelLoader {
             material = mapaMateriales.get(materialIdx);
         } else {
             material = new Material();
+            logger.warning("[!] No se encontró material con el índice :" + materialIdx);
         }
-        loadVertices(aiMesh, malla);
+        loadVerticesOnly(aiMesh, malla);
+        loadNormalsOnly(aiMesh, malla);
+        loadUVOnly(aiMesh, malla);
         loadFaces(aiMesh, malla, material);
         procesarBones(aiMesh, malla, boneList);
-        NormalUtil.computeNormals(malla);
+        // malla.computeNormals();
         return malla;
     }
-
-    /**
-     * Crea una estructura de nodos simple basada en la estructura de nodos de
-     * la escena. Se usa para encontrar los nodos de la escena y almacenar sus
-     * transformaciones y relacionar con sus padres e hijos
-     *
-     * @param aiNode
-     * @param parentNode
-     * @return
-     */
-    private Node procesarJerarquiaNodos(AINode aiNode, Node parentNode) {
-        String nodeName = aiNode.mName().dataString();
-        Node node = new Node(nodeName, parentNode, aiNode);
-
-        int numChildren = aiNode.mNumChildren();
-        PointerBuffer aiChildren = aiNode.mChildren();
-        for (int i = 0; i < numChildren; i++) {
-            AINode aiChildNode = AINode.create(aiChildren.get(i));
-            Node childNode = procesarJerarquiaNodos(aiChildNode, node);
-            node.addChild(childNode);
-        }
-
-        return node;
-    }
-    //
-    // private static Matrix4f toMatrix_2(AIMatrix4x4 aiMatrix4x4) {
-    // Matrix4f result = new Matrix4f();
-    // result.m00(aiMatrix4x4.a1());
-    // result.m10(aiMatrix4x4.a2());
-    // result.m20(aiMatrix4x4.a3());
-    // result.m30(aiMatrix4x4.a4());
-    // result.m01(aiMatrix4x4.b1());
-    // result.m11(aiMatrix4x4.b2());
-    // result.m21(aiMatrix4x4.b3());
-    // result.m31(aiMatrix4x4.b4());
-    // result.m02(aiMatrix4x4.c1());
-    // result.m12(aiMatrix4x4.c2());
-    // result.m22(aiMatrix4x4.c3());
-    // result.m32(aiMatrix4x4.c4());
-    // result.m03(aiMatrix4x4.d1());
-    // result.m13(aiMatrix4x4.d2());
-    // result.m23(aiMatrix4x4.d3());
-    // result.m33(aiMatrix4x4.d4());
-    //
-    // return result;
-    // }
 
     /**
      * Convierte una matriz 4x4 de ASSMIP a la matriz del engine
@@ -800,6 +890,9 @@ public class AssimpModelLoader implements ModelLoader {
         return result;
     }
 
+    /**
+     * Carga los vértices de la malla con coordenadas de texturas
+     */
     protected void loadVertices(AIMesh aiMesh, Mesh malla) {
         AIVector3D.Buffer aiVertices = aiMesh.mVertices();
         AIVector3D aiVertex = null;
@@ -817,6 +910,54 @@ public class AssimpModelLoader implements ModelLoader {
         }
     }
 
+    /**
+     * Carga solamenta los vertices de la malla
+     * 
+     * @param aiMesh
+     * @param malla
+     */
+    protected void loadVerticesOnly(AIMesh aiMesh, Mesh malla) {
+        AIVector3D.Buffer aiVertices = aiMesh.mVertices();
+        AIVector3D aiVertex = null;
+        while (aiVertices.hasRemaining()) {
+            aiVertex = aiVertices.get();
+            malla.addVertex(aiVertex.x(), aiVertex.y(), aiVertex.z());
+
+        }
+    }
+
+    /**
+     * Carga solamenta los vertices de la malla
+     * 
+     * @param aiMesh
+     * @param malla
+     */
+    protected void loadNormalsOnly(AIMesh aiMesh, Mesh malla) {
+        AIVector3D.Buffer aiNormals = aiMesh.mNormals();
+        AIVector3D aiNormal = null;
+        while (aiNormals.hasRemaining()) {
+            aiNormal = aiNormals.get();
+            malla.addNormal(aiNormal.x(), aiNormal.y(), aiNormal.z());
+        }
+    }
+
+    /**
+     * Carga solamenta los coordenadas UV de la malla
+     * 
+     * @param aiMesh
+     * @param malla
+     */
+    protected void loadUVOnly(AIMesh aiMesh, Mesh malla) {
+        AIVector3D.Buffer aiUVs = aiMesh.mTextureCoords(0);
+        AIVector3D aiUV = null;
+        if (aiUVs != null) {
+            while (aiUVs.hasRemaining()) {
+                aiUV = aiUVs.get();
+                malla.addUV(aiUV.x(), aiUV.y());
+            }
+        }
+    }
+
     protected void loadFaces(AIMesh aiMesh, Mesh malla, AbstractMaterial material) {
         int numFaces = aiMesh.mNumFaces();
         AIFace.Buffer aiFaces = aiMesh.mFaces();
@@ -826,7 +967,7 @@ public class AssimpModelLoader implements ModelLoader {
                 IntBuffer buffer = aiFace.mIndices();
                 int[] tmp = new int[aiFace.mNumIndices()];
                 buffer.get(tmp);
-                malla.addPoly(material, tmp, tmp, tmp).setSmooth(true);
+                malla.addPoly(material, tmp).setSmooth(true);
             } catch (Exception ex) {
                 Logger.getLogger(AssimpModelLoader.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -837,130 +978,37 @@ public class AssimpModelLoader implements ModelLoader {
      * Obtiene la textura solicitada de un material
      *
      * @param aiMaterial
-     * @param tipo
+     * @param textureType
      * @param texturesDir
      * @return
      */
-    protected Texture loadTexture(AIMaterial aiMaterial, int tipo, String texturesDir) {
+    protected Texture loadTexture(AIMaterial aiMaterial, int textureType, String texturesDir) {
         Texture textura = null;
         AIString path = AIString.calloc();
-        Assimp.aiGetMaterialTexture(aiMaterial, tipo, 0, path, (IntBuffer) null, null, null, null, null, null);
+        Assimp.aiGetMaterialTexture(aiMaterial, textureType, 0, path, (IntBuffer) null, null, null, null, null, null);
         String txtPath = path.dataString();
         File file;
 
         if (txtPath != null && txtPath.length() > 0) {
             try {
-                TextureCache textCache = TextureCache.getInstance();
                 file = new File(txtPath);
                 if (file.exists()) {
-                    textura = textCache.getTexture(file.getAbsolutePath());
+                    textura = AssetManager.get().loadTexture(file);
                     // textureFile = txtPath;
                     // textureFile = textureFile.replace("//", "/");
                 } else {
                     file = new File(texturesDir, txtPath);
                     if (file.exists()) {
-                        textura = textCache.getTexture(file.getAbsolutePath());
+                        textura = AssetManager.get().loadTexture(file);
                     }
                     // textureFile = texturesDir + "/" + txtPath;
                     // textureFile = textureFile.replace("//", "/");
-
                 }
-                // textura = textCache.getTexture(textureFile);
             } catch (Exception ex) {
                 Logger.getLogger(AssimpModelLoader.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
         return textura;
-    }
-
-    /**
-     * Crea un material desde un material de Assimp
-     *
-     * @param aiMaterial
-     *
-     * @param texturesDir
-     * @return
-     * @throws Exception
-     */
-    protected AbstractMaterial loadMaterial(AIMaterial aiMaterial, String texturesDir) throws Exception {
-        AIColor4D colour = AIColor4D.create();
-
-        Texture texturaColor = null;
-        Texture texturaNormal = null;
-        Texture texturaEmisivo = null;
-        Texture texturaTransparencia = null;
-        Texture texturaEspecular = null;
-        Texture texturaMetalica = null;
-        Texture texturaRugosidad = null;
-
-        // textura difusa
-        texturaColor = loadTexture(aiMaterial, Assimp.aiTextureType_DIFFUSE, texturesDir);
-        // textura normal
-        texturaNormal = loadTexture(aiMaterial, Assimp.aiTextureType_NORMALS, texturesDir);
-        // textura emisiva/lightmap
-        texturaEmisivo = loadTexture(aiMaterial, Assimp.aiTextureType_EMISSIVE, texturesDir);
-        if (texturaEmisivo == null) {
-            texturaEmisivo = loadTexture(aiMaterial, Assimp.aiTextureType_LIGHTMAP, texturesDir);
-        }
-
-        // textura transparencia
-        texturaTransparencia = loadTexture(aiMaterial, Assimp.aiTextureType_OPACITY, texturesDir);
-        // textura especular
-        texturaEspecular = loadTexture(aiMaterial, Assimp.aiTextureType_SPECULAR, texturesDir);
-        // textura metalica
-        texturaMetalica = loadTexture(aiMaterial, Assimp.aiTextureType_REFLECTION, texturesDir);
-        // textura de brillo (lo transofrma a rugosidad invirtiendolo)
-        texturaRugosidad = loadTexture(aiMaterial, Assimp.aiTextureType_SHININESS, texturesDir);
-
-        int result = 0;
-        // QColor ambient = QColor.WHITE;
-        // result = Assimp.aiGetMaterialColor(aiMaterial, AI_MATKEY_COLOR_AMBIENT,
-        // aiTextureType_NONE, 0, colour);
-        // if (result == 0) {
-        // ambient = new QColor(colour.a(), colour.r(), colour.g(), colour.b());
-        // }
-
-        QColor diffuse = QColor.WHITE;
-        result = Assimp.aiGetMaterialColor(aiMaterial, AI_MATKEY_COLOR_DIFFUSE, aiTextureType_NONE, 0, colour);
-        if (result == 0) {
-            diffuse = new QColor(colour.a(), colour.r(), colour.g(), colour.b());
-        }
-
-        QColor specular = QColor.WHITE;
-        result = Assimp.aiGetMaterialColor(aiMaterial, AI_MATKEY_COLOR_SPECULAR, aiTextureType_NONE, 0, colour);
-        if (result == 0) {
-            specular = new QColor(colour.a(), colour.r(), colour.g(), colour.b());
-        }
-        
-        Material material = new Material();
-        material.setColor(diffuse);
-        material.setColorEspecular(specular);
-
-        if (texturaColor != null) {
-            material.setColorMap(texturaColor);
-        }
-        if (texturaNormal != null) {
-            material.setNormalMap(texturaNormal);
-        }
-        if (texturaEmisivo != null) {
-            material.setEmissiveMap(texturaEmisivo);
-        }
-        if (texturaTransparencia != null) {
-            material.setAlphaMap(texturaTransparencia);
-            material.setTransparencia(true);
-        }
-        if (texturaEspecular != null) {
-            material.setMapaEspecular(texturaEspecular);
-        }
-        if (texturaMetalica != null) {
-            material.setMetallicMap(texturaMetalica);
-        }
-
-        if (texturaRugosidad != null) {
-            // el inverso de la textura de brillo
-            material.setRoughnessMap(new InvertTexture(texturaRugosidad));
-        }
-        return material;
     }
 
 }

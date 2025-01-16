@@ -89,11 +89,11 @@ public class ExportModelObj implements ModelExporter {
                         writer.write(String
                                 .format("v %.6f %.6f %.6f",
                                         vertex.location.x + parentLocation.x
-                                                + entity.getTransformacion().getTraslacion().x,
+                                                + entity.getTransform().getLocation().x,
                                         vertex.location.y + parentLocation.y
-                                                + entity.getTransformacion().getTraslacion().y,
+                                                + entity.getTransform().getLocation().y,
                                         vertex.location.z + parentLocation.z
-                                                + entity.getTransformacion().getTraslacion().z)
+                                                + entity.getTransform().getLocation().z)
                                 .replace(",", "."));
                         writer.newLine();
                     }
@@ -162,7 +162,7 @@ public class ExportModelObj implements ModelExporter {
 
             for (Entity child : entity.getChilds()) {
                 exportEntity(output,
-                        entity.getTransformacion().getTraslacion(),
+                        entity.getTransform().getLocation(),
                         child,
                         writer,
                         vertextCount + vertextCountLocal,

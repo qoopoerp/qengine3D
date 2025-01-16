@@ -32,7 +32,7 @@ public class QColisionTerreno extends CollisionShape {
     }
 
     @Override
-    public void destruir() {
+    public void destroy() {
     }
 
     public Terrain getTerreno() {

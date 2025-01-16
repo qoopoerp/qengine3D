@@ -106,7 +106,7 @@ public class QVehiculoControl implements EntityComponent {
     }
 
     @Override
-    public void destruir() {
+    public void destroy() {
 
     }
 

@@ -52,7 +52,7 @@ public class RevolutionModifier implements ModifierComponent {
     }
 
     @Override
-    public void destruir() {
+    public void destroy() {
 
     }
 

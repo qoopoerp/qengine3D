@@ -16,7 +16,6 @@ import net.qoopo.engine.core.renderer.RenderEngine;
 import net.qoopo.engine.core.scene.Scene;
 import net.qoopo.engine3d.test.generaEjemplos.impl.assedloader.TestLoadModel;
 import net.qoopo.engine3d.test.generaEjemplos.impl.ligths.SunTestScene;
-import net.qoopo.engine3d.test.generaEjemplos.impl.simple.HdriTest;
 
 /**
  *
@@ -35,43 +34,12 @@ public class InitialScene extends MakeTestScene {
                         material.setMetallic(0.5f);
 
                         // Entity box = new Entity("Box");
-                        // // Mesh mesh = new Box(1.0f);
-                        // Mesh mesh = new Suzane();
+                        // Mesh mesh = new Box(1.0f);
+                        // // Mesh mesh = new Suzane();
                         // mesh.applyMaterial(material);
                         // box.addComponent(mesh);
-                        // // box.addComponent(new QColisionCaja(1, 1, 1));
-                        // // box.move(0, 0, 3);
+                        // box.addComponent(new QColisionCaja(1, 1, 1));
                         // scene.addEntity(box);
-
-                        // Entity e2 = new Entity("suzane");
-                        // Mesh mesh2 = new Suzane();
-                        // mesh2.applyMaterial(material);
-                        // e2.addComponent(mesh2);
-                        // e2.move(-2, 0, 0);
-                        // scene.addEntity(e2);
-
-                        // Entity e3 = new Entity("teapot");
-                        // Mesh mesh3 = new Teapot();
-                        // // mesh3.applyMaterial(material);
-                        // e3.addComponent(mesh3);
-                        // e3.move(2, 0, 0);
-                        // scene.addEntity(e3);
-
-                        // Entity e4 = new Entity("sphere");
-                        // Mesh mesh4 = new Sphere();
-                        // mesh4.applyMaterial(material);
-                        // e4.addComponent(mesh4);
-                        // e4.move(0, 4, 0);
-                        // scene.addEntity(e4);
-
-                        // Entity e5 = new Entity("torus");
-                        // Mesh mesh5 = new Torus();
-                        // mesh5.applyMaterial(material);
-                        // e5.addComponent(mesh5);
-                        // // e5.addComponent(new RotationModifier((float) Math.toRadians(90.0f), 0,
-                        // 0));
-                        // e5.move(-2, 4, 0);
-                        // scene.addEntity(e5);
 
                         List<MakeTestScene> ejemplo = new ArrayList<>();
                         // ejemplo.add(new TriangleTest());
@@ -125,7 +93,7 @@ public class InitialScene extends MakeTestScene {
                         // -----------------------------------------
                         // ejemplo.add(new RotateItemsTest());
                         // ejemplo.add(new FloorTestScene());
-                        ejemplo.add(new HdriTest());
+                        // ejemplo.add(new HdriTest());
                         // ejemplo.add(new EnviromentTest());
                         // ejemplo.add(new TestSimpleTerrain());
                         // ejemplo.add(new TestTerrainHeightMap());

@@ -96,11 +96,8 @@ public class SoftwareRenderer extends RenderEngine {
             if (!isLoading()) {
                 if (frameBuffer != null) {
                     clean();
-                    // logger.info("P1. Limpiar pantalla=" + getSubDelta());
                     updateLigths();
-                    // logger.info("P2. Actualizar luces y sombras=" + getSubDelta());
                     render();
-                    // logger.info("P3. Render=" + getSubDelta());
                     postProcess();
                 }
             } else {
@@ -111,8 +108,8 @@ public class SoftwareRenderer extends RenderEngine {
             e.printStackTrace();
         }
         poligonosDibujados = poligonosDibujadosTemp;
-        tiempoPrevio = System.currentTimeMillis();
-        return tiempoPrevio;
+        beforeTime = System.currentTimeMillis();
+        return beforeTime;
     }
 
     /**
@@ -197,7 +194,7 @@ public class SoftwareRenderer extends RenderEngine {
             if (getFrameBuffer() != null && getShader() != null) {
                 for (int x = xFrom; x < xFrom + width; x++) {
                     for (int y = yFrom; y < yFrom + height; y++) {
-                        if (getFrameBuffer().getFragment(x, y).isDraw()) {
+                        if (getFrameBuffer().getFragment(x, y) != null && getFrameBuffer().getFragment(x, y).isDraw()) {
                             try { // busca un shader para esta entidad
                                 FragmentShader shader = getShader();
 
@@ -216,6 +213,9 @@ public class SoftwareRenderer extends RenderEngine {
                                 getFrameBuffer().setQColor(x, y,
                                         shader.shadeFragment(
                                                 getFrameBuffer().getFragment(x, y), x, y));
+                                if (QGlobal.ENABLE_GAMMA_FIX)
+                                    getFrameBuffer().getColor(x, y).fixGamma();
+
                                 getFrameBuffer().getFragment(x, y).setDraw(false);
                             } catch (Exception e) {
                                 e.printStackTrace();
@@ -227,14 +227,14 @@ public class SoftwareRenderer extends RenderEngine {
         }
     }
 
+    // Dibuja sobre la superficie
     public void draw() {
         if (!isLoading()) {
             if (frameBuffer != null) {
                 if (renderReal) {
-                    showStats(frameBuffer.getRendered().getGraphics());
+                    showStats(frameBuffer.getBufferColor());
                 }
 
-                // Dibuja sobre la superficie
                 if (renderReal
                         && (this.getSuperficie() != null
                                 && this.getSuperficie().getComponente() != null
@@ -324,18 +324,12 @@ public class SoftwareRenderer extends RenderEngine {
                     scene.addEntity(particula.objeto);
                 }
             }
-            // for (Particle particula : emisor.getParticulasEliminadas()) {
-            // escena.eliminarGeometria(particula.objeto);
-            // particula.objeto.renderizar=false;
-            // modificado = true;
-            // }
-            // agrego las particulas nueva y elimino las viejas
         }
 
         // primero ejecuta los componentes y modificadores
         entity.getComponents(Mesh.class)
                 .stream()
-                // .parallel()
+                .parallel()
                 .forEach(comp -> {
                     Mesh mesh = (Mesh) comp;
 
@@ -374,7 +368,7 @@ public class SoftwareRenderer extends RenderEngine {
 
                         // rasterizacion caras
                         List.of(modifiedMesh.primitiveList).stream()
-                                // .parallel()
+                                .parallel()
                                 .forEach(primitive -> {
                                     if (primitive.material == null
                                             // q no tengra transparencia cuando tiene el tipo de material basico
@@ -383,7 +377,7 @@ public class SoftwareRenderer extends RenderEngine {
                                                             .isTransparencia())) {
 
                                         // transformamos los vertices por cada poligono
-                                        // TempVars temp = TempVars.get();
+
                                         try {
                                             QVertexBuffer bufferVertices = new QVertexBuffer();
                                             bufferVertices.init(
@@ -406,10 +400,6 @@ public class SoftwareRenderer extends RenderEngine {
                                                 if (primitive.uvIndexList.length > polyVertexIndex)
                                                     uvIndex = primitive.uvIndexList[polyVertexIndex];
 
-                                                // Vertex vertex = temp2.vertex1;
-                                                // QVector3 vertexNormal = temp2.vector3f1;
-                                                // QVector2 vertexUV = temp2.vector2f1;
-
                                                 Vertex vertex = new Vertex();
                                                 QVector3 vertexNormal = new QVector3();
                                                 QVector2 vertexUV = new QVector2();
@@ -418,24 +408,21 @@ public class SoftwareRenderer extends RenderEngine {
                                                 vertex.set(modifiedMesh.vertexList[vertexIndex]);
 
                                                 // la normal que corresponde de la malla
-                                                if (modifiedMesh.normalList.length > normalIndex)
+                                                if (normalIndex >= 0 && modifiedMesh.normalList.length > normalIndex)
                                                     vertexNormal.set(modifiedMesh.normalList[normalIndex]);
 
-                                                // logger.info("uv index " + polyVertexIndex + " => " + uvIndex);
                                                 // la coordenada uv que corresponde de la malla
-                                                if (modifiedMesh.uvList.length > uvIndex)
+                                                if (uvIndex >= 0 && modifiedMesh.uvList.length > uvIndex)
                                                     vertexUV.set(modifiedMesh.uvList[uvIndex]);
-
-                                                // logger.info("uv => " + vertexUV.toString());
 
                                                 bufferVertices.setVertex(
                                                         vertexShader.apply(vertex, vertexNormal, vertexUV,
                                                                 QColor.WHITE,
                                                                 matVistaModelo),
                                                         vertexIndex);
-                                                if (modifiedMesh.normalList.length > normalIndex)
+                                                if (normalIndex >= 0 && modifiedMesh.normalList.length > normalIndex)
                                                     bufferVertices.setNormal(vertexNormal, normalIndex);
-                                                if (modifiedMesh.uvList.length > uvIndex)
+                                                if (uvIndex >= 0 && modifiedMesh.uvList.length > uvIndex)
                                                     bufferVertices.setUV(vertexUV, uvIndex);
 
                                             }
@@ -462,8 +449,6 @@ public class SoftwareRenderer extends RenderEngine {
                                             logger.severe("[X] Error al dibujar entidad : " + entity.getName()
                                                     + "   -> " + ex.getLocalizedMessage());
                                             ex.printStackTrace();
-                                            // } finally {
-                                            // temp.release();
                                         }
                                     }
                                 });
@@ -538,7 +523,7 @@ public class SoftwareRenderer extends RenderEngine {
                                 // copia de la luz
                                 // se le aplica la transformacion para luego calcular la ilumnicacion.
                                 // La ilumnicacion se calcula usando lso vertices ya transformados
-                                // luz.entity.getTransformacion().getTraslacion().set(QTransformar.transformarVector(QVector3.zero,
+                                // luz.entity.getTransformacion().getLocation().set(QTransformar.transformarVector(QVector3.zero,
                                 // entity, camara));
                                 // actualiza la dirección de la luz
                                 direccionLuzEspacioCamara = TransformationVectorUtil
@@ -612,12 +597,7 @@ public class SoftwareRenderer extends RenderEngine {
                                 }
                             }
                         });
-
-                        // for (QComponente componente : entity.getComponentes()) {
-                        // }
                     });
-
-            // }
         } catch (Exception e) {
         } finally {
             forzarActualizacionMapaSombras = false;
@@ -699,22 +679,6 @@ public class SoftwareRenderer extends RenderEngine {
     @Override
     public void stop() {
 
-    }
-
-    public FragmentShader getShader() {
-        return shader;
-    }
-
-    public void setShader(FragmentShader shader) {
-        this.shader = shader;
-    }
-
-    public AbstractRaster getRaster() {
-        return raster;
-    }
-
-    public void setRaster(AbstractRaster raster) {
-        this.raster = raster;
     }
 
     @Override

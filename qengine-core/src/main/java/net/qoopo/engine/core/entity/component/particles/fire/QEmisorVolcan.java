@@ -73,7 +73,7 @@ public class QEmisorVolcan extends ParticleEmissor {
                 nueva.iniciarVida();
 
                 // ubicacion inicial de la particula
-                nuevaentity.getTransformacion().trasladar(
+                nuevaentity.getTransform().move(
                         rnd.nextFloat() * (ambito.aabMaximo.location.x - ambito.aabMinimo.location.x)
                                 + ambito.aabMinimo.location.x,
                         ambito.aabMaximo.location.y,
@@ -95,7 +95,7 @@ public class QEmisorVolcan extends ParticleEmissor {
 
             // si ya paso su tiempo de vida o ya esta fuera del ambito en la altura
             if ((System.currentTimeMillis() - particula.getTiempoCreacion()) / 1000 > particula.getTiempoVida()
-                    || (particula.objeto.getTransformacion().getTraslacion().y < ambito.aabMinimo.location.y)) {
+                    || (particula.objeto.getTransform().getLocation().y < ambito.aabMinimo.location.y)) {
                 // particulasEliminadas.add(copo);
                 actuales--;
                 particula.objeto.setToRender(false);
@@ -142,7 +142,7 @@ public class QEmisorVolcan extends ParticleEmissor {
     }
 
     @Override
-    public void destruir() {
+    public void destroy() {
         material.destroy();
         material = null;
     }

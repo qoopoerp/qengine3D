@@ -117,8 +117,8 @@ public class Camera extends Entity {
     }
 
     public void iniciar() {
-        transformacion.getTraslacion().set(QVector3.zero);
-        transformacion.getRotacion().inicializar();
+        transform.getLocation().set(QVector3.zero);
+        transform.getRotation().inicializar();
         escalaOrtogonal = 1.0f;
         frustrumCerca = 1.0f;
         frustrumLejos = 100f;
@@ -340,7 +340,7 @@ public class Camera extends Entity {
      */
     private void construirGeometria(QVector3[] esquinas) {
         try {
-            GEOMETRIA_FRUSTUM.destruir();
+            GEOMETRIA_FRUSTUM.destroy();
             for (QVector3 vector : esquinas) {
                 GEOMETRIA_FRUSTUM.addVertex(vector);
             }
@@ -440,7 +440,7 @@ public class Camera extends Entity {
         newCamara.setRadioAspecto(radioAspecto);
         newCamara.setOrtogonal(ortogonal);
         newCamara.updateCamera();
-        newCamara.setTransformacion(transformacion.clone());
+        newCamara.setTransform(transform.clone());
         return newCamara;
     }
 
@@ -463,9 +463,9 @@ public class Camera extends Entity {
      * @param up
      */
     public void lookAt(QVector3 location, QVector3 direction, QVector3 up) {
-        transformacion.getTraslacion().set(location);
-        transformacion.getRotacion().getCuaternion().lookAt(direction, up);
-        transformacion.getRotacion().actualizarAngulos();
+        transform.getLocation().set(location);
+        transform.getRotation().getCuaternion().lookAt(direction, up);
+        transform.getRotation().actualizarAngulos();
         updateCamera();
     }
 

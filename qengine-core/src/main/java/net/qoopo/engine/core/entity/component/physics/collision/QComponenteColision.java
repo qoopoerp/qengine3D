@@ -16,7 +16,7 @@ import net.qoopo.engine.core.entity.component.mesh.primitive.Vertex;
 import net.qoopo.engine.core.entity.component.physics.collision.detector.CollisionShape;
 import net.qoopo.engine.core.entity.component.physics.collision.detector.shape.primitivas.AABB;
 import net.qoopo.engine.core.entity.component.physics.collision.detector.shape.primitivas.QColisionEsfera;
-import net.qoopo.engine.core.entity.component.transform.QTransformacion;
+import net.qoopo.engine.core.entity.component.transform.Transform;
 import net.qoopo.engine.core.math.QVector3;
 
 /**
@@ -62,7 +62,7 @@ public class QComponenteColision implements EntityComponent {
         return tieneColision;
     }
 
-    public void crearContenedorColision(Mesh geometria, QTransformacion transformacion) {
+    public void crearContenedorColision(Mesh geometria, Transform transformacion) {
         switch (tipoContenedorColision) {
             case TIPO_CONTENEDOR_ESFERA:
                 crearEsfera(geometria, transformacion);
@@ -79,7 +79,7 @@ public class QComponenteColision implements EntityComponent {
      * @param geometria
      * @param transformacion
      */
-    public void crearAABB(Mesh geometria, QTransformacion transformacion) {
+    public void crearAABB(Mesh geometria, Transform transformacion) {
         this.formaColision = new AABB(geometria.vertexList[0].clone(), geometria.vertexList[0].clone());
 
         AABB tmp = (AABB) formaColision;
@@ -111,19 +111,19 @@ public class QComponenteColision implements EntityComponent {
         }
 
         // actualizo la coordenads con la posicion del objeto en el espacio tambien
-        tmp.aabMinimo.location.x += transformacion.getTraslacion().x;
-        tmp.aabMinimo.location.y += transformacion.getTraslacion().y;
-        tmp.aabMinimo.location.z += transformacion.getTraslacion().z;
+        tmp.aabMinimo.location.x += transformacion.getLocation().x;
+        tmp.aabMinimo.location.y += transformacion.getLocation().y;
+        tmp.aabMinimo.location.z += transformacion.getLocation().z;
 
-        tmp.aabMaximo.location.x += transformacion.getTraslacion().x;
-        tmp.aabMaximo.location.y += transformacion.getTraslacion().y;
-        tmp.aabMaximo.location.z += transformacion.getTraslacion().z;
+        tmp.aabMaximo.location.x += transformacion.getLocation().x;
+        tmp.aabMaximo.location.y += transformacion.getLocation().y;
+        tmp.aabMaximo.location.z += transformacion.getLocation().z;
 
         // System.out.println("AAAB Calculado " + ((AABB) formaColision).aabMinimo + " -
         // " + ((AABB) formaColision).aabMaximo);
     }
 
-    public void crearEsfera(Mesh geometria, QTransformacion transformacion) {
+    public void crearEsfera(Mesh geometria, Transform transformacion) {
         Vertex centro = null;
         float radio = 0;
         // primero calculamos el rectangulo AABB para obtener el centro y radio
@@ -140,7 +140,7 @@ public class QComponenteColision implements EntityComponent {
     }
 
     @Override
-    public void destruir() {
+    public void destroy() {
         if (listaContenedores != null) {
             listaContenedores.clear();
             listaContenedores = null;

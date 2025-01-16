@@ -131,7 +131,7 @@ public class EditorRenderer {
                         renderGrid();
                         renderSelectedBox();
                         renderGizmos();
-                        renderAxis();
+                        // renderAxis();
                         renderSkeleton();
                 }
         }
@@ -182,24 +182,24 @@ public class EditorRenderer {
                         // try {
 
                         // // ejes
-                        // t.vertex1.set(origen.getTransformacion().getTraslacion().x,
-                        // origen.getTransformacion().getTraslacion().y,
-                        // origen.getTransformacion().getTraslacion().z,
+                        // t.vertex1.set(origen.getTransformacion().getLocation().x,
+                        // origen.getTransformacion().getLocation().y,
+                        // origen.getTransformacion().getLocation().z,
                         // 1);
 
-                        // t.vertex2.set(origen.getTransformacion().getTraslacion().x + 1,
-                        // origen.getTransformacion().getTraslacion().y,
-                        // origen.getTransformacion().getTraslacion().z,
+                        // t.vertex2.set(origen.getTransformacion().getLocation().x + 1,
+                        // origen.getTransformacion().getLocation().y,
+                        // origen.getTransformacion().getLocation().z,
                         // 1);
 
-                        // t.vertex3.set(origen.getTransformacion().getTraslacion().x,
-                        // origen.getTransformacion().getTraslacion().y + 1,
-                        // origen.getTransformacion().getTraslacion().z,
+                        // t.vertex3.set(origen.getTransformacion().getLocation().x,
+                        // origen.getTransformacion().getLocation().y + 1,
+                        // origen.getTransformacion().getLocation().z,
                         // 1);
 
-                        // t.vertex4.set(origen.getTransformacion().getTraslacion().x,
-                        // origen.getTransformacion().getTraslacion().y,
-                        // origen.getTransformacion().getTraslacion().z + 1,
+                        // t.vertex4.set(origen.getTransformacion().getLocation().x,
+                        // origen.getTransformacion().getLocation().y,
+                        // origen.getTransformacion().getLocation().z + 1,
                         // 1);
 
                         // renderer.renderLine(polEjeX,
@@ -359,10 +359,10 @@ public class EditorRenderer {
                                                         // entity y mostrar
                                                         // los huesos acordes a esta transformacion
                                                         entidadTmp = new Entity();
-                                                        entidadTmp.getTransformacion().desdeMatrix(
+                                                        entidadTmp.getTransform().fromMatrix(
                                                                         entity.getMatrizTransformacion(QGlobal.time));
                                                         // lista.add(entidadTmp);
-                                                        for (Bone hueso : esqueleto.getHuesos()) {
+                                                        for (Bone hueso : esqueleto.getBones()) {
                                                                 // agrega al nodo invisible para usar la transformacion
                                                                 // de la entity y mostrar
                                                                 // correctamente
@@ -791,7 +791,7 @@ public class EditorRenderer {
                                 QVector2 uv = new QVector2();
                                 QColor color = QColor.WHITE;
 
-                                TempVars t = TempVars.get();
+                                // TempVars t = TempVars.get();
                                 try {
                                         // ---- LIMPIO EL ZBUFFER PARA SOBREESCRIBIR
                                         // limpio el zbuffer
@@ -830,48 +830,48 @@ public class EditorRenderer {
                                         renderer.renderEntity(currentGizmo, matrizVista, matrizVistaInvertidaBillboard,
                                                         true);
 
-                                        // ejes
-                                        t.vertex1.set(currentGizmo.getTransformacion().getTraslacion().x,
-                                                        currentGizmo.getTransformacion().getTraslacion().y,
-                                                        currentGizmo.getTransformacion().getTraslacion().z,
-                                                        1);
+                                        // // ejes
+                                        // t.vertex1.set(currentGizmo.getTransformacion().getLocation().x,
+                                        //                 currentGizmo.getTransformacion().getLocation().y,
+                                        //                 currentGizmo.getTransformacion().getLocation().z,
+                                        //                 1);
 
-                                        t.vertex2.set(currentGizmo.getTransformacion().getTraslacion().x + 1,
-                                                        currentGizmo.getTransformacion().getTraslacion().y,
-                                                        currentGizmo.getTransformacion().getTraslacion().z,
-                                                        1);
+                                        // t.vertex2.set(currentGizmo.getTransformacion().getLocation().x + 1,
+                                        //                 currentGizmo.getTransformacion().getLocation().y,
+                                        //                 currentGizmo.getTransformacion().getLocation().z,
+                                        //                 1);
 
-                                        t.vertex3.set(currentGizmo.getTransformacion().getTraslacion().x,
-                                                        currentGizmo.getTransformacion().getTraslacion().y + 1,
-                                                        currentGizmo.getTransformacion().getTraslacion().z,
-                                                        1);
+                                        // t.vertex3.set(currentGizmo.getTransformacion().getLocation().x,
+                                        //                 currentGizmo.getTransformacion().getLocation().y + 1,
+                                        //                 currentGizmo.getTransformacion().getLocation().z,
+                                        //                 1);
 
-                                        t.vertex4.set(currentGizmo.getTransformacion().getTraslacion().x,
-                                                        currentGizmo.getTransformacion().getTraslacion().y,
-                                                        currentGizmo.getTransformacion().getTraslacion().z + 1,
-                                                        1);
+                                        // t.vertex4.set(currentGizmo.getTransformacion().getLocation().x,
+                                        //                 currentGizmo.getTransformacion().getLocation().y,
+                                        //                 currentGizmo.getTransformacion().getLocation().z + 1,
+                                        //                 1);
 
-                                        renderer.renderLine(matVistaModelo, polEjeX,
-                                                        vertexShader.apply(t.vertex1, normal, uv, color,
-                                                                        matVistaModelo),
-                                                        vertexShader.apply(t.vertex2, normal, uv, color,
-                                                                        matVistaModelo));
+                                        // renderer.renderLine(matVistaModelo, polEjeX,
+                                        //                 vertexShader.apply(t.vertex1, normal, uv, color,
+                                        //                                 matVistaModelo),
+                                        //                 vertexShader.apply(t.vertex2, normal, uv, color,
+                                        //                                 matVistaModelo));
 
-                                        renderer.renderLine(matVistaModelo, polEjeY,
-                                                        vertexShader.apply(t.vertex1, normal, uv, color,
-                                                                        matVistaModelo),
-                                                        vertexShader.apply(t.vertex3, normal, uv, color,
-                                                                        matVistaModelo));
+                                        // renderer.renderLine(matVistaModelo, polEjeY,
+                                        //                 vertexShader.apply(t.vertex1, normal, uv, color,
+                                        //                                 matVistaModelo),
+                                        //                 vertexShader.apply(t.vertex3, normal, uv, color,
+                                        //                                 matVistaModelo));
 
-                                        renderer.renderLine(matVistaModelo, polEjeZ,
-                                                        vertexShader.apply(t.vertex1, normal, uv, color,
-                                                                        matVistaModelo),
-                                                        vertexShader.apply(t.vertex4, normal, uv, color,
-                                                                        matVistaModelo));
+                                        // renderer.renderLine(matVistaModelo, polEjeZ,
+                                        //                 vertexShader.apply(t.vertex1, normal, uv, color,
+                                        //                                 matVistaModelo),
+                                        //                 vertexShader.apply(t.vertex4, normal, uv, color,
+                                        //                                 matVistaModelo));
                                 } catch (Exception e) {
                                         e.printStackTrace();
                                 } finally {
-                                        t.release();
+                                        // t.release();
                                 }
                         }
                 } else {

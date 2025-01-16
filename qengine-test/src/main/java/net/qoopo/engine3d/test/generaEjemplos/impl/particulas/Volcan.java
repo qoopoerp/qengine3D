@@ -28,7 +28,7 @@ public class Volcan extends MakeTestScene {
         AABB ambitoVolcan = new AABB(new Vertex(-9, 0, -1), new Vertex(-8, 2, 1));//
         QEmisorVolcan emisorVolcan = new QEmisorVolcan(ambitoVolcan, 300, 5000, 25, mundo.gravity.clone().multiply(-1));
         volcan.addComponent(emisorVolcan);
-        volcan.getTransformacion().trasladar(0, 0.5f, 0);
+        volcan.getTransform().move(0, 0.5f, 0);
 
 //        fogata.agregarComponente(new QLuz(QLuz.TYPE_POINT, 0.8f, 255, 255, 0, true));
 //        fogata.agregarComponente(new QLuz(QLuz.TYPE_POINT, 0.8f, 255, 255, 255, true));

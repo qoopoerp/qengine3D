@@ -140,15 +140,15 @@ public abstract class Water implements EntityComponent, UpdatableComponent {
 
             // REFRACCION
             // -------------------------------------------------------------------
-            render.getCamera().setTransformacion(mainRender.getCamera().getTransformacion().clone());// la misma
+            render.getCamera().setTransform(mainRender.getCamera().getTransform().clone());// la misma
                                                                                                      // posicion de
                                                                                                      // la
                                                                                                      // cámara
                                                                                                      // actual
-            render.getCamera().getTransformacion().getRotacion().actualizarAngulos();
+            render.getCamera().getTransform().getRotation().actualizarAngulos();
             render.setFrameBuffer(frameRefraccion);
             render.getPanelClip().setNormal(abajo);
-            render.getPanelClip().setDistancia(entity.getTransformacion().getTraslacion().y - 1.0f);
+            render.getPanelClip().setDistancia(entity.getTransform().getLocation().y - 1.0f);
             render.update();
             render.getFrameBuffer().updateOuputTexture();
             // REFLEXION -------------------------------------------------------------------
@@ -156,21 +156,21 @@ public abstract class Water implements EntityComponent, UpdatableComponent {
             // la actual altura
             render.setFrameBuffer(frameReflexion);
             render.getPanelClip().setNormal(arriba);
-            render.getPanelClip().setDistancia(entity.getTransformacion().getTraslacion().y + 0.5f);
+            render.getPanelClip().setDistancia(entity.getTransform().getLocation().y + 0.5f);
 
-            float distancia = 2 * (mainRender.getCamera().getTransformacion().getTraslacion().y
-                    - entity.getTransformacion().getTraslacion().y);
-            QVector3 nuevaPos = mainRender.getCamera().getTransformacion().getTraslacion().clone();
+            float distancia = 2 * (mainRender.getCamera().getTransform().getLocation().y
+                    - entity.getTransform().getLocation().y);
+            QVector3 nuevaPos = mainRender.getCamera().getTransform().getLocation().clone();
             nuevaPos.y -= distancia;
 
             // invertir angulo Pitch
-            render.getCamera().setTransformacion(mainRender.getCamera().getTransformacion().clone());
-            render.getCamera().getTransformacion().getRotacion().actualizarAngulos();
-            render.getCamera().getTransformacion().getRotacion().getAngulos()
+            render.getCamera().setTransform(mainRender.getCamera().getTransform().clone());
+            render.getCamera().getTransform().getRotation().actualizarAngulos();
+            render.getCamera().getTransform().getRotation().getAngulos()
                     .setAnguloX(
-                            render.getCamera().getTransformacion().getRotacion().getAngulos().getAnguloX() * -1);
-            render.getCamera().getTransformacion().getRotacion().actualizarCuaternion();
-            render.getCamera().getTransformacion().trasladar(nuevaPos);
+                            render.getCamera().getTransform().getRotation().getAngulos().getAnguloX() * -1);
+            render.getCamera().getTransform().getRotation().actualizarCuaternion();
+            render.getCamera().getTransform().move(nuevaPos);
             render.update();
             render.shadeFragments();
             render.draw();
@@ -192,8 +192,8 @@ public abstract class Water implements EntityComponent, UpdatableComponent {
             // Efecto fresnel
             // -> Este calculo se deberia hacer para cada pixel de la superficie, pues el
             // angulo es diferente para cada punto de la superficie del agua
-            QVector3 vision = mainRender.getCamera().getTransformacion().getTraslacion().clone()
-                    .subtract(entity.getTransformacion().getTraslacion().clone());
+            QVector3 vision = mainRender.getCamera().getTransform().getLocation().clone()
+                    .subtract(entity.getTransform().getLocation().clone());
             // el factor fresnel representa que tanta refraccion se aplica
             float factorFresnel = arriba.dot(vision.normalize());
             factorFresnel = QMath.pow(factorFresnel, 0.5f);// para que sea menos reflectante (si se una un numero
@@ -234,7 +234,7 @@ public abstract class Water implements EntityComponent, UpdatableComponent {
     }
 
     @Override
-    public void destruir() {
+    public void destroy() {
         if (textReflexion != null) {
             textReflexion.destroy();
             textReflexion = null;

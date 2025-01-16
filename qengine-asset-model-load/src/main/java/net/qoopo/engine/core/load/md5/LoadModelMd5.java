@@ -23,7 +23,7 @@ import net.qoopo.engine.core.entity.component.physics.collision.detector.Collisi
 import net.qoopo.engine.core.entity.component.physics.collision.detector.shape.mallas.QColisionMallaConvexa;
 import net.qoopo.engine.core.entity.component.physics.dinamica.QObjetoDinamico;
 import net.qoopo.engine.core.entity.component.physics.dinamica.QObjetoRigido;
-import net.qoopo.engine.core.entity.component.transform.QTransformacion;
+import net.qoopo.engine.core.entity.component.transform.Transform;
 import net.qoopo.engine.core.load.md5.util.MD5AnimModel;
 import net.qoopo.engine.core.load.md5.util.MD5BaseFrame;
 import net.qoopo.engine.core.load.md5.util.MD5Frame;
@@ -143,22 +143,22 @@ public class LoadModelMd5 implements ModelLoader {
         Skeleton esqueleto = new Skeleton();
         List<MD5JointInfo.MD5JointData> joints = md5Model.getJointInfo().getJoints();
         int numJoints = joints.size();
-        esqueleto.setHuesos(new ArrayList<>());
+        esqueleto.setBones(new ArrayList<>());
         Bone hueso;
         MD5JointInfo.MD5JointData joint;
         for (int i = 0; i < numJoints; i++) {
             joint = joints.get(i);
             hueso = new Bone(i, joint.getName());
-            hueso.setTransformacion(new QTransformacion(QRotacion.CUATERNION));
-            hueso.getTransformacion().getTraslacion().set(QJOMLUtil.convertirQVector3(joint.getPosition()));
-            hueso.getTransformacion().getRotacion().setCuaternion(joint.getOrientation().clone());
+            hueso.setTransform(new Transform(QRotacion.CUATERNION));
+            hueso.getTransform().getLocation().set(QJOMLUtil.convertirQVector3(joint.getPosition()));
+            hueso.getTransform().getRotation().setCuaternion(joint.getOrientation().clone());
             // la inversa de la trasnformacion, la calculamos manualmente sin tomar en
             // cuenta la jerarquia
-            hueso.transformacionInversa = hueso.getTransformacion().toTransformMatriz().invert();
+            hueso.transformacionInversa = hueso.getTransform().toMatrix().invert();
             if (joint.getParentIndex() > -1) {
                 esqueleto.getBone(joint.getParentIndex()).addChild(hueso);
             }
-            esqueleto.agregarHueso(hueso);
+            esqueleto.addBone(hueso);
         }
         // esqueleto.calcularMatricesInversas();
         return esqueleto;
@@ -215,7 +215,7 @@ public class LoadModelMd5 implements ModelLoader {
                 // hueso
                 // usa la transfomación sin tomar en cuenta a los padres porq el peso tiene la
                 // posición en el espacio de coordenadas de la articulación
-                posicionVertice.add(huesos[c].getTransformacion().toTransformMatriz()
+                posicionVertice.add(huesos[c].getTransform().toMatrix()
                         .mult(QJOMLUtil.convertirQVector3(weight.getPosition())).multiply(weight.getBias()));
                 c++;
             }
@@ -375,7 +375,7 @@ public class LoadModelMd5 implements ModelLoader {
         float[] frameData = frame.getFrameData();
 
         Entity hueso;
-        QTransformacion transformacion;
+        Transform transformacion;
         for (int i = 0; i < numJoints; i++) {
             hueso = esqueleto.getBone(i);
             MD5BaseFrame.MD5BaseFrameData baseFrameData = baseFrame.getFrameDataList().get(i);
@@ -405,9 +405,9 @@ public class LoadModelMd5 implements ModelLoader {
             }
             // Update Quaternion's w component
             orientation = MD5Utils.calculateQuaternion(new Vector3f(orientation.x, orientation.y, orientation.z));
-            transformacion = new QTransformacion(QRotacion.CUATERNION);
-            transformacion.getTraslacion().set(position.x, position.y, position.z);
-            transformacion.getRotacion().setCuaternion(orientation.clone());
+            transformacion = new Transform(QRotacion.CUATERNION);
+            transformacion.getLocation().set(position.x, position.y, position.z);
+            transformacion.getRotation().setCuaternion(orientation.clone());
 
             // para probar, la multiplico por la inversa de la transformacion del hueso
             // QMatriz4 mat = transformacion.toTransformMatriz();
@@ -415,7 +415,7 @@ public class LoadModelMd5 implements ModelLoader {
             // matInversa = matInversa.invert();
             // mat.multLocal(matInversa);
             // transformacion.desdeMatrix(mat);
-            qFrame.agregarPar(new AnimationPair(hueso, transformacion));
+            qFrame.addPair(new AnimationPair(hueso, transformacion));
         }
         return qFrame;
     }

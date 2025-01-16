@@ -171,7 +171,7 @@ public class NivelTest2 extends QEscenario {
                         QObjetoRigido pinoRigido = new QObjetoRigido(QObjetoDinamico.ESTATICO);
                         pinoRigido.setMasa(5, QVector3.zero);
                         pinoRigido.tipoContenedorColision = QComponenteColision.TIPO_CONTENEDOR_AABB;
-                        pinoRigido.crearContenedorColision(pinoG, pino.getTransformacion());
+                        pinoRigido.crearContenedorColision(pinoG, pino.getTransform());
                         pino.addComponent(pinoRigido);
 
                         // try {

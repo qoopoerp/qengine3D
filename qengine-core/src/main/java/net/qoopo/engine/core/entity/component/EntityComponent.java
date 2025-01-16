@@ -29,6 +29,6 @@ public interface EntityComponent extends Serializable {
 
     public Entity getEntity();
 
-    public void destruir();
+    public void destroy();
 
 }

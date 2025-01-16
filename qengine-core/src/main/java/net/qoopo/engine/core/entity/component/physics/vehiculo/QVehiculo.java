@@ -60,7 +60,7 @@ public class QVehiculo implements EntityComponent {
     }
 
     @Override
-    public void destruir() {
+    public void destroy() {
         chasis.setUsado(false);
     }
 

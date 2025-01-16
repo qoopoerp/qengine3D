@@ -322,8 +322,8 @@ public class Principal extends javax.swing.JFrame {
         nuevoRenderer.setCamera(camara);// setea la camara inicial creada
         // nuevoRenderer.setAccionSeleccionar(accionSeleccionar);
 
-        if (QGlobal.ENABLE_GAMMA_FIX)
-            nuevoRenderer.addFilter(gammaFixFilter);
+        // if (QGlobal.ENABLE_GAMMA_FIX)
+        //     nuevoRenderer.addFilter(gammaFixFilter);
 
         for (RenderEngine render : engine.getRendererList()) {
             render.resize();
@@ -3323,7 +3323,7 @@ public class Principal extends javax.swing.JFrame {
             }
 
             @Override
-            public void destruir() {
+            public void destroy() {
 
             }
         });
@@ -3340,14 +3340,14 @@ public class Principal extends javax.swing.JFrame {
                                     .getComponent(renderer.getCamera(), CameraController.class);
                             if (control != null) {
                                 control.getTarget()
-                                        .set(editorRenderer.entidadActiva.getTransformacion().getTraslacion());
+                                        .set(editorRenderer.entidadActiva.getTransform().getLocation());
                                 control.updateCamera();
                             } else {
                                 CameraOrbiter control2 = (CameraOrbiter) ComponentUtil
                                         .getComponent(renderer.getCamera(), CameraOrbiter.class);
                                 if (control2 != null) {
                                     control2.getTarget()
-                                            .set(editorRenderer.entidadActiva.getTransformacion().getTraslacion());
+                                            .set(editorRenderer.entidadActiva.getTransform().getLocation());
                                     control2.updateCamera();
                                 }
                             }

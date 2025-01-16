@@ -50,14 +50,14 @@ public class JumpComponent implements EntityComponent, UpdatableComponent {
         jump.multiply(EngineTime.deltaMS);
         currentHeight += fDirection * jump.length();
 
-        QVector3 newPosition = entity.getTransformacion().getTraslacion();
+        QVector3 newPosition = entity.getTransform().getLocation();
         newPosition.add(jump);
 
         entity.move(newPosition);
     }
 
     @Override
-    public void destruir() {
+    public void destroy() {
 
     }
 

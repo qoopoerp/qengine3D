@@ -20,7 +20,7 @@ public abstract class Engine {
     protected long ti2;
     protected boolean ejecutando = false;
 
-    protected long tiempoPrevio;
+    protected long beforeTime;
 
     public long getSubDelta() {
         ti2 = System.currentTimeMillis() - ti;
@@ -35,7 +35,7 @@ public abstract class Engine {
     public abstract long update();
 
     public long getDelta() {
-        return System.currentTimeMillis() - tiempoPrevio;
+        return System.currentTimeMillis() - beforeTime;
     }
 
     public float getFPS() {

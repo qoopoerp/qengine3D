@@ -25,7 +25,7 @@ public abstract class QTecladoReceptor implements EntityComponent {
     public abstract void keyReleased(java.awt.event.KeyEvent evt);
 
     @Override
-    public void destruir() {
+    public void destroy() {
 
     }
 

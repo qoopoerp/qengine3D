@@ -63,7 +63,7 @@ public class RotationEntityComponent implements EntityComponent, UpdatableCompon
     }
 
     @Override
-    public void destruir() {
+    public void destroy() {
 
     }
 

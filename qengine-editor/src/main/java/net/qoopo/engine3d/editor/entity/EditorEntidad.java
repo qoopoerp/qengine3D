@@ -82,7 +82,7 @@ import net.qoopo.engine.core.entity.component.physics.vehiculo.QVehiculo;
 import net.qoopo.engine.core.entity.component.physics.vehiculo.QVehiculoControl;
 import net.qoopo.engine.core.entity.component.reflections.PlanarReflection;
 import net.qoopo.engine.core.entity.component.terrain.Terrain;
-import net.qoopo.engine.core.entity.component.transform.QTransformacion;
+import net.qoopo.engine.core.entity.component.transform.Transform;
 import net.qoopo.engine.core.entity.component.water.WaterDuDv;
 import net.qoopo.engine.core.lwjgl.audio.component.SoundEmissorAL;
 import net.qoopo.engine.core.lwjgl.audio.component.SoundListenerAL;
@@ -751,7 +751,7 @@ public class EditorEntidad extends javax.swing.JPanel {
         pnlListaComponentes.setLayout(new BoxLayout(pnlListaComponentes, BoxLayout.Y_AXIS));
 
         // primer componente es la transformación
-        pnlListaComponentes.add(new PnlTransformacion((QTransformacion) entity.getTransformacion()));
+        pnlListaComponentes.add(new PnlTransformacion((Transform) entity.getTransform()));
 
         if (entity instanceof Camera) {
             pnlListaComponentes.add(new PnlCamara((Camera) entity));

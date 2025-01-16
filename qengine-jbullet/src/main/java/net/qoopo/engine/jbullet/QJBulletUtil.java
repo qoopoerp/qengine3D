@@ -70,9 +70,9 @@ public class QJBulletUtil {
     public static Transform getTransformacion(Entity entity) {
         Transform transInicial = new Transform();
         transInicial.setIdentity();
-        transInicial.origin.set(QVectMathUtil.convertirVector3f(entity.getTransformacion().getTraslacion()));
+        transInicial.origin.set(QVectMathUtil.convertirVector3f(entity.getTransform().getLocation()));
         transInicial
-                .setRotation(QVectMathUtil.convertirQuat4f(entity.getTransformacion().getRotacion().getCuaternion()));
+                .setRotation(QVectMathUtil.convertirQuat4f(entity.getTransform().getRotation().getCuaternion()));
         return transInicial;
     }
 
@@ -206,7 +206,7 @@ public class QJBulletUtil {
         // Escalo la forma de colisión de acuerdo a la escala de la entity
         try {
             colShape.setLocalScaling(
-                    QVectMathUtil.convertirVector3f(formaColision.getEntity().getTransformacion().getEscala()));
+                    QVectMathUtil.convertirVector3f(formaColision.getEntity().getTransform().getScale()));
         } catch (Exception e) {
         }
         return colShape;

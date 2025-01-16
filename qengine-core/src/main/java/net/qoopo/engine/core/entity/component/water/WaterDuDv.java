@@ -77,8 +77,8 @@ public class WaterDuDv extends Water {
 
     }
 
-    public void destruir() {
-        super.destruir();
+    public void destroy() {
+        super.destroy();
         if (textNormal != null) {
             textNormal.destroy();
             textNormal = null;

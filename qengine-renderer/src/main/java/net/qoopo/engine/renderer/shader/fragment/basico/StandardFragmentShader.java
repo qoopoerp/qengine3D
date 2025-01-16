@@ -284,9 +284,9 @@ public class StandardFragmentShader extends FragmentShader {
 
                         if (luz instanceof QPointLigth || luz instanceof QSpotLigth) {
                             // vectorLuz.set(pixel.ubicacion.x -
-                            // luz.entity.getTransformacion().getTraslacion().x, pixel.ubicacion.y -
-                            // luz.entity.getTransformacion().getTraslacion().y, pixel.ubicacion.z -
-                            // luz.entity.getTransformacion().getTraslacion().z);
+                            // luz.entity.getTransformacion().getLocation().x, pixel.ubicacion.y -
+                            // luz.entity.getTransformacion().getLocation().y, pixel.ubicacion.z -
+                            // luz.entity.getTransformacion().getLocation().z);
                             vectorLuz.set(fragment.ubicacion.getVector3().clone().subtract(
                                     TransformationVectorUtil.transformarVector(QVector3.zero, luz.getEntity(),
                                             render.getCamera())));

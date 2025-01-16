@@ -18,6 +18,8 @@ import net.qoopo.engine.core.math.QMatriz4;
  *
  * @author alberto
  */
+@Getter
+@Setter
 public class Skeleton implements EntityComponent {
 
     @Getter
@@ -25,7 +27,7 @@ public class Skeleton implements EntityComponent {
     private Entity entity;
 
     // private Entity huesoRaiz;
-    private List<Bone> huesos = new ArrayList<>();
+    private List<Bone> bones = new ArrayList<>();
     private boolean mostrar = false;
     private boolean superponer = false;
 
@@ -33,23 +35,15 @@ public class Skeleton implements EntityComponent {
     }
 
     public Skeleton(List<Bone> huesos) {
-        this.huesos = huesos;
+        this.bones = huesos;
     }
 
-    public List<Bone> getHuesos() {
-        return huesos;
-    }
-
-    public void setHuesos(List<Bone> huesos) {
-        this.huesos = huesos;
-    }
-
-    public void agregarHueso(Bone hueso) {
-        huesos.add(hueso);
+    public void addBone(Bone hueso) {
+        bones.add(hueso);
     }
 
     public Bone getBone(int i) {
-        for (Bone hueso : huesos) {
+        for (Bone hueso : bones) {
             if (hueso.getIndice() == i) {
                 return hueso;
             }
@@ -59,7 +53,7 @@ public class Skeleton implements EntityComponent {
     }
 
     public Bone getBone(String nombre) {
-        for (Bone hueso : huesos) {
+        for (Bone hueso : bones) {
             // los nombres en este motor siempre se agrea un espacio con un número
             if (hueso.getName().equals(nombre) || hueso.getName().startsWith(nombre + " ")) {
                 return hueso;
@@ -67,16 +61,15 @@ public class Skeleton implements EntityComponent {
         }
         // System.out.println("Hueso no encontrado (n) " + nombre);
         return null;
-
     }
 
     @Override
-    public void destruir() {
-        for (Bone hueso : huesos) {
+    public void destroy() {
+        for (Bone hueso : bones) {
             hueso.destruir();
         }
-        huesos.clear();
-        huesos = null;
+        bones.clear();
+        bones = null;
     }
 
     /**
@@ -87,7 +80,7 @@ public class Skeleton implements EntityComponent {
      */
     public void calcularMatricesInversas() {
         // System.out.println("Calculando inversas ");
-        for (Bone hueso : huesos) {
+        for (Bone hueso : bones) {
             // si es el hueso raiz
             if (hueso.getParent() == null) {
                 // System.out.println("Hueso raiz=" + hueso.getNombre());

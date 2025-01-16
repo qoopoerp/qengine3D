@@ -1,6 +1,0 @@
-hasExtraMap;TRUE
-hasTransparency;FALSE
-hasReflection;TRUE
-hasRefraction;FALSE
-castsShadow;TRUE
-important;FALSE

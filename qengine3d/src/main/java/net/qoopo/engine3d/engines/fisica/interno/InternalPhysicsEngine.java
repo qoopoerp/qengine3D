@@ -39,7 +39,7 @@ public class InternalPhysicsEngine extends PhysicsEngine {
         // procesadorColision = new Fuerzas2();
         // procesadorColision = new QProcesadorImplF3();
         procesadorColision = new QProcesadorImplF4();
-        tiempoPrevio = System.currentTimeMillis();
+        beforeTime = System.currentTimeMillis();
     }
 
     @Override
@@ -70,8 +70,8 @@ public class InternalPhysicsEngine extends PhysicsEngine {
             System.out.println("MF. Error=" + e.getMessage());
         }
         // System.out.println("MF-->" + DF.format(1000.0 / (float) deltaTime) + " FPS");
-        tiempoPrevio = System.currentTimeMillis();
-        return tiempoPrevio;
+        beforeTime = System.currentTimeMillis();
+        return beforeTime;
     }
 
     private void aplicarGravedad() {
@@ -152,7 +152,7 @@ public class InternalPhysicsEngine extends PhysicsEngine {
                                 for (EntityComponent componente : objeto.getComponents()) {
                                     if (componente instanceof Mesh) {
                                         ((QObjetoRigido) componenteFisico).crearContenedorColision((Mesh) componente,
-                                                objeto.getTransformacion());
+                                                objeto.getTransform());
                                     }
                                 }
                             }

@@ -132,9 +132,9 @@ public class Java3DRenderer extends RenderEngine {
         }
         poligonosDibujados = poligonosDibujadosTemp;
         logger.info("MR-J3D-->" + DF.format(getFPS()) + " FPS");
-        tiempoPrevio = System.currentTimeMillis();
+        beforeTime = System.currentTimeMillis();
 
-        return tiempoPrevio;
+        return beforeTime;
     }
 
     /**
@@ -416,9 +416,9 @@ public class Java3DRenderer extends RenderEngine {
                         tmp = (TransformGroup) nodo;
                         tmp.getTransform(transform);
                         long t = System.currentTimeMillis();
-                        transform.setScale(QVectMathUtil.convertirVector3d(entidad.getTransformacion().getEscala()));
+                        transform.setScale(QVectMathUtil.convertirVector3d(entidad.getTransform().getScale()));
                         QVector3 posicion = entidad.getMatrizTransformacion(t).toTranslationVector();
-                        // QVector3 posicion = entidad.transformacion.getTraslacion();
+                        // QVector3 posicion = entidad.transformacion.getLocation();
                         transform.setTranslation(QVectMathUtil.convertirVector3f(posicion));
                         // QRotacion rot = new QRotacion();
                         // rot.setCuaternion(entidad.getMatrizTransformacion(t).toRotationQuat());

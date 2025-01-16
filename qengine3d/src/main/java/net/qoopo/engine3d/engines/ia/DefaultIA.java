@@ -32,8 +32,8 @@ public class DefaultIA extends IAEngine {
 
     @Override
     public long update() {
-        tiempoPrevio = System.currentTimeMillis();
-        return tiempoPrevio;
+        beforeTime = System.currentTimeMillis();
+        return beforeTime;
     }
 
 }

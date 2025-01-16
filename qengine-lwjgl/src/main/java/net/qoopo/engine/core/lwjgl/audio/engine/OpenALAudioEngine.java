@@ -71,7 +71,7 @@ public class OpenALAudioEngine extends AudioEngine {
                             if (manager.getListener() == null) {
                                 manager.setListener((SoundListenerAL) componente);
                             } else {// actualiza la ubicacion del listener
-                                manager.getListener().setPosition(entity.getTransformacion().getTraslacion());
+                                manager.getListener().setPosition(entity.getTransform().getLocation());
                                 manager.getListener().setOrientation(entity.getDirection(), entity.getUp());
                             }
                         }
@@ -82,8 +82,8 @@ public class OpenALAudioEngine extends AudioEngine {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        tiempoPrevio = System.currentTimeMillis();
-        return tiempoPrevio;
+        beforeTime = System.currentTimeMillis();
+        return beforeTime;
     }
 
     // private void cargarSonidos() {

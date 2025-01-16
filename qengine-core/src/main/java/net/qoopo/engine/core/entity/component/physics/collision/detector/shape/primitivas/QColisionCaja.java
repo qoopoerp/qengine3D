@@ -49,7 +49,7 @@ public class QColisionCaja extends CollisionShape {
     }
 
     @Override
-    public void destruir() {
+    public void destroy() {
 
     }
 

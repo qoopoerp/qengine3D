@@ -87,8 +87,8 @@ public class QSpotLigth extends QLigth {
     }
 
     @Override
-    public void destruir() {
-        super.destruir();
+    public void destroy() {
+        super.destroy();
         direction = null;
     }
 

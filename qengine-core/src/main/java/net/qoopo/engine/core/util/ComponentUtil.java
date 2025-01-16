@@ -51,7 +51,7 @@ public class ComponentUtil {
         List<EntityComponent> tmp = new ArrayList<>();
         for (EntityComponent componente : entity.getComponents()) {
             if (className.isAssignableFrom(componente.getClass())) {
-                componente.destruir();
+                componente.destroy();
                 tmp.add(componente);
             }
         }

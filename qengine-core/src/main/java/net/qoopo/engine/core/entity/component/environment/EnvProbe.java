@@ -436,7 +436,7 @@ public class EnvProbe implements EntityComponent, UpdatableComponent {
     }
 
     @Override
-    public void destruir() {
+    public void destroy() {
         envMap = null;
         render = null;
         textures = null;

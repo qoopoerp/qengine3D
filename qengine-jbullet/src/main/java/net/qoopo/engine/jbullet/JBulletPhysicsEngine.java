@@ -125,13 +125,13 @@ public class JBulletPhysicsEngine extends PhysicsEngine {
 
     public JBulletPhysicsEngine(Scene universo) {
         super(universo);
-        tiempoPrevio = System.currentTimeMillis();
+        beforeTime = System.currentTimeMillis();
         iniciarMundoFisico();
     }
 
     public JBulletPhysicsEngine(Scene universo, Vector3f worldAabbMin, Vector3f worldAabbMax) {
         super(universo);
-        tiempoPrevio = System.currentTimeMillis();
+        beforeTime = System.currentTimeMillis();
         this.worldAabbMax = worldAabbMax;
         this.worldAabbMin = worldAabbMin;
         iniciarMundoFisico();
@@ -184,8 +184,8 @@ public class JBulletPhysicsEngine extends PhysicsEngine {
         limpiarFuerzas();
         detectarColisiones();
         // logger.info("MF-->" + df.format(getFPS()) + " FPS");
-        tiempoPrevio = System.currentTimeMillis();
-        return tiempoPrevio;
+        beforeTime = System.currentTimeMillis();
+        return beforeTime;
     }
 
     /**
@@ -325,7 +325,7 @@ public class JBulletPhysicsEngine extends PhysicsEngine {
                         Mesh geometria = ComponentUtil.getMesh(objeto);
                         if (geometria != null) {
                             System.out.println(" Se va a crear objeto de colision para " + objeto.getName());
-                            componenteFisico.crearContenedorColision(geometria, objeto.getTransformacion());
+                            componenteFisico.crearContenedorColision(geometria, objeto.getTransform());
                         }
                     }
                 }
@@ -454,9 +454,9 @@ public class JBulletPhysicsEngine extends PhysicsEngine {
             entity.move(trans.origin.x, trans.origin.y, trans.origin.z);
             // actualizacion de la rotación
             trans.getRotation(rotacion);
-            entity.getTransformacion().getRotacion().getCuaternion().set(rotacion.x, rotacion.y, rotacion.z,
+            entity.getTransform().getRotation().getCuaternion().set(rotacion.x, rotacion.y, rotacion.z,
                     rotacion.w);
-            entity.getTransformacion().getRotacion().actualizarAngulos();
+            entity.getTransform().getRotation().actualizarAngulos();
             // aplico control de posicion propio de este engine
             entity.comprobarMovimiento();
         } catch (Exception e) {

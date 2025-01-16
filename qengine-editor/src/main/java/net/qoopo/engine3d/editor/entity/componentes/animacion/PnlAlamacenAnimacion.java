@@ -205,7 +205,9 @@ public class PnlAlamacenAnimacion extends javax.swing.JPanel {
                         .get(lstAnimacion.getSelectedValue());
                 if (animacionActiva != null) {
                     lblAnimDuracion.setText(df.format(animacionActiva.getDuracion()) + " s");
-                    lblAnimFrames.setText("" + animacionActiva.getListaFrames().size());
+                    lblAnimFrames.setText(
+                            "" + (animacionActiva.getListaFrames() != null ? animacionActiva.getListaFrames().size()
+                                    : "-1"));
                     lblNombreAnimacion.setText(animacionActiva.getNombre());
                     chkLoop.setSelected(animacionActiva.isLoop());
 
@@ -233,7 +235,8 @@ public class PnlAlamacenAnimacion extends javax.swing.JPanel {
 
     private void btnEliminarAnimacionActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btnEliminarAnimacionActionPerformed
         if (animacionActiva != null) {
-            ((AnimationStorageComponent) ComponentUtil.getComponent(almacen.getEntity(), AnimationStorageComponent.class))
+            ((AnimationStorageComponent) ComponentUtil.getComponent(almacen.getEntity(),
+                    AnimationStorageComponent.class))
                     .remove(lstAnimacion.getSelectedValue());
 
         }

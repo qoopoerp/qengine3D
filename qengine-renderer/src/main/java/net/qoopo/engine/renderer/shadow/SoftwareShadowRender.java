@@ -319,7 +319,7 @@ public class SoftwareShadowRender extends SoftwareRenderer {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        tiempoPrevio = System.currentTimeMillis();
+        beforeTime = System.currentTimeMillis();
         return System.nanoTime() - tInicio;
     }
 

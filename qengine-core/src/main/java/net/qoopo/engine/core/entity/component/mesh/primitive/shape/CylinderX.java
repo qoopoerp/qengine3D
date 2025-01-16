@@ -9,7 +9,7 @@ import net.qoopo.engine.core.entity.component.mesh.generator.MeshGenerator;
 import net.qoopo.engine.core.entity.component.mesh.primitive.Shape;
 import net.qoopo.engine.core.entity.component.mesh.primitive.Vertex;
 import net.qoopo.engine.core.entity.component.modifier.generate.RevolutionModifier;
-import net.qoopo.engine.core.entity.component.transform.QTransformacion;
+import net.qoopo.engine.core.entity.component.transform.Transform;
 import net.qoopo.engine.core.material.Material;
 import net.qoopo.engine.core.math.QVector3;
 
@@ -64,13 +64,13 @@ public class CylinderX extends Shape {
         computeNormals();
         applyMaterial(material);
         // ahora roto los vertices para que se alineen al eje x
-        QTransformacion tra = new QTransformacion();
-        tra.getRotacion().rotarZ((float) Math.toRadians(90));
-        tra.getRotacion().actualizarCuaternion();
+        Transform tra = new Transform();
+        tra.getRotation().rotarZ((float) Math.toRadians(90));
+        tra.getRotation().actualizarCuaternion();
         QVector3 tmp = QVector3.empty();
         for (Vertex vertice : vertexList) {
             tmp.set(vertice.location.x, vertice.location.y, vertice.location.z);
-            tmp = tra.toTransformMatriz().mult(tmp);
+            tmp = tra.toMatrix().mult(tmp);
             vertice.setXYZ(tmp.x, tmp.y, tmp.z);
         }
     }

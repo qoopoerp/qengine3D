@@ -42,7 +42,7 @@ public class EjemploFisica2 extends FisicaDisparar {
         // al non usar el conversor d eunidades de media, se toma como metros
         // Piso
         Entity piso = new Entity("piso");
-        piso.getTransformacion().getTraslacion().y = 0f;
+        piso.getTransform().getLocation().y = 0f;
         piso.move(0, 0, 0);
 
         piso.addComponent(new Box(0.1f, mundo.UM.convertirPixel(50), mundo.UM.convertirPixel(50)));

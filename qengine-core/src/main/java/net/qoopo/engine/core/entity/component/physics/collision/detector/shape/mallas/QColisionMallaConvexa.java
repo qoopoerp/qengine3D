@@ -35,7 +35,7 @@ public class QColisionMallaConvexa extends CollisionShape {
     }
 
     @Override
-    public void destruir() {
+    public void destroy() {
     }
 
     public Mesh getMalla() {

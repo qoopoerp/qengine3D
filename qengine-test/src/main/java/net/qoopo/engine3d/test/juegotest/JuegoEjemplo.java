@@ -261,7 +261,7 @@ public class JuegoEjemplo {
                         // personaje.agregarPistola();
                         // personaje.posicionPistola();
                         // configuro a personaje como listener de audio
-                        personaje.addComponent(new SoundListenerAL(personaje.getTransformacion().getTraslacion()));
+                        personaje.addComponent(new SoundListenerAL(personaje.getTransform().getLocation()));
                         motor.getScene().addEntity(personaje);
                 } catch (Exception e) {
                         e.printStackTrace();

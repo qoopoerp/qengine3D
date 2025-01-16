@@ -114,7 +114,7 @@ public class CameraFirstPersonController implements EntityComponent {
             }
 
             @Override
-            public void destruir() {
+            public void destroy() {
 
             }
         };
@@ -136,7 +136,7 @@ public class CameraFirstPersonController implements EntityComponent {
     }
 
     @Override
-    public void destruir() {
+    public void destroy() {
         QInputManager.removeMouseListener(mouseReceptor);
         QInputManager.removeKeyboardListener(tecladoReceptor);
     }

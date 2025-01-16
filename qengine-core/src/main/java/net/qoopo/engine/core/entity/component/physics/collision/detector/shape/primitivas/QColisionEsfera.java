@@ -43,6 +43,6 @@ public class QColisionEsfera extends CollisionShape {
     }
 
     @Override
-    public void destruir() {
+    public void destroy() {
     }
 }

@@ -80,7 +80,7 @@ public class SimpleTerrain extends Terrain {
     }
 
     @Override
-    public void destruir() {
+    public void destroy() {
     }
 
 }

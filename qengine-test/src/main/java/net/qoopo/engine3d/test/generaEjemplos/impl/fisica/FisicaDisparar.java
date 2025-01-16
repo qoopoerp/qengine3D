@@ -68,9 +68,9 @@ public class FisicaDisparar extends MakeTestScene {
                 balon3Fisica.agregarFuerzas(nuevaFuerza);
 
                 nuevoBalon.addComponent(balon3Fisica);
-                nuevoBalon.move(render.getCamera().getTransformacion().getTraslacion().x,
-                        render.getCamera().getTransformacion().getTraslacion().y,
-                        render.getCamera().getTransformacion().getTraslacion().z);
+                nuevoBalon.move(render.getCamera().getTransform().getLocation().x,
+                        render.getCamera().getTransform().getLocation().y,
+                        render.getCamera().getTransform().getLocation().z);
                 scene.addEntity(nuevoBalon);
 
                 break;
@@ -94,9 +94,9 @@ public class FisicaDisparar extends MakeTestScene {
                 balon3Fisica.agregarFuerzas(nuevaFuerza);
 
                 nuevoBalon.addComponent(balon3Fisica);
-                nuevoBalon.move(render.getCamera().getTransformacion().getTraslacion().x,
-                        render.getCamera().getTransformacion().getTraslacion().y,
-                        render.getCamera().getTransformacion().getTraslacion().z);
+                nuevoBalon.move(render.getCamera().getTransform().getLocation().x,
+                        render.getCamera().getTransform().getLocation().y,
+                        render.getCamera().getTransform().getLocation().z);
 
                 nuevoBalon.addComponent(new CollisionListener() {
                     @Override

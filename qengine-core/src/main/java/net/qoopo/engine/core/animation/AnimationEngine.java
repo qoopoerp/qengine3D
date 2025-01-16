@@ -18,7 +18,7 @@ import net.qoopo.engine.core.scene.Scene;
  */
 public class AnimationEngine extends Engine {
 
-    protected Scene escena;
+    protected Scene scene;
     private float tiempoInicio = 0;
     private float tiempo;
     private float tiempoFin = 10;
@@ -26,13 +26,13 @@ public class AnimationEngine extends Engine {
     private float direccion = 1.0f;
 
     public AnimationEngine(Scene universo) {
-        this.escena = universo;
+        this.scene = universo;
     }
 
     @Override
     public void start() {
         ejecutando = true;
-        tiempoPrevio = System.currentTimeMillis();
+        beforeTime = System.currentTimeMillis();
     }
 
     @Override
@@ -74,7 +74,7 @@ public class AnimationEngine extends Engine {
     public void actualizarPoses(float marcaTiempo) {
         try {
             AnimationComponent actual;
-            for (Entity entity : escena.getEntities()) {
+            for (Entity entity : scene.getEntities()) {
                 if (entity.isToRender()) {
                     for (EntityComponent componente : entity.getComponents()) {
                         if (componente instanceof AnimationComponent) {
@@ -99,16 +99,16 @@ public class AnimationEngine extends Engine {
             tiempo = tiempoFin - tiempo;
         }
         actualizarPoses(tiempo);
-        tiempoPrevio = System.currentTimeMillis();
-        return tiempoPrevio;
+        beforeTime = System.currentTimeMillis();
+        return beforeTime;
     }
 
-    public Scene getEscena() {
-        return escena;
+    public Scene getScene() {
+        return scene;
     }
 
-    public void setEscena(Scene escena) {
-        this.escena = escena;
+    public void setScene(Scene escena) {
+        this.scene = escena;
     }
 
     public float getTiempoInicio() {

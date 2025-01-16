@@ -29,32 +29,32 @@ public class TestLoadMd5 extends MakeTestScene {
                         this.scene = mundo;
                         ModelLoader loadModel = new LoadModelMd5();
                         List<File> archivos = new ArrayList<>();
-                        archivos.add(new File("assets/models/md5/doom3/md5/characters/player/mocap/player.md5mesh"));
+                        // archivos.add(new File("assets/models/md5/doom3/md5/characters/player/mocap/player.md5mesh"));
                         // monstuos
                         archivos.add(new File("assets/models/md5/doom3_monsters/hellknight/monster.md5mesh"));
                         archivos.add(new File("assets/models/md5/bob/boblamp.md5mesh"));
-                        archivos.add(new File("assets/models/md5/doom3/md5/monsters/mancubus/mancubus.md5mesh"));
-                        archivos.add(new File("assets/models/md5/doom3/md5/monsters/imp/imp.md5mesh"));
-                        archivos.add(new File("assets/models/md5/doom3/md5/monsters/hellknight/hellknight.md5mesh"));
-                        archivos.add(new File("assets/models/md5/doom3/md5/monsters/guardian/guardian.md5mesh"));
-                        archivos.add(new File("assets/models/md5/doom3/md5/monsters/gseeker/gseeker.md5mesh"));
-                        archivos.add(new File("assets/models/md5/doom3/md5/monsters/archvile/archvile.md5mesh"));
-                        archivos.add(new File("assets/models/md5/doom3/md5/monsters/cacodemon/cacodemon.md5mesh"));
-                        archivos.add(new File("assets/models/md5/doom3/md5/monsters/lostsoul/lostsoul.md5mesh"));
-                        archivos.add(new File("assets/models/md5/doom3/md5/monsters/maggot3/maggot3.md5mesh"));
-                        archivos.add(new File("assets/models/md5/doom3/md5/monsters/pinky/pinky.md5mesh"));
-                        archivos.add(new File("assets/models/md5/doom3/md5/monsters/revenant/revenant.md5mesh"));
-                        archivos.add(new File("assets/models/md5/doom3/md5/monsters/skeleton/skeleton.md5mesh"));
-                        archivos.add(new File("assets/models/md5/doom3/md5/monsters/trite/trite.md5mesh"));
-                        archivos.add(new File("assets/models/md5/doom3/md5/monsters/sabaoth/sabaoth.md5mesh"));
+                        // archivos.add(new File("assets/models/md5/doom3/md5/monsters/mancubus/mancubus.md5mesh"));
+                        // archivos.add(new File("assets/models/md5/doom3/md5/monsters/imp/imp.md5mesh"));
+                        // archivos.add(new File("assets/models/md5/doom3/md5/monsters/hellknight/hellknight.md5mesh"));
+                        // archivos.add(new File("assets/models/md5/doom3/md5/monsters/guardian/guardian.md5mesh"));
+                        // archivos.add(new File("assets/models/md5/doom3/md5/monsters/gseeker/gseeker.md5mesh"));
+                        // archivos.add(new File("assets/models/md5/doom3/md5/monsters/archvile/archvile.md5mesh"));
+                        // archivos.add(new File("assets/models/md5/doom3/md5/monsters/cacodemon/cacodemon.md5mesh"));
+                        // archivos.add(new File("assets/models/md5/doom3/md5/monsters/lostsoul/lostsoul.md5mesh"));
+                        // archivos.add(new File("assets/models/md5/doom3/md5/monsters/maggot3/maggot3.md5mesh"));
+                        // archivos.add(new File("assets/models/md5/doom3/md5/monsters/pinky/pinky.md5mesh"));
+                        // archivos.add(new File("assets/models/md5/doom3/md5/monsters/revenant/revenant.md5mesh"));
+                        // archivos.add(new File("assets/models/md5/doom3/md5/monsters/skeleton/skeleton.md5mesh"));
+                        // archivos.add(new File("assets/models/md5/doom3/md5/monsters/trite/trite.md5mesh"));
+                        // archivos.add(new File("assets/models/md5/doom3/md5/monsters/sabaoth/sabaoth.md5mesh"));
 
                         int space = 8;
                         int sections = 5;
                         for (int i = 0; i < archivos.size(); i++) {
                                 Entity entidad = loadModel.loadModel(archivos.get(i));
                                 entidad.move((i % sections) * space, 0, (i / sections) * space);
-                                entidad.scale(0.05f, 0.05f, 0.05f);
-                                entidad.rotate(Math.toRadians(-90), 0, 0);
+                                // entidad.scale(0.05f, 0.05f, 0.05f);
+                                // entidad.rotate(Math.toRadians(-90), 0, 0);
                                 mundo.addEntity(entidad);
                         }
 

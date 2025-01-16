@@ -91,7 +91,7 @@ public class CameraController implements EntityComponent {
     }
 
     public void updateCamera() {
-        float distance = camara.getTransformacion().getTraslacion().clone().subtract(target).length();
+        float distance = camara.getTransform().getLocation().clone().subtract(target).length();
         // QVector3 ubicacion = QVector3.empty();
         QVector3 ubicacion = QVector3.of(
                 distance * (float) (Math.cos(coordenadasEsfericas.x) * Math.sin(coordenadasEsfericas.y)),
@@ -184,7 +184,7 @@ public class CameraController implements EntityComponent {
             }
 
             @Override
-            public void destruir() {
+            public void destroy() {
 
             }
         };
@@ -214,7 +214,7 @@ public class CameraController implements EntityComponent {
                         break;
 
                     case KeyEvent.VK_NUMPAD5: {
-                        float distance = camara.getTransformacion().getTraslacion().clone().subtract(target).length();
+                        float distance = camara.getTransform().getLocation().clone().subtract(target).length();
                         camara.setOrtogonal(!camara.isOrtogonal());
                         camara.setEscalaOrtogonal(distance);
                         break;
@@ -292,7 +292,7 @@ public class CameraController implements EntityComponent {
     }
 
     @Override
-    public void destruir() {
+    public void destroy() {
         QInputManager.removeMouseListener(mouseReceptor);
         QInputManager.removeKeyboardListener(tecladoReceptor);
     }

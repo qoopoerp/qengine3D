@@ -132,9 +132,9 @@ public class QNodoColorIluminacion extends ShaderNode {
                         }
 
                         if (luz instanceof QPointLigth || luz instanceof QSpotLigth) {
-                            vectorLuz.set(pixel.ubicacion.x - luz.getEntity().getTransformacion().getTraslacion().x,
-                                    pixel.ubicacion.y - luz.getEntity().getTransformacion().getTraslacion().y,
-                                    pixel.ubicacion.z - luz.getEntity().getTransformacion().getTraslacion().z);
+                            vectorLuz.set(pixel.ubicacion.x - luz.getEntity().getTransform().getLocation().x,
+                                    pixel.ubicacion.y - luz.getEntity().getTransform().getLocation().y,
+                                    pixel.ubicacion.z - luz.getEntity().getTransform().getLocation().z);
                             // solo toma en cuenta a los puntos q estan en el area de afectacion
                             if (vectorLuz.length() > luz.radio) {
                                 continue;

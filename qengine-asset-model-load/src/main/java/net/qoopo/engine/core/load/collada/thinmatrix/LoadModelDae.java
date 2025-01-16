@@ -22,7 +22,7 @@ import net.qoopo.engine.core.entity.component.animation.AnimationStorageComponen
 import net.qoopo.engine.core.entity.component.animation.Skeleton;
 import net.qoopo.engine.core.entity.component.mesh.Mesh;
 import net.qoopo.engine.core.entity.component.mesh.primitive.Vertex;
-import net.qoopo.engine.core.entity.component.transform.QTransformacion;
+import net.qoopo.engine.core.entity.component.transform.Transform;
 import net.qoopo.engine.core.load.collada.thinmatrix.data.AnimatedModelData;
 import net.qoopo.engine.core.load.collada.thinmatrix.data.AnimationData;
 import net.qoopo.engine.core.load.collada.thinmatrix.data.JointData;
@@ -97,14 +97,14 @@ public class LoadModelDae implements ModelLoader {
     private static AnimationFrame loadAnimationFrame(KeyFrameData frameData, Skeleton esqueleto) {
         AnimationFrame qFrame = new AnimationFrame(frameData.time);
         Bone hueso;
-        QTransformacion transformacion;
+        Transform transformacion;
         for (JointTransformData joinTransFormData : frameData.jointTransforms) {
             hueso = esqueleto.getBone(joinTransFormData.jointNameId);
             if (hueso != null) {
                 QMatriz4 mat4 = QJOMLUtil.convertirQMatriz4(joinTransFormData.jointLocalTransform);
-                transformacion = new QTransformacion();
-                transformacion.desdeMatrix(mat4);
-                qFrame.agregarPar(new AnimationPair(hueso, transformacion));
+                transformacion = new Transform();
+                transformacion.fromMatrix(mat4);
+                qFrame.addPair(new AnimationPair(hueso, transformacion));
             } else {
                 System.out.println("No se encontro el hueso " + joinTransFormData.jointNameId + " para la animation");
             }
@@ -122,8 +122,8 @@ public class LoadModelDae implements ModelLoader {
         Bone hueso = new Bone(joint.index, joint.nameId);
         QMatriz4 mat4 = QJOMLUtil.convertirQMatriz4(joint.bindLocalTransform);
         // hueso.transformacion = new QTransformacion(QRotacion.CUATERNION);
-        hueso.setTransformacion(new QTransformacion());
-        hueso.getTransformacion().desdeMatrix(mat4);
+        hueso.setTransform(new Transform());
+        hueso.getTransform().fromMatrix(mat4);
         return hueso;
     }
 
@@ -148,7 +148,7 @@ public class LoadModelDae implements ModelLoader {
         // System.out.println("ESQUELETO CARGADO");
         // System.out.println("=======================");
         // Entity.imprimirArbolEntidad(hueso, "");
-        esqueleto.setHuesos(lista);
+        esqueleto.setBones(lista);
         esqueleto.calcularMatricesInversas();
         return esqueleto;
     }

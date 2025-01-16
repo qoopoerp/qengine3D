@@ -30,7 +30,7 @@ public interface AbstractRaster {
      * @param p1
      * @param p2
      */
-    public void rasterLine(QMatriz4 matViewModel,Primitive primitiva, Vertex... vertex);
+    public void rasterLine(QMatriz4 matViewModel, Primitive primitiva, Vertex... vertex);
 
     /**
      * Realiza la rasterización de un polígono
@@ -39,7 +39,7 @@ public interface AbstractRaster {
      * @param primitiva
      * @param wire
      */
-    public void raster(QMatriz4 matViewModel,QVertexBuffer bufferVertices, Primitive primitiva, boolean wire);
+    public void raster(QMatriz4 matViewModel, QVertexBuffer bufferVertices, Primitive primitiva, boolean wire);
 
     /**
      * Realiza el clipping de los vertices
@@ -66,7 +66,11 @@ public interface AbstractRaster {
             vertexTemp[0] = vertextInput[vertexIndex[i]];
             vertexTemp[1] = vertextInput[vertexIndex[(i + 1) % vertexIndex.length]];
 
-            if (normalIndex.length > i && normalInput.length > normalIndex[i]
+            if (
+
+            normalIndex.length > i
+                    && normalInput.length > normalIndex[i]
+                    && normalIndex[i] >= 0
                     && normalInput.length > (normalIndex[(i + 1) % normalIndex.length])) {
                 normalTemp[0] = normalInput[normalIndex[i]];
                 normalTemp[1] = normalInput[normalIndex[(i + 1) % normalIndex.length]];
@@ -74,7 +78,9 @@ public interface AbstractRaster {
                 normalTemp[0] = new QVector3();
                 normalTemp[1] = new QVector3();
             }
-            if (uvIndex.length > i && uvInput.length > uvIndex[i]
+            if (uvIndex.length > i
+                    && uvInput.length > uvIndex[i]
+                    && uvIndex[i] >= 0
                     && uvInput.length > (uvIndex[(i + 1) % uvIndex.length])) {
                 uvTemp[0] = uvInput[uvIndex[i]];
                 uvTemp[1] = uvInput[uvIndex[(i + 1) % uvIndex.length]];

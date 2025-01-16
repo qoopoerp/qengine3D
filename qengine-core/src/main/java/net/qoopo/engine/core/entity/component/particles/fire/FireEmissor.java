@@ -68,7 +68,7 @@ public class FireEmissor extends ParticleEmissor {
             material = new Material();
             AtlasSequentialTexture proc = new AtlasSequentialTexture(textura, 8, 8, 10);
             material.setColorMap(proc);
-            material.setColorTransparente(QColor.BLACK);
+            material.setAlphaColour(QColor.BLACK);
             material.setTransparencia(true);
 //            material.setTransAlfa(0.90f);// el objeto tiene una transparencia 
         } catch (Exception e) {
@@ -146,7 +146,7 @@ public class FireEmissor extends ParticleEmissor {
         for (Particle particula : this.particulas) {
             //si ya paso su tiempo de vida o ya esta fuera del ambito en la altura
             if ((System.currentTimeMillis() - particula.getTiempoCreacion()) > particula.getTiempoVida()
-                    || (particula.objeto.getTransformacion().getTraslacion().y > ambito.aabMaximo.location.y)) {
+                    || (particula.objeto.getTransform().getLocation().y > ambito.aabMaximo.location.y)) {
                 particulasEliminadas.add(particula);
                 actuales--;
                 particula.objeto.setToRender(false);
@@ -176,8 +176,8 @@ public class FireEmissor extends ParticleEmissor {
             for (EntityComponent componente : particula.objeto.getComponents()) {
                 if (componente instanceof QObjetoRigido) {
                     //el deltax y delta z es para acercarlo al centro, multiplico por -1 para ir en el sentido contrario
-                    dx = particula.objeto.getTransformacion().getTraslacion().x / Math.abs(particula.objeto.getTransformacion().getTraslacion().x) * -1;
-                    dz = particula.objeto.getTransformacion().getTraslacion().z / Math.abs(particula.objeto.getTransformacion().getTraslacion().z) * -1;
+                    dx = particula.objeto.getTransform().getLocation().x / Math.abs(particula.objeto.getTransform().getLocation().x) * -1;
+                    dz = particula.objeto.getTransform().getLocation().z / Math.abs(particula.objeto.getTransform().getLocation().z) * -1;
 
                     ((QObjetoRigido) componente).agregarFuerzas(QVector3.of(
                             dx * rnd.nextFloat() * (maxMov - miniMov) + miniMov,
@@ -203,8 +203,8 @@ public class FireEmissor extends ParticleEmissor {
     }
 
     @Override
-    public void destruir() {
-        super.destruir();
+    public void destroy() {
+        super.destroy();
         luces.clear();
     }
 }

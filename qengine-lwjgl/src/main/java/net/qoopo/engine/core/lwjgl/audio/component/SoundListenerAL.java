@@ -48,6 +48,6 @@ public class SoundListenerAL implements EntityComponent {
     }
 
     @Override
-    public void destruir() {
+    public void destroy() {
     }
 }

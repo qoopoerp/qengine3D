@@ -32,7 +32,7 @@ public class InflateModifier implements ModifierComponent {
     }
 
     @Override
-    public void destruir() {
+    public void destroy() {
 
     }
 

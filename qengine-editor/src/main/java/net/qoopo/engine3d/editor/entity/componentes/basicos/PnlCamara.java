@@ -51,7 +51,7 @@ public class PnlCamara extends javax.swing.JPanel {
 
     // private void applyObjectControl() {
     // if (!lock) {
-    // camara.getTraslacion().setXYZ(getFloatFromSpinner(spnLocX),
+    // camara.getLocation().setXYZ(getFloatFromSpinner(spnLocX),
     // getFloatFromSpinner(spnLocY), getFloatFromSpinner(spnLocZ));
     // camara.getRotacion().rotarX((float) (getFloatFromSpinner(spnRotX) * Math.PI /
     // 120));

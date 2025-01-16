@@ -17,7 +17,7 @@ import javax.swing.event.ChangeListener;
 import javax.swing.event.MouseInputAdapter;
 import javax.swing.event.MouseInputListener;
 
-import net.qoopo.engine.core.entity.component.transform.QTransformacion;
+import net.qoopo.engine.core.entity.component.transform.Transform;
 
 /**
  *
@@ -25,7 +25,7 @@ import net.qoopo.engine.core.entity.component.transform.QTransformacion;
  */
 public class PnlTransformacion extends javax.swing.JPanel {
 
-    private QTransformacion transformacion;
+    private Transform transformacion;
 
     private int Xtemp = -1;
     private boolean lock = false;
@@ -35,7 +35,7 @@ public class PnlTransformacion extends javax.swing.JPanel {
      * 
      * @param transformacion
      */
-    public PnlTransformacion(QTransformacion transformacion) {
+    public PnlTransformacion(Transform transformacion) {
         initComponents();
 
         MouseMotionListener spinnerMouseMotion = new MouseMotionAdapter() {
@@ -153,27 +153,27 @@ public class PnlTransformacion extends javax.swing.JPanel {
 
     private void leerValores() {
         lock = true;
-        spnLocX.setValue((float) transformacion.getTraslacion().x);
-        spnLocY.setValue(transformacion.getTraslacion().y);
-        spnLocZ.setValue(transformacion.getTraslacion().z);
-        spnRotX.setValue(transformacion.getRotacion().getAngulos().getAnguloX() * 180 / Math.PI);
-        spnRotY.setValue(transformacion.getRotacion().getAngulos().getAnguloY() * 180 / Math.PI);
-        spnRotZ.setValue(transformacion.getRotacion().getAngulos().getAnguloZ() * 180 / Math.PI);
-        spnScaleX.setValue(transformacion.getEscala().x);
-        spnScaleY.setValue(transformacion.getEscala().y);
-        spnScaleZ.setValue(transformacion.getEscala().z);
+        spnLocX.setValue((float) transformacion.getLocation().x);
+        spnLocY.setValue(transformacion.getLocation().y);
+        spnLocZ.setValue(transformacion.getLocation().z);
+        spnRotX.setValue(transformacion.getRotation().getAngulos().getAnguloX() * 180 / Math.PI);
+        spnRotY.setValue(transformacion.getRotation().getAngulos().getAnguloY() * 180 / Math.PI);
+        spnRotZ.setValue(transformacion.getRotation().getAngulos().getAnguloZ() * 180 / Math.PI);
+        spnScaleX.setValue(transformacion.getScale().x);
+        spnScaleY.setValue(transformacion.getScale().y);
+        spnScaleZ.setValue(transformacion.getScale().z);
         lock = false;
     }
 
     private void applyObjectControl() {
         if (!lock) {
-            transformacion.getTraslacion().set(getFloatFromSpinner(spnLocX), getFloatFromSpinner(spnLocY),
+            transformacion.getLocation().set(getFloatFromSpinner(spnLocX), getFloatFromSpinner(spnLocY),
                     getFloatFromSpinner(spnLocZ));
-            transformacion.getRotacion().rotarX((float) (getFloatFromSpinner(spnRotX) * Math.PI / 180));
-            transformacion.getRotacion().rotarY((float) (getFloatFromSpinner(spnRotY) * Math.PI / 180));
-            transformacion.getRotacion().rotarZ((float) (getFloatFromSpinner(spnRotZ) * Math.PI / 180));
+            transformacion.getRotation().rotarX((float) (getFloatFromSpinner(spnRotX) * Math.PI / 180));
+            transformacion.getRotation().rotarY((float) (getFloatFromSpinner(spnRotY) * Math.PI / 180));
+            transformacion.getRotation().rotarZ((float) (getFloatFromSpinner(spnRotZ) * Math.PI / 180));
 
-            transformacion.getEscala().set(getFloatFromSpinner(spnScaleX), getFloatFromSpinner(spnScaleY),
+            transformacion.getScale().set(getFloatFromSpinner(spnScaleX), getFloatFromSpinner(spnScaleY),
                     getFloatFromSpinner(spnScaleZ));
 
             // if (entidad instanceof QGeometria) {

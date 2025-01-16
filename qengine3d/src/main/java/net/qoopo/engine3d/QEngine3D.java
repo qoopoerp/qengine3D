@@ -267,8 +267,8 @@ public class QEngine3D extends Engine implements Runnable {
         }
 
         // logger.info("M3D-->" + DF.format(getFPS()) + " FPS");
-        tiempoPrevio = System.currentTimeMillis();
-        return tiempoPrevio;
+        beforeTime = System.currentTimeMillis();
+        return beforeTime;
     }
 
     @Override

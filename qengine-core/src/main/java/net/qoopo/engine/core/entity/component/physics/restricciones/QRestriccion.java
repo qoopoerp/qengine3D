@@ -25,7 +25,7 @@ public class QRestriccion implements EntityComponent {
     protected QObjetoRigido b;
 
     @Override
-    public void destruir() {
+    public void destroy() {
         // throw new UnsupportedOperationException("Not supported yet."); //To change
         // body of generated methods, choose Tools | Templates.
     }

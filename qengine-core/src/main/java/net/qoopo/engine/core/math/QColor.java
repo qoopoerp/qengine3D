@@ -237,10 +237,10 @@ public class QColor implements Serializable {
     // /**
     //  * Realiza la correción de gamma para la imagen final
     //  */
-    // public void fixGamma() {
-    //     set(a, QMath.pow(r, gammaExp), QMath.pow(g, gammaExp),
-    //             QMath.pow(b, gammaExp));
-    // }
+    public void fixGamma() {
+        set(a, QMath.pow(r, gammaExp), QMath.pow(g, gammaExp),
+                QMath.pow(b, gammaExp));
+    }
 
     /**
      * Agrega al color el componente Gamma util cuando se carga de imágenes

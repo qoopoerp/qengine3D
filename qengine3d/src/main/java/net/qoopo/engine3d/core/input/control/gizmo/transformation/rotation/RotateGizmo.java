@@ -109,11 +109,11 @@ public class RotateGizmo extends Gizmo {
         try {
             if (entity != null) {
                 // actualizo posicion y rotacion
-                this.transformacion.getTraslacion()
+                this.transform.getLocation()
                         .set(entity.getMatrizTransformacion(QGlobal.time).toTranslationVector());
-                this.transformacion.getRotacion()
+                this.transform.getRotation()
                         .setCuaternion(entity.getMatrizTransformacion(QGlobal.time).toRotationQuat());
-                this.transformacion.getRotacion().actualizarAngulos();
+                this.transform.getRotation().actualizarAngulos();
             }
         } catch (Exception e) {
         }

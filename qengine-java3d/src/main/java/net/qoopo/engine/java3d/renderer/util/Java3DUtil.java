@@ -135,7 +135,7 @@ public class Java3DUtil {
 
             // SETEO DE LAS TRANSFORMACIONES
             long t = System.currentTimeMillis();
-            transform.setScale(QVectMathUtil.convertirVector3d(objeto.getEntity().getTransformacion().getEscala()));
+            transform.setScale(QVectMathUtil.convertirVector3d(objeto.getEntity().getTransform().getScale()));
             transform.setTranslation(
                     QVectMathUtil
                             .convertirVector3f(objeto.getEntity().getMatrizTransformacion(t).toTranslationVector()));

@@ -1,3 +1,0 @@
-Terrain
-Statue
-Houses;Trees;Path Edge;Rocks;Bushes;Bridge;Fences;Windmill;Mushrooms;Herb Stall;Barrels;Cute Trees;Bench;Lanterns;Lilly Pads;Foxes;Turtles

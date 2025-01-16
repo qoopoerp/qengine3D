@@ -60,7 +60,7 @@ public class QColisionTriangulo extends CollisionShape {
     }
 
     @Override
-    public void destruir() {
+    public void destroy() {
 
     }
 

@@ -64,6 +64,6 @@ public class QDefinirCentro {
         }
 
         // Paso 3 . a LA trasnformación dar la ubicación del centro
-        entity.getTransformacion().getTraslacion().set(centro);
+        entity.getTransform().getLocation().set(centro);
     }
 }

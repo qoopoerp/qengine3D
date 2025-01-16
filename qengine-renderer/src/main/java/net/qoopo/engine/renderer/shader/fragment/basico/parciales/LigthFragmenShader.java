@@ -78,8 +78,8 @@ public class LigthFragmenShader extends FragmentShader {
             color.set(colorDifuso);
 
             if (colorDifuso.a < 1 || (((Material) fragment.material).isTransparencia()
-                    && ((Material) fragment.material).getColorTransparente() != null
-                    && colorDifuso.toRGB() == ((Material) fragment.material).getColorTransparente().toRGB())) {
+                    && ((Material) fragment.material).getAlphaColour() != null
+                    && colorDifuso.toRGB() == ((Material) fragment.material).getAlphaColour().toRGB())) {
                 return null;
             }
         }

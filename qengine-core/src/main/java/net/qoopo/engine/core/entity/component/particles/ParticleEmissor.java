@@ -92,7 +92,7 @@ public abstract class ParticleEmissor implements EntityComponent {
     }
 
     @Override
-    public void destruir() {
+    public void destroy() {
         ambito = null;
         particulas.clear();
         particulas = null;

@@ -24,8 +24,8 @@ public class EntidadTestFisica extends Entity {
 
     @Override
     public void comprobarMovimiento() {
-        // if (transformacion.getTraslacion().y < 0.5f) {
-        // transformacion.getTraslacion().y = 0.5f;
+        // if (transformacion.getLocation().y < 0.5f) {
+        // transformacion.getLocation().y = 0.5f;
         // }
     }
 

@@ -26,7 +26,7 @@ public class GenFuego {
         AABB ambito = new AABB(new Vertex(-0.15f, 0, -0.15f), new Vertex(.15f, 1.5f, .15f));//
         FireEmissor emisorFuego = new FireEmissor(ambito, 2000, 50, 5, QGlobal.gravedad.clone().multiply(-1f), false);
         fogata.addComponent(emisorFuego);
-        fogata.getTransformacion().trasladar(0, 0.5f, 0);
+        fogata.getTransform().move(0, 0.5f, 0);
 
         Entity enLuz = new Entity();
         enLuz.move(0, 0.25f, 0);
@@ -49,7 +49,7 @@ public class GenFuego {
         AABB ambito = new AABB(new Vertex(-0.15f, 0, -0.15f), new Vertex(.15f, 1.5f, .15f));//
         FireEmissor emisorFuego = new FireEmissor(ambito, 2000, 50, 5, QGlobal.gravedad.clone().multiply(-1f), true);
         fogata.addComponent(emisorFuego);
-        fogata.getTransformacion().trasladar(0, 0.5f, 0);
+        fogata.getTransform().move(0, 0.5f, 0);
 
         Entity enLuz = new Entity();
         enLuz.move(0, 0.25f, 0);

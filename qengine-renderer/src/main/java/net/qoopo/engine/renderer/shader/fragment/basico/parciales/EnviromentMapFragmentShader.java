@@ -113,8 +113,8 @@ public class EnviromentMapFragmentShader extends FragmentShader {
 
             // si se configuro un color transparente para la textura
             // solo activa la transparencia si tiene el canal alfa
-            if (color.a < 1 || (material.isTransparencia() && material.getColorTransparente() != null
-                    && color.toRGB() == material.getColorTransparente().toRGB())) {
+            if (color.a < 1 || (material.isTransparencia() && material.getAlphaColour() != null
+                    && color.toRGB() == material.getAlphaColour().toRGB())) {
                 return null;
             }
         }
@@ -232,9 +232,9 @@ public class EnviromentMapFragmentShader extends FragmentShader {
 
                         if (luz instanceof QPointLigth || luz instanceof QSpotLigth) {
                             // vectorLuz.set(pixel.ubicacion.x -
-                            // luz.entity.getTransformacion().getTraslacion().x, pixel.ubicacion.y -
-                            // luz.entity.getTransformacion().getTraslacion().y, pixel.ubicacion.z -
-                            // luz.entity.getTransformacion().getTraslacion().z);
+                            // luz.entity.getTransformacion().getLocation().x, pixel.ubicacion.y -
+                            // luz.entity.getTransformacion().getLocation().y, pixel.ubicacion.z -
+                            // luz.entity.getTransformacion().getLocation().z);
                             vectorLuz.set(fragment.ubicacion.getVector3().clone().subtract(
                                     TransformationVectorUtil.transformarVector(QVector3.zero, luz.getEntity(),
                                             render.getCamera())));

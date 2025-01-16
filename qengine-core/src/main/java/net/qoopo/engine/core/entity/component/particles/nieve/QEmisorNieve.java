@@ -40,7 +40,7 @@ public class QEmisorNieve extends ParticleEmissor {
             material = new Material(
                     new Texture(ImgReader.read(new File("assets/textures/nieve/copo0.png"))), 64);
             // material.setTransAlfa(0.90f);// el objeto tiene una transparencia
-            material.setColorTransparente(QColor.BLACK);
+            material.setAlphaColour(QColor.BLACK);
             material.setTransparencia(true);
         } catch (Exception e) {
             e.printStackTrace();
@@ -107,7 +107,7 @@ public class QEmisorNieve extends ParticleEmissor {
             // copo.setTiempoVida(copo.getTiempoVida() - 0.1f);
             // si ya paso su tiempo de vida o ya esta fuera del ambito en la altura
             if ((System.currentTimeMillis() - particula.getTiempoCreacion()) / 1000 > particula.getTiempoVida()
-                    || (particula.objeto.getTransformacion().getTraslacion().y < ambito.aabMinimo.location.y)) {
+                    || (particula.objeto.getTransform().getLocation().y < ambito.aabMinimo.location.y)) {
                 particulasEliminadas.add(particula);
                 actuales--;
                 particula.objeto.setToRender(false);
@@ -151,7 +151,7 @@ public class QEmisorNieve extends ParticleEmissor {
     }
 
     @Override
-    public void destruir() {
+    public void destroy() {
         throw new UnsupportedOperationException("Not supported yet."); // To change body of generated methods, choose
                                                                        // Tools | Templates.
     }

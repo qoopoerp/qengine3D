@@ -160,7 +160,7 @@ public class MoveGizmo extends Gizmo {
     public void updateLocationGizmo() {
         try {
             if (entity != null) {
-                this.transformacion.getTraslacion()
+                this.transform.getLocation()
                         .set(entity.getMatrizTransformacion(QGlobal.time).toTranslationVector());
             }
         } catch (Exception e) {

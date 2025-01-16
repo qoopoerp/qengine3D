@@ -17,7 +17,7 @@ public class QGlobal {
 
     public static long time = 0;
 
-    public static boolean ENABLE_GAMMA_FIX = false;
+    public static boolean ENABLE_GAMMA_FIX = true;
 
     public static final float MOTOR_RENDER_FPS = 60f;
 

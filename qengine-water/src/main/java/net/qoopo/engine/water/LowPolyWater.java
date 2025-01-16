@@ -40,8 +40,8 @@ public class LowPolyWater extends Water {
     }
 
     public void build() {
-        // enableReflection = false;
-        // enableRefraction = false;
+        enableReflection = false;
+        enableRefraction = false;
         super.build();
         // Material
         material = new Material("water");
@@ -69,7 +69,7 @@ public class LowPolyWater extends Water {
 
     }
 
-    public void destruir() {
-        super.destruir();
+    public void destroy() {
+        super.destroy();
     }
 }

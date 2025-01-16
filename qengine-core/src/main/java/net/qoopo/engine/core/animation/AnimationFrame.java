@@ -23,7 +23,7 @@ public class AnimationFrame implements Serializable {
      * QParAnimacion de paresModificarAnimacion a ser modificados en esta
      * animación
      */
-    private List<AnimationPair> paresModificarAnimacion = new ArrayList<>();
+    private List<AnimationPair> animationPairList = new ArrayList<>();
 
     public AnimationFrame() {
 
@@ -35,23 +35,23 @@ public class AnimationFrame implements Serializable {
 
     public AnimationFrame(float marcaTiempo, List<AnimationPair> objetos) {
         this.marcaTiempo = marcaTiempo;
-        this.paresModificarAnimacion = objetos;
+        this.animationPairList = objetos;
     }
 
-    public List<AnimationPair> getParesModificarAnimacion() {
-        return paresModificarAnimacion;
+    public List<AnimationPair> getAnimationPairList() {
+        return animationPairList;
     }
 
-    public void setParesModificarAnimacion(List<AnimationPair> paresModificarAnimacion) {
-        this.paresModificarAnimacion = paresModificarAnimacion;
+    public void setAnimationPairList(List<AnimationPair> paresModificarAnimacion) {
+        this.animationPairList = paresModificarAnimacion;
     }
 
-    public void agregarPar(AnimationPair par) {
-        paresModificarAnimacion.add(par);
+    public void addPair(AnimationPair par) {
+        animationPairList.add(par);
     }
 
-    public void eliminarPar(AnimationPair par) {
-        paresModificarAnimacion.remove(par);
+    public void removePair(AnimationPair par) {
+        animationPairList.remove(par);
     }
 
     /**
@@ -74,8 +74,8 @@ public class AnimationFrame implements Serializable {
     }
 
     public void destruir() {
-        paresModificarAnimacion.clear();
-        paresModificarAnimacion = null;
+        animationPairList.clear();
+        animationPairList = null;
     }
   
 }

@@ -47,7 +47,7 @@ public class Material extends AbstractMaterial {
     private boolean transparencia = false;
     // transparencia, 0 transparente 1 solido
     private float transAlfa = 1.0f;
-    private QColor colorTransparente = null;
+    private QColor alphaColour = null;
 
     // ***************** ESPECULARIDAD *********************
     // nivel de brillo, maximo 500

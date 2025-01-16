@@ -185,7 +185,7 @@ public class Mesh implements EntityComponent {
 
     public Poly addPoly(AbstractMaterial material, int[] vertices) throws Exception {
         validarVertices(vertices);
-        Poly nuevo = new Poly(this, vertices);
+        Poly nuevo = new Poly(this, vertices, vertices, vertices);
         nuevo.material = material;
         primitiveList = Arrays.copyOf(primitiveList, primitiveList.length + 1);
         primitiveList[primitiveList.length - 1] = nuevo;
@@ -258,7 +258,7 @@ public class Mesh implements EntityComponent {
 
 
     @Override
-    public void destruir() {
+    public void destroy() {
         deleteData();
         // try {
         // for (Primitive face : primitiveList) {
