@@ -125,7 +125,7 @@ public class AnimationComponent implements EntityComponent {
                 tiempo %= duracion;
             } else {
                 // tiempo = tiempoPrevio;
-                tiempo = listaFrames.get(listaFrames.size() - 1).getMarcaTiempo();
+                tiempo = listaFrames.get(listaFrames.size() - 1).getTimeMark();
             }
         }
         calcularFrameActual();
@@ -154,7 +154,7 @@ public class AnimationComponent implements EntityComponent {
 
         // ahora recorremos los pares para cambiar la posicion y rotacion de cada uno
         frame.getAnimationPairList().forEach(par -> {
-            par.getEntidad().setTransform(par.getTransformacion());
+            par.getEntidad().setTransform(par.getTransform());
         });
     }
 
@@ -187,8 +187,8 @@ public class AnimationComponent implements EntityComponent {
             if (siguiente.getAnimationPairList().size() > i) {
                 // si tiene el mismo tama;o (deberia ser asi)
                 Entity bone = previo.getAnimationPairList().get(i).getEntidad();
-                Transform origen = previo.getAnimationPairList().get(i).getTransformacion();
-                Transform destino = siguiente.getAnimationPairList().get(i).getTransformacion();
+                Transform origen = previo.getAnimationPairList().get(i).getTransform();
+                Transform destino = siguiente.getAnimationPairList().get(i).getTransform();
                 if (siguiente.getAnimationPairList().get(i).getEntidad().getName().equals(bone.getName())) {
                     nuevo.addPair(new AnimationPair(bone, Transform.interpolate(origen, destino, progresion)));
                 } else {
@@ -213,8 +213,8 @@ public class AnimationComponent implements EntityComponent {
      * @return
      */
     private float calcularProgresion(AnimationFrame previo, AnimationFrame siguiente) {
-        float totalTime = Math.abs(siguiente.getMarcaTiempo() - previo.getMarcaTiempo());
-        float currentTime = tiempo - previo.getMarcaTiempo();
+        float totalTime = Math.abs(siguiente.getTimeMark() - previo.getTimeMark());
+        float currentTime = tiempo - previo.getTimeMark();
         return currentTime / totalTime;
     }
 
@@ -231,7 +231,7 @@ public class AnimationComponent implements EntityComponent {
             AnimationFrame nextFrame = listaFrames.get(0);
             for (int i = 1; i < listaFrames.size(); i++) {
                 nextFrame = listaFrames.get(i);
-                if (nextFrame.getMarcaTiempo() >= tiempo) {
+                if (nextFrame.getTimeMark() >= tiempo) {
                     break;
                 }
                 previousFrame = listaFrames.get(i);

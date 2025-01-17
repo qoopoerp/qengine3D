@@ -156,9 +156,9 @@ public class PnlTransformacion extends javax.swing.JPanel {
         spnLocX.setValue((float) transformacion.getLocation().x);
         spnLocY.setValue(transformacion.getLocation().y);
         spnLocZ.setValue(transformacion.getLocation().z);
-        spnRotX.setValue(transformacion.getRotation().getAngulos().getAnguloX() * 180 / Math.PI);
-        spnRotY.setValue(transformacion.getRotation().getAngulos().getAnguloY() * 180 / Math.PI);
-        spnRotZ.setValue(transformacion.getRotation().getAngulos().getAnguloZ() * 180 / Math.PI);
+        spnRotX.setValue(transformacion.getRotation().getEulerAngles().x * 180 / Math.PI);
+        spnRotY.setValue(transformacion.getRotation().getEulerAngles().y * 180 / Math.PI);
+        spnRotZ.setValue(transformacion.getRotation().getEulerAngles().z * 180 / Math.PI);
         spnScaleX.setValue(transformacion.getScale().x);
         spnScaleY.setValue(transformacion.getScale().y);
         spnScaleZ.setValue(transformacion.getScale().z);

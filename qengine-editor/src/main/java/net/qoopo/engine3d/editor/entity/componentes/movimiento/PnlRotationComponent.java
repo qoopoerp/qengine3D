@@ -35,15 +35,15 @@ public class PnlRotationComponent extends javax.swing.JPanel {
     public PnlRotationComponent(RotationEntityComponent modifier) {
         initComponents();
         this.modifier = modifier;
-        txtX.setText(String.valueOf(Math.toDegrees(modifier.getRadiansX())));
-        txtY.setText(String.valueOf(Math.toDegrees(modifier.getRadiansY())));
-        txtZ.setText(String.valueOf(Math.toDegrees(modifier.getRadiansZ())));
+        txtX.setText(String.valueOf(Math.toDegrees(modifier.getRotation().x)));
+        txtY.setText(String.valueOf(Math.toDegrees(modifier.getRotation().y)));
+        txtZ.setText(String.valueOf(Math.toDegrees(modifier.getRotation().z)));
     }
 
     private void aplicarCambios() {
-        modifier.setRadiansX((float) Math.toRadians(Float.valueOf(txtX.getText())));
-        modifier.setRadiansY((float) Math.toRadians(Float.valueOf(txtY.getText())));
-        modifier.setRadiansZ((float) Math.toRadians(Float.valueOf(txtZ.getText())));
+        modifier.getRotation().x = ((float) Math.toRadians(Float.valueOf(txtX.getText())));
+        modifier.getRotation().y = ((float) Math.toRadians(Float.valueOf(txtY.getText())));
+        modifier.getRotation().z = ((float) Math.toRadians(Float.valueOf(txtZ.getText())));
         // modifier.setCachedMesh(null);
         // modifier.build();
     }

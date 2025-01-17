@@ -6,7 +6,7 @@
 package net.qoopo.engine.renderer.raster;
 
 import net.qoopo.engine.core.entity.component.mesh.primitive.Primitive;
-import net.qoopo.engine.core.entity.component.mesh.primitive.QVertexBuffer;
+import net.qoopo.engine.core.entity.component.mesh.primitive.VertexBuffer;
 import net.qoopo.engine.core.entity.component.mesh.primitive.Vertex;
 import net.qoopo.engine.core.math.QMath;
 import net.qoopo.engine.core.math.QMatriz4;
@@ -39,7 +39,7 @@ public interface AbstractRaster {
      * @param primitiva
      * @param wire
      */
-    public void raster(QMatriz4 matViewModel, QVertexBuffer bufferVertices, Primitive primitiva, boolean wire);
+    public void raster(QMatriz4 matViewModel, VertexBuffer bufferVertices, Primitive primitiva, boolean wire);
 
     /**
      * Realiza el clipping de los vertices

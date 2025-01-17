@@ -139,7 +139,7 @@ public class ScaleGizmo extends Gizmo {
                         .set(entity.getMatrizTransformacion(QGlobal.time).toTranslationVector());
                 this.transform.getRotation()
                         .setCuaternion(entity.getMatrizTransformacion(QGlobal.time).toRotationQuat());
-                this.transform.getRotation().actualizarAngulos();
+                this.transform.getRotation().updateEuler();
             }
         } catch (Exception e) {
         }

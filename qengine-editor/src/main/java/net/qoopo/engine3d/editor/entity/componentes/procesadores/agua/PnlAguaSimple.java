@@ -120,7 +120,7 @@ public class PnlAguaSimple extends javax.swing.JPanel {
 
     private void btnAgregaAguaActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btnAgregaAguaActionPerformed
         Material material = new Material("Lago");
-        material.setTransparencia(true);
+        material.setTransparent(true);
         material.setTransAlfa(0.4f);// 40% ( transparencia del 60%)
         material.setColor(new QColor(1, 0, 0, 0.7f));
         material.setSpecularExponent(64);

@@ -33,7 +33,7 @@ import org.lwjgl.system.MemoryUtil;
 
 import net.qoopo.engine.core.entity.Entity;
 import net.qoopo.engine.core.entity.component.mesh.primitive.Primitive;
-import net.qoopo.engine.core.entity.component.mesh.primitive.QVertexBuffer;
+import net.qoopo.engine.core.entity.component.mesh.primitive.VertexBuffer;
 import net.qoopo.engine.core.entity.component.mesh.primitive.Vertex;
 import net.qoopo.engine.core.lwjgl.renderer.core.QGlVentana;
 import net.qoopo.engine.core.lwjgl.renderer.core.shader.QGLShader;
@@ -187,7 +187,7 @@ public class OpenGlRenderer extends RenderEngine {
     }
 
     @Override
-    public void render(QMatriz4 matViewModel, QVertexBuffer bufferVertices, Primitive primitiva, boolean wire) {
+    public void render(QMatriz4 matViewModel, VertexBuffer bufferVertices, Primitive primitiva, boolean wire) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'render'");
     }

@@ -17,7 +17,7 @@ import net.qoopo.engine.core.engine.EngineTime;
 import net.qoopo.engine.core.entity.Entity;
 import net.qoopo.engine.core.entity.component.ligth.QLigth;
 import net.qoopo.engine.core.entity.component.mesh.primitive.Primitive;
-import net.qoopo.engine.core.entity.component.mesh.primitive.QVertexBuffer;
+import net.qoopo.engine.core.entity.component.mesh.primitive.VertexBuffer;
 import net.qoopo.engine.core.entity.component.mesh.primitive.Vertex;
 import net.qoopo.engine.core.input.QDefaultListener;
 import net.qoopo.engine.core.math.QColor;
@@ -27,7 +27,7 @@ import net.qoopo.engine.core.renderer.buffer.FrameBuffer;
 import net.qoopo.engine.core.renderer.post.FilterTexture;
 import net.qoopo.engine.core.renderer.superficie.Superficie;
 import net.qoopo.engine.core.scene.Camera;
-import net.qoopo.engine.core.scene.QClipPane;
+import net.qoopo.engine.core.scene.ClipPane;
 import net.qoopo.engine.core.scene.QOrigen;
 import net.qoopo.engine.core.scene.Scene;
 import net.qoopo.engine.core.texture.Texture;
@@ -105,7 +105,7 @@ public abstract class RenderEngine extends Engine {
     /**
      * Plano que permite hacer culling
      */
-    protected QClipPane panelClip = null;
+    protected ClipPane panelClip = null;
 
     /**
      * Superficie donde se va a dibujar
@@ -228,13 +228,13 @@ public abstract class RenderEngine extends Engine {
      */
     public abstract Entity selectEntity(QVector2 mouseLocation);
 
-    public float getCameraRotationZ() {
-        return camera.getTransform().getRotation().getAngulos().getAnguloZ();
-    }
+    // public float getCameraRotationZ() {
+    //     return camera.getTransform().getRotation().getEulerAngles().z;
+    // }
 
-    public void setCameraRotationZ(float rotateZ) {
-        this.camera.getTransform().getRotation().rotarZ(rotateZ);
-    }
+    // public void setCameraRotationZ(float rotateZ) {
+    //     this.camera.getTransform().getRotation().rotarZ(rotateZ);
+    // }
 
     protected void prepararInputListener() {
         if (superficie != null && superficie.getComponente() != null) {
@@ -305,11 +305,11 @@ public abstract class RenderEngine extends Engine {
                     + DF.format(camera.getTransform().getLocation().y) + ";"
                     + DF.format(camera.getTransform().getLocation().z) + ")", 10, 120);
             g.drawString("Ang (X;Y;Z)  : ("
-                    + DF.format(Math.toDegrees(camera.getTransform().getRotation().getAngulos().getAnguloX()))
+                    + DF.format(Math.toDegrees(camera.getTransform().getRotation().getEulerAngles().x))
                     + ";"
-                    + DF.format(Math.toDegrees(camera.getTransform().getRotation().getAngulos().getAnguloY()))
+                    + DF.format(Math.toDegrees(camera.getTransform().getRotation().getEulerAngles().y))
                     + ";"
-                    + DF.format(Math.toDegrees(camera.getTransform().getRotation().getAngulos().getAnguloZ()))
+                    + DF.format(Math.toDegrees(camera.getTransform().getRotation().getEulerAngles().z))
                     + ")", 10, 130);
         }
         // gf.drawImage(g., 0, 0, this.getSuperficie().getComponente().getWidth(),
@@ -368,7 +368,7 @@ public abstract class RenderEngine extends Engine {
      * @param primitiva
      * @param wire
      */
-    public abstract void render(QMatriz4 matViewModel, QVertexBuffer bufferVertices, Primitive primitiva, boolean wire);
+    public abstract void render(QMatriz4 matViewModel, VertexBuffer bufferVertices, Primitive primitiva, boolean wire);
 
     public abstract void renderEntity(Entity entity, QMatriz4 matrizVista, QMatriz4 matrizVistaInvertidaBillboard,
             boolean transparentes);

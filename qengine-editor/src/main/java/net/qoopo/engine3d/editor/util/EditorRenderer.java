@@ -283,9 +283,9 @@ public class EditorRenderer {
 
                                         renderer.renderLine(matVistaModelo, polGrid,
                                                         vertexShader.apply(t.vertex1, normal, uv, color,
-                                                                        matVistaModelo),
+                                                                        matVistaModelo).getVertex(),
                                                         vertexShader.apply(t.vertex2, normal, uv, color,
-                                                                        matVistaModelo));
+                                                                        matVistaModelo).getVertex());
                                 }
                                 // lineas paralelas en el eje Z
                                 for (int i = 0; i <= secciones; i++) {
@@ -294,9 +294,9 @@ public class EditorRenderer {
 
                                         renderer.renderLine(matVistaModelo, polGrid,
                                                         vertexShader.apply(t.vertex1, normal, uv, color,
-                                                                        matVistaModelo),
+                                                                        matVistaModelo).getVertex(),
                                                         vertexShader.apply(t.vertex2, normal, uv, color,
-                                                                        matVistaModelo));
+                                                                        matVistaModelo).getVertex());
                                 }
                                 // el eje de X
                                 {
@@ -305,9 +305,9 @@ public class EditorRenderer {
 
                                         renderer.renderLine(matVistaModelo, polSeleccion,
                                                         vertexShader.apply(t.vertex1, normal, uv, color,
-                                                                        matVistaModelo),
+                                                                        matVistaModelo).getVertex(),
                                                         vertexShader.apply(t.vertex2, normal, uv, color,
-                                                                        matVistaModelo));
+                                                                        matVistaModelo).getVertex());
                                 }
                                 // el eje de Z
                                 {
@@ -316,9 +316,9 @@ public class EditorRenderer {
 
                                         renderer.renderLine(matVistaModelo, polSeleccion,
                                                         vertexShader.apply(t.vertex1, normal, uv, color,
-                                                                        matVistaModelo),
+                                                                        matVistaModelo).getVertex(),
                                                         vertexShader.apply(t.vertex2, normal, uv, color,
-                                                                        matVistaModelo));
+                                                                        matVistaModelo).getVertex());
                                 }
                         } catch (Exception e) {
                                 e.printStackTrace();
@@ -491,19 +491,19 @@ public class EditorRenderer {
 
                                                 renderer.renderLine(matVistaModelo, polSeleccion,
                                                                 vertexShader.apply(t.vertex1, normal, uv, color,
-                                                                                matVistaModelo),
+                                                                                matVistaModelo).getVertex(),
                                                                 vertexShader.apply(t.vertex2, normal, uv, color,
-                                                                                matVistaModelo));
+                                                                                matVistaModelo).getVertex());
                                                 renderer.renderLine(matVistaModelo, polSeleccion,
                                                                 vertexShader.apply(t.vertex1, normal, uv, color,
-                                                                                matVistaModelo),
+                                                                                matVistaModelo).getVertex(),
                                                                 vertexShader.apply(t.vertex3, normal, uv, color,
-                                                                                matVistaModelo));
+                                                                                matVistaModelo).getVertex());
                                                 renderer.renderLine(matVistaModelo, polSeleccion,
                                                                 vertexShader.apply(t.vertex1, normal, uv, color,
-                                                                                matVistaModelo),
+                                                                                matVistaModelo).getVertex(),
                                                                 vertexShader.apply(t.vertex4, normal, uv, color,
-                                                                                matVistaModelo));
+                                                                                matVistaModelo).getVertex());
                                                 // 2
 
                                                 t.vertex1.set(tmp.aabMinimo.location.x, tmp.aabMaximo.location.y,
@@ -524,19 +524,19 @@ public class EditorRenderer {
 
                                                 renderer.renderLine(matVistaModelo, polSeleccion,
                                                                 vertexShader.apply(t.vertex1, normal, uv, color,
-                                                                                matVistaModelo),
+                                                                                matVistaModelo).getVertex(),
                                                                 vertexShader.apply(t.vertex2, normal, uv, color,
-                                                                                matVistaModelo));
+                                                                                matVistaModelo).getVertex());
                                                 renderer.renderLine(matVistaModelo, polSeleccion,
                                                                 vertexShader.apply(t.vertex1, normal, uv, color,
-                                                                                matVistaModelo),
+                                                                                matVistaModelo).getVertex(),
                                                                 vertexShader.apply(t.vertex3, normal, uv, color,
-                                                                                matVistaModelo));
+                                                                                matVistaModelo).getVertex());
                                                 renderer.renderLine(matVistaModelo, polSeleccion,
                                                                 vertexShader.apply(t.vertex1, normal, uv, color,
-                                                                                matVistaModelo),
+                                                                                matVistaModelo).getVertex(),
                                                                 vertexShader.apply(t.vertex4, normal, uv, color,
-                                                                                matVistaModelo));
+                                                                                matVistaModelo).getVertex());
                                                 // 3
                                                 t.vertex1.set(tmp.aabMinimo.location.x, tmp.aabMaximo.location.y,
                                                                 tmp.aabMinimo.location.z,
@@ -556,19 +556,19 @@ public class EditorRenderer {
 
                                                 renderer.renderLine(matVistaModelo, polSeleccion,
                                                                 vertexShader.apply(t.vertex1, normal, uv, color,
-                                                                                matVistaModelo),
+                                                                                matVistaModelo).getVertex(),
                                                                 vertexShader.apply(t.vertex2, normal, uv, color,
-                                                                                matVistaModelo));
+                                                                                matVistaModelo).getVertex());
                                                 renderer.renderLine(matVistaModelo, polSeleccion,
                                                                 vertexShader.apply(t.vertex1, normal, uv, color,
-                                                                                matVistaModelo),
+                                                                                matVistaModelo).getVertex(),
                                                                 vertexShader.apply(t.vertex3, normal, uv, color,
-                                                                                matVistaModelo));
+                                                                                matVistaModelo).getVertex());
                                                 renderer.renderLine(matVistaModelo, polSeleccion,
                                                                 vertexShader.apply(t.vertex1, normal, uv, color,
-                                                                                matVistaModelo),
+                                                                                matVistaModelo).getVertex(),
                                                                 vertexShader.apply(t.vertex4, normal, uv, color,
-                                                                                matVistaModelo));
+                                                                                matVistaModelo).getVertex());
                                                 // 4
 
                                                 t.vertex1.set(tmp.aabMaximo.location.x, tmp.aabMaximo.location.y,
@@ -589,19 +589,19 @@ public class EditorRenderer {
 
                                                 renderer.renderLine(matVistaModelo, polSeleccion,
                                                                 vertexShader.apply(t.vertex1, normal, uv, color,
-                                                                                matVistaModelo),
+                                                                                matVistaModelo).getVertex(),
                                                                 vertexShader.apply(t.vertex2, normal, uv, color,
-                                                                                matVistaModelo));
+                                                                                matVistaModelo).getVertex());
                                                 renderer.renderLine(matVistaModelo, polSeleccion,
                                                                 vertexShader.apply(t.vertex1, normal, uv, color,
-                                                                                matVistaModelo),
+                                                                                matVistaModelo).getVertex(),
                                                                 vertexShader.apply(t.vertex3, normal, uv, color,
-                                                                                matVistaModelo));
+                                                                                matVistaModelo).getVertex());
                                                 renderer.renderLine(matVistaModelo, polSeleccion,
                                                                 vertexShader.apply(t.vertex1, normal, uv, color,
-                                                                                matVistaModelo),
+                                                                                matVistaModelo).getVertex(),
                                                                 vertexShader.apply(t.vertex4, normal, uv, color,
-                                                                                matVistaModelo));
+                                                                                matVistaModelo).getVertex());
 
                                                 // ((QMaterialBas) polSeleccion.material).setColorDifusa(QColor.CYAN);
                                                 // inferiores
@@ -625,19 +625,19 @@ public class EditorRenderer {
 
                                                 renderer.renderLine(matVistaModelo, polSeleccion,
                                                                 vertexShader.apply(t.vertex1, normal, uv, color,
-                                                                                matVistaModelo),
+                                                                                matVistaModelo).getVertex(),
                                                                 vertexShader.apply(t.vertex2, normal, uv, color,
-                                                                                matVistaModelo));
+                                                                                matVistaModelo).getVertex());
                                                 renderer.renderLine(matVistaModelo, polSeleccion,
                                                                 vertexShader.apply(t.vertex1, normal, uv, color,
-                                                                                matVistaModelo),
+                                                                                matVistaModelo).getVertex(),
                                                                 vertexShader.apply(t.vertex3, normal, uv, color,
-                                                                                matVistaModelo));
+                                                                                matVistaModelo).getVertex());
                                                 renderer.renderLine(matVistaModelo, polSeleccion,
                                                                 vertexShader.apply(t.vertex1, normal, uv, color,
-                                                                                matVistaModelo),
+                                                                                matVistaModelo).getVertex(),
                                                                 vertexShader.apply(t.vertex4, normal, uv, color,
-                                                                                matVistaModelo));
+                                                                                matVistaModelo).getVertex());
 
                                                 // 2
 
@@ -659,19 +659,19 @@ public class EditorRenderer {
 
                                                 renderer.renderLine(matVistaModelo, polSeleccion,
                                                                 vertexShader.apply(t.vertex1, normal, uv, color,
-                                                                                matVistaModelo),
+                                                                                matVistaModelo).getVertex(),
                                                                 vertexShader.apply(t.vertex2, normal, uv, color,
-                                                                                matVistaModelo));
+                                                                                matVistaModelo).getVertex());
                                                 renderer.renderLine(matVistaModelo, polSeleccion,
                                                                 vertexShader.apply(t.vertex1, normal, uv, color,
-                                                                                matVistaModelo),
+                                                                                matVistaModelo).getVertex(),
                                                                 vertexShader.apply(t.vertex3, normal, uv, color,
-                                                                                matVistaModelo));
+                                                                                matVistaModelo).getVertex());
                                                 renderer.renderLine(matVistaModelo, polSeleccion,
                                                                 vertexShader.apply(t.vertex1, normal, uv, color,
-                                                                                matVistaModelo),
+                                                                                matVistaModelo).getVertex(),
                                                                 vertexShader.apply(t.vertex4, normal, uv, color,
-                                                                                matVistaModelo));
+                                                                                matVistaModelo).getVertex());
 
                                                 // 3
 
@@ -693,19 +693,19 @@ public class EditorRenderer {
 
                                                 renderer.renderLine(matVistaModelo, polSeleccion,
                                                                 vertexShader.apply(t.vertex1, normal, uv, color,
-                                                                                matVistaModelo),
+                                                                                matVistaModelo).getVertex(),
                                                                 vertexShader.apply(t.vertex2, normal, uv, color,
-                                                                                matVistaModelo));
+                                                                                matVistaModelo).getVertex());
                                                 renderer.renderLine(matVistaModelo, polSeleccion,
                                                                 vertexShader.apply(t.vertex1, normal, uv, color,
-                                                                                matVistaModelo),
+                                                                                matVistaModelo).getVertex(),
                                                                 vertexShader.apply(t.vertex3, normal, uv, color,
-                                                                                matVistaModelo));
+                                                                                matVistaModelo).getVertex());
                                                 renderer.renderLine(matVistaModelo, polSeleccion,
                                                                 vertexShader.apply(t.vertex1, normal, uv, color,
-                                                                                matVistaModelo),
+                                                                                matVistaModelo).getVertex(),
                                                                 vertexShader.apply(t.vertex4, normal, uv, color,
-                                                                                matVistaModelo));
+                                                                                matVistaModelo).getVertex());
 
                                                 // 4
 
@@ -727,19 +727,19 @@ public class EditorRenderer {
 
                                                 renderer.renderLine(matVistaModelo, polSeleccion,
                                                                 vertexShader.apply(t.vertex1, normal, uv, color,
-                                                                                matVistaModelo),
+                                                                                matVistaModelo).getVertex(),
                                                                 vertexShader.apply(t.vertex2, normal, uv, color,
-                                                                                matVistaModelo));
+                                                                                matVistaModelo).getVertex());
                                                 renderer.renderLine(matVistaModelo, polSeleccion,
                                                                 vertexShader.apply(t.vertex1, normal, uv, color,
-                                                                                matVistaModelo),
+                                                                                matVistaModelo).getVertex(),
                                                                 vertexShader.apply(t.vertex3, normal, uv, color,
-                                                                                matVistaModelo));
+                                                                                matVistaModelo).getVertex());
                                                 renderer.renderLine(matVistaModelo, polSeleccion,
                                                                 vertexShader.apply(t.vertex1, normal, uv, color,
-                                                                                matVistaModelo),
+                                                                                matVistaModelo).getVertex(),
                                                                 vertexShader.apply(t.vertex4, normal, uv, color,
-                                                                                matVistaModelo));
+                                                                                matVistaModelo).getVertex());
 
                                         } finally {
                                                 t.release();
@@ -832,42 +832,42 @@ public class EditorRenderer {
 
                                         // // ejes
                                         // t.vertex1.set(currentGizmo.getTransformacion().getLocation().x,
-                                        //                 currentGizmo.getTransformacion().getLocation().y,
-                                        //                 currentGizmo.getTransformacion().getLocation().z,
-                                        //                 1);
+                                        // currentGizmo.getTransformacion().getLocation().y,
+                                        // currentGizmo.getTransformacion().getLocation().z,
+                                        // 1);
 
                                         // t.vertex2.set(currentGizmo.getTransformacion().getLocation().x + 1,
-                                        //                 currentGizmo.getTransformacion().getLocation().y,
-                                        //                 currentGizmo.getTransformacion().getLocation().z,
-                                        //                 1);
+                                        // currentGizmo.getTransformacion().getLocation().y,
+                                        // currentGizmo.getTransformacion().getLocation().z,
+                                        // 1);
 
                                         // t.vertex3.set(currentGizmo.getTransformacion().getLocation().x,
-                                        //                 currentGizmo.getTransformacion().getLocation().y + 1,
-                                        //                 currentGizmo.getTransformacion().getLocation().z,
-                                        //                 1);
+                                        // currentGizmo.getTransformacion().getLocation().y + 1,
+                                        // currentGizmo.getTransformacion().getLocation().z,
+                                        // 1);
 
                                         // t.vertex4.set(currentGizmo.getTransformacion().getLocation().x,
-                                        //                 currentGizmo.getTransformacion().getLocation().y,
-                                        //                 currentGizmo.getTransformacion().getLocation().z + 1,
-                                        //                 1);
+                                        // currentGizmo.getTransformacion().getLocation().y,
+                                        // currentGizmo.getTransformacion().getLocation().z + 1,
+                                        // 1);
 
                                         // renderer.renderLine(matVistaModelo, polEjeX,
-                                        //                 vertexShader.apply(t.vertex1, normal, uv, color,
-                                        //                                 matVistaModelo),
-                                        //                 vertexShader.apply(t.vertex2, normal, uv, color,
-                                        //                                 matVistaModelo));
+                                        // vertexShader.apply(t.vertex1, normal, uv, color,
+                                        // matVistaModelo),
+                                        // vertexShader.apply(t.vertex2, normal, uv, color,
+                                        // matVistaModelo));
 
                                         // renderer.renderLine(matVistaModelo, polEjeY,
-                                        //                 vertexShader.apply(t.vertex1, normal, uv, color,
-                                        //                                 matVistaModelo),
-                                        //                 vertexShader.apply(t.vertex3, normal, uv, color,
-                                        //                                 matVistaModelo));
+                                        // vertexShader.apply(t.vertex1, normal, uv, color,
+                                        // matVistaModelo),
+                                        // vertexShader.apply(t.vertex3, normal, uv, color,
+                                        // matVistaModelo));
 
                                         // renderer.renderLine(matVistaModelo, polEjeZ,
-                                        //                 vertexShader.apply(t.vertex1, normal, uv, color,
-                                        //                                 matVistaModelo),
-                                        //                 vertexShader.apply(t.vertex4, normal, uv, color,
-                                        //                                 matVistaModelo));
+                                        // vertexShader.apply(t.vertex1, normal, uv, color,
+                                        // matVistaModelo),
+                                        // vertexShader.apply(t.vertex4, normal, uv, color,
+                                        // matVistaModelo));
                                 } catch (Exception e) {
                                         e.printStackTrace();
                                 } finally {

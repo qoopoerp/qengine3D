@@ -58,7 +58,7 @@ public class BRDFFragmentShader extends FragmentShader {
         // ***********************************************************
 
         Material material = (Material) fragment.material;
-        if (material.isTransparencia()) {
+        if (material.isTransparent()) {
             // si tiene un mapa de transparencia
             float alpha = 0;
             if (material.getAlphaMap() != null) {

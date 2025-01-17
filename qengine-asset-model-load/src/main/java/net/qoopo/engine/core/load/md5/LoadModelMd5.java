@@ -35,7 +35,7 @@ import net.qoopo.engine.core.load.md5.util.MD5Utils;
 import net.qoopo.engine.core.material.Material;
 import net.qoopo.engine.core.math.Cuaternion;
 import net.qoopo.engine.core.math.QColor;
-import net.qoopo.engine.core.math.QRotacion;
+import net.qoopo.engine.core.math.Rotation;
 import net.qoopo.engine.core.math.QVector3;
 import net.qoopo.engine.core.texture.util.MaterialUtil;
 import net.qoopo.engine.core.util.QJOMLUtil;
@@ -149,7 +149,7 @@ public class LoadModelMd5 implements ModelLoader {
         for (int i = 0; i < numJoints; i++) {
             joint = joints.get(i);
             hueso = new Bone(i, joint.getName());
-            hueso.setTransform(new Transform(QRotacion.CUATERNION));
+            hueso.setTransform(new Transform(Rotation.CUATERNION));
             hueso.getTransform().getLocation().set(QJOMLUtil.convertirQVector3(joint.getPosition()));
             hueso.getTransform().getRotation().setCuaternion(joint.getOrientation().clone());
             // la inversa de la trasnformacion, la calculamos manualmente sin tomar en
@@ -405,7 +405,7 @@ public class LoadModelMd5 implements ModelLoader {
             }
             // Update Quaternion's w component
             orientation = MD5Utils.calculateQuaternion(new Vector3f(orientation.x, orientation.y, orientation.z));
-            transformacion = new Transform(QRotacion.CUATERNION);
+            transformacion = new Transform(Rotation.CUATERNION);
             transformacion.getLocation().set(position.x, position.y, position.z);
             transformacion.getRotation().setCuaternion(orientation.clone());
 

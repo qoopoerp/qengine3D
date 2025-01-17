@@ -11,7 +11,7 @@ import net.qoopo.engine.core.entity.Entity;
 import net.qoopo.engine.core.entity.component.EntityComponent;
 import net.qoopo.engine.core.math.QMath;
 import net.qoopo.engine.core.math.QMatriz4;
-import net.qoopo.engine.core.math.QRotacion;
+import net.qoopo.engine.core.math.Rotation;
 import net.qoopo.engine.core.math.QVector3;
 
 /**
@@ -28,7 +28,7 @@ public class Transform implements EntityComponent {
     private final QMatriz4 matriz = new QMatriz4();
     private QVector3 location = QVector3.zero.clone();
     private QVector3 scale = QVector3.unitario_xyz.clone();
-    private QRotacion rotation = new QRotacion(QRotacion.ANGULOS_EULER);
+    private Rotation rotation = new Rotation(Rotation.ANGULOS_EULER);
 
     public Transform() {
     }
@@ -42,7 +42,7 @@ public class Transform implements EntityComponent {
         location.set(matriz.toTranslationVector());
         scale.set(matriz.toScaleVector());
         rotation.setCuaternion(matriz.toRotationQuat());
-        rotation.actualizarAngulos();
+        rotation.updateEuler();
     }
 
     public QMatriz4 toMatrix() {
@@ -59,9 +59,9 @@ public class Transform implements EntityComponent {
         try {
             nuevo.getScale().set(scale);
             nuevo.getLocation().set(location);
-            nuevo.getRotation().setAngulos(rotation.getAngulos().clone());
+            // nuevo.getRotation().setEulerAngles(rotation.getEulerAngles().clone());
             nuevo.getRotation().setCuaternion(rotation.getCuaternion().clone());
-            // nuevo.getRotacion().actualizarAngulos();
+            nuevo.getRotation().updateEuler();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -105,7 +105,7 @@ public class Transform implements EntityComponent {
      * @return
      */
     public static Transform interpolate(Transform origen, Transform destino, float progresion) {
-        Transform nueva = new Transform(QRotacion.CUATERNION);
+        Transform nueva = new Transform(Rotation.CUATERNION);
         QMath.interpolateLinear(nueva.location, progresion, origen.location, destino.location);
         QMath.interpolateLinear(nueva.scale, progresion, origen.scale, destino.scale);
         // interpolacion espefira (SLERP)
@@ -115,6 +115,9 @@ public class Transform implements EntityComponent {
         // interpolacion normalizada (NLERP) , m[as rapida
         nueva.getRotation().getCuaternion().set(origen.getRotation().getCuaternion());
         nueva.getRotation().getCuaternion().nlerp(destino.getRotation().getCuaternion(), progresion);
+        // QVector3 angles = new QVector3();
+        // QMath.interpolateLinear(angles, progresion, origen.getRotation().getAngulos().getAngles(), destino.getRotation().getAngulos().getAngles());
+        // nueva.getRotation().getAngulos().set(angles);
         return nueva;
     }
 }

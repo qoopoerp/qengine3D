@@ -18,7 +18,7 @@ public class AnimationFrame implements Serializable {
     /**
      * Marca de tiempo en segundos
      */
-    private float marcaTiempo;
+    private float timeMark;
     /**
      * QParAnimacion de paresModificarAnimacion a ser modificados en esta
      * animación
@@ -29,12 +29,12 @@ public class AnimationFrame implements Serializable {
 
     }
 
-    public AnimationFrame(float marcaTiempo) {
-        this.marcaTiempo = marcaTiempo;
+    public AnimationFrame(float timeMark) {
+        this.timeMark = timeMark;
     }
 
     public AnimationFrame(float marcaTiempo, List<AnimationPair> objetos) {
-        this.marcaTiempo = marcaTiempo;
+        this.timeMark = marcaTiempo;
         this.animationPairList = objetos;
     }
 
@@ -62,15 +62,15 @@ public class AnimationFrame implements Serializable {
      * @return
      */
     public boolean pasarSiguienteFrame(float tiempo) {
-        return tiempo >= this.marcaTiempo;
+        return tiempo >= this.timeMark;
     }
 
-    public float getMarcaTiempo() {
-        return marcaTiempo;
+    public float getTimeMark() {
+        return timeMark;
     }
 
-    public void setMarcaTiempo(float marcaTiempo) {
-        this.marcaTiempo = marcaTiempo;
+    public void setTimeMark(float marcaTiempo) {
+        this.timeMark = marcaTiempo;
     }
 
     public void destruir() {

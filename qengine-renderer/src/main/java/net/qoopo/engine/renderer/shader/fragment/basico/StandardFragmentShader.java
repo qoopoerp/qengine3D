@@ -100,7 +100,7 @@ public class StandardFragmentShader extends FragmentShader {
         // ****** TRANSPARENCIA
         // ***********************************************************
         // //TOMA EL VALOR DE LA TRANSPARENCIA
-        if (material.isTransparencia()) {
+        if (material.isTransparent()) {
             // si tiene un mapa de transparencia
             float alpha = 0;
             if (material.getAlphaMap() != null) {

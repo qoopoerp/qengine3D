@@ -253,7 +253,7 @@ public class EditorMaterial extends javax.swing.JPanel {
             // spnNormalAmount.setValue(material.getFactorNormal());
             spnFactorRefraccion.setValue(material.getIor());
             spnFactorEmision.setValue(material.getEmision());
-            chkTransparencia.setSelected(material.isTransparencia());
+            chkTransparencia.setSelected(material.isTransparent());
             chkReflexion.setSelected(material.isReflexion());
             chkRefraccion.setSelected(material.isRefraccion());
             optCubo.setSelected(material.getEnvMapType() == 1);
@@ -295,7 +295,7 @@ public class EditorMaterial extends javax.swing.JPanel {
         ComponentUtil.removeComponents(entidadVistaPrevia, Mesh.class);
         entidadVistaPrevia.addComponent(MaterialUtil.applyMaterial(new Box(1.0f), material));
         entidadVistaPrevia.getTransform().getRotation().getCuaternion().set(0, 0, 0, 1);
-        entidadVistaPrevia.getTransform().getRotation().actualizarAngulos();
+        entidadVistaPrevia.getTransform().getRotation().updateEuler();
         entidadVistaPrevia.scale(1, 1, 1);
         return entidadVistaPrevia;
     }
@@ -304,7 +304,7 @@ public class EditorMaterial extends javax.swing.JPanel {
         ComponentUtil.removeComponents(entidadVistaPrevia, Mesh.class);
         entidadVistaPrevia.addComponent(MaterialUtil.applyMaterial(new Sphere(.5f), material));
         entidadVistaPrevia.getTransform().getRotation().getCuaternion().set(0, 0, 0, 1);
-        entidadVistaPrevia.getTransform().getRotation().actualizarAngulos();
+        entidadVistaPrevia.getTransform().getRotation().updateEuler();
         entidadVistaPrevia.scale(1, 1, 1);
         return entidadVistaPrevia;
     }
@@ -313,7 +313,7 @@ public class EditorMaterial extends javax.swing.JPanel {
         ComponentUtil.removeComponents(entidadVistaPrevia, Mesh.class);
         entidadVistaPrevia.addComponent(MaterialUtil.applyMaterial(new Teapot(), material));
         entidadVistaPrevia.getTransform().getRotation().getCuaternion().set(0, 0, 0, 1);
-        entidadVistaPrevia.getTransform().getRotation().actualizarAngulos();
+        entidadVistaPrevia.getTransform().getRotation().updateEuler();
         entidadVistaPrevia.scale(0.5f, 0.5f, 0.5f);
         return entidadVistaPrevia;
     }
@@ -348,7 +348,7 @@ public class EditorMaterial extends javax.swing.JPanel {
             // activeMaterial.setFactorReflexion(getFloatFromSpinner(spnFactorReflexion));
             activeMaterial.setIor(getFloatFromSpinner(spnFactorRefraccion));
             activeMaterial.setEmision(getFloatFromSpinner(spnFactorEmision));
-            activeMaterial.setTransparencia(chkTransparencia.isSelected());
+            activeMaterial.setTransparent(chkTransparencia.isSelected());
             activeMaterial.setReflexion(chkReflexion.isSelected());
             activeMaterial.setRefraccion(chkRefraccion.isSelected());
 

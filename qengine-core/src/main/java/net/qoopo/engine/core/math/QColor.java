@@ -70,6 +70,10 @@ public class QColor implements Serializable {
         this(color.getAlpha() / 255.0f, color.getRed() / 255.0f, color.getGreen() / 255.0f, color.getBlue() / 255.0f);
     }
 
+
+    public static QColor of(int r, int g, int b) {
+        return QColor.of(r/255.0f, g/255.0f, b/255.0f);
+    }
     public static QColor of(float r, float g, float b) {
         return new QColor(r, g, b);
     }

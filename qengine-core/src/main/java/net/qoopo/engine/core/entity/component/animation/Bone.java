@@ -29,8 +29,6 @@ public class Bone extends Entity {
     // inversa de la transformacion Pose, es para volver el vertice a su estado
     // normal y aplicar la transformacion de la animacion
     public QMatriz4 transformacionInversa = new QMatriz4();
-    // private long cached_time_inversa = 0;
-    // private QMatriz4 cachedMatrizInversa;
     protected QMatriz4 cachedMatrizConInversa = new QMatriz4();
     private long cached_time_inversa = 0;
 

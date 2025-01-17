@@ -11,6 +11,7 @@ import net.qoopo.engine.core.math.QColor;
 import net.qoopo.engine.core.math.QMatriz4;
 import net.qoopo.engine.core.math.QVector2;
 import net.qoopo.engine.core.math.QVector3;
+import net.qoopo.engine.core.math.QVector4;
 import net.qoopo.engine.core.util.QGlobal;
 import net.qoopo.engine.core.util.TempVars;
 
@@ -31,9 +32,17 @@ public class DefaultVertexShader implements VertexShader {
      * @param matrizVistaModelo Matriz Vista Modelo
      * @return
      */
-    public Vertex apply(Vertex vertex, QVector3 normal, QVector2 uv, QColor color, QMatriz4 matrizVistaModelo) {
-        Vertex nuevo = new Vertex();
-        TempVars tmp = TempVars.get();
+    public VertexShaderOutput apply(
+            Vertex vertex,
+            QVector3 normal,
+            QVector2 uv,
+            QColor color,
+            QMatriz4 matrizVistaModelo) {
+        Vertex shadedVertex = new Vertex();
+        shadedVertex.setColor(color);
+        QVector3 shadedNormal = new QVector3();
+        QVector4 tmpNormal = new QVector4();
+        QVector4 tmpNormalBone = new QVector4();
         try {
             // Pasos
             // 1.En caso de existir un esqueleto, Modificar la posición del vértice de
@@ -44,40 +53,40 @@ public class DefaultVertexShader implements VertexShader {
             if (vertex.getListaHuesos() != null && vertex.getListaHuesos().length > 0) {
                 Bone hueso;
                 QMatriz4 matrizTransformacionHueso;
-                tmp.vector4f1.set(0, 0, 0, 1);// posicion final
-                tmp.vector4f2.set(0, 0, 0, 0);// normal final
+                shadedVertex.location.set(0, 0, 0, 1);// posicion final
+                tmpNormal.set(0, 0, 0, 0);// normal final
                 float peso = 0;
                 // recorre los huesos que afectan el vertice
                 for (int i = 0; i < vertex.getListaHuesos().length; i++) {
                     peso = vertex.getListaHuesosPesos()[i];
                     hueso = vertex.getListaHuesos()[i];
                     matrizTransformacionHueso = hueso.getMatrizTransformacionHueso(QGlobal.time);
-                    tmp.vector4f1.add(matrizTransformacionHueso.mult(vertex.location).multiply(peso));
+                    shadedVertex.location.add(matrizTransformacionHueso.mult(vertex.location).multiply(peso));
                     // la normal
-                    tmp.vector4f3.set(normal, 0);
-                    tmp.vector4f2.add(matrizTransformacionHueso.mult(tmp.vector4f3).multiply(peso));
+                    tmpNormalBone.set(normal, 0);
+                    tmpNormal.add(matrizTransformacionHueso.mult(tmpNormalBone).multiply(peso));
                 }
             } else {
                 // si no hay esqueleto o no esta activo el motor de animacion, usa la coordenada
                 // del vertice
-                tmp.vector4f1.set(vertex.location);
-                tmp.vector4f2.set(normal, 0);// un vector normal, sin traslacion
+                shadedVertex.location.set(vertex.location);
+                tmpNormal.set(normal, 0);// un vector normal, sin traslacion
             }
             // ********* PASO 2 ************************
             // multiplica la matriz vista modelo por la ubicacion
-            tmp.vector4f1.set(matrizVistaModelo.mult(tmp.vector4f1));
+            shadedVertex.location.set(matrizVistaModelo.mult(shadedVertex.location));
             // multipla la matriz vista modelo por la normal
-            tmp.vector4f2.set((matrizVistaModelo.mult(tmp.vector4f2)));
+            tmpNormal.set((matrizVistaModelo.mult(tmpNormal)));
             // ------
-            nuevo.location.set(tmp.vector4f1);
-            normal.set(tmp.vector4f2.getVector3());
-            normal.normalize();
+            shadedVertex.location.set(shadedVertex.location);
+            shadedNormal.set(tmpNormal.getVector3());
+            shadedNormal.normalize();
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
-            tmp.release();
+
         }
-        return nuevo;
+        return VertexShaderOutput.builder().vertex(shadedVertex).normal(shadedNormal).uv(uv).color(color).build();
     }
 
 }

@@ -24,42 +24,29 @@ public class RotationEntityComponent implements EntityComponent, UpdatableCompon
 
     private Entity entity;
 
-    private float radiansX = 0.0f;
-    private float radiansY = (float) Math.toRadians(0.01f);
-    private float radiansZ = 0.0f;
+    private QVector3 rotation = new QVector3(0, (float) Math.toRadians(10f), 0);
 
-    private float totalX = 0;
-    private float totalY = 0;
-    private float totalZ = 0;
+    private QVector3 totalRotation = new QVector3(Float.MIN_VALUE);
 
     public RotationEntityComponent(Cuaternion cuaternion) {
-        QVector3 angles = QVector3.empty();
-        this.radiansX = cuaternion.toAngleAxis(angles);
-        this.radiansX = angles.x;
-        this.radiansY = angles.y;
-        this.radiansZ = angles.z;
+        cuaternion.toAngleAxis(rotation);
     }
 
     public RotationEntityComponent(QVector3 angles) {
-        this.radiansX = angles.x;
-        this.radiansY = angles.y;
-        this.radiansZ = angles.z;
-
+        this.rotation = angles;
     }
 
     public RotationEntityComponent(float radiansX, float radiansY, float radiansZ) {
-        this.radiansX = radiansX;
-        this.radiansY = radiansY;
-        this.radiansZ = radiansZ;
+        rotation.set(radiansX, radiansY, radiansZ);
     }
 
     @Override
     public void update(RenderEngine renderEngine, Scene scene) {
-
-        totalX += radiansX * EngineTime.deltaMS;
-        totalY += radiansY * EngineTime.deltaMS;
-        totalZ += radiansZ * EngineTime.deltaMS;
-        entity.rotate(totalX, totalY, totalZ);
+        if (totalRotation.x == Float.MIN_VALUE) {
+            totalRotation.set(entity.getTransform().getRotation().getEulerAngles());
+        }
+        totalRotation.add(rotation.multiply(EngineTime.deltaS));
+        entity.rotate(totalRotation);
     }
 
     @Override

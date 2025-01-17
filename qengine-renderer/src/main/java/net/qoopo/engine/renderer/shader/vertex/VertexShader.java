@@ -13,6 +13,6 @@ import net.qoopo.engine.core.math.QVector3;
  */
 public interface VertexShader {
 
-    public Vertex apply(Vertex vertex, QVector3 normal, QVector2 uv, QColor color, QMatriz4 matrizVistaModelo);
+    public VertexShaderOutput apply(Vertex vertex, QVector3 normal, QVector2 uv, QColor color, QMatriz4 matrizVistaModelo);
 
 }

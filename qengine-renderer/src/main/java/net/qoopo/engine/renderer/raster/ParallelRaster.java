@@ -12,7 +12,7 @@ import net.qoopo.engine.core.entity.component.mesh.primitive.Fragment;
 import net.qoopo.engine.core.entity.component.mesh.primitive.Line;
 import net.qoopo.engine.core.entity.component.mesh.primitive.Poly;
 import net.qoopo.engine.core.entity.component.mesh.primitive.Primitive;
-import net.qoopo.engine.core.entity.component.mesh.primitive.QVertexBuffer;
+import net.qoopo.engine.core.entity.component.mesh.primitive.VertexBuffer;
 import net.qoopo.engine.core.entity.component.mesh.primitive.Vertex;
 import net.qoopo.engine.core.material.Material;
 import net.qoopo.engine.core.math.QMath;
@@ -64,19 +64,17 @@ public class ParallelRaster implements AbstractRaster {
 
         ClippedData clippedData = AbstractRaster.clipping(render.getCamera(), indices, indices, indices, vertex,
                 normales, uvList);
-        // List<Vertex> clippedVertex =List.of(vertex);
         for (int i = 0; i < clippedData.getVertexList().size() - 1; i++) {
             QVector2[] screenPojected = projectVertices(clippedData.getVertexList().get(i),
                     clippedData.getVertexList().get(i + 1));
-            lineaBresenham(QVector3.empty(), QVector3.empty(), matViewModel, primitiva,
+            drawLine(QVector3.empty(), QVector3.empty(), matViewModel, primitiva,
                     (int) screenPojected[0].x,
                     (int) screenPojected[0].y,
                     (int) screenPojected[1].x,
                     (int) screenPojected[1].y,
-                    // vertex
-                    new Vertex[] { clippedData.getVertexList().get(i), clippedData.getVertexList().get(i + 1) },
-                    new QVector3[] { QVector3.unitario_y.clone(), QVector3.unitario_y.clone() },
-                    new QVector2[] { new QVector2(), new QVector2() });
+                    VertexArray.of(clippedData.getVertexList().get(i), clippedData.getVertexList().get(i + 1)),
+                    Vector3Array.of(QVector3.unitario_y.clone(), QVector3.unitario_y.clone()),
+                    Vector2Array.of(new QVector2(), new QVector2()));
         }
     }
 
@@ -89,7 +87,7 @@ public class ParallelRaster implements AbstractRaster {
      *
      */
     @Override
-    public void raster(QMatriz4 matViewModel, QVertexBuffer vertexBuffer, Primitive primitiva, boolean wire) {
+    public void raster(QMatriz4 matViewModel, VertexBuffer vertexBuffer, Primitive primitiva, boolean wire) {
         if (primitiva instanceof Poly) {
             if (wire) {
                 rasterWirePolygon(matViewModel, vertexBuffer, (Poly) primitiva);
@@ -110,35 +108,17 @@ public class ParallelRaster implements AbstractRaster {
      * @param poligono
      *
      */
-    protected void rasterWirePolygon(QMatriz4 matViewModel, QVertexBuffer vertexBuffer, Poly poligono) {
+    protected void rasterWirePolygon(QMatriz4 matViewModel, VertexBuffer vertexBuffer, Poly poligono) {
         try {
             Vertex v1;
             Vertex v2;
-            Vertex v3;
-            // synchronized (this) {
             if (poligono.vertexIndexList.length >= 3) {
-                // QVector3 toCenter=poligono.getCenterCopy().location.getVector3();
-
-                // Rasterizacion (dibujo de los puntos del plano)
-                // for (int i = 1; i < vertexBuffer.getVertexList().length - 1; i++) {
-                // v1 = vertexBuffer.getVertexList()[0];
-                // v2 = vertexBuffer.getVertexList()[i];
-                // v3 = vertexBuffer.getVertexList()[i + 1];
-
-                // rasterLine(matViewModel, poligono, v1, v2);
-                // rasterLine(matViewModel, poligono, v1, v3);
-                // rasterLine(matViewModel, poligono, v2, v3);
-                // }
-
                 ClippedData clippedData = AbstractRaster.clipping(render.getCamera(),
                         poligono.vertexIndexList,
                         poligono.normalIndexList,
                         poligono.uvIndexList,
                         vertexBuffer.getVertexList(), vertexBuffer.getNormalList(),
                         vertexBuffer.getUvList());
-
-                // Rasterizacion (dibujo de los puntos del plano)
-                // Separo en triangulos sin importar cuantos puntos tenga
                 for (int i = 0; i < clippedData.getVertexList().size() - 1; i++) {
                     v1 = clippedData.getVertexList().get(i);
                     v2 = clippedData.getVertexList().get(i + 1);
@@ -147,10 +127,9 @@ public class ParallelRaster implements AbstractRaster {
                             !render.getCamera().isVisible(v2)) {
                         continue;
                     }
-                    rasterLine(matViewModel, poligono, v1, v2);                    
+                    rasterLine(matViewModel, poligono, v1, v2);
                 }
             }
-            // }
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -163,7 +142,7 @@ public class ParallelRaster implements AbstractRaster {
      * @param siempreTop
      * @param dibujar    . SI es true, llama al método procesarPixel del shader
      */
-    private void rasterFullPolygon(QMatriz4 matViewModel, QVertexBuffer vertexBuffer, Poly poly) {
+    private void rasterFullPolygon(QMatriz4 matViewModel, VertexBuffer vertexBuffer, Poly poly) {
         try {
             if (poly.vertexIndexList.length >= 3) {
                 QVector3 toCenter = poly.getCenterCopy().location.getVector3();
@@ -172,7 +151,7 @@ public class ParallelRaster implements AbstractRaster {
                 // si el objeto tiene transparencia (con material básico) igual dibuja sus caras
                 // traseras
                 if ((!(poly.material instanceof Material) || ((poly.material instanceof Material)
-                        && !((Material) poly.material).isTransparencia()))
+                        && !((Material) poly.material).isTransparent()))
                         && !render.opciones.isDibujarCarasTraseras() && toCenter.dot(poly.getNormalCopy()) > 0) {
                     render.poligonosDibujadosTemp--;
                     return; // salta el dibujo de caras traseras
@@ -215,6 +194,21 @@ public class ParallelRaster implements AbstractRaster {
         }
     }
 
+    /**
+     * Realiza la rasterización de un triángulo
+     * 
+     * @param matViewModel
+     * @param v1
+     * @param v2
+     * @param v3
+     * @param v1Normal
+     * @param v2Normal
+     * @param v3Normal
+     * @param v1uv
+     * @param v2uv
+     * @param v3uv
+     * @param poly
+     */
     private void rasterTriangle(QMatriz4 matViewModel, Vertex v1, Vertex v2, Vertex v3, QVector3 v1Normal,
             QVector3 v2Normal,
             QVector3 v3Normal,
@@ -531,7 +525,7 @@ public class ParallelRaster implements AbstractRaster {
     }
 
     /**
-     * Algoritmo para pintar una linea
+     * Algoritmo para pintar una linea Bresenham
      *
      * @param primitiva
      * @param x0
@@ -539,7 +533,7 @@ public class ParallelRaster implements AbstractRaster {
      * @param x1
      * @param y1
      */
-    public void lineaBresenham(QVector3 up, QVector3 rigth, QMatriz4 matViewModel, Primitive primitiva, int x0, int y0,
+    private void drawLine(QVector3 up, QVector3 rigth, QMatriz4 matViewModel, Primitive primitiva, int x0, int y0,
             int x1, int y1,
             Vertex[] vt, QVector3[] normals, QVector2[] uv) {
         int x, y, dx, dy, p, incE, incNE, stepx, stepy;
@@ -663,7 +657,7 @@ public class ParallelRaster implements AbstractRaster {
                 try {
                     if (render.getPanelClip() != null) {
                         if (!render.getPanelClip()
-                                .esVisible(TransformationVectorUtil.transformarVector(
+                                .isVisible(TransformationVectorUtil.transformarVector(
                                         TransformationVectorUtil.transformarVectorInversa(currentVertex.location,
                                                 poly.mesh.getEntity(), render.getCamera()),
                                         poly.mesh.getEntity()))) {

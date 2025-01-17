@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
-import lombok.Getter;
 import net.qoopo.engine.core.entity.component.EntityComponent;
 import net.qoopo.engine.core.entity.component.mesh.Mesh;
 import net.qoopo.engine.core.entity.component.transform.Transform;
@@ -44,7 +43,7 @@ public class Entity implements Serializable {
 
     protected final List<EntityComponent> components = new ArrayList<>();
 
-    // unico componente que no esta en la lista, todos necesitan este componente    
+    // unico componente que no esta en la lista, todos necesitan este componente
     protected Transform transform = new Transform();
     protected String name;
     protected Entity parent;
@@ -139,8 +138,8 @@ public class Entity implements Serializable {
         this.transform.getLocation().set(x, y, z);
     }
 
-    public void move(QVector3 nuevaPosicion) {
-        move(nuevaPosicion.x, nuevaPosicion.y, nuevaPosicion.z);
+    public void move(QVector3 location) {
+        move(location.x, location.y, location.z);
     }
 
     public void scale(QVector3 vector) {
@@ -160,9 +159,16 @@ public class Entity implements Serializable {
     }
 
     public void rotate(float angX, float angY, float angZ) {
-        transform.getRotation().rotarX(angX);
-        transform.getRotation().rotarY(angY);
-        transform.getRotation().rotarZ(angZ);
+        // transform.getRotation().rotarX(angX);
+        // transform.getRotation().rotarY(angY);
+        // transform.getRotation().rotarZ(angZ);
+        transform.getRotation().getEulerAngles().set(angX, angY, angZ);
+        transform.getRotation().updateCuaternion();
+
+    }
+
+    public void rotate(QVector3 angles) {
+        transform.getRotation().setEulerAngles(angles);
     }
 
     public void aumentarX(float aumento) {
@@ -297,7 +303,7 @@ public class Entity implements Serializable {
         if (isBillboard()) {
             TempVars tv = TempVars.get();
             try {
-                transform.getRotation().actualizarCuaternion();
+                transform.getRotation().updateCuaternion();
 
                 tv.vector3f1.set(camaraVista.toTranslationVector());
                 tv.vector3f1.add(this.transform.getLocation().clone().multiply(-1));
@@ -327,7 +333,7 @@ public class Entity implements Serializable {
                 orient.set(2, 2, xzp.z * cosp);
                 transform.getRotation().getCuaternion().fromRotationMatrix(orient);
 
-                transform.getRotation().actualizarAngulos();
+                transform.getRotation().updateEuler();
             } finally {
                 tv.release();
             }

@@ -47,7 +47,7 @@ import net.qoopo.engine.core.entity.component.mesh.Mesh;
 import net.qoopo.engine.core.entity.component.mesh.primitive.Poly;
 import net.qoopo.engine.core.entity.component.mesh.primitive.Primitive;
 import net.qoopo.engine.core.entity.component.mesh.primitive.Vertex;
-import net.qoopo.engine.core.math.QRotacion;
+import net.qoopo.engine.core.math.Rotation;
 import net.qoopo.engine.core.math.QVector2;
 import net.qoopo.engine.core.math.QVector3;
 import net.qoopo.engine.core.util.QVectMathUtil;
@@ -139,17 +139,17 @@ public class Java3DUtil {
             transform.setTranslation(
                     QVectMathUtil
                             .convertirVector3f(objeto.getEntity().getMatrizTransformacion(t).toTranslationVector()));
-            QRotacion rot = new QRotacion();
+            Rotation rot = new Rotation();
             rot.setCuaternion(objeto.getEntity().getMatrizTransformacion(t).toRotationQuat());
-            rot.actualizarAngulos();
+            rot.updateEuler();
 
             Transform3D t1 = new Transform3D();
             Transform3D t2 = new Transform3D();
             Transform3D t3 = new Transform3D();
 
-            t1.rotX(rot.getAngulos().getAnguloX());
-            t2.rotY(rot.getAngulos().getAnguloY());
-            t3.rotZ(rot.getAngulos().getAnguloZ());
+            t1.rotX(rot.getEulerAngles().x);
+            t2.rotY(rot.getEulerAngles().y);
+            t3.rotZ(rot.getEulerAngles().z);
             t2.mul(t1);
             t3.mul(t2);
             transform.mul(t3);
@@ -670,9 +670,9 @@ public class Java3DUtil {
     // Transform3D t2 = new Transform3D();
     // Transform3D t3 = new Transform3D();
     //
-    // t1.rotX(rot.getAngulos().getAnguloX());
-    // t2.rotY(rot.getAngulos().getAnguloY());
-    // t3.rotZ(rot.getAngulos().getAnguloZ());
+    // t1.rotX(rot.getAngulos().x);
+    // t2.rotY(rot.getAngulos().y);
+    // t3.rotZ(rot.getAngulos().z);
     // t2.mul(t1);
     // t3.mul(t2);
     // transform.mul(t3);

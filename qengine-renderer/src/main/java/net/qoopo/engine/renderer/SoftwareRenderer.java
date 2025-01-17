@@ -25,13 +25,13 @@ import net.qoopo.engine.core.entity.component.mesh.Mesh;
 import net.qoopo.engine.core.entity.component.mesh.primitive.Fragment;
 import net.qoopo.engine.core.entity.component.mesh.primitive.Poly;
 import net.qoopo.engine.core.entity.component.mesh.primitive.Primitive;
-import net.qoopo.engine.core.entity.component.mesh.primitive.QVertexBuffer;
 import net.qoopo.engine.core.entity.component.mesh.primitive.Vertex;
+import net.qoopo.engine.core.entity.component.mesh.primitive.VertexBuffer;
 import net.qoopo.engine.core.entity.component.modifier.ModifierComponent;
 import net.qoopo.engine.core.entity.component.particles.Particle;
 import net.qoopo.engine.core.entity.component.particles.ParticleEmissor;
 import net.qoopo.engine.core.material.Material;
-import net.qoopo.engine.core.math.QColor;
+import net.qoopo.engine.core.material.node.MaterialNode;
 import net.qoopo.engine.core.math.QMatriz4;
 import net.qoopo.engine.core.math.QVector2;
 import net.qoopo.engine.core.math.QVector3;
@@ -52,6 +52,7 @@ import net.qoopo.engine.renderer.shader.fragment.basico.StandardFragmentShader;
 import net.qoopo.engine.renderer.shader.vertex.DefaultVertexShader;
 import net.qoopo.engine.renderer.shader.vertex.VertexShader;
 import net.qoopo.engine.renderer.shader.vertex.VertexShaderComponent;
+import net.qoopo.engine.renderer.shader.vertex.VertexShaderOutput;
 import net.qoopo.engine.renderer.shadow.procesadores.QSombraCono;
 import net.qoopo.engine.renderer.shadow.procesadores.QSombraDireccional;
 import net.qoopo.engine.renderer.shadow.procesadores.QSombraDireccionalCascada;
@@ -306,7 +307,7 @@ public class SoftwareRenderer extends RenderEngine {
             tmpVertexShader = vertexShaderComponent.getShader();
         }
 
-        final VertexShader vertexShader = tmpVertexShader;
+        VertexShader vertexShader = tmpVertexShader;
 
         entity.actualizarRotacionBillboard(matrizVistaInvertidaBillboard);
 
@@ -331,130 +332,140 @@ public class SoftwareRenderer extends RenderEngine {
                 .stream()
                 .parallel()
                 .forEach(comp -> {
-                    Mesh mesh = (Mesh) comp;
-
-                    if (mesh != null) {
-                        // actualizo la marca de tiempo, solo se usa para saber si se debe volver a
-                        // calcular los modificadores
-                        if (mesh.getTimeMark() == 0L) {
-                            mesh.updateTimeMark();
-                        }
-
-                        // Recorre los modificadores para preguntar si hay algun cambio
-                        for (EntityComponent component : entity.getComponents(ModifierComponent.class)) {
-                            if (((ModifierComponent) component).isChanged()) {
-                                mesh.updateTimeMark();
-                                break;
-                            }
-                        }
-
-                        Mesh tmpMesh = mesh.getCacheMesh();
-                        if (tmpMesh == null || tmpMesh.getTimeMark() != mesh.getTimeMark()) {
-                            logger.info("Actualizando malla por modificadores " + entity.getName());
-                            tmpMesh = mesh.clone();// no destructivo, las modificaciones se realizan sobre la copia
-                            tmpMesh.setEntity(entity);
-                        }
-                        // aplica modificadores
-                        for (EntityComponent component : entity.getComponents()) {
-                            if (component instanceof ModifierComponent) {
-                                ((ModifierComponent) component).apply(tmpMesh);
-                            }
-                        }
-
-                        mesh.setCacheMesh(tmpMesh);
-                        final Mesh modifiedMesh = tmpMesh;
-
-                        // Mesh modifiedMesh = (Mesh) entity.getComponent(Mesh.class);
-
-                        // rasterizacion caras
-                        List.of(modifiedMesh.primitiveList).stream()
-                                .parallel()
-                                .forEach(primitive -> {
-                                    if (primitive.material == null
-                                            // q no tengra transparencia cuando tiene el tipo de material basico
-                                            || (primitive.material instanceof Material
-                                                    && transparentes == ((Material) primitive.material)
-                                                            .isTransparencia())) {
-
-                                        // transformamos los vertices por cada poligono
-
-                                        try {
-                                            QVertexBuffer bufferVertices = new QVertexBuffer();
-                                            bufferVertices.init(
-                                                    modifiedMesh.vertexList.length,
-                                                    modifiedMesh.normalList.length,
-                                                    modifiedMesh.uvList.length);
-
-                                            // calcula las transformaciones de los vértices
-                                            // de 0 a n donde n es el numero de vertices del poligono o primitva (linea)
-                                            for (int polyVertexIndex = 0; polyVertexIndex < primitive.vertexIndexList.length; polyVertexIndex++) {
-
-                                                // indice del vértice de la malla
-                                                int vertexIndex = primitive.vertexIndexList[polyVertexIndex];
-                                                int normalIndex = 0;
-                                                int uvIndex = 0;
-
-                                                if (primitive.normalIndexList.length > polyVertexIndex)
-                                                    normalIndex = primitive.normalIndexList[polyVertexIndex];
-
-                                                if (primitive.uvIndexList.length > polyVertexIndex)
-                                                    uvIndex = primitive.uvIndexList[polyVertexIndex];
-
-                                                Vertex vertex = new Vertex();
-                                                QVector3 vertexNormal = new QVector3();
-                                                QVector2 vertexUV = new QVector2();
-
-                                                // el vertice que corresponde de la malla
-                                                vertex.set(modifiedMesh.vertexList[vertexIndex]);
-
-                                                // la normal que corresponde de la malla
-                                                if (normalIndex >= 0 && modifiedMesh.normalList.length > normalIndex)
-                                                    vertexNormal.set(modifiedMesh.normalList[normalIndex]);
-
-                                                // la coordenada uv que corresponde de la malla
-                                                if (uvIndex >= 0 && modifiedMesh.uvList.length > uvIndex)
-                                                    vertexUV.set(modifiedMesh.uvList[uvIndex]);
-
-                                                bufferVertices.setVertex(
-                                                        vertexShader.apply(vertex, vertexNormal, vertexUV,
-                                                                QColor.WHITE,
-                                                                matVistaModelo),
-                                                        vertexIndex);
-                                                if (normalIndex >= 0 && modifiedMesh.normalList.length > normalIndex)
-                                                    bufferVertices.setNormal(vertexNormal, normalIndex);
-                                                if (uvIndex >= 0 && modifiedMesh.uvList.length > uvIndex)
-                                                    bufferVertices.setUV(vertexUV, uvIndex);
-
-                                            }
-
-                                            if (primitive instanceof Poly) {
-                                                Poly poly = (Poly) primitive;
-                                                // vuelve a calcular la normal y el centro en función de los vértices
-                                                // transformados, funciona para las
-                                                // animaciones, donde la transformacion de la normal no da los
-                                                // resultados esperados, porq no tenemos la matriz del hueso
-                                                poly.computeNormalCenter(bufferVertices.getVertexList());
-                                                if (poly.isNormalInversa()) {
-                                                    // invierto la normal en caso detener la marca de normal inversa
-                                                    poly.getNormal().flip();
-                                                    poly.getNormalCopy().flip();
-                                                }
-                                            }
-
-                                            poligonosDibujadosTemp++;
-                                            raster.raster(matVistaModelo, bufferVertices, primitive, opciones
-                                                    .getTipoVista() == RenderOptions.VISTA_WIRE
-                                                    || primitive.mesh.type == Mesh.GEOMETRY_TYPE_WIRE);
-                                        } catch (Exception ex) {
-                                            logger.severe("[X] Error al dibujar entidad : " + entity.getName()
-                                                    + "   -> " + ex.getLocalizedMessage());
-                                            ex.printStackTrace();
-                                        }
-                                    }
-                                });
-                    }
+                    renderMesh((Mesh) comp, transparentes, matVistaModelo, vertexShader);
                 });
 
+    }
+
+    /*
+     * Renderiza una malla
+     */
+    private void renderMesh(Mesh mesh, boolean transparentes, QMatriz4 matVistaModelo, VertexShader vertexShader) {
+
+        if (mesh != null) {
+            Entity entity = mesh.getEntity();
+
+            // actualizo la marca de tiempo, solo se usa para saber si se debe volver a
+            // calcular los modificadores
+            if (mesh.getTimeMark() == 0L) {
+                mesh.updateTimeMark();
+            }
+
+            // Recorre los modificadores para preguntar si hay algun cambio
+            for (EntityComponent component : entity.getComponents(ModifierComponent.class)) {
+                if (((ModifierComponent) component).isChanged()) {
+                    mesh.updateTimeMark();
+                    break;
+                }
+            }
+
+            Mesh tmpMesh = mesh.getCacheMesh();
+            if (tmpMesh == null || tmpMesh.getTimeMark() != mesh.getTimeMark()) {
+                logger.info("Actualizando malla por modificadores " + entity.getName());
+                tmpMesh = mesh.clone();// no destructivo, las modificaciones se realizan sobre la copia
+                tmpMesh.setEntity(entity);
+            }
+            // aplica modificadores
+            for (EntityComponent component : entity.getComponents()) {
+                if (component instanceof ModifierComponent) {
+                    ((ModifierComponent) component).apply(tmpMesh);
+                }
+            }
+
+            mesh.setCacheMesh(tmpMesh);
+            final Mesh modifiedMesh = tmpMesh;
+
+            // rasterizacion caras
+            List.of(modifiedMesh.primitiveList).stream()
+                    .parallel()
+                    .forEach(primitive -> {
+                        if (primitive.material == null
+                                // en caso de ser materialnode que solo se dibujen cuando se mande a pintar los
+                                // no transparentes
+                                || (!transparentes && primitive.material instanceof MaterialNode)
+                        // q no tengra transparencia cuando tiene el tipo de material basico
+                                || (primitive.material instanceof Material
+                                        && transparentes == ((Material) primitive.material)
+                                                .isTransparent())) {
+
+                            // transformamos los vertices por cada poligono
+                            try {
+                                VertexBuffer buffer = new VertexBuffer();
+                                buffer.init(
+                                        modifiedMesh.vertexList.length,
+                                        modifiedMesh.normalList.length,
+                                        modifiedMesh.uvList.length);
+
+                                // calcula las transformaciones de los vértices
+                                // de 0 a n donde n es el numero de vertices del poligono o primitva (linea)
+                                for (int polyVertexIndex = 0; polyVertexIndex < primitive.vertexIndexList.length; polyVertexIndex++) {
+
+                                    // indice del vértice de la malla
+                                    int vertexIndex = primitive.vertexIndexList[polyVertexIndex];
+                                    int normalIndex = 0;
+                                    int uvIndex = 0;
+
+                                    if (primitive.normalIndexList.length > polyVertexIndex)
+                                        normalIndex = primitive.normalIndexList[polyVertexIndex];
+
+                                    if (primitive.uvIndexList.length > polyVertexIndex)
+                                        uvIndex = primitive.uvIndexList[polyVertexIndex];
+
+                                    Vertex vertex = new Vertex();
+                                    QVector3 vertexNormal = new QVector3();
+                                    QVector2 vertexUV = new QVector2();
+
+                                    // el vertice que corresponde de la malla
+                                    vertex.set(modifiedMesh.vertexList[vertexIndex]);
+
+                                    // la normal que corresponde de la malla
+                                    if (normalIndex >= 0 && modifiedMesh.normalList.length > normalIndex)
+                                        vertexNormal.set(modifiedMesh.normalList[normalIndex]);
+
+                                    // la coordenada uv que corresponde de la malla
+                                    if (uvIndex >= 0 && modifiedMesh.uvList.length > uvIndex)
+                                        vertexUV.set(modifiedMesh.uvList[uvIndex]);
+
+                                    VertexShaderOutput shaderOutput = vertexShader.apply(vertex, vertexNormal, vertexUV,
+                                            vertex.color,
+                                            matVistaModelo);
+
+                                    buffer.setVertex(shaderOutput.getVertex(), vertexIndex);
+                                    buffer.setColor(shaderOutput.getColor(), vertexIndex);
+
+                                    if (normalIndex >= 0 && modifiedMesh.normalList.length > normalIndex)
+                                        buffer.setNormal(shaderOutput.getNormal(), normalIndex);
+                                    if (uvIndex >= 0 && modifiedMesh.uvList.length > uvIndex)
+                                        buffer.setUV(shaderOutput.getUv(), uvIndex);
+
+                                }
+
+                                if (primitive instanceof Poly) {
+                                    Poly poly = (Poly) primitive;
+                                    // vuelve a calcular la normal y el centro en función de los vértices
+                                    // transformados, funciona para las
+                                    // animaciones, donde la transformacion de la normal no da los
+                                    // resultados esperados, porq no tenemos la matriz del hueso
+                                    poly.computeNormalCenter(buffer.getVertexList());
+                                    if (poly.isNormalInversa()) {
+                                        // invierto la normal en caso detener la marca de normal inversa
+                                        poly.getNormal().flip();
+                                        poly.getNormalCopy().flip();
+                                    }
+                                }
+
+                                poligonosDibujadosTemp++;
+                                raster.raster(matVistaModelo, buffer, primitive, opciones
+                                        .getTipoVista() == RenderOptions.VISTA_WIRE
+                                        || primitive.mesh.type == Mesh.GEOMETRY_TYPE_WIRE);
+                            } catch (Exception ex) {
+                                logger.severe("[X] Error al dibujar entidad : " + entity.getName()
+                                        + "   -> " + ex.getLocalizedMessage());
+                                ex.printStackTrace();
+                            }
+                        }
+                    });
+        }
     }
 
     /**
@@ -687,7 +698,7 @@ public class SoftwareRenderer extends RenderEngine {
     }
 
     @Override
-    public void render(QMatriz4 matViewModel, QVertexBuffer bufferVertices, Primitive primitiva, boolean wire) {
+    public void render(QMatriz4 matViewModel, VertexBuffer bufferVertices, Primitive primitiva, boolean wire) {
         raster.raster(matViewModel, bufferVertices, primitiva, wire);
     }
 

@@ -66,7 +66,7 @@ public class CylinderZ extends Shape {
         // ahora roto los vertices para que se alineen al eje x
         Transform tra = new Transform();
         tra.getRotation().rotarX((float) Math.toRadians(90));
-        tra.getRotation().actualizarCuaternion();
+        tra.getRotation().updateCuaternion();
         QVector3 tmp = QVector3.empty();
         for (Vertex vertice : vertexList) {
             tmp.set(vertice.location.x, vertice.location.y, vertice.location.z);

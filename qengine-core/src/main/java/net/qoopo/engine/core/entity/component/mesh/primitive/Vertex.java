@@ -3,7 +3,10 @@ package net.qoopo.engine.core.entity.component.mesh.primitive;
 import java.io.Serializable;
 import java.util.Arrays;
 
+import lombok.Getter;
+import lombok.Setter;
 import net.qoopo.engine.core.entity.component.animation.Bone;
+import net.qoopo.engine.core.math.QColor;
 import net.qoopo.engine.core.math.QVector3;
 import net.qoopo.engine.core.math.QVector4;
 
@@ -14,6 +17,8 @@ import net.qoopo.engine.core.math.QVector4;
  *
  * @author alberto
  */
+@Getter
+@Setter
 public class Vertex implements Serializable {
 
     public static final Vertex ZERO = new Vertex(0, 0, 0, 1);
@@ -21,6 +26,7 @@ public class Vertex implements Serializable {
     public QVector4 location = new QVector4();
     public QVector3 up = QVector3.unitario_y.clone();
     public QVector3 right = QVector3.unitario_x.clone();
+    public QColor color = QColor.WHITE;
     public boolean normalInversa = false;
 
     /**
@@ -83,6 +89,7 @@ public class Vertex implements Serializable {
         location.y = vertice.location.y;
         location.z = vertice.location.z;
         location.w = vertice.location.w;
+        color.set(vertice.color);
         up.set(vertice.up);
         right.set(vertice.right);
         normalInversa = vertice.normalInversa;
@@ -96,6 +103,7 @@ public class Vertex implements Serializable {
         location.y = other.location.y;
         location.z = other.location.z;
         location.w = other.location.w;
+        color.set(other.color);
         up.set(other.up);
         right.set(other.right);
         normalInversa = other.normalInversa;
@@ -119,30 +127,6 @@ public class Vertex implements Serializable {
     public String toString() {
         return "(" + location.x + ", " + location.y + ", " + location.z + ")";
         // return ubicacion.toString();
-    }
-
-    public Bone[] getListaHuesos() {
-        return listaHuesos;
-    }
-
-    public void setListaHuesos(Bone[] listaHuesos) {
-        this.listaHuesos = listaHuesos;
-    }
-
-    public float[] getListaHuesosPesos() {
-        return listaHuesosPesos;
-    }
-
-    public void setListaHuesosPesos(float[] listaHuesosPesos) {
-        this.listaHuesosPesos = listaHuesosPesos;
-    }
-
-    public int[] getListaHuesosIds() {
-        return listaHuesosIds;
-    }
-
-    public void setListaHuesosIds(int[] listaHuesosIds) {
-        this.listaHuesosIds = listaHuesosIds;
     }
 
     public Vertex multiply(float valor) {
@@ -196,29 +180,4 @@ public class Vertex implements Serializable {
         return ve;
     }
 
-    // public static QVertice promediarCatmullClark(QVertice... vert) {
-    // QVertice ve = new QVertice();
-    // for (QVertice v : vert) {
-    // ve.ubicacion.x += v.ubicacion.x;
-    // ve.ubicacion.y += v.ubicacion.y;
-    // ve.ubicacion.z += v.ubicacion.z;
-    // ve.u += v.u;
-    // ve.v += v.v;
-    // ve.normal.add(v.normal);
-    // }
-    //
-    // //promedia
-    // ve.ubicacion.x /= vert.length;
-    // ve.ubicacion.y /= vert.length;
-    // ve.ubicacion.z /= vert.length;
-    // ve.u /= vert.length;
-    // ve.v /= vert.length;
-    // ve.normal.multiply(1.0f / vert.length);
-    //
-    // //modifica el nuevo vertice para que se eleve y suavice la supervicie
-    // double escala = 1.0f / (Math.sqrt(ve.ubicacion.x * ve.ubicacion.x +
-    // ve.ubicacion.y * ve.ubicacion.y + ve.ubicacion.z * ve.ubicacion.z));
-    // ve.ubicacion.set(ve.ubicacion.getVector3().multiply((float) escala), 1);
-    // return ve;
-    // }
 }

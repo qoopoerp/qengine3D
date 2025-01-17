@@ -21,7 +21,7 @@ import net.qoopo.engine.core.math.QVector3;
 import net.qoopo.engine.core.renderer.RenderEngine;
 import net.qoopo.engine.core.renderer.buffer.FrameBuffer;
 import net.qoopo.engine.core.scene.Camera;
-import net.qoopo.engine.core.scene.QClipPane;
+import net.qoopo.engine.core.scene.ClipPane;
 import net.qoopo.engine.core.scene.Scene;
 import net.qoopo.engine.core.texture.Texture;
 
@@ -106,7 +106,7 @@ public abstract class Water implements EntityComponent, UpdatableComponent {
                 render.resize();
                 render.setRenderReal(false);
                 render.opciones.setDibujarCarasTraseras(true);
-                render.setPanelClip(new QClipPane(arriba, 0));
+                render.setPanelClip(new ClipPane(arriba, 0));
                 outputTexture = new WaterTextureProcessor(textReflexion, textRefraccion);
             }
         } catch (Exception e) {
@@ -141,11 +141,11 @@ public abstract class Water implements EntityComponent, UpdatableComponent {
             // REFRACCION
             // -------------------------------------------------------------------
             render.getCamera().setTransform(mainRender.getCamera().getTransform().clone());// la misma
-                                                                                                     // posicion de
-                                                                                                     // la
-                                                                                                     // cámara
-                                                                                                     // actual
-            render.getCamera().getTransform().getRotation().actualizarAngulos();
+                                                                                           // posicion de
+                                                                                           // la
+                                                                                           // cámara
+                                                                                           // actual
+            render.getCamera().getTransform().getRotation().updateEuler();
             render.setFrameBuffer(frameRefraccion);
             render.getPanelClip().setNormal(abajo);
             render.getPanelClip().setDistancia(entity.getTransform().getLocation().y - 1.0f);
@@ -165,11 +165,9 @@ public abstract class Water implements EntityComponent, UpdatableComponent {
 
             // invertir angulo Pitch
             render.getCamera().setTransform(mainRender.getCamera().getTransform().clone());
-            render.getCamera().getTransform().getRotation().actualizarAngulos();
-            render.getCamera().getTransform().getRotation().getAngulos()
-                    .setAnguloX(
-                            render.getCamera().getTransform().getRotation().getAngulos().getAnguloX() * -1);
-            render.getCamera().getTransform().getRotation().actualizarCuaternion();
+            render.getCamera().getTransform().getRotation().updateEuler();
+            render.getCamera().getTransform().getRotation().getEulerAngles().x *= -1;
+            render.getCamera().getTransform().getRotation().updateCuaternion();
             render.getCamera().getTransform().move(nuevaPos);
             render.update();
             render.shadeFragments();

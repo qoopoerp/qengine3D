@@ -1,0 +1,83 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package net.qoopo.engine.core.scene;
+
+import lombok.Getter;
+import lombok.Setter;
+import net.qoopo.engine.core.math.QVector3;
+import net.qoopo.engine.core.math.QVector4;
+
+/**
+ * Esta clase define un plano para realizar clipping de escenas y de esta manera
+ * no dibujar lo que este fuera de este plano
+ *
+ * @author alberto
+ */
+@Getter
+@Setter
+public class ClipPane {
+
+    /**
+     * La normal de plano Los puntos que esten de este lado seran los visibles
+     */
+    private QVector3 normal;
+    /**
+     * La distancia que existe desde el origen al plano
+     */
+    private float distancia;
+
+    /**
+     * Construye un plano a partir de una direccion y la distancia del plano al
+     * origen
+     *
+     * @param direccion
+     * @param distancia
+     */
+    public ClipPane(QVector3 direccion, float distancia) {
+        this.normal = direccion;
+        normal.normalize();
+        this.distancia = distancia;
+    }
+
+    /**
+     * Construye un plano a partir de 3 vectores de posicion
+     *
+     * @param pos1
+     * @param pos2
+     * @param pos3
+     */
+    public ClipPane(QVector3 pos1, QVector3 pos2, QVector3 pos3) {
+        normal = QVector3.of(pos1, pos2);
+        normal.cross(QVector3.of(pos2, pos3));
+        normal.normalize();
+        // QVector3 center = QVector3.empty();
+        // center.add(pos1, pos2, pos3);
+        // center.multiply(1.0f / 3.0f);
+        // this.distancia = center.length();
+        // segun https://www.cubic.org/docs/3dclip.htm
+        this.distancia = normal.dot(pos1);
+
+        // this.pos1 = pos1;
+        // this.pos2 = pos2;
+        // this.pos3 = pos3;
+
+    }
+
+    public boolean isVisible(QVector3 posicion) {
+        return (posicion.dot(normal) - distancia) > 0;
+        // return (posicion.dot(normal) - distancia) < 0;
+    }
+
+    public boolean isVisible(QVector4 posicion) {
+        return (posicion.getVector3().dot(normal) - distancia) > 0;
+        // return (posicion.dot(normal) - distancia) < 0;
+    }
+
+    public float distancia(QVector3 posicion) {
+        return (posicion.dot(normal) - distancia);
+    }
+
+}

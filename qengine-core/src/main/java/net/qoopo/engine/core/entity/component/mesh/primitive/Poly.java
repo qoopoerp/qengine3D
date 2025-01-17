@@ -82,37 +82,6 @@ public class Poly extends Primitive implements Comparable<Poly> {
         }
     }
 
-    // public void calculaNormalYCentro(QVertice vert1, QVertice vert2, QVertice
-    // vert3) {
-    // normal = QVector3.of(vert1, vert2);
-    // normal.cross(QVector3.of(vert2, vert3));
-    // normal.normalize();
-    // int count = 0;
-    //// center.x = 0;
-    //// center.y = 0;
-    //// center.z = 0;
-    // center.ubicacion.set(0, 0, 0, 0);
-    //// for (int i : vertices) {
-    //// center.x += geometria.vertices[i].x;
-    //// center.y += geometria.vertices[i].y;
-    //// center.z += geometria.vertices[i].z;
-    //// count++;
-    //// }
-    //
-    // center.ubicacion.x = vert1.ubicacion.x + vert2.ubicacion.x +
-    // vert3.ubicacion.x;
-    // center.ubicacion.y = vert1.ubicacion.y + vert2.ubicacion.y +
-    // vert3.ubicacion.y;
-    // center.ubicacion.z = vert1.ubicacion.z + vert2.ubicacion.z +
-    // vert3.ubicacion.z;
-    //// count = 3;
-    //// ------------
-    // center.ubicacion.x /= count;
-    // center.ubicacion.y /= count;
-    // center.ubicacion.z /= count;
-    // centerCopy.copyAttribute(center);
-    // normalCopy.copyXYZ(normal);
-    // }
     @Override
     public String toString() {
         return "Poly{" + "listaVertices=" + Arrays.toString(vertexIndexList) + '}';

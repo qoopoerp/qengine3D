@@ -113,7 +113,7 @@ public class EnviromentMapFragmentShader extends FragmentShader {
 
             // si se configuro un color transparente para la textura
             // solo activa la transparencia si tiene el canal alfa
-            if (color.a < 1 || (material.isTransparencia() && material.getAlphaColour() != null
+            if (color.a < 1 || (material.isTransparent() && material.getAlphaColour() != null
                     && color.toRGB() == material.getAlphaColour().toRGB())) {
                 return null;
             }
@@ -145,7 +145,7 @@ public class EnviromentMapFragmentShader extends FragmentShader {
         // ***********************************************************
         // ****** TRANSPARENCIA
         // ***********************************************************
-        if (material.isTransparencia() && transparencia < 1) {
+        if (material.isTransparent() && transparencia < 1) {
             QColor tmp = render.getFrameBuffer().getColor(x, y);// el color actual en el buffer para mezclarlo
             color.r = (1 - transparencia) * tmp.r + transparencia * color.r;
             color.g = (1 - transparencia) * tmp.g + transparencia * color.g;

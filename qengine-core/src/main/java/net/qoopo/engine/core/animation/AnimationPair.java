@@ -17,14 +17,14 @@ import net.qoopo.engine.core.entity.component.transform.Transform;
 public class AnimationPair implements Serializable {
 
     private Entity entity;
-    private Transform transformacion;
+    private Transform transform;
 
     public AnimationPair() {
     }
 
-    public AnimationPair(Entity entity, Transform transformacion) {
+    public AnimationPair(Entity entity, Transform transform) {
         this.entity = entity;
-        this.transformacion = transformacion;
+        this.transform = transform;
     }
 
     public Entity getEntidad() {
@@ -35,12 +35,12 @@ public class AnimationPair implements Serializable {
         this.entity = entity;
     }
 
-    public Transform getTransformacion() {
-        return transformacion;
+    public Transform getTransform() {
+        return transform;
     }
 
-    public void setTransformacion(Transform transformacion) {
-        this.transformacion = transformacion;
+    public void setTransform(Transform transformacion) {
+        this.transform = transformacion;
     }
 
 }

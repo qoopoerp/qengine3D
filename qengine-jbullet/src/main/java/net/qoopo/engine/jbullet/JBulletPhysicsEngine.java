@@ -456,7 +456,7 @@ public class JBulletPhysicsEngine extends PhysicsEngine {
             trans.getRotation(rotacion);
             entity.getTransform().getRotation().getCuaternion().set(rotacion.x, rotacion.y, rotacion.z,
                     rotacion.w);
-            entity.getTransform().getRotation().actualizarAngulos();
+            entity.getTransform().getRotation().updateEuler();
             // aplico control de posicion propio de este engine
             entity.comprobarMovimiento();
         } catch (Exception e) {

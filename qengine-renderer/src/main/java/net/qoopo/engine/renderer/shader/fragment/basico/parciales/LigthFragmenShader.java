@@ -44,7 +44,7 @@ public class LigthFragmenShader extends FragmentShader {
         QIluminacion iluminacion = new QIluminacion();
 
         // TOMA EL VALOR DE LA TRANSPARENCIA
-        if (((Material) fragment.material).isTransparencia()) {
+        if (((Material) fragment.material).isTransparent()) {
             // si tiene un mapa de transparencia
             if (((Material) fragment.material).getAlphaMap() != null) {
                 // es una imagen en blanco y negro, toma cualquier canal de color
@@ -77,7 +77,7 @@ public class LigthFragmenShader extends FragmentShader {
 
             color.set(colorDifuso);
 
-            if (colorDifuso.a < 1 || (((Material) fragment.material).isTransparencia()
+            if (colorDifuso.a < 1 || (((Material) fragment.material).isTransparent()
                     && ((Material) fragment.material).getAlphaColour() != null
                     && colorDifuso.toRGB() == ((Material) fragment.material).getAlphaColour().toRGB())) {
                 return null;
@@ -90,7 +90,7 @@ public class LigthFragmenShader extends FragmentShader {
         // ***********************************************************
         // ****** TRANSPARENCIA
         // ***********************************************************
-        if (((Material) fragment.material).isTransparencia() && transparencia < 1) {
+        if (((Material) fragment.material).isTransparent() && transparencia < 1) {
             QColor tmp = render.getFrameBuffer().getColor(x, y);// el color actual en el buffer para mezclarlo
             color.r = (1 - transparencia) * tmp.r + transparencia * color.r;
             color.g = (1 - transparencia) * tmp.g + transparencia * color.g;

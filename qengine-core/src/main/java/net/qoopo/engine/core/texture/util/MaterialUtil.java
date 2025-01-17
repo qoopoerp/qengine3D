@@ -83,7 +83,7 @@ public class MaterialUtil {
         try {
             material = new Material();
             material.setTransAlfa(alpha);
-            material.setTransparencia(alpha < 1.0f);
+            material.setTransparent(alpha < 1.0f);
             material.setColor(new QColor(1, r, g, b));
             material.setColorEspecular(new QColor(1, rS, gS, bS));
             material.setSpecularExponent(specularExponent);

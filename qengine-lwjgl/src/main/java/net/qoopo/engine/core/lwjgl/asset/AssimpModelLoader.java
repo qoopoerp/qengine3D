@@ -65,7 +65,7 @@ import net.qoopo.engine.core.material.Material;
 import net.qoopo.engine.core.math.Cuaternion;
 import net.qoopo.engine.core.math.QColor;
 import net.qoopo.engine.core.math.QMatriz4;
-import net.qoopo.engine.core.math.QRotacion;
+import net.qoopo.engine.core.math.Rotation;
 import net.qoopo.engine.core.math.QVector3;
 import net.qoopo.engine.core.scene.Camera;
 import net.qoopo.engine.core.texture.Texture;
@@ -277,7 +277,7 @@ public class AssimpModelLoader implements ModelLoader {
         texture = loadTexture(aiMaterial, Assimp.aiTextureType_OPACITY, texturesDir);
         if (texture != null) {
             material.setAlphaMap(texture);
-            material.setTransparencia(true);
+            material.setTransparent(true);
         }
         // textura especular
         texture = loadTexture(aiMaterial, Assimp.aiTextureType_SPECULAR, texturesDir);
@@ -347,7 +347,7 @@ public class AssimpModelLoader implements ModelLoader {
                     camara.setFOV(aiCamera.mHorizontalFOV());
                     camara.frustrumCerca = aiCamera.mClipPlaneNear();
                     camara.frustrumLejos = aiCamera.mClipPlaneFar();
-                    camara.setRadioAspecto(aiCamera.mAspect());
+                    camara.setAspectRatio(aiCamera.mAspect());
                 }
             }
         }
@@ -357,7 +357,7 @@ public class AssimpModelLoader implements ModelLoader {
         }
 
         // Transformacion
-        entity.setTransform(new Transform(QRotacion.CUATERNION));
+        entity.setTransform(new Transform(Rotation.CUATERNION));
         entity.getTransform().fromMatrix(AssimpModelLoader.toMatrix(aiNodo.mTransformation()));
 
         Skeleton esqueleto = null;
@@ -515,7 +515,7 @@ public class AssimpModelLoader implements ModelLoader {
             }
 
             if (hueso != null) {
-                Transform transformacion = new Transform(QRotacion.CUATERNION);
+                Transform transformacion = new Transform(Rotation.CUATERNION);
                 if (positionKeys != null && positionKeys.hasRemaining()) {
                     try {
                         // AIVectorKey aiVecKey = ;
@@ -528,7 +528,8 @@ public class AssimpModelLoader implements ModelLoader {
                             }
                         }
                     } catch (Exception e) {
-                        logger.severe("[X] Error cargando posicion y escala, no transformacion para el frame solicitado");
+                        logger.severe(
+                                "[X] Error cargando posicion y escala, no transformacion para el frame solicitado");
                     }
                 }
                 if (rotationKeys != null && rotationKeys.hasRemaining()) {
@@ -563,7 +564,7 @@ public class AssimpModelLoader implements ModelLoader {
             Integer contadorNodosSinPadre) {
         Bone hueso = new Bone(id, nodo.getName());
         QMatriz4 matriz = nodo.getTransformacion();
-        hueso.setTransform(new Transform(QRotacion.CUATERNION));
+        hueso.setTransform(new Transform(Rotation.CUATERNION));
         hueso.getTransform().fromMatrix(matriz);
         Node nodoPadre = nodo.getParent();
         if (nodoPadre != null) {
@@ -719,14 +720,14 @@ public class AssimpModelLoader implements ModelLoader {
                         // si existe un frame con un par animado para este frame
                         if (mapa.get(k).size() > j) {
                             AnimationFrame frameHueso = mapa.get(k).get(j);
-                            tiempo = Math.max(tiempo, frameHueso.getMarcaTiempo());
+                            tiempo = Math.max(tiempo, frameHueso.getTimeMark());
                             for (AnimationPair par : frameHueso.getAnimationPairList()) {
                                 frame.addPair(par);
                             }
                         }
                     }
                 }
-                frame.setMarcaTiempo(tiempo);// actualiza el tiempo que fue inicializado en 0.00f
+                frame.setTimeMark(tiempo);// actualiza el tiempo que fue inicializado en 0.00f
                 animation.addFrame(frame);
             }
             almacen.add(animation.getNombre(), animation);
@@ -834,9 +835,9 @@ public class AssimpModelLoader implements ModelLoader {
             material = new Material();
             logger.warning("[!] No se encontró material con el índice :" + materialIdx);
         }
-        loadVerticesOnly(aiMesh, malla);
-        loadNormalsOnly(aiMesh, malla);
-        loadUVOnly(aiMesh, malla);
+        loadVertices(aiMesh, malla);
+        loadNormals(aiMesh, malla);
+        loadUVs(aiMesh, malla);
         loadFaces(aiMesh, malla, material);
         procesarBones(aiMesh, malla, boneList);
         // malla.computeNormals();
@@ -891,32 +892,12 @@ public class AssimpModelLoader implements ModelLoader {
     }
 
     /**
-     * Carga los vértices de la malla con coordenadas de texturas
-     */
-    protected void loadVertices(AIMesh aiMesh, Mesh malla) {
-        AIVector3D.Buffer aiVertices = aiMesh.mVertices();
-        AIVector3D aiVertex = null;
-        AIVector3D textCoord = null;
-        AIVector3D.Buffer textCoords = aiMesh.mTextureCoords(0);
-        while (aiVertices.hasRemaining()) {
-            aiVertex = aiVertices.get();
-            if (textCoords != null && textCoords.hasRemaining()) {
-                textCoord = textCoords.get();
-                malla.addVertex(aiVertex.x(), aiVertex.y(), aiVertex.z());
-                malla.addUV(textCoord.x(), textCoord.y());
-            } else {
-                malla.addVertex(aiVertex.x(), aiVertex.y(), aiVertex.z());
-            }
-        }
-    }
-
-    /**
      * Carga solamenta los vertices de la malla
      * 
      * @param aiMesh
      * @param malla
      */
-    protected void loadVerticesOnly(AIMesh aiMesh, Mesh malla) {
+    protected void loadVertices(AIMesh aiMesh, Mesh malla) {
         AIVector3D.Buffer aiVertices = aiMesh.mVertices();
         AIVector3D aiVertex = null;
         while (aiVertices.hasRemaining()) {
@@ -932,7 +913,7 @@ public class AssimpModelLoader implements ModelLoader {
      * @param aiMesh
      * @param malla
      */
-    protected void loadNormalsOnly(AIMesh aiMesh, Mesh malla) {
+    protected void loadNormals(AIMesh aiMesh, Mesh malla) {
         AIVector3D.Buffer aiNormals = aiMesh.mNormals();
         AIVector3D aiNormal = null;
         while (aiNormals.hasRemaining()) {
@@ -947,7 +928,7 @@ public class AssimpModelLoader implements ModelLoader {
      * @param aiMesh
      * @param malla
      */
-    protected void loadUVOnly(AIMesh aiMesh, Mesh malla) {
+    protected void loadUVs(AIMesh aiMesh, Mesh malla) {
         AIVector3D.Buffer aiUVs = aiMesh.mTextureCoords(0);
         AIVector3D aiUV = null;
         if (aiUVs != null) {

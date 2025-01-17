@@ -69,7 +69,7 @@ public class FireEmissor extends ParticleEmissor {
             AtlasSequentialTexture proc = new AtlasSequentialTexture(textura, 8, 8, 10);
             material.setColorMap(proc);
             material.setAlphaColour(QColor.BLACK);
-            material.setTransparencia(true);
+            material.setTransparent(true);
 //            material.setTransAlfa(0.90f);// el objeto tiene una transparencia 
         } catch (Exception e) {
             e.printStackTrace();

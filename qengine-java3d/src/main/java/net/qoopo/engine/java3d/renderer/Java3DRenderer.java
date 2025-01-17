@@ -29,7 +29,7 @@ import net.qoopo.engine.core.entity.component.EntityComponent;
 import net.qoopo.engine.core.entity.component.ligth.QLigth;
 import net.qoopo.engine.core.entity.component.mesh.Mesh;
 import net.qoopo.engine.core.entity.component.mesh.primitive.Primitive;
-import net.qoopo.engine.core.entity.component.mesh.primitive.QVertexBuffer;
+import net.qoopo.engine.core.entity.component.mesh.primitive.VertexBuffer;
 import net.qoopo.engine.core.entity.component.mesh.primitive.Vertex;
 import net.qoopo.engine.core.entity.component.particles.Particle;
 import net.qoopo.engine.core.entity.component.particles.ParticleEmissor;
@@ -426,9 +426,9 @@ public class Java3DRenderer extends RenderEngine {
                         // Transform3D t1 = new Transform3D();
                         // Transform3D t2 = new Transform3D();
                         // Transform3D t3 = new Transform3D();
-                        // t1.rotX(rot.getAngulos().getAnguloX());
-                        // t2.rotY(rot.getAngulos().getAnguloY());
-                        // t3.rotZ(rot.getAngulos().getAnguloZ());
+                        // t1.rotX(rot.getAngulos().x);
+                        // t2.rotY(rot.getAngulos().y);
+                        // t3.rotZ(rot.getAngulos().z);
                         // t2.mul(t1);
                         // t3.mul(t2);
                         // transform.mul(t3);
@@ -558,7 +558,7 @@ public class Java3DRenderer extends RenderEngine {
     }
 
     @Override
-    public void render(QMatriz4 matViewModel, QVertexBuffer bufferVertices, Primitive primitiva, boolean wire) {
+    public void render(QMatriz4 matViewModel, VertexBuffer bufferVertices, Primitive primitiva, boolean wire) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'render'");
     }

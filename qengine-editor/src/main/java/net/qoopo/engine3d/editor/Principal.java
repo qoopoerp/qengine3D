@@ -116,7 +116,7 @@ import net.qoopo.engine3d.editor.util.EditorRenderer;
 import net.qoopo.engine3d.editor.util.ImagePreviewPanel;
 import net.qoopo.engine3d.editor.util.QArbolWrapper;
 import net.qoopo.engine3d.editor.util.Util;
-import net.qoopo.engine3d.test.generaEjemplos.InitialScene;
+import net.qoopo.engine3d.test.InitialScene;
 
 @Getter
 @Setter

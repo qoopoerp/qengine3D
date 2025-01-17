@@ -4,7 +4,6 @@ import net.qoopo.engine.core.entity.component.camera.CameraController;
 import net.qoopo.engine.core.math.QVector3;
 import net.qoopo.engine.core.scene.Camera;
 import net.qoopo.engine3d.QEngine3D;
-import net.qoopo.engine3d.test.generaEjemplos.InitialScene;
 
 public class Main {
     public static void main(String[] args) {

@@ -44,7 +44,7 @@ public class Material extends AbstractMaterial {
     private float emision = 0;
 
     // ***************** TRANSPARENCIA *********************
-    private boolean transparencia = false;
+    private boolean transparent = false;
     // transparencia, 0 transparente 1 solido
     private float transAlfa = 1.0f;
     private QColor alphaColour = null;

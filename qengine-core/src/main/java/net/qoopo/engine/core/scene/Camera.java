@@ -38,13 +38,11 @@ public class Camera extends Entity {
         MATERIAL = new Material();
         MATERIAL.setColor(new QColor(1, 1, 204.0f / 255.0f));
         MATERIAL.setTransAlfa(0.3f);
-        MATERIAL.setTransparencia(true);
+        MATERIAL.setTransparent(true);
     }
     private float escalaOrtogonal = 0.0f;
     private boolean ortogonal = false;
-    private float radioAspecto = 800.0f / 600.0f;
-    public float camaraAlto;
-    public float camaraAncho;
+    private float aspectRatio = 800.0f / 600.0f;
 
     /**
      * Angulo de Vision de la Camara , Los humanos tenemos un angulo de vision
@@ -79,7 +77,7 @@ public class Camera extends Entity {
     /**
      * Los planos de recorte del frustum de la camara
      */
-    private final QClipPane[] clipPane = new QClipPane[6];
+    private final ClipPane[] clipPane = new ClipPane[6];
 
     /**
      * Matriz para aplicar la proyeccion
@@ -118,7 +116,7 @@ public class Camera extends Entity {
 
     public void iniciar() {
         transform.getLocation().set(QVector3.zero);
-        transform.getRotation().inicializar();
+        transform.getRotation().reset();
         escalaOrtogonal = 1.0f;
         frustrumCerca = 1.0f;
         frustrumLejos = 100f;
@@ -142,7 +140,7 @@ public class Camera extends Entity {
         // visible = (planosRecorte[1].distancia(t.vector3f1) > 0.005f);
         // for (int i = 0; i < 2; i++) { //solo far plane y near plane
         for (int i = 0; i < 6; i++) {
-            if (!this.clipPane[i].esVisible(t.vector3f1)) {
+            if (!this.clipPane[i].isVisible(t.vector3f1)) {
                 // if (!(this.planosRecorte[i].distancia(t.vector3f1) > 0.005f)) {
                 visible = false;
             }
@@ -165,8 +163,8 @@ public class Camera extends Entity {
         for (int i = 0; i < 6; i++) {
             // if (!this.planosRecorte[i].esVisible(v1) ||
             // !this.planosRecorte[i].esVisible(v2)) {
-            if (!this.clipPane[i].esVisible(v1) && this.clipPane[i].esVisible(v2)
-                    || this.clipPane[i].esVisible(v1) && !this.clipPane[i].esVisible(v2)) {
+            if (!this.clipPane[i].isVisible(v1) && this.clipPane[i].isVisible(v2)
+                    || this.clipPane[i].isVisible(v1) && !this.clipPane[i].isVisible(v2)) {
                 float da = this.clipPane[i].distancia(v1); // distance plane -> point a
                 float db = this.clipPane[i].distancia(v2); // distance plane -> point b
                 return da / (da - db); // intersection factor (between 0 and 1)
@@ -202,12 +200,12 @@ public class Camera extends Entity {
     }
 
     public void setRadioAspecto(int pantallaAncho, int pantallaAlto) {
-        radioAspecto = (float) pantallaAncho / (float) pantallaAlto;
+        aspectRatio = (float) pantallaAncho / (float) pantallaAlto;
         updateCamera();
     }
 
-    public void setRadioAspecto(float radioAspecto) {
-        this.radioAspecto = radioAspecto;
+    public void setAspectRatio(float radioAspecto) {
+        this.aspectRatio = radioAspecto;
         updateCamera();
     }
 
@@ -217,13 +215,20 @@ public class Camera extends Entity {
      */
     public void updateCamera() {
         // http://www.songho.ca/opengl/gl_transform.html#projection
-        camaraAlto = 2 * frustrumCerca * (float) Math.tan(FOV / 2);
-        camaraAncho = camaraAlto * radioAspecto;
 
-        frustumIzquierda = -camaraAncho / 2;
-        frustumDerecha = camaraAncho / 2;
-        frustumArriba = -camaraAlto / 2;
-        frustumAbajo = camaraAlto / 2;
+        float height = frustrumCerca * (float) Math.tan(FOV / 2);
+        float width = height * aspectRatio;
+        frustumIzquierda = -width;
+        frustumDerecha = width;
+        frustumArriba = -height;
+        frustumAbajo = height;
+
+        // camaraAlto = 2 * frustrumCerca * (float) Math.tan(FOV / 2);
+        // camaraAncho = camaraAlto * radioAspecto;
+        // frustumIzquierda = -camaraAncho / 2;
+        // frustumDerecha = camaraAncho / 2;
+        // frustumArriba = -camaraAlto / 2;
+        // frustumAbajo = camaraAlto / 2;
 
         if (ortogonal) {
             frustumArriba *= escalaOrtogonal;
@@ -231,10 +236,18 @@ public class Camera extends Entity {
             frustumIzquierda *= escalaOrtogonal;
             frustumAbajo *= escalaOrtogonal;
         }
-        construirMatrizProyeccion();
+
+        /**
+         * Matriz de proyeccion igua a la de OpenGL
+         * http://www.songho.ca/opengl/gl_projectionmatrix.html
+         *
+         */
+        matrizProyeccion.fromFrustum(frustrumCerca, frustrumLejos, frustumIzquierda, frustumDerecha, frustumArriba,
+                frustumAbajo, ortogonal);
+
         QVector3[] esquinas = getEsquinasFrustum();
         construirPlanosRecorte(esquinas);
-        construirGeometria(esquinas);
+        // construirGeometria(esquinas);
         cached_time = -1L;
     }
 
@@ -258,11 +271,11 @@ public class Camera extends Entity {
         QVector3 centroCerca = centro.clone().add(camaraDireccion.clone().normalize().multiply(frustrumCerca));
         QVector3 centroLejos = centro.clone().add(camaraDireccion.clone().normalize().multiply(frustrumLejos));
 
-        float cercaAlto = 2 * (float) Math.tan(FOV / 2) * frustrumCerca; // camaraAlto
-        float cercaAncho = cercaAlto * radioAspecto;
+        float cercaAlto = 2 * (float) Math.tan(FOV / 2) * frustrumCerca;
+        float cercaAncho = cercaAlto * aspectRatio;
 
         float lejosAlto = 2 * (float) Math.tan(FOV / 2) * frustrumLejos;
-        float lejosAncho = lejosAlto * radioAspecto;
+        float lejosAncho = lejosAlto * aspectRatio;
 
         if (ortogonal) {
             lejosAncho = cercaAncho;
@@ -300,39 +313,19 @@ public class Camera extends Entity {
         return esquinas;
     }
 
-    /**
-     * Devuelve la matriz de proyeccion de la camara
-     *
-     * @return
-     */
-    public QMatriz4 getMatrizProyeccion() {
-        return matrizProyeccion;
-    }
-
-    /**
-     * Matriz de proyeccion igua a la de OpenGL
-     * http://www.songho.ca/opengl/gl_projectionmatrix.html
-     *
-     */
-    private void construirMatrizProyeccion() {
-        matrizProyeccion.fromFrustum(frustrumCerca, frustrumLejos, frustumIzquierda, frustumDerecha, frustumArriba,
-                frustumAbajo, ortogonal);
-
-    }
-
     private void construirPlanosRecorte(QVector3[] esquinas) {
         // Plano cercano
-        clipPane[0] = new QClipPane(esquinas[6], esquinas[4], esquinas[5]);
+        clipPane[0] = new ClipPane(esquinas[6], esquinas[4], esquinas[5]);
         // Plano lejano
-        clipPane[1] = new QClipPane(esquinas[2], esquinas[1], esquinas[0]);
+        clipPane[1] = new ClipPane(esquinas[2], esquinas[1], esquinas[0]);
         // Plano superior
-        clipPane[2] = new QClipPane(esquinas[0], esquinas[5], esquinas[4]);
+        clipPane[2] = new ClipPane(esquinas[0], esquinas[5], esquinas[4]);
         // Plano inferior
-        clipPane[3] = new QClipPane(esquinas[6], esquinas[7], esquinas[2]);
+        clipPane[3] = new ClipPane(esquinas[6], esquinas[7], esquinas[2]);
         // Plano derecha
-        clipPane[4] = new QClipPane(esquinas[7], esquinas[5], esquinas[1]);
+        clipPane[4] = new ClipPane(esquinas[7], esquinas[5], esquinas[1]);
         // Plano izquierda
-        clipPane[5] = new QClipPane(esquinas[6], esquinas[2], esquinas[4]);
+        clipPane[5] = new ClipPane(esquinas[6], esquinas[2], esquinas[4]);
     }
 
     /**
@@ -437,7 +430,7 @@ public class Camera extends Entity {
     public Camera clone() {
         Camera newCamara = new Camera();
         newCamara.setFOV(FOV);
-        newCamara.setRadioAspecto(radioAspecto);
+        newCamara.setAspectRatio(aspectRatio);
         newCamara.setOrtogonal(ortogonal);
         newCamara.updateCamera();
         newCamara.setTransform(transform.clone());
@@ -452,7 +445,7 @@ public class Camera extends Entity {
      * @param up
      */
     public void lookAtTarget(QVector3 posicion, QVector3 objetivo, QVector3 up) {
-        lookAt(posicion.clone(), posicion.clone().subtract(objetivo), up);
+        lookAt(posicion, posicion.clone().subtract(objetivo), up);
     }
 
     /**
@@ -465,7 +458,7 @@ public class Camera extends Entity {
     public void lookAt(QVector3 location, QVector3 direction, QVector3 up) {
         transform.getLocation().set(location);
         transform.getRotation().getCuaternion().lookAt(direction, up);
-        transform.getRotation().actualizarAngulos();
+        transform.getRotation().updateEuler();
         updateCamera();
     }
 
@@ -504,7 +497,7 @@ public class Camera extends Entity {
 
     @Override
     public String toString() {
-        return "QCamara{" + "radioAspecto=" + radioAspecto + ", FOV=" + FOV + ", frustrumCerca=" + frustrumCerca
+        return "QCamara{" + "radioAspecto=" + aspectRatio + ", FOV=" + FOV + ", frustrumCerca=" + frustrumCerca
                 + ", frustrumLejos=" + frustrumLejos + ", frustumIzquierda=" + frustumIzquierda + ", frustumDerecha="
                 + frustumDerecha + ", frustumArriba=" + frustumArriba + ", frustumAbajo=" + frustumAbajo + '}';
     }

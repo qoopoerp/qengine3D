@@ -1,6 +1,6 @@
 package net.qoopo.engine.core.util;
 
-import net.qoopo.engine.core.entity.component.mesh.primitive.QVertexBuffer;
+import net.qoopo.engine.core.entity.component.mesh.primitive.VertexBuffer;
 import net.qoopo.engine.core.entity.component.mesh.primitive.Vertex;
 import net.qoopo.engine.core.math.Cuaternion;
 import net.qoopo.engine.core.math.QColor;
@@ -100,9 +100,9 @@ public class TempVars {
     /**
      * Buffer de vertices
      */
-    public final QVertexBuffer bufferVertices1 = new QVertexBuffer();
-    public final QVertexBuffer bufferVertices2 = new QVertexBuffer();
-    public final QVertexBuffer bufferVertices3 = new QVertexBuffer();
+    public final VertexBuffer bufferVertices1 = new VertexBuffer();
+    public final VertexBuffer bufferVertices2 = new VertexBuffer();
+    public final VertexBuffer bufferVertices3 = new VertexBuffer();
     /**
      * Vertices
      */
