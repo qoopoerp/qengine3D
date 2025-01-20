@@ -2,23 +2,23 @@ package net.qoopo.engine.core.math;
 
 import java.util.logging.Logger;
 
-public final class QMatriz3 implements Cloneable, java.io.Serializable {
+public final class Matrix3 implements Cloneable, java.io.Serializable {
 
     static final long serialVersionUID = 1;
 
-    private static final Logger logger = Logger.getLogger(QMatriz3.class.getName());
+    private static final Logger logger = Logger.getLogger(Matrix3.class.getName());
     protected float m00, m01, m02;
     protected float m10, m11, m12;
     protected float m20, m21, m22;
-    public static final QMatriz3 ZERO = new QMatriz3(0, 0, 0, 0, 0, 0, 0, 0, 0);
-    public static final QMatriz3 IDENTITY = new QMatriz3();
+    public static final Matrix3 ZERO = new Matrix3(0, 0, 0, 0, 0, 0, 0, 0, 0);
+    public static final Matrix3 IDENTITY = new Matrix3();
 
     /**
      * Constructor instantiates a new <code>Matrix3f</code> object. The initial
      * values for the matrix is that of the identity matrix.
      *
      */
-    public QMatriz3() {
+    public Matrix3() {
         loadIdentity();
     }
 
@@ -35,7 +35,7 @@ public final class QMatriz3 implements Cloneable, java.io.Serializable {
      * @param m21 2x1 in the matrix.
      * @param m22 2x2 in the matrix.
      */
-    public QMatriz3(float m00, float m01, float m02, float m10, float m11,
+    public Matrix3(float m00, float m01, float m02, float m10, float m11,
             float m12, float m20, float m21, float m22) {
 
         this.m00 = m00;
@@ -55,7 +55,7 @@ public final class QMatriz3 implements Cloneable, java.io.Serializable {
      *
      * @param mat the matrix to copy.
      */
-    public QMatriz3(QMatriz3 mat) {
+    public Matrix3(Matrix3 mat) {
         set(mat);
     }
 
@@ -82,7 +82,7 @@ public final class QMatriz3 implements Cloneable, java.io.Serializable {
      * @param matrix the matrix to copy.
      * @return this
      */
-    public QMatriz3 set(QMatriz3 matrix) {
+    public Matrix3 set(Matrix3 matrix) {
         if (null == matrix) {
             loadIdentity();
         } else {
@@ -216,9 +216,9 @@ public final class QMatriz3 implements Cloneable, java.io.Serializable {
      *              parameter is null a new one is created
      * @return the normalized matrix
      */
-    public QMatriz3 normalize(QMatriz3 store) {
+    public Matrix3 normalize(Matrix3 store) {
         if (store == null) {
-            store = new QMatriz3();
+            store = new Matrix3();
         }
 
         float mag = 1.0f / QMath.sqrt(
@@ -250,7 +250,7 @@ public final class QMatriz3 implements Cloneable, java.io.Serializable {
      *
      * @return this matrix once normalized.
      */
-    public QMatriz3 normalizeLocal() {
+    public Matrix3 normalizeLocal() {
         return normalize(this);
     }
 
@@ -261,7 +261,7 @@ public final class QMatriz3 implements Cloneable, java.io.Serializable {
      * @param i the column to retrieve. Must be between 0 and 2.
      * @return the column specified by the index.
      */
-    public QVector3 getColumn(int i) {
+    public Vector3 getColumn(int i) {
         return getColumn(i, null);
     }
 
@@ -274,9 +274,9 @@ public final class QMatriz3 implements Cloneable, java.io.Serializable {
      *              is created.
      * @return the column specified by the index.
      */
-    public QVector3 getColumn(int i, QVector3 store) {
+    public Vector3 getColumn(int i, Vector3 store) {
         if (store == null) {
-            store = QVector3.empty();
+            store = Vector3.empty();
         }
         switch (i) {
             case 0:
@@ -308,7 +308,7 @@ public final class QMatriz3 implements Cloneable, java.io.Serializable {
      * @param i the row to retrieve. Must be between 0 and 2.
      * @return the row specified by the index.
      */
-    public QVector3 getRow(int i) {
+    public Vector3 getRow(int i) {
         return getRow(i, null);
     }
 
@@ -321,9 +321,9 @@ public final class QMatriz3 implements Cloneable, java.io.Serializable {
      *              is created.
      * @return the row specified by the index.
      */
-    public QVector3 getRow(int i, QVector3 store) {
+    public Vector3 getRow(int i, Vector3 store) {
         if (store == null) {
-            store = QVector3.empty();
+            store = Vector3.empty();
         }
         switch (i) {
             case 0:
@@ -425,7 +425,7 @@ public final class QMatriz3 implements Cloneable, java.io.Serializable {
      * @param column the data to set.
      * @return this
      */
-    public QMatriz3 setColumn(int i, QVector3 column) {
+    public Matrix3 setColumn(int i, Vector3 column) {
 
         if (column == null) {
             logger.warning("Column is null. Ignoring.");
@@ -463,7 +463,7 @@ public final class QMatriz3 implements Cloneable, java.io.Serializable {
      * @param row the data to set.
      * @return this
      */
-    public QMatriz3 setRow(int i, QVector3 row) {
+    public Matrix3 setRow(int i, Vector3 row) {
 
         if (row == null) {
             logger.warning("Row is null. Ignoring.");
@@ -503,7 +503,7 @@ public final class QMatriz3 implements Cloneable, java.io.Serializable {
      * @return this
      */
     @SuppressWarnings("fallthrough")
-    public QMatriz3 set(int i, int j, float value) {
+    public Matrix3 set(int i, int j, float value) {
         switch (i) {
             case 0:
                 switch (j) {
@@ -556,7 +556,7 @@ public final class QMatriz3 implements Cloneable, java.io.Serializable {
      * @throws JmeException if the array is not of size 9.
      * @return this
      */
-    public QMatriz3 set(float[][] matrix) {
+    public Matrix3 set(float[][] matrix) {
         if (matrix.length != 3 || matrix[0].length != 3) {
             throw new IllegalArgumentException(
                     "Array must be of size 9.");
@@ -582,7 +582,7 @@ public final class QMatriz3 implements Cloneable, java.io.Serializable {
      * @param vAxis QVector3
      * @param wAxis QVector3
      */
-    public void fromAxes(QVector3 uAxis, QVector3 vAxis, QVector3 wAxis) {
+    public void fromAxes(Vector3 uAxis, Vector3 vAxis, Vector3 wAxis) {
         m00 = uAxis.x;
         m10 = uAxis.y;
         m20 = uAxis.z;
@@ -603,7 +603,7 @@ public final class QMatriz3 implements Cloneable, java.io.Serializable {
      * @param matrix the matrix to set the value to.
      * @return this
      */
-    public QMatriz3 set(float[] matrix) {
+    public Matrix3 set(float[] matrix) {
         return set(matrix, true);
     }
 
@@ -615,7 +615,7 @@ public final class QMatriz3 implements Cloneable, java.io.Serializable {
      *                 order.
      * @return this
      */
-    public QMatriz3 set(float[] matrix, boolean rowMajor) {
+    public Matrix3 set(float[] matrix, boolean rowMajor) {
         if (matrix.length != 9) {
             throw new IllegalArgumentException(
                     "Array must be of size 9.");
@@ -654,7 +654,7 @@ public final class QMatriz3 implements Cloneable, java.io.Serializable {
      * @param quaternion the quaternion to create a rotational matrix from.
      * @return this
      */
-    public QMatriz3 set(Cuaternion quaternion) {
+    public Matrix3 set(Cuaternion quaternion) {
         return quaternion.toRotationMatrix(this);
     }
 
@@ -685,8 +685,8 @@ public final class QMatriz3 implements Cloneable, java.io.Serializable {
      * @param angle the angle to rotate (in radians).
      * @param axis  the axis of rotation.
      */
-    public void fromAngleAxis(float angle, QVector3 axis) {
-        QVector3 normAxis = axis.clone();
+    public void fromAngleAxis(float angle, Vector3 axis) {
+        Vector3 normAxis = axis.clone();
         normAxis.normalize();
         fromAngleNormalAxis(angle, normAxis);
     }
@@ -698,7 +698,7 @@ public final class QMatriz3 implements Cloneable, java.io.Serializable {
      * @param angle the angle to rotate (in radians).
      * @param axis  the axis of rotation (already normalized).
      */
-    public void fromAngleNormalAxis(float angle, QVector3 axis) {
+    public void fromAngleNormalAxis(float angle, Vector3 axis) {
         float fCos = QMath.cos(angle);
         float fSin = QMath.sin(angle);
         float fOneMinusCos = ((float) 1.0) - fCos;
@@ -731,7 +731,7 @@ public final class QMatriz3 implements Cloneable, java.io.Serializable {
      * @param mat the matrix to multiply this matrix by.
      * @return the result matrix.
      */
-    public QMatriz3 mult(QMatriz3 mat) {
+    public Matrix3 mult(Matrix3 mat) {
         return mult(mat, null);
     }
 
@@ -745,14 +745,14 @@ public final class QMatriz3 implements Cloneable, java.io.Serializable {
      *                object.
      * @return a matrix3f object containing the result of this operation
      */
-    public QMatriz3 mult(QMatriz3 mat, QMatriz3 product) {
+    public Matrix3 mult(Matrix3 mat, Matrix3 product) {
 
         float temp00, temp01, temp02;
         float temp10, temp11, temp12;
         float temp20, temp21, temp22;
 
         if (product == null) {
-            product = new QMatriz3();
+            product = new Matrix3();
         }
         temp00 = m00 * mat.m00 + m01 * mat.m10 + m02 * mat.m20;
         temp01 = m00 * mat.m01 + m01 * mat.m11 + m02 * mat.m21;
@@ -785,7 +785,7 @@ public final class QMatriz3 implements Cloneable, java.io.Serializable {
      * @param vec the vector to multiply this matrix by.
      * @return the result vector.
      */
-    public QVector3 mult(QVector3 vec) {
+    public Vector3 mult(Vector3 vec) {
         return mult(vec, null);
     }
 
@@ -798,10 +798,10 @@ public final class QMatriz3 implements Cloneable, java.io.Serializable {
      *                be the same as vec.
      * @return The given product vector.
      */
-    public QVector3 mult(QVector3 vec, QVector3 product) {
+    public Vector3 mult(Vector3 vec, Vector3 product) {
 
         if (null == product) {
-            product = QVector3.empty();
+            product = Vector3.empty();
         }
 
         float x = vec.x;
@@ -821,7 +821,7 @@ public final class QMatriz3 implements Cloneable, java.io.Serializable {
      * @param scale the value to scale by.
      * @return this QMatriz3
      */
-    public QMatriz3 multLocal(float scale) {
+    public Matrix3 multLocal(float scale) {
         m00 *= scale;
         m01 *= scale;
         m02 *= scale;
@@ -843,7 +843,7 @@ public final class QMatriz3 implements Cloneable, java.io.Serializable {
      * @param vec the vector to multiply this matrix by.
      * @return The passed vector after multiplication
      */
-    public QVector3 multLocal(QVector3 vec) {
+    public Vector3 multLocal(Vector3 vec) {
         if (vec == null) {
             return null;
         }
@@ -864,7 +864,7 @@ public final class QMatriz3 implements Cloneable, java.io.Serializable {
      * @param mat the matrix to multiply this matrix by.
      * @return This matrix, after the multiplication
      */
-    public QMatriz3 multLocal(QMatriz3 mat) {
+    public Matrix3 multLocal(Matrix3 mat) {
         return mult(mat, this);
     }
 
@@ -873,7 +873,7 @@ public final class QMatriz3 implements Cloneable, java.io.Serializable {
      *
      * @return This matrix after transpose
      */
-    public QMatriz3 transposeLocal() {
+    public Matrix3 transposeLocal() {
         // float[] tmp = new float[9];
         // get(tmp, false);
         // set(tmp, true);
@@ -898,7 +898,7 @@ public final class QMatriz3 implements Cloneable, java.io.Serializable {
      *
      * @return The new inverse matrix
      */
-    public QMatriz3 invert() {
+    public Matrix3 invert() {
         return invert(null);
     }
 
@@ -907,9 +907,9 @@ public final class QMatriz3 implements Cloneable, java.io.Serializable {
      *
      * @return The store
      */
-    public QMatriz3 invert(QMatriz3 store) {
+    public Matrix3 invert(Matrix3 store) {
         if (store == null) {
-            store = new QMatriz3();
+            store = new Matrix3();
         }
 
         float det = determinant();
@@ -936,7 +936,7 @@ public final class QMatriz3 implements Cloneable, java.io.Serializable {
      *
      * @return this
      */
-    public QMatriz3 invertLocal() {
+    public Matrix3 invertLocal() {
         float det = determinant();
         if (QMath.abs(det) <= 0f) {
             return zero();
@@ -971,7 +971,7 @@ public final class QMatriz3 implements Cloneable, java.io.Serializable {
      *
      * @return The adjoint matrix
      */
-    public QMatriz3 adjoint() {
+    public Matrix3 adjoint() {
         return adjoint(null);
     }
 
@@ -982,9 +982,9 @@ public final class QMatriz3 implements Cloneable, java.io.Serializable {
      *              created.
      * @return store
      */
-    public QMatriz3 adjoint(QMatriz3 store) {
+    public Matrix3 adjoint(Matrix3 store) {
         if (store == null) {
-            store = new QMatriz3();
+            store = new Matrix3();
         }
 
         store.m00 = m11 * m22 - m12 * m21;
@@ -1018,7 +1018,7 @@ public final class QMatriz3 implements Cloneable, java.io.Serializable {
      *
      * @return this matrix
      */
-    public QMatriz3 zero() {
+    public Matrix3 zero() {
         m00 = m01 = m02 = m10 = m11 = m12 = m20 = m21 = m22 = 0.0f;
         return this;
     }
@@ -1031,7 +1031,7 @@ public final class QMatriz3 implements Cloneable, java.io.Serializable {
      *
      * @return this object for chaining.
      */
-    public QMatriz3 transpose() {
+    public Matrix3 transpose() {
         return transposeLocal();
     }
 
@@ -1040,8 +1040,8 @@ public final class QMatriz3 implements Cloneable, java.io.Serializable {
      *
      * @return The new QMatriz3 object.
      */
-    public QMatriz3 transposeNew() {
-        QMatriz3 ret = new QMatriz3(m00, m10, m20, m01, m11, m21, m02, m12, m22);
+    public Matrix3 transposeNew() {
+        Matrix3 ret = new Matrix3(m00, m10, m20, m01, m11, m21, m02, m12, m22);
         return ret;
     }
 
@@ -1120,7 +1120,7 @@ public final class QMatriz3 implements Cloneable, java.io.Serializable {
      */
     @Override
     public boolean equals(Object o) {
-        if (!(o instanceof QMatriz3) || o == null) {
+        if (!(o instanceof Matrix3) || o == null) {
             return false;
         }
 
@@ -1128,7 +1128,7 @@ public final class QMatriz3 implements Cloneable, java.io.Serializable {
             return true;
         }
 
-        QMatriz3 comp = (QMatriz3) o;
+        Matrix3 comp = (Matrix3) o;
         if (Float.compare(m00, comp.m00) != 0) {
             return false;
         }
@@ -1171,8 +1171,8 @@ public final class QMatriz3 implements Cloneable, java.io.Serializable {
      * @see "Tomas M�ller, John Hughes \"Efficiently Building a Matrix to Rotate
      *      \ One Vector to Another\" Journal of Graphics Tools, 4(4):1-4, 1999"
      */
-    public void fromStartEndVectors(QVector3 start, QVector3 end) {
-        QVector3 v = QVector3.empty();
+    public void fromStartEndVectors(Vector3 start, Vector3 end) {
+        Vector3 v = Vector3.empty();
         float e, h, f;
 
         v = start.clone().cross(end);
@@ -1181,8 +1181,8 @@ public final class QMatriz3 implements Cloneable, java.io.Serializable {
 
         // if "from" and "to" vectors are nearly parallel
         if (f > 1.0f - QMath.ZERO_TOLERANCE) {
-            QVector3 u = QVector3.empty();
-            QVector3 x = QVector3.empty();
+            Vector3 u = Vector3.empty();
+            Vector3 x = Vector3.empty();
             float c1, c2, c3;
             /* coefficients for later use */
             int i, j;
@@ -1258,7 +1258,7 @@ public final class QMatriz3 implements Cloneable, java.io.Serializable {
      *
      * @param scale The scale applied to each of the X, Y and Z output values.
      */
-    public void scale(QVector3 scale) {
+    public void scale(Vector3 scale) {
         m00 *= scale.x;
         m10 *= scale.x;
         m20 *= scale.x;
@@ -1270,7 +1270,7 @@ public final class QMatriz3 implements Cloneable, java.io.Serializable {
         m22 *= scale.z;
     }
 
-    static boolean equalIdentity(QMatriz3 mat) {
+    static boolean equalIdentity(Matrix3 mat) {
         if (Math.abs(mat.m00 - 1) > 1e-4) {
             return false;
         }
@@ -1306,9 +1306,9 @@ public final class QMatriz3 implements Cloneable, java.io.Serializable {
     }
 
     @Override
-    public QMatriz3 clone() {
+    public Matrix3 clone() {
         try {
-            return (QMatriz3) super.clone();
+            return (Matrix3) super.clone();
         } catch (CloneNotSupportedException e) {
             throw new AssertionError(); // can not happen
         }

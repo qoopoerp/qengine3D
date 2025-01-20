@@ -6,7 +6,7 @@
 package net.qoopo.engine.core.entity.component.physics.collision.detector.shape.primitivas;
 
 import net.qoopo.engine.core.entity.component.physics.collision.detector.CollisionShape;
-import net.qoopo.engine.core.math.QVector3;
+import net.qoopo.engine.core.math.Vector3;
 
 /**
  * Define una esfera contenedora del objeto
@@ -15,14 +15,14 @@ import net.qoopo.engine.core.math.QVector3;
  */
 public class QColisionCapsula extends CollisionShape {
 
-    private QVector3 centro;
+    private Vector3 centro;
     private float altura;
     private float radio;
 
     public QColisionCapsula() {
     }
 
-    public QColisionCapsula(QVector3 centro, float altura, float radio) {
+    public QColisionCapsula(Vector3 centro, float altura, float radio) {
         this.centro = centro;
         this.altura = altura;
         this.radio = radio;
@@ -46,11 +46,11 @@ public class QColisionCapsula extends CollisionShape {
 
     }
 
-    public QVector3 getCentro() {
+    public Vector3 getCentro() {
         return centro;
     }
 
-    public void setCentro(QVector3 centro) {
+    public void setCentro(Vector3 centro) {
         this.centro = centro;
     }
 

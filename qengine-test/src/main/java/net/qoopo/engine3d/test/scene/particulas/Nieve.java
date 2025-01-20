@@ -9,7 +9,7 @@ import net.qoopo.engine.core.entity.Entity;
 import net.qoopo.engine.core.entity.component.mesh.primitive.Vertex;
 import net.qoopo.engine.core.entity.component.particles.nieve.QEmisorNieve;
 import net.qoopo.engine.core.entity.component.physics.collision.detector.shape.primitivas.AABB;
-import net.qoopo.engine.core.math.QVector3;
+import net.qoopo.engine.core.math.Vector3;
 import net.qoopo.engine.core.renderer.RenderEngine;
 import net.qoopo.engine.core.scene.Scene;
 import net.qoopo.engine3d.test.scene.MakeTestScene;
@@ -31,7 +31,7 @@ public class Nieve extends MakeTestScene {
         Entity emisor = new Entity("Emisor");
 
         AABB ambito = new AABB(new Vertex(-10, 0, -10), new Vertex(10, 10, 10));//
-        QEmisorNieve emisorNieve = new QEmisorNieve(ambito, 300, 1000, 5, QVector3.unitario_y.clone().multiply(-1));
+        QEmisorNieve emisorNieve = new QEmisorNieve(ambito, 300, 1000, 5, Vector3.unitario_y.clone().multiply(-1));
         emisor.addComponent(emisorNieve);
         mundo.addEntity(emisor);
 

@@ -21,7 +21,7 @@ import net.qoopo.engine.core.entity.component.physics.dinamica.QObjetoDinamico;
 import net.qoopo.engine.core.entity.component.physics.dinamica.QObjetoRigido;
 import net.qoopo.engine.core.material.Material;
 import net.qoopo.engine.core.math.QColor;
-import net.qoopo.engine.core.math.QVector3;
+import net.qoopo.engine.core.math.Vector3;
 import net.qoopo.engine.core.scene.Scene;
 import net.qoopo.engine.core.texture.Texture;
 import net.qoopo.engine.core.texture.util.MaterialUtil;
@@ -67,7 +67,7 @@ public class PhysicsTest1 extends FisicaDisparar {
         QColisionEsfera colision = new QColisionEsfera(4);
         balon.addComponent(colision);
         QObjetoRigido fisicaBalon = new QObjetoRigido(QObjetoDinamico.DINAMICO);
-        fisicaBalon.setMasa(16f, QVector3.zero.clone());
+        fisicaBalon.setMasa(16f, Vector3.zero.clone());
         fisicaBalon.setFormaColision(colision);
         balon.addComponent(fisicaBalon);
         balon.move(mundo.UM.convertirPixel(0), mundo.UM.convertirPixel(15f), mundo.UM.convertirPixel(-5));
@@ -81,7 +81,7 @@ public class PhysicsTest1 extends FisicaDisparar {
         balon2.addComponent(new Sphere(1));
         QObjetoRigido balon2Fisica = new QObjetoRigido(QObjetoDinamico.DINAMICO);
         balon2Fisica.setFormaColision(colision2);
-        balon2Fisica.setMasa(1f, QVector3.zero.clone());
+        balon2Fisica.setMasa(1f, Vector3.zero.clone());
         balon2.addComponent(balon2Fisica);
         balon2.move(mundo.UM.convertirPixel(3), mundo.UM.convertirPixel(8f), mundo.UM.convertirPixel(-5));
         mundo.addEntity(balon2);
@@ -94,7 +94,7 @@ public class PhysicsTest1 extends FisicaDisparar {
         balon3.addComponent(colision3);
         QObjetoRigido balon3Fisica = new QObjetoRigido(QObjetoDinamico.DINAMICO);
         balon3Fisica.setFormaColision(colision3);
-        balon3Fisica.setMasa(2f, QVector3.zero.clone());
+        balon3Fisica.setMasa(2f, Vector3.zero.clone());
         balon3.addComponent(balon3Fisica);
         balon3.move(mundo.UM.convertirPixel(1.5f), mundo.UM.convertirPixel(12f), mundo.UM.convertirPixel(0));
         mundo.addEntity(balon3);
@@ -119,7 +119,7 @@ public class PhysicsTest1 extends FisicaDisparar {
         float alto = -altoLadrillo / 2;
         for (int j = 0; j < 15; j++) {
             for (int i = 0; i < 16; i++) {
-                QVector3 vt = QVector3.of(i * anchoLadrillo + inicio - 7, altoLadrillo + alto, 0);
+                Vector3 vt = Vector3.of(i * anchoLadrillo + inicio - 7, altoLadrillo + alto, 0);
                 hacerLadrillo(vt, mundo);
             }
             inicio = -inicio;
@@ -127,7 +127,7 @@ public class PhysicsTest1 extends FisicaDisparar {
         }
     }
 
-    private void hacerLadrillo(QVector3 loc, Scene mundo) {
+    private void hacerLadrillo(Vector3 loc, Scene mundo) {
         Entity bloque = new Entity("Bloque");
         bloque.move(loc);
         Box geometria = new Box(altoLadrillo, anchoLadrillo, largoLadrillo);
@@ -136,7 +136,7 @@ public class PhysicsTest1 extends FisicaDisparar {
         QColisionCaja formaColision = new QColisionCaja(anchoLadrillo, altoLadrillo, largoLadrillo);
         bloque.addComponent(formaColision);
         QObjetoRigido bloquefisica = new QObjetoRigido(QObjetoDinamico.DINAMICO);
-        bloquefisica.setMasa(1f, QVector3.zero.clone());
+        bloquefisica.setMasa(1f, Vector3.zero.clone());
         bloquefisica.setFormaColision(formaColision);
         bloque.addComponent(bloquefisica);
         bloque.addComponent(geometria);

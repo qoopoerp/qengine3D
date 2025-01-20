@@ -6,8 +6,8 @@ import lombok.Getter;
 import lombok.Setter;
 import net.qoopo.engine.core.entity.Entity;
 import net.qoopo.engine.core.material.AbstractMaterial;
-import net.qoopo.engine.core.math.QVector3;
-import net.qoopo.engine.core.math.QVector4;
+import net.qoopo.engine.core.math.Vector3;
+import net.qoopo.engine.core.math.Vector4;
 
 /**
  * Pixel que pertenece al buffer de pixel
@@ -20,11 +20,11 @@ public class Fragment implements Serializable {
 
     private boolean draw = false;
     public float u, v;
-    public QVector4 ubicacion = new QVector4();
-    public QVector3 normal = QVector3.empty();
+    public Vector4 location = new Vector4();
+    public Vector3 normal = Vector3.empty();
     
-    public QVector3 up = QVector3.empty();
-    public QVector3 right = QVector3.empty();
+    public Vector3 up = Vector3.empty();
+    public Vector3 right = Vector3.empty();
 
     public AbstractMaterial material;
     public Primitive primitiva;

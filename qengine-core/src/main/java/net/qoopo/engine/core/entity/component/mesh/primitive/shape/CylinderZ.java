@@ -11,7 +11,7 @@ import net.qoopo.engine.core.entity.component.mesh.primitive.Vertex;
 import net.qoopo.engine.core.entity.component.modifier.generate.RevolutionModifier;
 import net.qoopo.engine.core.entity.component.transform.Transform;
 import net.qoopo.engine.core.material.Material;
-import net.qoopo.engine.core.math.QVector3;
+import net.qoopo.engine.core.math.Vector3;
 
 /**
  *
@@ -67,7 +67,7 @@ public class CylinderZ extends Shape {
         Transform tra = new Transform();
         tra.getRotation().rotarX((float) Math.toRadians(90));
         tra.getRotation().updateCuaternion();
-        QVector3 tmp = QVector3.empty();
+        Vector3 tmp = Vector3.empty();
         for (Vertex vertice : vertexList) {
             tmp.set(vertice.location.x, vertice.location.y, vertice.location.z);
             tmp = tra.toMatrix().mult(tmp);

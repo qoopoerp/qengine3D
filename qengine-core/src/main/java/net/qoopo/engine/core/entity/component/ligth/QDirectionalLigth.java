@@ -6,7 +6,7 @@
 package net.qoopo.engine.core.entity.component.ligth;
 
 import net.qoopo.engine.core.math.QColor;
-import net.qoopo.engine.core.math.QVector3;
+import net.qoopo.engine.core.math.Vector3;
 import net.qoopo.engine.core.util.QGlobal;
 
 /**
@@ -15,10 +15,10 @@ import net.qoopo.engine.core.util.QGlobal;
  */
 public class QDirectionalLigth extends QLigth {
 
-    private QVector3 direction = QVector3.of(0, -1, 0);
-    private QVector3 directionTransformada = QVector3.of(0, -1, 0);
+    private Vector3 direction = Vector3.of(0, -1, 0);
+    private Vector3 directionTransformada = Vector3.of(0, -1, 0);
 
-    public QDirectionalLigth(QVector3 direccion) {
+    public QDirectionalLigth(Vector3 direccion) {
         this.direction = direccion;
         this.resolucionMapaSombra = QGlobal.SOMBRAS_DIRECCIONAL_MAPA_ANCHO;
         coeficientesAtenuacion.set(1.0f, 0.0f, 0.0f);
@@ -31,7 +31,7 @@ public class QDirectionalLigth extends QLigth {
         coeficientesAtenuacion.set(1.0f, 0.0f, 0.0f);
     }
 
-    public QDirectionalLigth(float energia, QColor color, float radio, QVector3 direccion, boolean proyectarSombras,
+    public QDirectionalLigth(float energia, QColor color, float radio, Vector3 direccion, boolean proyectarSombras,
             boolean sombraDinamica) {
         super(energia, color, radio, proyectarSombras, sombraDinamica);
         this.direction = direccion;
@@ -39,11 +39,11 @@ public class QDirectionalLigth extends QLigth {
         coeficientesAtenuacion.set(1.0f, 0.0f, 0.0f);
     }
 
-    public QVector3 getDirection() {
+    public Vector3 getDirection() {
         return direction;
     }
 
-    public void setDirection(QVector3 direction) {
+    public void setDirection(Vector3 direction) {
         this.direction = direction;
     }
 
@@ -51,17 +51,17 @@ public class QDirectionalLigth extends QLigth {
         this.direction.set(x, y, z);
     }
 
-    public QVector3 getDirectionTransformada() {
+    public Vector3 getDirectionTransformada() {
         return directionTransformada;
     }
 
-    public void setDirectionTransformada(QVector3 directionTransformada) {
+    public void setDirectionTransformada(Vector3 directionTransformada) {
         this.directionTransformada = directionTransformada;
     }
 
     @Override
     public QLigth clone() {
-        QLigth newLight = new QDirectionalLigth(energia, color, radio, direction.clone(), proyectarSombras, sombraDinamica);
+        QLigth newLight = new QDirectionalLigth(energy, color, radio, direction.clone(), proyectarSombras, sombraDinamica);
         newLight.entity = this.entity.clone();
         newLight.setEnable(this.enable);
         newLight.setResolucionMapaSombra(resolucionMapaSombra);

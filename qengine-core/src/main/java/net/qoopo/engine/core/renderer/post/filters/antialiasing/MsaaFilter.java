@@ -18,18 +18,29 @@ public class MsaaFilter implements FilterTexture {
 
     private int muestras = 4;
 
+    private float scale = 1.0f;
+
     public MsaaFilter() {
 
+    }
+
+    public MsaaFilter(float scale) {
+        this.scale = scale;
     }
 
     public MsaaFilter(int muestras) {
         this.muestras = muestras;
     }
 
+    public MsaaFilter(float scale, int muestras) {
+        this.muestras = muestras;
+        this.scale = scale;
+    }
+
     @Override
     public Texture apply(Texture... buffer) {
         QColor color;
-        Texture output = new Texture(buffer[0].getWidth(), buffer[0].getHeight());
+        Texture output = new Texture((int) (buffer[0].getWidth() * scale), (int) (buffer[0].getHeight() * scale));
         try {
             for (int x = 0; x < buffer[0].getWidth(); x++) {
                 for (int y = 0; y < buffer[0].getHeight(); y++) {
@@ -43,8 +54,10 @@ public class MsaaFilter implements FilterTexture {
                         }
                     }
                     color.scaleLocal(1.0f / 9.0f);
-                    output.setQColor(output.getWidth() * x / buffer[0].getWidth(),
-                            output.getHeight() * y / buffer[0].getHeight(), color);
+                    output.setQColor(
+                            output.getWidth() * x / buffer[0].getWidth(),
+                            output.getHeight() * y / buffer[0].getHeight(),
+                            color);
                 }
             }
         } catch (Exception e) {

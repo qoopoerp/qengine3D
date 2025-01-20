@@ -4,11 +4,11 @@ import net.qoopo.engine.core.entity.component.mesh.primitive.VertexBuffer;
 import net.qoopo.engine.core.entity.component.mesh.primitive.Vertex;
 import net.qoopo.engine.core.math.Cuaternion;
 import net.qoopo.engine.core.math.QColor;
-import net.qoopo.engine.core.math.QMatriz3;
-import net.qoopo.engine.core.math.QMatriz4;
-import net.qoopo.engine.core.math.QVector2;
-import net.qoopo.engine.core.math.QVector3;
-import net.qoopo.engine.core.math.QVector4;
+import net.qoopo.engine.core.math.Matrix3;
+import net.qoopo.engine.core.math.Matrix4;
+import net.qoopo.engine.core.math.Vector2;
+import net.qoopo.engine.core.math.Vector3;
+import net.qoopo.engine.core.math.Vector4;
 
 /**
  * Temporary variables assigned to each thread. Engine classes may access these
@@ -71,31 +71,31 @@ public class TempVars {
     /**
      * Vectores de 2 dimensiones
      */
-    public final QVector2 vector2f1 = new QVector2();
-    public final QVector2 vector2f2 = new QVector2();
-    public final QVector2 vector2f3 = new QVector2();
-    public final QVector2 vector2f4 = new QVector2();
-    public final QVector2 vector2f5 = new QVector2();
+    public final Vector2 vector2f1 = new Vector2();
+    public final Vector2 vector2f2 = new Vector2();
+    public final Vector2 vector2f3 = new Vector2();
+    public final Vector2 vector2f4 = new Vector2();
+    public final Vector2 vector2f5 = new Vector2();
     /**
      * Vectores de 3 dimensiones
      */
-    public final QVector3 vector3f1 = QVector3.empty();
-    public final QVector3 vector3f2 = QVector3.empty();
-    public final QVector3 vector3f3 = QVector3.empty();
-    public final QVector3 vector3f4 = QVector3.empty();
-    public final QVector3 vector3f5 = QVector3.empty();
-    public final QVector3 vector3f6 = QVector3.empty();
-    public final QVector3 vector3f7 = QVector3.empty();
-    public final QVector3 vector3f8 = QVector3.empty();
-    public final QVector3 vector3f9 = QVector3.empty();
-    public final QVector3 vector3f10 = QVector3.empty();
+    public final Vector3 vector3f1 = Vector3.empty();
+    public final Vector3 vector3f2 = Vector3.empty();
+    public final Vector3 vector3f3 = Vector3.empty();
+    public final Vector3 vector3f4 = Vector3.empty();
+    public final Vector3 vector3f5 = Vector3.empty();
+    public final Vector3 vector3f6 = Vector3.empty();
+    public final Vector3 vector3f7 = Vector3.empty();
+    public final Vector3 vector3f8 = Vector3.empty();
+    public final Vector3 vector3f9 = Vector3.empty();
+    public final Vector3 vector3f10 = Vector3.empty();
     /**
      * Vectores de 4 dimensiones
      */
-    public final QVector4 vector4f1 = new QVector4();
-    public final QVector4 vector4f2 = new QVector4();
-    public final QVector4 vector4f3 = new QVector4();
-    public final QVector4 vector4f4 = new QVector4();
+    public final Vector4 vector4f1 = new Vector4();
+    public final Vector4 vector4f2 = new Vector4();
+    public final Vector4 vector4f3 = new Vector4();
+    public final Vector4 vector4f4 = new Vector4();
 
     /**
      * Buffer de vertices
@@ -110,12 +110,16 @@ public class TempVars {
     public final Vertex vertex2 = new Vertex();
     public final Vertex vertex3 = new Vertex();
     public final Vertex vertex4 = new Vertex();
+    public final Vertex vertex5 = new Vertex();
+    public final Vertex vertex6 = new Vertex();
+    public final Vertex vertex7 = new Vertex();
+    public final Vertex vertex8 = new Vertex();
 
     /**
      * General matrices.
      */
-    public final QMatriz3 tempMat3 = new QMatriz3();
-    public final QMatriz4 tempMat4 = new QMatriz4();
+    public final Matrix3 tempMat3 = new Matrix3();
+    public final Matrix4 tempMat4 = new Matrix4();
     /**
      * General quaternions.
      */

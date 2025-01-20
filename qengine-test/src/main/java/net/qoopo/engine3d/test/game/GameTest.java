@@ -21,7 +21,7 @@ import net.qoopo.engine.core.entity.component.physics.vehiculo.QVehiculoControl;
 import net.qoopo.engine.core.lwjgl.audio.component.SoundListenerAL;
 import net.qoopo.engine.core.material.Material;
 import net.qoopo.engine.core.math.QColor;
-import net.qoopo.engine.core.math.QVector3;
+import net.qoopo.engine.core.math.Vector3;
 import net.qoopo.engine.core.scene.Camera;
 import net.qoopo.engine.core.scene.QEscenario;
 import net.qoopo.engine.core.scene.Scene;
@@ -138,7 +138,7 @@ public class GameTest {
                 rueda1.setFrontal(true);
                 rueda1.setAncho(0.1f);
                 rueda1.setRadio(0.25f);
-                rueda1.setUbicacion(QVector3.of(-px, alturaLlantaConexion, pz));
+                rueda1.setUbicacion(Vector3.of(-px, alturaLlantaConexion, pz));
                 vehiculo.agregarRueda(rueda1);
                 // 2
                 QRueda rueda2 = new QRueda();
@@ -147,7 +147,7 @@ public class GameTest {
                 rueda2.setFrontal(true);
                 rueda2.setAncho(0.1f);
                 rueda2.setRadio(0.25f);
-                rueda2.setUbicacion(QVector3.of(px, alturaLlantaConexion, pz));
+                rueda2.setUbicacion(Vector3.of(px, alturaLlantaConexion, pz));
                 vehiculo.agregarRueda(rueda2);
                 // 3
 
@@ -157,7 +157,7 @@ public class GameTest {
                 rueda3.setFrontal(false);
                 rueda3.setAncho(0.1f);
                 rueda3.setRadio(0.25f);
-                rueda3.setUbicacion(QVector3.of(-px, alturaLlantaConexion, -pz));
+                rueda3.setUbicacion(Vector3.of(-px, alturaLlantaConexion, -pz));
                 vehiculo.agregarRueda(rueda3);
                 // 4
 
@@ -167,7 +167,7 @@ public class GameTest {
                 rueda4.setFrontal(false);
                 rueda4.setAncho(0.1f);
                 rueda4.setRadio(0.25f);
-                rueda4.setUbicacion(QVector3.of(pz, alturaLlantaConexion, -pz));
+                rueda4.setUbicacion(Vector3.of(pz, alturaLlantaConexion, -pz));
                 vehiculo.agregarRueda(rueda4);
                 // control del vehiculo
 
@@ -186,7 +186,7 @@ public class GameTest {
         private static void configurarCielo(QEngine3D motor) {
                 // sol
                 Entity sol = new Entity("Sol");
-                QDirectionalLigth solLuz = new QDirectionalLigth(1.1f, QColor.WHITE, 1, QVector3.of(0, 0, 0), true,
+                QDirectionalLigth solLuz = new QDirectionalLigth(1.1f, QColor.WHITE, 1, Vector3.of(0, 0, 0), true,
                                 true);
                 solLuz.setResolucionMapaSombra(1024);
                 sol.addComponent(solLuz);
@@ -241,9 +241,9 @@ public class GameTest {
                         personaje.move(-90, 15, 9);
                         // pongo las coordenadas para q este detras del jugador
                         cam.lookAtTarget(
-                                        QVector3.of(0, 3f, -8),
-                                        QVector3.of(0, 1f, 0),
-                                        QVector3.unitario_y.clone());
+                                        Vector3.of(0, 3f, -8),
+                                        Vector3.of(0, 1f, 0),
+                                        Vector3.unitario_y.clone());
 
                         // cam.lookAtTarget(
                         // QVector3.of(0, 2.5f, 6), //detras y arriba de bob

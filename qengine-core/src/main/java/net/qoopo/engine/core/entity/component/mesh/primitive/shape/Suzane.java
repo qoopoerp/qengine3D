@@ -16,8 +16,8 @@ import net.qoopo.engine.core.entity.component.mesh.primitive.Primitive;
 import net.qoopo.engine.core.entity.component.mesh.primitive.Shape;
 import net.qoopo.engine.core.entity.component.mesh.primitive.Vertex;
 import net.qoopo.engine.core.material.Material;
-import net.qoopo.engine.core.math.QVector2;
-import net.qoopo.engine.core.math.QVector3;
+import net.qoopo.engine.core.math.Vector2;
+import net.qoopo.engine.core.math.Vector3;
 import net.qoopo.engine.core.util.ComponentUtil;
 
 /**
@@ -43,10 +43,10 @@ public class Suzane extends Shape {
             for (Vertex vertice : mesh.vertexList) {
                 this.addVertex(vertice);
             }
-            for (QVector3 normal : mesh.normalList) {
+            for (Vector3 normal : mesh.normalList) {
                 this.addNormal(normal);
             }
-            for (QVector2 uv : mesh.uvList) {
+            for (Vector2 uv : mesh.uvList) {
                 this.addUV(uv);
             }
             for (Primitive primitiva : mesh.primitiveList) {

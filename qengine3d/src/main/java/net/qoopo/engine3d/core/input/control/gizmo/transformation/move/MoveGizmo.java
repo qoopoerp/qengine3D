@@ -9,7 +9,7 @@ import net.qoopo.engine.core.assets.model.ModelLoader;
 import net.qoopo.engine.core.assets.model.waveobject.LoadModelObj;
 import net.qoopo.engine.core.entity.Entity;
 import net.qoopo.engine.core.entity.component.mesh.Mesh;
-import net.qoopo.engine.core.entity.component.mesh.primitive.shape.QPlanoBilateral;
+import net.qoopo.engine.core.entity.component.mesh.primitive.shape.PlaneTwoSided;
 import net.qoopo.engine.core.material.Material;
 import net.qoopo.engine.core.math.QColor;
 import net.qoopo.engine.core.texture.util.MaterialUtil;
@@ -40,21 +40,15 @@ public class MoveGizmo extends Gizmo {
 
         matX = new Material("x");
         matX.setColor(QColor.RED);
-        matX.setEmision(0.85f);
-        // matX.setTransparencia(true);
-        // matX.setTransAlfa(0.9f);
+        matX.setEmissionIntensity(0.5f);
         MaterialUtil.applyMaterial(formaX, matX);
         matY = new Material("y");
         matY.setColor(QColor.GREEN);
-        matY.setEmision(0.85f);
-        // matY.setTransparencia(true);
-        // matY.setTransAlfa(0.9f);
+        matY.setEmissionIntensity(0.5f);
         MaterialUtil.applyMaterial(formaY, matY);
         matZ = new Material("z");
         matZ.setColor(QColor.BLUE);
-        matZ.setEmision(0.85f);
-        // matZ.setTransparencia(true);
-        // matZ.setTransAlfa(0.9f);
+        matZ.setEmissionIntensity(0.5f);
         MaterialUtil.applyMaterial(formaZ, matZ);
     }
 
@@ -114,10 +108,8 @@ public class MoveGizmo extends Gizmo {
                 updateLocationGizmo();
             }
         };
-        conXZ.move(0.85f, 0, 0.85f);
-
-        conXZ.addComponent(MaterialUtil.applyMaterial(new QPlanoBilateral(0.85f, 0.85f), matY));
-
+        conXZ.move(0.5f, 0, 0.5f);
+        conXZ.addComponent(MaterialUtil.applyMaterial(new PlaneTwoSided(0.5f, 0.5f), matY));
         return conXZ;
     }
 
@@ -130,9 +122,9 @@ public class MoveGizmo extends Gizmo {
                 updateLocationGizmo();
             }
         };
-        conXY.move(0.85f, 0.85f, 0);
+        conXY.move(0.5f, 0.5f, 0);
         conXY.rotate(Math.toRadians(90), 0, 0);
-        conXY.addComponent(MaterialUtil.applyMaterial(new QPlanoBilateral(0.85f, 0.85f), matZ));
+        conXY.addComponent(MaterialUtil.applyMaterial(new PlaneTwoSided(0.5f, 0.5f), matZ));
         return conXY;
     }
 
@@ -145,9 +137,9 @@ public class MoveGizmo extends Gizmo {
                 updateLocationGizmo();
             }
         };
-        conZY.move(0, 0.85f, 0.85f);
+        conZY.move(0, 0.5f, 0.5f);
         conZY.rotate(0, 0, Math.toRadians(90));
-        conZY.addComponent(MaterialUtil.applyMaterial(new QPlanoBilateral(0.85f, 0.85f), matX));
+        conZY.addComponent(MaterialUtil.applyMaterial(new PlaneTwoSided(0.5f, 0.5f), matX));
         return conZY;
     }
 

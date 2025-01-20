@@ -13,7 +13,7 @@ import lombok.Setter;
 import net.qoopo.engine.core.entity.component.mesh.primitive.Vertex;
 import net.qoopo.engine.core.material.Material;
 import net.qoopo.engine.core.entity.component.mesh.primitive.Shape;
-import net.qoopo.engine.core.math.QVector3;
+import net.qoopo.engine.core.math.Vector3;
 
 /**
  * Un prisma, ​ en geometría, es un poliedro que consta de dos caras iguales y
@@ -108,8 +108,8 @@ public class Prism extends Shape {
         float ajusteAltura = alto / 2;
 
         float angulo = 360.0f / secciones;
-        QVector3 vUV = QVector3.of(0.5f, 0.f, 0);
-        QVector3 vector = QVector3.of(0, alto, radioSuperior);
+        Vector3 vUV = Vector3.of(0.5f, 0.f, 0);
+        Vector3 vector = Vector3.of(0, alto, radioSuperior);
 
         // cara superior - vertices
         for (int i = 0; i <= secciones; i++) {

@@ -5,7 +5,7 @@
  */
 package net.qoopo.engine.core.entity.component.mesh.util;
 
-import net.qoopo.engine.core.math.QVector3;
+import net.qoopo.engine.core.math.Vector3;
 
 /**
  * Clase usada para el manejo de las unidades de medida
@@ -198,7 +198,7 @@ public class QUnidadMedida {
      * @param velocidad Un vector de velocidad en m/s
      * @return
      */
-    public static QVector3 velocidad(QVector3 velocidad) {
+    public static Vector3 velocidad(Vector3 velocidad) {
 //        return velocidad.multiply(1f / QGlobal.MOTOR_FISICA_FPS);
         return velocidad.clone();
     }

@@ -9,7 +9,7 @@ import net.qoopo.engine.core.entity.component.mesh.primitive.Fragment;
 import net.qoopo.engine.core.material.Material;
 import net.qoopo.engine.core.math.QColor;
 import net.qoopo.engine.core.math.QMath;
-import net.qoopo.engine.core.math.QVector3;
+import net.qoopo.engine.core.math.Vector3;
 import net.qoopo.engine.core.renderer.RenderEngine;
 import net.qoopo.engine.core.util.TempVars;
 import net.qoopo.engine.renderer.shader.fragment.FragmentShader;
@@ -110,9 +110,9 @@ public class LigthFragmenShader extends FragmentShader {
      */
     protected void calcularIluminacion(Fragment fragment, QIluminacion iluminacion, QColor color) {
 
-        QVector3 vectorLuz = QVector3.empty();
+        Vector3 vectorLuz = Vector3.empty();
         float distanciaLuz;
-        QVector3 tmpPixelPos = QVector3.empty();
+        Vector3 tmpPixelPos = Vector3.empty();
 
         // La iluminacion se calcula en el sistema de coordenadas de la camara
         fragment.normal.normalize();
@@ -124,9 +124,9 @@ public class LigthFragmenShader extends FragmentShader {
             iluminacion.setColorAmbiente(colorEmisivo.clone().add(render.getScene().getAmbientColor()));
         } else {
             // si tiene factor de emision toma ese valor solamente
-            if (material.getEmision() > 0) {
+            if (material.getEmissionIntensity() > 0) {
                 // illumination.dR = material.getFactorEmision();
-                float factorEmision = material.getEmision();
+                float factorEmision = material.getEmissionIntensity();
                 iluminacion.setColorAmbiente(new QColor(factorEmision, factorEmision, factorEmision));
                 return;// no hago mas calculos
             } else {
@@ -149,8 +149,8 @@ public class LigthFragmenShader extends FragmentShader {
                     // si esta encendida
                     if (luz != null && luz.getEntity().isToRender() && luz.isEnable()) {
                         if (luz instanceof QPointLigth || luz instanceof QSpotLigth) {
-                            vectorLuz.set(fragment.ubicacion.getVector3().clone().subtract(
-                                    TransformationVectorUtil.transformarVector(QVector3.zero, luz.getEntity(),
+                            vectorLuz.set(fragment.location.getVector3().clone().subtract(
+                                    TransformationVectorUtil.transformarVector(Vector3.zero, luz.getEntity(),
                                             render.getCamera())));
                             distanciaLuz = vectorLuz.length();
                             // solo toma en cuenta a los puntos q estan en el area de afectacion
@@ -161,16 +161,16 @@ public class LigthFragmenShader extends FragmentShader {
                             float alfa = 0.0f;
                             // si es Spot valido que este dentro del cono
                             if (luz instanceof QSpotLigth) {
-                                QVector3 coneDirection = ((QSpotLigth) luz).getDirectionTransformada().normalize();
+                                Vector3 coneDirection = ((QSpotLigth) luz).getDirectionTransformada().normalize();
                                 alfa = coneDirection.angulo(vectorLuz.clone().normalize());
                                 if (alfa > ((QSpotLigth) luz).getAnguloExterno()) {
                                     continue;
                                 }
                             }
 
-                            QColor colorLuz = QMath.calcularColorLuz(color, colorEspecular, luz.color, luz.energia,
-                                    fragment.ubicacion.getVector3(), vectorLuz.invert().normalize(), fragment.normal,
-                                    material.getSpecularExponent(), reflectancia);
+                            QColor colorLuz = QMath.calcularColorLuz(color, colorEspecular, luz.color, luz.energy,
+                                    fragment.location.getVector3(), vectorLuz.invert().normalize(), fragment.normal,
+                                    material.getSpecularExponent(), reflectancia, 1.0f, 1.0f);
                             // atenuacion
                             // float attenuationInv = light.att.constant + light.att.interpolateLinear *
                             // distance +
@@ -195,16 +195,16 @@ public class LigthFragmenShader extends FragmentShader {
                         } else if (luz instanceof QDirectionalLigth) {
                             vectorLuz.set(((QDirectionalLigth) luz).getDirectionTransformada());
                             iluminacion.getColorLuz()
-                                    .addLocal(QMath.calcularColorLuz(color, colorEspecular, luz.color, luz.energia,
-                                            fragment.ubicacion.getVector3(), vectorLuz.invert().normalize(),
+                                    .addLocal(QMath.calcularColorLuz(color, colorEspecular, luz.color, luz.energy,
+                                            fragment.location.getVector3(), vectorLuz.invert().normalize(),
                                             fragment.normal,
-                                            material.getSpecularExponent(), reflectancia));
+                                            material.getSpecularExponent(), reflectancia, 1.0f, 1.0f));
                         }
                     }
                 }
             } else {
                 // iluminacion default cuando no hay luces se asume una luz central
-                tmpPixelPos.set(fragment.ubicacion.getVector3());
+                tmpPixelPos.set(fragment.location.getVector3());
                 tmpPixelPos.normalize();
                 iluminacion.getColorAmbiente().add(-tmpPixelPos.dot(fragment.normal));
             }

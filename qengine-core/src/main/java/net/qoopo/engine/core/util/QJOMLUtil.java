@@ -10,9 +10,9 @@ import org.joml.Matrix4f;
 import org.joml.Vector3d;
 import org.joml.Vector3f;
 
-import net.qoopo.engine.core.math.QMatriz3;
-import net.qoopo.engine.core.math.QMatriz4;
-import net.qoopo.engine.core.math.QVector3;
+import net.qoopo.engine.core.math.Matrix3;
+import net.qoopo.engine.core.math.Matrix4;
+import net.qoopo.engine.core.math.Vector3;
 
 //import javax.vecmath.Point3d;
 //import javax.vecmath.Point3f;
@@ -31,15 +31,15 @@ public class QJOMLUtil {
     // public static Color3f convertirColor3f(QColor color) {
     // return new Color3f(color.r, color.g, color.b);
     // }
-    public static QVector3 convertirQVector3(Vector3f vector) {
-        return QVector3.of(vector.x, vector.y, vector.z);
+    public static Vector3 convertirQVector3(Vector3f vector) {
+        return Vector3.of(vector.x, vector.y, vector.z);
     }
 
-    public static Vector3f convertirVector3f(QVector3 vector) {
+    public static Vector3f convertirVector3f(Vector3 vector) {
         return new Vector3f(vector.x, vector.y, vector.z);
     }
 
-    public static Vector3d convertirVector3d(QVector3 vector) {
+    public static Vector3d convertirVector3d(Vector3 vector) {
         return new Vector3d(vector.x, vector.y, vector.z);
     }
 
@@ -49,7 +49,7 @@ public class QJOMLUtil {
     // public static Point3d convertirPoint3d(QVector3 vector) {
     // return new Point3d(vector.x, vector.y, vector.z);
     // }
-    public static Matrix3f convertirMatriz3f(QMatriz3 matriz) {
+    public static Matrix3f convertirMatriz3f(Matrix3 matriz) {
         Matrix3f mat = new Matrix3f(
                 matriz.get(0, 0),
                 matriz.get(0, 1),
@@ -63,8 +63,8 @@ public class QJOMLUtil {
         return mat;
     }
 
-    public static QMatriz4 convertirQMatriz4(Matrix4f matriz) {
-        QMatriz4 mat4 = new QMatriz4(
+    public static Matrix4 convertirQMatriz4(Matrix4f matriz) {
+        Matrix4 mat4 = new Matrix4(
                 matriz.m00(), matriz.m01(), matriz.m02(), matriz.m03(),
                 matriz.m10(), matriz.m11(), matriz.m12(), matriz.m13(),
                 matriz.m20(), matriz.m21(), matriz.m22(), matriz.m23(),

@@ -33,10 +33,10 @@ import net.qoopo.engine.core.entity.component.mesh.primitive.VertexBuffer;
 import net.qoopo.engine.core.entity.component.mesh.primitive.Vertex;
 import net.qoopo.engine.core.entity.component.particles.Particle;
 import net.qoopo.engine.core.entity.component.particles.ParticleEmissor;
-import net.qoopo.engine.core.math.QMatriz3;
-import net.qoopo.engine.core.math.QMatriz4;
-import net.qoopo.engine.core.math.QVector2;
-import net.qoopo.engine.core.math.QVector3;
+import net.qoopo.engine.core.math.Matrix3;
+import net.qoopo.engine.core.math.Matrix4;
+import net.qoopo.engine.core.math.Vector2;
+import net.qoopo.engine.core.math.Vector3;
 import net.qoopo.engine.core.renderer.RenderEngine;
 import net.qoopo.engine.core.renderer.superficie.Superficie;
 import net.qoopo.engine.core.scene.Scene;
@@ -176,9 +176,9 @@ public class Java3DRenderer extends RenderEngine {
             TransformGroup perspectiva = universo.getViewingPlatform().getViewPlatformTransform();
             Transform3D transformPerspectiva = new Transform3D();
 
-            QVector3 camPosicion = camera.getMatrizTransformacion(System.currentTimeMillis()).toTranslationVector();
+            Vector3 camPosicion = camera.getMatrizTransformacion(System.currentTimeMillis()).toTranslationVector();
 
-            QVector3 objetivo = camPosicion.clone().add(camera.getDirection().clone().multiply(-1));
+            Vector3 objetivo = camPosicion.clone().add(camera.getDirection().clone().multiply(-1));
             transformPerspectiva.lookAt(
                     new Point3d(camPosicion.x, camPosicion.y, camPosicion.z),
                     new Point3d(objetivo.x, objetivo.y, objetivo.z),
@@ -417,7 +417,7 @@ public class Java3DRenderer extends RenderEngine {
                         tmp.getTransform(transform);
                         long t = System.currentTimeMillis();
                         transform.setScale(QVectMathUtil.convertirVector3d(entidad.getTransform().getScale()));
-                        QVector3 posicion = entidad.getMatrizTransformacion(t).toTranslationVector();
+                        Vector3 posicion = entidad.getMatrizTransformacion(t).toTranslationVector();
                         // QVector3 posicion = entidad.transformacion.getLocation();
                         transform.setTranslation(QVectMathUtil.convertirVector3f(posicion));
                         // QRotacion rot = new QRotacion();
@@ -432,7 +432,7 @@ public class Java3DRenderer extends RenderEngine {
                         // t2.mul(t1);
                         // t3.mul(t2);
                         // transform.mul(t3);
-                        QMatriz3 matRota = entidad.getMatrizTransformacion(t).toRotationQuat().toRotationMatrix();
+                        Matrix3 matRota = entidad.getMatrizTransformacion(t).toRotationQuat().toRotationMatrix();
                         transform.setRotation(QVectMathUtil.convertirMatriz3f(matRota));
                         tmp.setTransform(transform);
                         // logger.info("QRenderJava3D - Entidad " + entidad.nombre + " actualizada
@@ -547,24 +547,24 @@ public class Java3DRenderer extends RenderEngine {
     }
 
     @Override
-    public Entity selectEntity(QVector2 mouseLocation) {
+    public Entity selectEntity(Vector2 mouseLocation) {
         return null;
     }
 
     @Override
-    public void renderLine(QMatriz4 matViewModel, Primitive primitiva, Vertex... vertex) {
+    public void renderLine(Matrix4 matViewModel, Primitive primitiva, Vertex... vertex) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'renderLine'");
     }
 
     @Override
-    public void render(QMatriz4 matViewModel, VertexBuffer bufferVertices, Primitive primitiva, boolean wire) {
+    public void render(Matrix4 matViewModel, VertexBuffer bufferVertices, Primitive primitiva, boolean wire) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'render'");
     }
 
     @Override
-    public void renderEntity(Entity entity, QMatriz4 matrizVista, QMatriz4 matrizVistaInvertidaBillboard,
+    public void renderEntity(Entity entity, Matrix4 matrizVista, Matrix4 matrizVistaInvertidaBillboard,
             boolean transparentes) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'renderEntity'");

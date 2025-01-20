@@ -6,7 +6,7 @@
 package net.qoopo.engine.core.entity.component.physics.collision.detector.shape.compuesta;
 
 import net.qoopo.engine.core.entity.component.physics.collision.detector.CollisionShape;
-import net.qoopo.engine.core.math.QVector3;
+import net.qoopo.engine.core.math.Vector3;
 
 /**
  * Define una esfera contenedora del objeto
@@ -16,9 +16,9 @@ import net.qoopo.engine.core.math.QVector3;
 public class QColisionCompuestaHija extends CollisionShape {
 
     private CollisionShape forma;
-    private QVector3 ubicacion;
+    private Vector3 ubicacion;
 
-    public QColisionCompuestaHija(CollisionShape formaColision, QVector3 ubicacion) {
+    public QColisionCompuestaHija(CollisionShape formaColision, Vector3 ubicacion) {
         this.forma = formaColision;
         this.ubicacion = ubicacion;
     }
@@ -31,11 +31,11 @@ public class QColisionCompuestaHija extends CollisionShape {
         this.forma = forma;
     }
 
-    public QVector3 getUbicacion() {
+    public Vector3 getUbicacion() {
         return ubicacion;
     }
 
-    public void setUbicacion(QVector3 ubicacion) {
+    public void setUbicacion(Vector3 ubicacion) {
         this.ubicacion = ubicacion;
     }
 

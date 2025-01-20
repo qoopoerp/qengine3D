@@ -7,8 +7,8 @@ import lombok.Setter;
 import net.qoopo.engine.core.engine.EngineTime;
 import net.qoopo.engine.core.entity.component.mesh.Mesh;
 import net.qoopo.engine.core.entity.component.mesh.primitive.Vertex;
-import net.qoopo.engine.core.math.QVector2;
-import net.qoopo.engine.core.math.QVector4;
+import net.qoopo.engine.core.math.Vector2;
+import net.qoopo.engine.core.math.Vector4;
 import net.qoopo.engine.core.util.mesh.NormalUtil;
 
 @Getter
@@ -17,7 +17,7 @@ import net.qoopo.engine.core.util.mesh.NormalUtil;
 @NoArgsConstructor
 public class GerstnerWaveDistortion implements WaveDistortion {
 
-    private QVector2 direction = new QVector2(1.8f, 0.4f);
+    private Vector2 direction = new Vector2(1.8f, 0.4f);
 
     private float amplitude = 2.0f;
     private float wavelength = 10.0f;
@@ -35,7 +35,7 @@ public class GerstnerWaveDistortion implements WaveDistortion {
 
         // actualizo los vértices
         for (Vertex vertex : mesh.vertexList) {
-            QVector4 original = vertex.location;
+            Vector4 original = vertex.location;
 
             // chat gtp
             float wave = k * original.x - omega * deltaTime;

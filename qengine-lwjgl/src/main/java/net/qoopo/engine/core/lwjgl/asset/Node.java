@@ -5,13 +5,13 @@ import java.util.List;
 
 import org.lwjgl.assimp.AINode;
 
-import net.qoopo.engine.core.math.QMatriz4;
+import net.qoopo.engine.core.math.Matrix4;
 
 public class Node {
 
     private AINode aiNode;
     private List<Node> children;
-    private QMatriz4 transformacion;
+    private Matrix4 transformacion;
     private String name;
     private Node parent;
 
@@ -22,16 +22,16 @@ public class Node {
         //la transformacion que da es relativa a su padre.
         this.transformacion = AssimpModelLoader.toMatrix(aiNode.mTransformation());
         if (transformacion == null) {
-            transformacion = new QMatriz4();
+            transformacion = new Matrix4();
         }
         this.children = new ArrayList<>();
     }
 
-    public QMatriz4 getTransformacion() {
+    public Matrix4 getTransformacion() {
         return transformacion;
     }
 
-    public void setTransformacion(QMatriz4 transformacion) {
+    public void setTransformacion(Matrix4 transformacion) {
         this.transformacion = transformacion;
     }
 
@@ -41,7 +41,7 @@ public class Node {
      *
      * @return
      */
-    public QMatriz4 getTransformacionAnidada() {
+    public Matrix4 getTransformacionAnidada() {
         if (parent == null) {
 //            return new QMatriz4();
             return transformacion;

@@ -27,7 +27,7 @@ import net.qoopo.engine.core.entity.component.physics.vehiculo.QVehiculoControl;
 import net.qoopo.engine.core.entity.component.terrain.Terrain;
 import net.qoopo.engine.core.material.Material;
 import net.qoopo.engine.core.math.QColor;
-import net.qoopo.engine.core.math.QVector3;
+import net.qoopo.engine.core.math.Vector3;
 import net.qoopo.engine.core.renderer.RenderEngine;
 import net.qoopo.engine.core.scene.Scene;
 import net.qoopo.engine.core.texture.Texture;
@@ -165,7 +165,7 @@ public class EjemploVehiculo extends MakeTestScene {
         rueda1.setFrontal(true);
         rueda1.setAncho(0.1f);
         rueda1.setRadio(0.25f);
-        rueda1.setUbicacion(QVector3.of(-px, alturaLlantaConexion, pz));
+        rueda1.setUbicacion(Vector3.of(-px, alturaLlantaConexion, pz));
         vehiculo.agregarRueda(rueda1);
         // 2
         QRueda rueda2 = new QRueda();
@@ -174,7 +174,7 @@ public class EjemploVehiculo extends MakeTestScene {
         rueda2.setFrontal(true);
         rueda2.setAncho(0.1f);
         rueda2.setRadio(0.25f);
-        rueda2.setUbicacion(QVector3.of(px, alturaLlantaConexion, pz));
+        rueda2.setUbicacion(Vector3.of(px, alturaLlantaConexion, pz));
         vehiculo.agregarRueda(rueda2);
         // 3
 
@@ -184,7 +184,7 @@ public class EjemploVehiculo extends MakeTestScene {
         rueda3.setFrontal(false);
         rueda3.setAncho(0.1f);
         rueda3.setRadio(0.25f);
-        rueda3.setUbicacion(QVector3.of(-px, alturaLlantaConexion, -pz));
+        rueda3.setUbicacion(Vector3.of(-px, alturaLlantaConexion, -pz));
         vehiculo.agregarRueda(rueda3);
         // 4
 
@@ -194,7 +194,7 @@ public class EjemploVehiculo extends MakeTestScene {
         rueda4.setFrontal(false);
         rueda4.setAncho(0.1f);
         rueda4.setRadio(0.25f);
-        rueda4.setUbicacion(QVector3.of(pz, alturaLlantaConexion, -pz));
+        rueda4.setUbicacion(Vector3.of(pz, alturaLlantaConexion, -pz));
         vehiculo.agregarRueda(rueda4);
         // control del vehiculo
 

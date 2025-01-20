@@ -135,23 +135,23 @@ public class PnlControlVehiculo extends javax.swing.JPanel {
             AABB tmp = new AABB(geometria.vertexList[0].clone(), geometria.vertexList[0].clone());
 
             for (Vertex vertice : geometria.vertexList) {
-                if (vertice.location.x < tmp.aabMinimo.location.x) {
-                    tmp.aabMinimo.location.x = vertice.location.x;
+                if (vertice.location.x < tmp.min.x) {
+                    tmp.min.x = vertice.location.x;
                 }
-                if (vertice.location.y < tmp.aabMinimo.location.y) {
-                    tmp.aabMinimo.location.y = vertice.location.y;
+                if (vertice.location.y < tmp.min.y) {
+                    tmp.min.y = vertice.location.y;
                 }
-                if (vertice.location.z < tmp.aabMinimo.location.z) {
-                    tmp.aabMinimo.location.z = vertice.location.z;
+                if (vertice.location.z < tmp.min.z) {
+                    tmp.min.z = vertice.location.z;
                 }
-                if (vertice.location.x > tmp.aabMaximo.location.x) {
-                    tmp.aabMaximo.location.x = vertice.location.x;
+                if (vertice.location.x > tmp.max.x) {
+                    tmp.max.x = vertice.location.x;
                 }
-                if (vertice.location.y > tmp.aabMaximo.location.y) {
-                    tmp.aabMaximo.location.y = vertice.location.y;
+                if (vertice.location.y > tmp.max.y) {
+                    tmp.max.y = vertice.location.y;
                 }
-                if (vertice.location.z > tmp.aabMaximo.location.z) {
-                    tmp.aabMaximo.location.z = vertice.location.z;
+                if (vertice.location.z > tmp.max.z) {
+                    tmp.max.z = vertice.location.z;
                 }
             }
         }

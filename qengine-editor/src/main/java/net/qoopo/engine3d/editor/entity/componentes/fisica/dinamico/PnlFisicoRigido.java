@@ -24,7 +24,7 @@ import net.qoopo.engine.core.entity.component.physics.collision.detector.shape.p
 import net.qoopo.engine.core.entity.component.physics.collision.detector.shape.primitivas.QColisionCono;
 import net.qoopo.engine.core.entity.component.physics.collision.detector.shape.primitivas.QColisionEsfera;
 import net.qoopo.engine.core.entity.component.physics.dinamica.QObjetoRigido;
-import net.qoopo.engine.core.math.QVector3;
+import net.qoopo.engine.core.math.Vector3;
 
 /**
  *
@@ -88,7 +88,7 @@ public class PnlFisicoRigido extends javax.swing.JPanel {
     }
 
     private void aplicarCambios() {
-        rigido.setMasa(Float.parseFloat(txtMasa.getText()), QVector3.zero);
+        rigido.setMasa(Float.parseFloat(txtMasa.getText()), Vector3.zero);
         rigido.setFriccion(Float.parseFloat(txtFriccion.getText()));
         rigido.setRestitucion(Float.parseFloat(txtRestitucion.getText()));
         rigido.setAmortiguacion_traslacion(Float.parseFloat(txtDampLineal.getText()));

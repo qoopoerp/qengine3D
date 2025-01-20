@@ -25,7 +25,7 @@ import net.qoopo.engine.core.entity.component.physics.collision.detector.shape.p
 import net.qoopo.engine.core.entity.component.physics.collision.detector.shape.primitivas.QColisionCilindroX;
 import net.qoopo.engine.core.entity.component.physics.collision.detector.shape.primitivas.QColisionCono;
 import net.qoopo.engine.core.entity.component.physics.collision.detector.shape.primitivas.QColisionEsfera;
-import net.qoopo.engine.core.math.QVector3;
+import net.qoopo.engine.core.math.Vector3;
 
 /**
  *
@@ -287,7 +287,7 @@ public class PnlColisionCompuesta extends javax.swing.JPanel {
         CollisionShape formaColision = lista.get(cboRueda.getSelectedIndex());
         if (formaColision != null) {
             QColisionCompuestaHija rueda = new QColisionCompuestaHija(formaColision,
-                    QVector3.of(Float.parseFloat(txtX.getText()),
+                    Vector3.of(Float.parseFloat(txtX.getText()),
                             Float.parseFloat(txtY.getText()),
                             Float.parseFloat(txtZ.getText())));
 

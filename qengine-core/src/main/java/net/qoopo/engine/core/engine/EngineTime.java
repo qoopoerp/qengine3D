@@ -40,9 +40,8 @@ public class EngineTime {
         // Calcula los delta, o tiempo que pasó desde la última actualización
         deltaNano = currentFrameTime - frameLastTime;
         Duration duration = Duration.ofNanos(deltaNano);
-        deltaMS = duration.toMillis(); // deltaNano / 10000;
-        // deltaS = duration.toSeconds();// deltaNano / 1000000;
-        deltaS = deltaMS / 1000.0f;// deltaNano / 1000000;
+        deltaMS = duration.toMillis(); 
+        deltaS = deltaMS / 1000.0f;
         frameLastTime = currentFrameTime;
     }
 

@@ -18,10 +18,10 @@ import net.qoopo.engine.core.entity.component.ligth.QLigth;
 import net.qoopo.engine.core.entity.component.ligth.QPointLigth;
 import net.qoopo.engine.core.entity.component.ligth.QSpotLigth;
 import net.qoopo.engine.core.math.QMath;
-import net.qoopo.engine.core.math.QMatriz4;
-import net.qoopo.engine.core.math.QVector2;
-import net.qoopo.engine.core.math.QVector3;
-import net.qoopo.engine.core.math.QVector4;
+import net.qoopo.engine.core.math.Matrix4;
+import net.qoopo.engine.core.math.Vector2;
+import net.qoopo.engine.core.math.Vector3;
+import net.qoopo.engine.core.math.Vector4;
 import net.qoopo.engine.core.scene.Camera;
 import net.qoopo.engine.core.scene.Scene;
 import net.qoopo.engine.core.util.QGlobal;
@@ -47,11 +47,11 @@ public class SoftwareShadowRender extends SoftwareRenderer {
     protected int tipo = DIRECIONALES;
     protected QLigth luz;
     protected Camera camaraRender;
-    protected QVector3 direccion;
-    protected QVector3 posicion;
-    protected QVector3 normalDireccion = QVector3.zero.clone();
-    protected QVector3 centro;
-    protected QVector3 vArriba = QVector3.unitario_y.clone();
+    protected Vector3 direccion;
+    protected Vector3 posicion;
+    protected Vector3 normalDireccion = Vector3.zero.clone();
+    protected Vector3 centro;
+    protected Vector3 vArriba = Vector3.unitario_y.clone();
     protected boolean cascada = false;
     protected int cascada_tamanio = 1;
     protected int cascada_indice = 1;
@@ -103,7 +103,7 @@ public class SoftwareShadowRender extends SoftwareRenderer {
     }
 
     public SoftwareShadowRender(int tipo, Scene escena, QPointLigth luz, Camera camaraRender, int ancho, int alto,
-            QVector3 direccion, QVector3 arriba) {
+            Vector3 direccion, Vector3 arriba) {
         this(tipo, escena, luz, ancho, alto);
         camera = new Camera("RenderSombraQLuzPuntual");
         camera.frustrumLejos = Math.min(luz.radio, camaraRender.frustrumLejos);
@@ -129,11 +129,11 @@ public class SoftwareShadowRender extends SoftwareRenderer {
         }
     }
 
-    public QVector3 getDireccion() {
+    public Vector3 getDireccion() {
         return direccion;
     }
 
-    public void setDireccion(QVector3 direccion) {
+    public void setDireccion(Vector3 direccion) {
         this.direccion = direccion;
     }
 
@@ -285,8 +285,8 @@ public class SoftwareShadowRender extends SoftwareRenderer {
             // La Matriz de vista es la inversa de la matriz de la camara.
             // Esto es porque la camara siempre estara en el centro y movemos el mundo
             // en direccion contraria a la camara.
-            QMatriz4 matrizVista = camera.getMatrizTransformacion(QGlobal.time).invert();
-            QMatriz4 matrizVistaInvertidaBillboard = camera.getMatrizTransformacion(QGlobal.time);
+            Matrix4 matrizVista = camera.getMatrizTransformacion(QGlobal.time).invert();
+            Matrix4 matrizVistaInvertidaBillboard = camera.getMatrizTransformacion(QGlobal.time);
             // caras solidas
             scene.getEntities().stream()
                     .filter(entity -> entity.isToRender())
@@ -331,13 +331,13 @@ public class SoftwareShadowRender extends SoftwareRenderer {
      * @param entity
      * @return
      */
-    public float factorSombra(QVector3 vector, Entity entity) {
+    public float factorSombra(Vector3 vector, Entity entity) {
         float factor = 0.0f;
-        QVector2 punto = new QVector2();
+        Vector2 punto = new Vector2();
         try {
             if (frameBuffer != null) {
                 vector = TransformationVectorUtil.transformarVector(vector, entity, camera);
-                camera.getCoordenadasPantalla(punto, new QVector4(vector, 1), getFrameBuffer().getWidth(),
+                camera.getCoordenadasPantalla(punto, new Vector4(vector, 1), getFrameBuffer().getWidth(),
                         getFrameBuffer().getHeight());
                 // si el punto no esta en mi campo de vision
                 if ((punto.x < 0)

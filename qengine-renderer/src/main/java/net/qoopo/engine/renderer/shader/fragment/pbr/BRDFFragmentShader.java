@@ -11,13 +11,12 @@ import net.qoopo.engine.core.entity.component.ligth.QPointLigth;
 import net.qoopo.engine.core.entity.component.ligth.QSpotLigth;
 import net.qoopo.engine.core.entity.component.mesh.primitive.Fragment;
 import net.qoopo.engine.core.material.Material;
+import net.qoopo.engine.core.math.Matrix4;
 import net.qoopo.engine.core.math.QColor;
 import net.qoopo.engine.core.math.QMath;
-import net.qoopo.engine.core.math.QMatriz4;
-import net.qoopo.engine.core.math.QVector3;
+import net.qoopo.engine.core.math.Vector3;
 import net.qoopo.engine.core.renderer.RenderEngine;
 import net.qoopo.engine.core.texture.Texture;
-import net.qoopo.engine.core.texture.TextureUtil;
 import net.qoopo.engine.core.texture.procesador.MipmapTexture;
 import net.qoopo.engine.core.util.QGlobal;
 import net.qoopo.engine.core.util.TempVars;
@@ -135,7 +134,7 @@ public class BRDFFragmentShader extends FragmentShader {
             // tmpNormal.set(fragment.matViewModel.mult(tmpNormal));
             // fragment.normal.set(tmpNormal.getVector3().normalize());
 
-            QVector3 normalMap = material.getNormalMap().getQColor(fragment.u, fragment.v).rgb();
+            Vector3 normalMap = material.getNormalMap().getQColor(fragment.u, fragment.v).rgb();
             // fragment.up.multiply(normalMap.y * 2 - 1);
             // fragment.right.multiply(normalMap.x * 2 - 1);
             // fragment.normal.multiply(normalMap.z * 2 - 1);
@@ -169,41 +168,32 @@ public class BRDFFragmentShader extends FragmentShader {
             // *********************************************************************************************
             // ****** VECTOR VISION
             // *********************************************************************************************
-            QVector3 V = fragment.ubicacion.getVector3();
+            Vector3 V = fragment.location.getVector3();
             V.invert();// Cam-WordPos
             V.normalize();
 
-            // //
-            // *********************************************************************************************
-            // // ****** VECTOR VISION
-            // //
-            // *********************************************************************************************
-            // // para obtener el vector vision quitamos la transformacion de la ubicacion y
-            // // volvemos a calcularla en las coordenadas del mundo
-            // // tm.vector3f1.set(currentPixel.ubicacion.getVector3());
-            // QVector3 V = TransformationVectorUtil.transformarVector(
-            // TransformationVectorUtil.transformarVectorInversa(fragment.ubicacion,
-            // fragment.entity,
-            // render.getCamera()),
-            // fragment.entity).getVector3();
-            // // ahora restamos la posicion de la camara a la posicion del mundo
-            // V.subtract(render.getCamera().getMatrizTransformacion(QGlobal.time).toTranslationVector());
-            // V.normalize();
+            V = TransformationVectorUtil.transformarVector(
+                    TransformationVectorUtil.transformarVectorInversa(fragment.location,
+                            fragment.entity,
+                            render.getCamera()),
+                    fragment.entity).getVector3();
+            // ahora restamos la posicion de la camara a la posicion del mundo
+            V.subtract(render.getCamera().getMatrizTransformacion(QGlobal.time).toTranslationVector());
+            V.normalize();
 
             // *********************************************************************************************
             // ****** VECTOR NORMAL
             // *********************************************************************************************
-            QVector3 N = fragment.normal;
+            Vector3 N = fragment.normal;
             N.normalize();
-            // la normal del pixel en el espacio mundial, se usara para tomar el color del
-            // mapa de irradiacion, quitamos la transformacion de la ubicacion y volvemos a
-            // calcularla en las coordenadas del mundo *
-            QVector3 N2 = (TransformationVectorUtil.transformarVectorNormal(
-                    TransformationVectorUtil.transformarVectorNormalInversa(fragment.normal, fragment.entity,
+
+            N = (TransformationVectorUtil.transformarVectorNormal(
+                    TransformationVectorUtil.transformarVectorNormalInversa(fragment.normal,
+                            fragment.entity,
                             render.getCamera()),
                     fragment.entity != null ? fragment.entity.getMatrizTransformacion(QGlobal.time)
-                            : QMatriz4.IDENTITY));
-            N2.normalize();
+                            : Matrix4.IDENTITY));
+            N.normalize();
 
             // el vector F0 debe tener los valores segun el nivel de metalico
             /*
@@ -221,7 +211,7 @@ public class BRDFFragmentShader extends FragmentShader {
              * 
              */
             roughness = material.getRoughness();
-            metallic = material.getMetallic();
+            metallic = material.getMetalness();
 
             if (render.opciones.isMaterial() && material.getMetallicMap() != null) {
                 metallic = material.getMetallicMap().getQColor(fragment.u, fragment.v).r;
@@ -233,64 +223,95 @@ public class BRDFFragmentShader extends FragmentShader {
                 ao = material.getAoMap().getQColor(fragment.u, fragment.v).r;
             }
 
-            QVector3 albedo = colorBase.rgb();
+            Vector3 albedo = colorBase.rgb();
             // calcula la reflectancia como normal incidente; Si es material diaeletrico,
             // como el plastico, usa la refletividad base (0.04f),
             // si es metalico usa el color albeto como reflectividad base, esto quiere decir
             // que el color resultante (del reflejo) se mescla con el color base
-            QVector3 F0 = QVector3.of(0.04f, 0.04f, 0.04f);
+            Vector3 F0 = Vector3.of(0.04f, 0.04f, 0.04f);
             F0 = QMath.mix(F0, albedo, metallic);
 
             float NdotV = Math.max(N.dot(V), 0.00001f);
 
-            QVector3 kS = QMath.fresnelSchlick(NdotV, F0, roughness);
-            QVector3 kD = QVector3.of(1.0f)
+            Vector3 kS = QMath.fresnelSchlick(NdotV, F0, roughness);
+            Vector3 kD = Vector3.of(1.0f)
                     .subtract(kS)
                     .multiply(1.0f - metallic);
 
             // ecuacion reflectancia
-            QVector3 ambient = new QVector3();
-            QVector3 Lo = QVector3.zero.clone();
+            Vector3 ambientLigth = Vector3.empty();
+            Vector3 directLigth = Vector3.empty();
 
             Texture enviromentMap = material.getEnvMap();
             Texture irradianceMap = material.getHdrMap();
 
-            if (enviromentMap == null && irradianceMap != null) {
-                enviromentMap = irradianceMap;
-            }
+            // if (enviromentMap == null && irradianceMap != null) {
+            // enviromentMap = irradianceMap;
+            // }
 
-            if (enviromentMap != null && irradianceMap == null) {
-                irradianceMap = enviromentMap;
-            }
+            // if (enviromentMap != null && irradianceMap == null) {
+            // irradianceMap = enviromentMap;
+            // }
 
-            computeBrdfDirectLighting(fragment, roughness, metallic, albedo, F0, V, N, N2, kS, kD, Lo);
+            computeBrdfDirectLighting(fragment, roughness, metallic, albedo, F0, V, N, kS, kD, directLigth);
 
-            if (enviromentMap != null) {
-                computeBrdfIBL(fragment, roughness, metallic, albedo, F0, V, N, N2, kS, kD,
-                        enviromentMap, irradianceMap, ao, ambient);
+            Vector3 ambientColor = render.getScene().getAmbientColor().rgb();
+            Vector3 emissionLigth;
+            // usa el mapa de iluminacion con el ambiente
+            if (material.getEmissiveMap() != null && render.opciones.isMaterial()) {
+                emissionLigth = material.getEmissiveMap().getQColor(fragment.u, fragment.v).rgb().multiply(albedo);
             } else {
-                QVector3 ambientColor = render.getScene().getAmbientColor().rgb();
+                // si tiene factor de emision toma ese valor solamente
+                float factorEmision = material.getEmissionIntensity();
+                emissionLigth = albedo.clone().multiply(factorEmision);
+            }
 
-                if (material.getEmissiveMap() != null && render.opciones.isMaterial()) {
-                    QColor colorEmisivo = material.getEmissiveMap().getQColor(fragment.u,
-                            fragment.v);
-                    ambientColor.set(colorEmisivo.add(render.getScene().getAmbientColor()).rgb());
-                } else {
-                    // si tiene factor de emision toma ese valor solamente
-                    if (material.getEmision() > 0) {
-                        QColor colorEmisivo = new QColor(material.getEmision(),
-                                material.getEmision(),
-                                material.getEmision());
-                        ambientColor.set(colorEmisivo.add(render.getScene().getAmbientColor()).rgb());
-                    }
-                }
-                ambient = ambientColor.multiply(albedo).multiply(ao);
+            // IBL
+            if (enviromentMap != null) {
+                // ****** VECTOR VISION
+                // para obtener el vector vision quitamos la transformacion de la ubicacion y
+                // volvemos a calcularla en las coordenadas del mundo
+                // V = TransformationVectorUtil.transformarVector(
+                // TransformationVectorUtil.transformarVectorInversa(fragment.location,
+                // fragment.entity,
+                // render.getCamera()),
+                // fragment.entity).getVector3();
+                // // ahora restamos la posicion de la camara a la posicion del mundo
+                // V.subtract(render.getCamera().getMatrizTransformacion(QGlobal.time).toTranslationVector());
+                // V.normalize();
+
+                // // ****** VECTOR NORMAL
+                // // la normal del pixel en el espacio mundial, se usara para tomar el color
+                // del
+                // // mapa de irradiacion, quitamos la transformacion de la ubicacion y volvemos
+                // a
+                // // calcularla en las coordenadas del mundo *
+                // N = (TransformationVectorUtil.transformarVectorNormal(
+                // TransformationVectorUtil.transformarVectorNormalInversa(fragment.normal,
+                // fragment.entity,
+                // render.getCamera()),
+                // fragment.entity != null ?
+                // fragment.entity.getMatrizTransformacion(QGlobal.time)
+                // : Matrix4.IDENTITY));
+                // N.normalize();
+
+                // NdotV = Math.max(N.dot(V), 0.00001f);
+
+                // kS = QMath.fresnelSchlick(NdotV, F0, roughness);
+                // kD = Vector3.of(1.0f)
+                // .subtract(kS)
+                // .multiply(1.0f - metallic);
+
+                computeBrdfIBL(fragment, roughness, metallic, albedo, F0, V, N, kS, kD,
+                        enviromentMap, irradianceMap, ao, ambientLigth);
+            } else {
+                ambientLigth = ambientColor.multiply(albedo).multiply(ao);
             }
             // vec3 color = ambient + Lo;
-            QVector3 tmpColor = ambient.add(Lo);
+            Vector3 tmpColor = ambientLigth.add(directLigth).add(emissionLigth);
 
             // HDR tonemapping
-            tmpColor.divide(tmpColor.clone().add(QVector3.unitario_xyz));
+            tmpColor.divide(tmpColor.clone().add(Vector3.unitario_xyz));
 
             outputColor.set(1.0f, tmpColor.x, tmpColor.y, tmpColor.z);
 
@@ -303,24 +324,20 @@ public class BRDFFragmentShader extends FragmentShader {
     }
 
     /** Calcula la iluminación */
-    protected void computeBrdfDirectLighting(Fragment fragment, float roughness, float metallic, QVector3 albedo,
-            QVector3 F0,
-            QVector3 V, QVector3 N, QVector3 N2, QVector3 kS, QVector3 kD, QVector3 Lo) {
+    protected void computeBrdfDirectLighting(Fragment fragment, float roughness, float metallic, Vector3 albedo,
+            Vector3 F0, Vector3 V, Vector3 N, Vector3 kS, Vector3 kD, Vector3 Lo) {
 
         Material material = (Material) fragment.material;
-        QVector3 vectorLuz = QVector3.empty();
 
         float NdotV = Math.max(N.dot(V), 0.00001f);
 
-        float distanciaLuz;
-        float sombra = 1;// 1= no sombra
         // solo si hay luces y si las opciones de la vista tiene activado el material
         if (render.opciones.isMaterial() && !render.getLitgths().isEmpty()) {
             for (QLigth luz : render.getLitgths()) {
                 // si esta encendida
                 if (luz != null && luz.getEntity().isToRender() && luz.isEnable()) {
-                    sombra = 1;
                     float alfa = 0.0f;
+                    // float sombra = 1;// 1= no sombra
                     // QProcesadorSombra proc = luz.getSombras();
                     // if (proc != null && render.opciones.isSombras() &&
                     // material.isSombrasRecibir()) {
@@ -330,47 +347,53 @@ public class BRDFFragmentShader extends FragmentShader {
                     // .getVector3(), fragment.entity);
                     // }
 
+                    Vector3 vectorLuz = Vector3.empty();
+                    float distanciaLuz;
+                    float attenuation = 1.0f;
                     if (luz instanceof QPointLigth || luz instanceof QSpotLigth) {
-                        vectorLuz.set(fragment.ubicacion.getVector3().clone().subtract(
-                                TransformationVectorUtil.transformarVector(QVector3.zero, luz.getEntity(),
-                                        render.getCamera())));
+                        vectorLuz.set(fragment.location.getVector3().clone().subtract(TransformationVectorUtil
+                                .transformarVector(Vector3.zero, luz.getEntity(), render.getCamera())));
                         // solo toma en cuenta a los puntos q estan en el area de afectacion
                         if (vectorLuz.length() > luz.radio) {
                             continue;
                         }
                         // si es Spot valido que este dentro del cono
                         if (luz instanceof QSpotLigth) {
-                            QVector3 coneDirection = ((QSpotLigth) luz).getDirectionTransformada().normalize();
+                            Vector3 coneDirection = ((QSpotLigth) luz).getDirectionTransformada().normalize();
                             alfa = coneDirection.angulo(vectorLuz.clone().normalize());
                             if (alfa > ((QSpotLigth) luz).getAnguloExterno()) {
                                 continue;
                             }
                         }
+
+                        // float distance = length(lightPositions[i] - WorldPos);
+                        distanciaLuz = vectorLuz.length();
+                        // distanciaLuz = L.length();
+                        // float attenuation = 1.0f / (distanciaLuz * distanciaLuz);
+                        attenuation = 1.0f
+                                / (luz.coeficientesAtenuacion.x + luz.coeficientesAtenuacion.y * distanciaLuz
+                                        + luz.coeficientesAtenuacion.z * distanciaLuz * distanciaLuz);
+                        vectorLuz.invert();
                     } else if (luz instanceof QDirectionalLigth) {
                         vectorLuz.set(((QDirectionalLigth) luz).getDirectionTransformada());
+                        // vectorLuz.set(TransformationVectorUtil.transformarVectorNormal(vectorLuz,
+                        // luz.getEntity().getMatrizTransformacion(QGlobal.time)));
+                        vectorLuz.invert();
                     }
 
                     // calcula la radiacion por cada luz
                     // L=normalize(lightPositions[i] -WorldPos);
-                    QVector3 L = vectorLuz.clone().invert().normalize();
+                    Vector3 L = vectorLuz.normalize();
                     // H= normalize(V + L);
-                    QVector3 H = V.clone().add(L).normalize();
+                    Vector3 H = V.clone().add(L).normalize();
                     float NdotL = Math.max(N.dot(L), 0.00001f);
-                    // float HdotV = Math.max(H.dot(V), 0.00f);
+                    float HdotV = Math.max(H.dot(V), 0.00f);
                     float NdotH = Math.max(N.dot(H), 0.00f);
-                    // float distance = length(lightPositions[i] - WorldPos);
-                    // distanciaLuz = vectorLuz.length();
-                    distanciaLuz = L.length();
-                    float attenuation = 1.0f / (distanciaLuz * distanciaLuz);
-                    // float attenuation = 1.0f
-                    // / (luz.coeficientesAtenuacion.x + luz.coeficientesAtenuacion.y * distanciaLuz
-                    // + luz.coeficientesAtenuacion.z * distanciaLuz * distanciaLuz);
 
                     // vec3 radiance = lightColors[i] * attenuation;
                     // QVector3 radiacion = luz.color.rgb().multiply(attenuation);
-                    QVector3 radiacion = luz.color.rgb().multiply(luz.energia * attenuation);
-                    // QVector3 radiacion = luz.color.rgb().multiply(luz.energia *
-                    // NdotL).multiply(attenuation);
+                    Vector3 radiacion = luz.color.rgb().multiply(luz.energy * attenuation);
+                    // QVector3 radiacion = luz.color.rgb().multiply(luz.energia );
                     // si la luz es spot, realiza una atenuacion adicional dependiendo del angulo
                     if (luz instanceof QSpotLigth) {
                         // lo siguiente es.. la diferencia entre alfa y el angulo externo divido con la
@@ -390,26 +413,24 @@ public class BRDFFragmentShader extends FragmentShader {
                     // DFG son funciones, D= funcion de distribucion Normal (NDF), F= ecuacion
                     // Fresnel, G= funcion de Geometria
 
-                    // ---- Parte especular fCookTorrance=DFG/(4*(ωo⋅n)(ωi⋅n) )
-                    // D=NDF (Función de distribución normal)
+                    // QVector3 difusseBRDF = kD.clone().multiply(albedo.clone().multiply(1.0f /
+                    // QMath.PI));
+                    Vector3 difusseBRDF = kD.clone().multiply(albedo);
+
+                    // ---- Parte especular fCookTorrance=FDG/(4*(ωo⋅n)(ωi⋅n) )
+                    Vector3 F = QMath.fresnelSchlick(HdotV, F0); // H,V, F0
+                    // D=NDF (Función de distribución normal) // Calculate normal distribution for
+                    // specular BRDF.
                     float D = QMath.DistributionGGX(NdotH, roughness); // N y H
+                    // Calculate geometric attenuation for specular BRDF.
                     // float G = QMath.GeometrySmith(NdotV, NdotL, roughness); // N, V, L
                     float G = QMath.GeometrySmith(N, V, L, roughness); // N, V, L
-                    // QVector3 F = QMath.fresnelSchlick(HdotV, F0); // H,V, F0
-                    // F - kS (componente especular -> fresnelSchlick)
-                    QVector3 numerator = kS.clone().multiply(D * G);
-                    float denominator = 4.0f * NdotV * NdotL; // N, V -- N ,L
-                    QVector3 specularBrdfCookTorrance = numerator.multiply(1.0f / Math.max(denominator, 0.00001f));
 
-                    // para la conservacion de energia la luz difusa y especular no pueden estar
-                    // sobre 1.0f (a menos que la superficie emita luz );
-                    // para preservar esta relacion el componenete de luz difusa (kD) deberia ser
-                    // igual a 1.0f -kS (componenete especular)
-                    // QVector3 kD = QVector3.of(1.0f).subtract(F);
-                    // F es igual al componenete especular (kS)
-                    // multiplicamos kD por el inverso del factor metalico solo los no metales tiene
-                    // luz difusa, o una mezcla lineal si es parcialmente metalico
-                    // kD.multiply(1.0f - metallic);
+                    // F - kS (componente especular -> fresnelSchlick)
+                    // QVector3 numerator = kS.clone().multiply(D * G);
+                    Vector3 numerator = F.multiply(D * G);
+                    float denominator = 4.0f * NdotV * NdotL; // N, V -- N ,L
+                    Vector3 specularBrdfCookTorrance = numerator.multiply(1.0f / Math.max(denominator, 0.00001f));
 
                     // sombra
                     // brdfCookTorrance.multiply(sombra);
@@ -421,14 +442,14 @@ public class BRDFFragmentShader extends FragmentShader {
                     // difusa
                     // 2) mezclamos albedo con difusa, pero no con expecular
                     // Lo += (kD * albedo / PI + specular) * radiance * NdotL;
-                    Lo.add(
-                            kD.clone().multiply(albedo.clone().multiply(1.0f / QMath.PI))
-                                    .add(specularBrdfCookTorrance)
-                                    .multiply(radiacion)
-                                    .multiply(NdotL));
+                    Lo.add(difusseBRDF.add(specularBrdfCookTorrance)
+                            .multiply(radiacion)
+                            .multiply(NdotL));
                 }
             }
         }
+
+        Lo.set(Math.max(Lo.x, 0.0f), Math.max(Lo.y, 0.0f), Math.max(Lo.z, 0.0f));
     }
 
     /**
@@ -442,7 +463,7 @@ public class BRDFFragmentShader extends FragmentShader {
      * @param F0
      * @param V
      * @param N
-     * @param N2
+     * 
      * @param kS
      * @param kD
      * @param enviromentMap
@@ -450,9 +471,9 @@ public class BRDFFragmentShader extends FragmentShader {
      * @param ao
      * @param ambient
      */
-    private void computeBrdfIBL(Fragment fragment, float roughness, float metallic, QVector3 albedo, QVector3 F0,
-            QVector3 V, QVector3 N, QVector3 N2, QVector3 kS, QVector3 kD, Texture enviromentMap, Texture irradianceMap,
-            float ao, QVector3 ambient) {
+    private void computeBrdfIBL(Fragment fragment, float roughness, float metallic, Vector3 albedo, Vector3 F0,
+            Vector3 V, Vector3 N, Vector3 kS, Vector3 kD, Texture enviromentMap, Texture irradianceMap,
+            float ao, Vector3 ambient) {
 
         Material material = (Material) fragment.material;
         float NdotV = Math.max(N.dot(V), 0.00001f);
@@ -474,74 +495,58 @@ public class BRDFFragmentShader extends FragmentShader {
 
         // toma el color del mapa de irradiacion usando el vector nomal (en el espacio
         // mundial) (en el mapa de reflejos se usa el vector reflejado)
-        QVector3 irradiacion = TextureUtil
-                .getEnviromentMapColor(N2, irradianceMap, material.getEnvMapType()).rgb();
+
+        Vector3 irradiance;
+        if (irradianceMap != null)
+            irradiance = irradianceMap.getColor(N).rgb();
+        else
+            irradiance = Vector3.empty();
 
         // irradiacion.multiply(5.0f);// elevo la luminosidad
-        QVector3 difuso = albedo.multiply(irradiacion);
+        Vector3 diffuseIBL = albedo.multiply(irradiance);
         if (enviromentMap instanceof MipmapTexture) {
             float niveles = (float) ((MipmapTexture) enviromentMap).getMaxLevel();
             ((MipmapTexture) enviromentMap).setLevel((int) (niveles * roughness));
         }
-        QColor[] enviromentColours = computeEnviroment(fragment, N2, V, enviromentMap);
-        QColor colorReflejo = enviromentColours[0];
-        QColor colorRefraccion = enviromentColours[1];
-        // QVector3 specular = colorReflejo.rgb().multiply(kS);
+
+        QColor specularColor;
+        QColor colorRefraccion;
+
+        // ************************************************************
+        // ****** REFLEXION
+        // ************************************************************
+        // if (material.isReflexion()) {
+        Vector3 reflejo = QMath.reflejarVector(V, N);
+        specularColor = enviromentMap.getColor(reflejo);
+        // } else {
+        // colorReflejo = null;
+        // }
+        // ***********************************************************
+        // ****** REFRACCION
+        // ***********************************************************
+        if (material.getIor() > 0) {
+            Vector3 refraccion = QMath.refractarVector(V, N, material.getIor());
+            colorRefraccion = enviromentMap.getColor(refraccion);
+        } else {
+            colorRefraccion = null;
+        }
+
         // https://www.unrealengine.com/en-US/blog/physically-based-shading-on-mobile
-        QVector3 specular = QVector3.unitario_xyz;
-        if (colorReflejo != null) {
-            specular = colorReflejo.rgb().multiply(QMath.EnvBRDFApprox(kS, roughness, NdotV));
+        Vector3 specularBRDF = Vector3.unitario_xyz;
+        if (specularColor != null) {
+            specularBRDF = specularColor.rgb().multiply(QMath.EnvBRDFApprox(kS,
+                    roughness,
+                    NdotV));
+            // specularBRDF = specularColor.rgb().multiply(QMath.EnvBRDFApprox(F0,
+            // roughness, NdotV));
         }
         // en caso de tener refraccion como el vidrio
         if (colorRefraccion != null) {
             // difuso.multiply(colorRefraccion.rgb());
-            difuso.add(colorRefraccion.rgb());
+            diffuseIBL.add(colorRefraccion.rgb());
         }
 
-        ambient.set(difuso.multiply(kD).add(specular).multiply(ao));
-    }
-
-    /**
-     * Calcula la Reflexión y Refracción utilizando un mapa de entorno (puede
-     * ser generado con un mapa de cubo)
-     *
-     * @param fragment
-     */
-    private QColor[] computeEnviroment(Fragment fragment, QVector3 N2, QVector3 V, Texture enviromentMap) {
-        QColor colorReflejo = null;
-        QColor colorRefraccion = null;
-        Material material = (Material) fragment.material;
-        if (render.opciones.isMaterial() && enviromentMap != null) {
-
-            try {
-                // ************************************************************
-                // ****** REFLEXION
-                // ************************************************************
-                // if (material.isReflexion()) {
-                QVector3 reflejo = QMath.reflejarVector(V, N2);
-                colorReflejo = TextureUtil.getEnviromentMapColor(reflejo, enviromentMap, material.getEnvMapType());
-                // } else {
-                // colorReflejo = null;
-                // }
-                // ***********************************************************
-                // ****** REFRACCION
-                // ***********************************************************
-                if (material.getIor() > 0) {
-                    QVector3 refraccion = QMath.refractarVector(V, N2, material.getIor());
-                    colorRefraccion = TextureUtil.getEnviromentMapColor(refraccion, enviromentMap,
-                            material.getEnvMapType());
-                } else {
-                    colorRefraccion = null;
-                }
-            } catch (Exception e) {
-                System.out.println("error reflexion " + e.getMessage());
-                e.printStackTrace();
-            } finally {
-
-            }
-
-        }
-        return new QColor[] { colorReflejo, colorRefraccion };
+        ambient.set(diffuseIBL.multiply(kD).add(specularBRDF).multiply(ao));
     }
 
 }

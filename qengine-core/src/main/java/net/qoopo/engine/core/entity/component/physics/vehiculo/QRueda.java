@@ -8,7 +8,7 @@ package net.qoopo.engine.core.entity.component.physics.vehiculo;
 import java.io.Serializable;
 
 import net.qoopo.engine.core.entity.Entity;
-import net.qoopo.engine.core.math.QVector3;
+import net.qoopo.engine.core.math.Vector3;
 
 /**
  *
@@ -33,7 +33,7 @@ public class QRueda implements Serializable {
     private float dampingCompression = 4.4f;
     private float friccion = 1000.0f;
     private float influenciaRodamiento = 0.1f;
-    private QVector3 ubicacion = QVector3.empty();
+    private Vector3 ubicacion = Vector3.empty();
 
     private Entity entidadRueda;
 
@@ -120,11 +120,11 @@ public class QRueda implements Serializable {
         this.entidadRueda = entidadRueda;
     }
 
-    public QVector3 getUbicacion() {
+    public Vector3 getUbicacion() {
         return ubicacion;
     }
 
-    public void setUbicacion(QVector3 ubicacion) {
+    public void setUbicacion(Vector3 ubicacion) {
         this.ubicacion = ubicacion;
     }
 

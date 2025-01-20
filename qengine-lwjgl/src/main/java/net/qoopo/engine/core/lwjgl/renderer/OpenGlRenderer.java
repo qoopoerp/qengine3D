@@ -37,8 +37,8 @@ import net.qoopo.engine.core.entity.component.mesh.primitive.VertexBuffer;
 import net.qoopo.engine.core.entity.component.mesh.primitive.Vertex;
 import net.qoopo.engine.core.lwjgl.renderer.core.QGlVentana;
 import net.qoopo.engine.core.lwjgl.renderer.core.shader.QGLShader;
-import net.qoopo.engine.core.math.QMatriz4;
-import net.qoopo.engine.core.math.QVector2;
+import net.qoopo.engine.core.math.Matrix4;
+import net.qoopo.engine.core.math.Vector2;
 import net.qoopo.engine.core.renderer.RenderEngine;
 import net.qoopo.engine.core.renderer.superficie.Superficie;
 import net.qoopo.engine.core.scene.Scene;
@@ -176,24 +176,24 @@ public class OpenGlRenderer extends RenderEngine {
     }
 
     @Override
-    public Entity selectEntity(QVector2 mouseLocation) {
+    public Entity selectEntity(Vector2 mouseLocation) {
         return null;
     }
 
     @Override
-    public void renderLine(QMatriz4 matViewModel, Primitive primitiva, Vertex... vertex) {
+    public void renderLine(Matrix4 matViewModel, Primitive primitiva, Vertex... vertex) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'renderLine'");
     }
 
     @Override
-    public void render(QMatriz4 matViewModel, VertexBuffer bufferVertices, Primitive primitiva, boolean wire) {
+    public void render(Matrix4 matViewModel, VertexBuffer bufferVertices, Primitive primitiva, boolean wire) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'render'");
     }
 
     @Override
-    public void renderEntity(Entity entity, QMatriz4 matrizVista, QMatriz4 matrizVistaInvertidaBillboard,
+    public void renderEntity(Entity entity, Matrix4 matrizVista, Matrix4 matrizVistaInvertidaBillboard,
             boolean transparentes) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'renderEntity'");

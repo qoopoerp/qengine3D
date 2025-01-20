@@ -7,7 +7,7 @@ import lombok.Setter;
 import net.qoopo.engine.core.entity.Entity;
 import net.qoopo.engine.core.entity.component.EntityComponent;
 import net.qoopo.engine.core.math.QColor;
-import net.qoopo.engine.core.math.QVector3;
+import net.qoopo.engine.core.math.Vector3;
 import net.qoopo.engine.core.shadow.QProcesadorSombra;
 
 public abstract class QLigth implements EntityComponent {
@@ -16,7 +16,7 @@ public abstract class QLigth implements EntityComponent {
     @Setter
     protected Entity entity;
 
-    public final QVector3 coeficientesAtenuacion = QVector3.of(1, 0.045f, 0.0075f); // PARA UNA DISTANCIA DE 100
+    public final Vector3 coeficientesAtenuacion = Vector3.of(1, 0.045f, 0.0075f); // PARA UNA DISTANCIA DE 100
 
     /*
      * VALORES PARA LOS COEFICIENTES DE ATENUACION EN FUNCION DE LA DISTANCIA QUE SE
@@ -38,7 +38,7 @@ public abstract class QLigth implements EntityComponent {
      * 
      * 
      */
-    public float energia = 1f;
+    public float energy = 1f;
     public QColor color = new QColor(Color.WHITE);
     protected boolean enable = true;
 
@@ -70,7 +70,7 @@ public abstract class QLigth implements EntityComponent {
 
     public void setAtributos(float intensidad, QColor color, float radio, boolean proyectarSombras,
             boolean sombraDinamica) {
-        this.energia = intensidad;
+        this.energy = intensidad;
         this.color = color;
         this.radio = radio;
         this.proyectarSombras = proyectarSombras;
@@ -85,7 +85,7 @@ public abstract class QLigth implements EntityComponent {
     public void copyAttribute(QLigth other) {
         color = other.color;
         enable = other.enable;
-        energia = other.energia;
+        energy = other.energy;
     }
 
     @Override
@@ -143,12 +143,12 @@ public abstract class QLigth implements EntityComponent {
         this.sombras = sombras;
     }
 
-    public float getEnergia() {
-        return energia;
+    public float getEnergy() {
+        return energy;
     }
 
-    public void setEnergia(float energia) {
-        this.energia = energia;
+    public void setEnergy(float energia) {
+        this.energy = energia;
     }
 
     public QColor getColor() {

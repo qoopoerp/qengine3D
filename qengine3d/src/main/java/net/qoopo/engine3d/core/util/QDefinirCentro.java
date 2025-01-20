@@ -12,7 +12,7 @@ import net.qoopo.engine.core.entity.Entity;
 import net.qoopo.engine.core.entity.component.EntityComponent;
 import net.qoopo.engine.core.entity.component.mesh.Mesh;
 import net.qoopo.engine.core.entity.component.mesh.primitive.Vertex;
-import net.qoopo.engine.core.math.QVector3;
+import net.qoopo.engine.core.math.Vector3;
 
 /**
  *
@@ -48,7 +48,7 @@ public class QDefinirCentro {
         }
 
         // recorrer los vertice sy sacar punto medio
-        QVector3 centro = QVector3.empty();
+        Vector3 centro = Vector3.empty();
         int c = 0;
         for (Vertex vertice : vertices) {
             // centro.add(QVector3.of(vertice.x, vertice.y, vertice.z));

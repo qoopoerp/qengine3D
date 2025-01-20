@@ -16,7 +16,7 @@ import net.qoopo.engine.core.entity.component.mesh.primitive.shape.Cylinder;
 import net.qoopo.engine.core.entity.component.mesh.primitive.shape.Cone;
 import net.qoopo.engine.core.entity.component.mesh.primitive.shape.Sphere;
 import net.qoopo.engine.core.math.QColor;
-import net.qoopo.engine.core.math.QVector3;
+import net.qoopo.engine.core.math.Vector3;
 import net.qoopo.engine.core.texture.util.MaterialUtil;
 import net.qoopo.engine.core.util.QGlobal;
 
@@ -70,7 +70,7 @@ public class GeneradorLamparas {
                 // secciones), 1f, QColor.YELLOW, QColor.WHITE, 1, 64));
                 cono.addComponent(MaterialUtil.applyColor(new Sphere(0.03f, 8), 1f, QColor.YELLOW, QColor.WHITE, 1,
                                 64));
-                cono.addComponent(new QSpotLigth(2.5f, QColor.YELLOW, 20f, QVector3.of(0, 0, -1),
+                cono.addComponent(new QSpotLigth(2.5f, QColor.YELLOW, 20f, Vector3.of(0, 0, -1),
                                 (float) Math.toRadians(30f), (float) Math.toRadians(25f), false, false));
                 // cono.agregarComponente(new QLuzPuntual(2.5f, QColor.YELLOW, true, 20));
 

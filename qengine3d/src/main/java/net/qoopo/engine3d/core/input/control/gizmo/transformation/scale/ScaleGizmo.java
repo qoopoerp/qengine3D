@@ -43,21 +43,21 @@ public class ScaleGizmo extends Gizmo {
 
         matX = new Material("x");
         matX.setColor(QColor.RED);
-        matX.setEmision(0.85f);
+        matX.setEmissionIntensity(0.5f);
         // matX.setTransparencia(true);
         // matX.setTransAlfa(0.9f);
         MaterialUtil.applyMaterial(formaX, matX);
 
         matY = new Material("y");
         matY.setColor(QColor.GREEN);
-        matY.setEmision(0.85f);
+        matY.setEmissionIntensity(0.5f);
         // matY.setTransparencia(true);
         // matY.setTransAlfa(0.9f);
         MaterialUtil.applyMaterial(formaY, matY);
 
         matZ = new Material("z");
         matZ.setColor(QColor.BLUE);
-        matZ.setEmision(0.85f);
+        matZ.setEmissionIntensity(0.5f);
         // matZ.setTransparencia(true);
         // matZ.setTransAlfa(0.9f);
         MaterialUtil.applyMaterial(formaZ, matZ);
@@ -85,8 +85,8 @@ public class ScaleGizmo extends Gizmo {
         matTodos.setColor(QColor.WHITE);
         // matTodos.setTransparencia(true);
         // matTodos.setTransAlfa(0.75f);
-        matTodos.setEmision(.85f);
-        todos.addComponent(MaterialUtil.applyMaterial(new Box(0.85f), matTodos));
+        matTodos.setEmissionIntensity(.85f);
+        todos.addComponent(MaterialUtil.applyMaterial(new Box(0.5f), matTodos));
 
         return todos;
     }

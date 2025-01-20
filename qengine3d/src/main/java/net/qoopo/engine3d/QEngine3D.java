@@ -241,7 +241,7 @@ public class QEngine3D extends Engine implements Runnable {
             }
 
             rendererList.forEach(renderer -> {
-                renderer.setBackColor(scene.getAmbientColor());// pintamos el fondo con el color ambiente
+                // renderer.setBackColor(scene.getAmbientColor());// pintamos el fondo con el color ambiente
                 renderer.update();
             });
 

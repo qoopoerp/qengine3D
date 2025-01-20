@@ -59,10 +59,9 @@ public class NodosSimple4 extends MakeTestScene {
                 Mesh esfera1 = new Sphere(1);
                 Material mat4 = new Material("Reflexion real");
                 mat4.setColor(QColor.YELLOW);
-                mat4.setMetallic(1);
+                mat4.setMetalness(1);
                 mat4.setIor(1.45f);
                 mat4.setEnvMap(mapa.getEnvMap());
-                mat4.setEnvMapType(EnvProbe.FORMATO_MAPA_CUBO);
                 cubo4.addComponent(MaterialUtil.applyMaterial(esfera1, mat4));
                 cubo4.addComponent(mapa);
                 mapa.aplicar(EnvProbe.FORMATO_MAPA_CUBO);

@@ -4,18 +4,18 @@ import java.io.Serializable;
 
 import net.qoopo.engine.core.util.QGlobal;
 
-public class QVector2 implements Serializable {
+public class Vector2 implements Serializable {
 
-    public static QVector2 addNewVector(QVector2 v1, QVector2... others) {
-        QVector2 result = v1.clone();
-        for (QVector2 other : others) {
+    public static Vector2 addNewVector(Vector2 v1, Vector2... others) {
+        Vector2 result = v1.clone();
+        for (Vector2 other : others) {
             result.x += other.x;
             result.y += other.y;
         }
         return result;
     }
 
-    public static float dotProduct(QVector2 v1, QVector2 v2) {
+    public static float dotProduct(Vector2 v1, Vector2 v2) {
         return (v1.x * v2.x + v1.y * v2.y);
     }
 //
@@ -26,18 +26,18 @@ public class QVector2 implements Serializable {
 //                v1.x * v2.y - v1.y * v2.x);
 //    }
 
-    public static QVector2 multiply(float alpha, QVector2 vector) {
-        return new QVector2(alpha * vector.x, alpha * vector.y);
+    public static Vector2 multiply(float alpha, Vector2 vector) {
+        return new Vector2(alpha * vector.x, alpha * vector.y);
     }
 
     public float x, y;
 
-    public QVector2() {
+    public Vector2() {
         x = 0;
         y = 0;
     }
 
-    public QVector2(float x, float y) {
+    public Vector2(float x, float y) {
         this.x = x;
         this.y = y;
     }
@@ -47,7 +47,7 @@ public class QVector2 implements Serializable {
         this.y = y;
     }
 
-    public void set(QVector2 vector) {
+    public void set(Vector2 vector) {
         this.x = vector.x;
         this.y = vector.y;
     }
@@ -58,7 +58,7 @@ public class QVector2 implements Serializable {
      *
      * @return
      */
-    public QVector2 normalize() {
+    public Vector2 normalize() {
         if (QGlobal.OPT_USAR_FAST_INVSQRT) {
             float inversaRaizCuadrada = QMath.fastInvSqrt(x * x + y * y);
             x *= inversaRaizCuadrada;
@@ -73,42 +73,42 @@ public class QVector2 implements Serializable {
         return this;
     }
 
-    public QVector2 invert() {
+    public Vector2 invert() {
         x *= -1;
         y *= -1;
         return this;
     }
 
-    public QVector2 add(float value) {
+    public Vector2 add(float value) {
         x += value;
         y += value;
         return this;
     }
 
-    public QVector2 subtract(float value) {
+    public Vector2 subtract(float value) {
         x -= value;
         y -= value;
         return this;
     }
 
-    public QVector2 add(QVector2... others) {
-        for (QVector2 other : others) {
+    public Vector2 add(Vector2... others) {
+        for (Vector2 other : others) {
             x += other.x;
             y += other.y;
         }
         return this;
     }
 
-    public QVector2 subtract(QVector2... others) {
-        for (QVector2 other : others) {
+    public Vector2 subtract(Vector2... others) {
+        for (Vector2 other : others) {
             x -= other.x;
             y -= other.y;
         }
         return this;
     }
 
-    public QVector2 add(float delta, QVector2... others) {
-        for (QVector2 other : others) {
+    public Vector2 add(float delta, Vector2... others) {
+        for (Vector2 other : others) {
             x += other.x * delta;
             y += other.y * delta;
         }
@@ -120,11 +120,11 @@ public class QVector2 implements Serializable {
         y = -y;
     }
 
-    public void copyXY(QVector2 vector) {
+    public void copyXY(Vector2 vector) {
         setXY(vector.x, vector.y);
     }
 
-    public QVector2 multiply(float alpha) {
+    public Vector2 multiply(float alpha) {
         x *= alpha;
         y *= alpha;
         return this;
@@ -146,7 +146,7 @@ public class QVector2 implements Serializable {
         }
     }
 
-    public float dotProduct(QVector2 other) {
+    public float dotProduct(Vector2 other) {
         return (this.x * other.x + this.y * other.y);
     }
 
@@ -176,8 +176,8 @@ public class QVector2 implements Serializable {
 //        x = tempX;
 //        return this;
 //    }
-    public QVector2 clone() {
-        return new QVector2(x, y);
+    public Vector2 clone() {
+        return new Vector2(x, y);
     }
 
     public String toString() {

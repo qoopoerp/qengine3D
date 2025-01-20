@@ -17,7 +17,7 @@ import net.qoopo.engine.core.entity.component.gui.QTecladoReceptor;
 import net.qoopo.engine.core.entity.component.mesh.util.QUnidadMedida;
 import net.qoopo.engine.core.input.QInputManager;
 import net.qoopo.engine.core.math.QColor;
-import net.qoopo.engine.core.math.QVector3;
+import net.qoopo.engine.core.math.Vector3;
 import net.qoopo.engine.core.util.QGlobal;
 
 /**
@@ -31,7 +31,7 @@ public class Scene implements Serializable {
     private QColor ambientColor = QColor.BLACK;
     private final CopyOnWriteArrayList<Entity> entities = new CopyOnWriteArrayList<>();
     // objetos a ser usados por el motor de fisica
-    public QVector3 gravity = QVector3.gravedad.clone();
+    public Vector3 gravity = Vector3.gravedad.clone();
     public QUnidadMedida UM;
     private boolean blocked = false;
     // para pruebasm luego se agregara el control necesario y lugar correcto
@@ -40,7 +40,7 @@ public class Scene implements Serializable {
     public Scene() {
         UM = new QUnidadMedida();
         UM.inicializar(1, QUnidadMedida.METRO);
-        gravity = QUnidadMedida.velocidad(QVector3.of(0, UM.convertirUnidades(-10, QUnidadMedida.METRO), 0));
+        gravity = QUnidadMedida.velocidad(Vector3.of(0, UM.convertirUnidades(-10, QUnidadMedida.METRO), 0));
         // actualizo como variable global
         QGlobal.gravedad = this.gravity;
         // INSTANCIA = this;
@@ -48,7 +48,7 @@ public class Scene implements Serializable {
 
     public Scene(QUnidadMedida unidadMedida) {
         this.UM = unidadMedida;
-        gravity = QUnidadMedida.velocidad(QVector3.of(0, UM.convertirUnidades(-10, QUnidadMedida.METRO), 0));
+        gravity = QUnidadMedida.velocidad(Vector3.of(0, UM.convertirUnidades(-10, QUnidadMedida.METRO), 0));
         QGlobal.gravedad = this.gravity;
         // INSTANCIA = this;
     }

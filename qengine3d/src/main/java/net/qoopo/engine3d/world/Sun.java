@@ -3,7 +3,7 @@ package net.qoopo.engine3d.world;
 import net.qoopo.engine.core.entity.Entity;
 import net.qoopo.engine.core.entity.component.ligth.QDirectionalLigth;
 import net.qoopo.engine.core.math.QColor;
-import net.qoopo.engine.core.math.QVector3;
+import net.qoopo.engine.core.math.Vector3;
 
 public class Sun extends Entity {
 
@@ -17,6 +17,6 @@ public class Sun extends Entity {
 
     public Sun(String name, float power) {
         super(name);
-        this.addComponent(new QDirectionalLigth(power, QColor.WHITE, 50, QVector3.of(0, -1f, 0), true, true));
+        this.addComponent(new QDirectionalLigth(power, QColor.WHITE, 50, Vector3.of(0, -1f, 0), true, true));
     }
 }

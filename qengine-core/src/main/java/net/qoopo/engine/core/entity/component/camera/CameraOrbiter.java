@@ -19,7 +19,7 @@ import net.qoopo.engine.core.entity.component.gui.QMouseReceptor;
 import net.qoopo.engine.core.entity.component.gui.QTecladoReceptor;
 import net.qoopo.engine.core.input.QInputManager;
 import net.qoopo.engine.core.math.QMath;
-import net.qoopo.engine.core.math.QVector3;
+import net.qoopo.engine.core.math.Vector3;
 import net.qoopo.engine.core.scene.Camera;
 
 /**
@@ -47,8 +47,8 @@ public class CameraOrbiter implements EntityComponent {
     private Camera camara;
     private QMouseReceptor mouseReceptor;
     private QTecladoReceptor tecladoReceptor;
-    private final QVector3 coordenadasEsfericas = QVector3.empty();
-    private final QVector3 target = QVector3.empty();
+    private final Vector3 coordenadasEsfericas = Vector3.empty();
+    private final Vector3 target = Vector3.empty();
 
     public CameraOrbiter(Camera camara) {
         this.camara = camara;
@@ -66,13 +66,13 @@ public class CameraOrbiter implements EntityComponent {
     public void updateCamera() {
         float distance = camara.getTransform().getLocation().clone().subtract(target).length();
         // QVector3 ubicacion = QVector3.empty();
-        QVector3 ubicacion = QVector3.of(
+        Vector3 ubicacion = Vector3.of(
                 distance * (float) (Math.cos(coordenadasEsfericas.x) * Math.sin(coordenadasEsfericas.y)),
                 distance * (float) Math.sin(coordenadasEsfericas.x),
                 distance * (float) (Math.cos(coordenadasEsfericas.x) * Math.cos(coordenadasEsfericas.y)));
 
         // QMath.sphericalToCartesian(coordenadasEsfericas, ubicacion);
-        camara.lookAtTarget(ubicacion.add(target), target, QVector3.unitario_y);
+        camara.lookAtTarget(ubicacion.add(target), target, Vector3.unitario_y);
     }
 
     public void moverAdelanteAtras(float valor) {
@@ -202,7 +202,7 @@ public class CameraOrbiter implements EntityComponent {
         QInputManager.removeKeyboardListener(tecladoReceptor);
     }
 
-    public QVector3 getTarget() {
+    public Vector3 getTarget() {
         return target;
     }
 

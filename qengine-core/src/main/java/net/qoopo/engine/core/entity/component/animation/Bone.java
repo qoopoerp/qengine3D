@@ -12,7 +12,7 @@ import net.qoopo.engine.core.assets.model.waveobject.LoadModelObj;
 import net.qoopo.engine.core.entity.Entity;
 import net.qoopo.engine.core.entity.component.EntityComponent;
 import net.qoopo.engine.core.entity.component.mesh.Mesh;
-import net.qoopo.engine.core.math.QMatriz4;
+import net.qoopo.engine.core.math.Matrix4;
 
 /**
  * Esta entity representa un hueso para la animación Esquelética. NO debe tener
@@ -28,8 +28,8 @@ public class Bone extends Entity {
 
     // inversa de la transformacion Pose, es para volver el vertice a su estado
     // normal y aplicar la transformacion de la animacion
-    public QMatriz4 transformacionInversa = new QMatriz4();
-    protected QMatriz4 cachedMatrizConInversa = new QMatriz4();
+    public Matrix4 transformacionInversa = new Matrix4();
+    protected Matrix4 cachedMatrizConInversa = new Matrix4();
     private long cached_time_inversa = 0;
 
     public Bone() {
@@ -76,13 +76,13 @@ public class Bone extends Entity {
      *
      * @param parentBindTransform
      */
-    public void calcularTransformacionInversa(QMatriz4 parentBindTransform) {
+    public void calcularTransformacionInversa(Matrix4 parentBindTransform) {
         try {
-            QMatriz4 mat = parentBindTransform.mult(transform.toMatrix());
+            Matrix4 mat = parentBindTransform.mult(transform.toMatrix());
             try {
                 transformacionInversa = mat.invert();
             } catch (Exception e) {
-                transformacionInversa = new QMatriz4();
+                transformacionInversa = new Matrix4();
             }
             for (Entity hijo : this.getChilds()) {
                 if (hijo instanceof Bone) {
@@ -122,7 +122,7 @@ public class Bone extends Entity {
      * @return
      */
     // @Override
-    public QMatriz4 getMatrizTransformacionHueso(long time) {
+    public Matrix4 getMatrizTransformacionHueso(long time) {
         try {
             if (time != cached_time_inversa || cachedMatrizConInversa == null) {
                 cached_time_inversa = time;

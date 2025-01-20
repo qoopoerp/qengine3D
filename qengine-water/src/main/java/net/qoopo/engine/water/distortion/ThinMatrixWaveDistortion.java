@@ -7,7 +7,7 @@ import lombok.Setter;
 import net.qoopo.engine.core.engine.EngineTime;
 import net.qoopo.engine.core.entity.component.mesh.Mesh;
 import net.qoopo.engine.core.entity.component.mesh.primitive.Vertex;
-import net.qoopo.engine.core.math.QVector4;
+import net.qoopo.engine.core.math.Vector4;
 import net.qoopo.engine.core.util.mesh.NormalUtil;
 
 @Getter
@@ -27,7 +27,7 @@ public class ThinMatrixWaveDistortion implements WaveDistortion {
         float waveTime = deltaTime * speed;
         // actualizo los vértices
         for (Vertex vertex : mesh.vertexList) {
-            QVector4 original = vertex.location;
+            Vector4 original = vertex.location;
 
             // de thinmatrix
             float radiansX = (float) ((original.x / wavelength + waveTime) * 2.0f * Math.PI);

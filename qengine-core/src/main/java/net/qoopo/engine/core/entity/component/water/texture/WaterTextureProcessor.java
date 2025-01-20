@@ -10,7 +10,7 @@ import java.awt.image.BufferedImage;
 
 import net.qoopo.engine.core.math.QColor;
 import net.qoopo.engine.core.math.QMath;
-import net.qoopo.engine.core.math.QVector2;
+import net.qoopo.engine.core.math.Vector2;
 import net.qoopo.engine.core.texture.Texture;
 
 /**
@@ -81,9 +81,9 @@ public class WaterTextureProcessor extends Texture {
 
     @Override
     public QColor getQColor(float x, float y) {
-        QVector2 distor = texturaDistorcion.getQColor(x + factorTiempo, y).rg().multiply(0.1f);
+        Vector2 distor = texturaDistorcion.getQColor(x + factorTiempo, y).rg().multiply(0.1f);
         distor.setXY(x + distor.x, y + distor.y + factorTiempo);
-        QVector2 distorTotal = texturaDistorcion.getQColor(distor.x, distor.y).rg().multiply(2).subtract(1)
+        Vector2 distorTotal = texturaDistorcion.getQColor(distor.x, distor.y).rg().multiply(2).subtract(1)
                 .multiply(fuerzaOla);
         x += distorTotal.x;
         y += distorTotal.y;

@@ -7,7 +7,7 @@ package net.qoopo.engine.renderer.shadow.procesadores;
 
 import net.qoopo.engine.core.entity.Entity;
 import net.qoopo.engine.core.entity.component.ligth.QPointLigth;
-import net.qoopo.engine.core.math.QVector3;
+import net.qoopo.engine.core.math.Vector3;
 import net.qoopo.engine.core.scene.Camera;
 import net.qoopo.engine.core.scene.Scene;
 import net.qoopo.engine.core.shadow.QProcesadorSombra;
@@ -25,26 +25,26 @@ public class QSombraOmnidireccional extends QProcesadorSombra {
      * del cubo y 6 mapa de sombras
      */
     private SoftwareShadowRender[] renderSombras;
-    private QVector3[] direcciones;
+    private Vector3[] direcciones;
 
     public QSombraOmnidireccional(Scene mundo, QPointLigth luz, Camera camaraRender, int ancho, int alto) {
         super(mundo, luz, ancho, alto);
-        direcciones = new QVector3[6];
+        direcciones = new Vector3[6];
         // -------------------------------------------------------
-        direcciones[0] = QVector3.of(0, 1, 0); // arriba
-        direcciones[1] = QVector3.of(0, -1, 0); // abajo
-        direcciones[2] = QVector3.of(0, 0, 1); // adelante
-        direcciones[3] = QVector3.of(0, 0, -1); // atras
-        direcciones[4] = QVector3.of(-1, 0, 0); // izquierda
-        direcciones[5] = QVector3.of(1, 0, 0); // derecha
+        direcciones[0] = Vector3.of(0, 1, 0); // arriba
+        direcciones[1] = Vector3.of(0, -1, 0); // abajo
+        direcciones[2] = Vector3.of(0, 0, 1); // adelante
+        direcciones[3] = Vector3.of(0, 0, -1); // atras
+        direcciones[4] = Vector3.of(-1, 0, 0); // izquierda
+        direcciones[5] = Vector3.of(1, 0, 0); // derecha
 
-        QVector3[] direccionesArriba = new QVector3[6];
-        direccionesArriba[0] = QVector3.of(0, 0, -1); // arriba
-        direccionesArriba[1] = QVector3.of(0, 0, 1); // abajo
-        direccionesArriba[2] = QVector3.of(0, 1, 0); // adelante
-        direccionesArriba[3] = QVector3.of(0, 1, 0); // atras
-        direccionesArriba[4] = QVector3.of(0, 1, 0); // izquierda
-        direccionesArriba[5] = QVector3.of(0, 1, 0); // derecha
+        Vector3[] direccionesArriba = new Vector3[6];
+        direccionesArriba[0] = Vector3.of(0, 0, -1); // arriba
+        direccionesArriba[1] = Vector3.of(0, 0, 1); // abajo
+        direccionesArriba[2] = Vector3.of(0, 1, 0); // adelante
+        direccionesArriba[3] = Vector3.of(0, 1, 0); // atras
+        direccionesArriba[4] = Vector3.of(0, 1, 0); // izquierda
+        direccionesArriba[5] = Vector3.of(0, 1, 0); // derecha
 
         String[] nombres = { "Arriba", "Abajo", "Frente", "Atras", "Izquierda", "Derecha" };
         renderSombras = new SoftwareShadowRender[6];
@@ -58,7 +58,7 @@ public class QSombraOmnidireccional extends QProcesadorSombra {
     }
 
     @Override
-    public float factorSombra(QVector3 vector, Entity entity) {
+    public float factorSombra(Vector3 vector, Entity entity) {
         float factor = 1.0f;
         float factorTmp = 0;
         int c = 0;

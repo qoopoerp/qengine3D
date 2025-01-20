@@ -18,7 +18,7 @@ import net.qoopo.engine.core.entity.component.physics.collision.detector.shape.p
 import net.qoopo.engine.core.entity.component.physics.dinamica.QObjetoDinamico;
 import net.qoopo.engine.core.entity.component.physics.dinamica.QObjetoRigido;
 import net.qoopo.engine.core.material.Material;
-import net.qoopo.engine.core.math.QVector3;
+import net.qoopo.engine.core.math.Vector3;
 import net.qoopo.engine.core.texture.util.MaterialUtil;
 
 /**
@@ -40,7 +40,7 @@ public class QEmisorVolcan extends ParticleEmissor {
     }
 
     public QEmisorVolcan(AABB ambito, float tiempoVida, int maximoParticulas, int velocidadEmision,
-            QVector3 direccion) {
+            Vector3 direccion) {
         super(ambito, tiempoVida, maximoParticulas, velocidadEmision, direccion);
         cargarMaterial();
     }
@@ -66,7 +66,7 @@ public class QEmisorVolcan extends ParticleEmissor {
                 QObjetoRigido rigido = new QObjetoRigido(QObjetoDinamico.DINAMICO);
 
                 rigido.velocidadLinear = direccion.clone();
-                rigido.setMasa(0.005f, QVector3.zero.clone());
+                rigido.setMasa(0.005f, Vector3.zero.clone());
                 nuevaentity.addComponent(rigido);
 
                 nueva.setTiempoVida(tiempoVida);
@@ -74,11 +74,11 @@ public class QEmisorVolcan extends ParticleEmissor {
 
                 // ubicacion inicial de la particula
                 nuevaentity.getTransform().move(
-                        rnd.nextFloat() * (ambito.aabMaximo.location.x - ambito.aabMinimo.location.x)
-                                + ambito.aabMinimo.location.x,
-                        ambito.aabMaximo.location.y,
-                        rnd.nextFloat() * (ambito.aabMaximo.location.z - ambito.aabMinimo.location.z)
-                                + ambito.aabMinimo.location.z);
+                        rnd.nextFloat() * (ambito.max.x - ambito.min.x)
+                                + ambito.min.x,
+                        ambito.max.y,
+                        rnd.nextFloat() * (ambito.max.z - ambito.min.z)
+                                + ambito.min.z);
 
                 nueva.objeto = nuevaentity;
 
@@ -95,7 +95,7 @@ public class QEmisorVolcan extends ParticleEmissor {
 
             // si ya paso su tiempo de vida o ya esta fuera del ambito en la altura
             if ((System.currentTimeMillis() - particula.getTiempoCreacion()) / 1000 > particula.getTiempoVida()
-                    || (particula.objeto.getTransform().getLocation().y < ambito.aabMinimo.location.y)) {
+                    || (particula.objeto.getTransform().getLocation().y < ambito.min.y)) {
                 // particulasEliminadas.add(copo);
                 actuales--;
                 particula.objeto.setToRender(false);
@@ -118,7 +118,7 @@ public class QEmisorVolcan extends ParticleEmissor {
             // se agrega un impulso
             for (EntityComponent componente : copo.objeto.getComponents()) {
                 if (componente instanceof QObjetoRigido) {
-                    ((QObjetoRigido) componente).agregarFuerzas(QVector3.of(
+                    ((QObjetoRigido) componente).agregarFuerzas(Vector3.of(
                             rnd.nextFloat() * (maxMov - miniMov) + miniMov,
                             0,
                             rnd.nextFloat() * (maxMov - miniMov) + miniMov));

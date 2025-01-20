@@ -48,8 +48,8 @@ import net.qoopo.engine.core.entity.component.mesh.primitive.Poly;
 import net.qoopo.engine.core.entity.component.mesh.primitive.Primitive;
 import net.qoopo.engine.core.entity.component.mesh.primitive.Vertex;
 import net.qoopo.engine.core.math.Rotation;
-import net.qoopo.engine.core.math.QVector2;
-import net.qoopo.engine.core.math.QVector3;
+import net.qoopo.engine.core.math.Vector2;
+import net.qoopo.engine.core.math.Vector3;
 import net.qoopo.engine.core.util.QVectMathUtil;
 
 /**
@@ -198,7 +198,7 @@ public class Java3DUtil {
                 PointLight luzJava3D = new PointLight(color,
                         QVectMathUtil.convertirPoint3f(
                                 ((QPointLigth) luz).getEntity().getMatrizTransformacion(time).toTranslationVector()),
-                        new Point3f(0, 1.0f / (((QPointLigth) luz).energia * 1f), 0));
+                        new Point3f(0, 1.0f / (((QPointLigth) luz).energy * 1f), 0));
                 luzJava3D.setCapability(PointLight.ALLOW_STATE_WRITE);
                 luzJava3D.setCapability(PointLight.ALLOW_COLOR_WRITE);
                 luzJava3D.setCapability(PointLight.ALLOW_POSITION_WRITE);
@@ -226,7 +226,7 @@ public class Java3DUtil {
                         color,
                         QVectMathUtil.convertirPoint3f(
                                 ((QSpotLigth) luz).getEntity().getMatrizTransformacion(time).toTranslationVector()),
-                        new Point3f(0, 1.0f / (((QSpotLigth) luz).energia * 1f), 0),
+                        new Point3f(0, 1.0f / (((QSpotLigth) luz).energy * 1f), 0),
                         direccion,
                         // (float) Math.toRadians(Math.toDegrees(((QLuzSpot) luz).getAngulo()) / 3),
                         ((QSpotLigth) luz).getAnguloExterno(),
@@ -260,11 +260,11 @@ public class Java3DUtil {
             for (Vertex vertice : objeto.vertexList) {
                 listaPuntos.add(new Point3f(vertice.location.x, vertice.location.y, vertice.location.z));
             }
-            for (QVector3 normal : objeto.normalList) {
+            for (Vector3 normal : objeto.normalList) {
                 listaNormales.add(QVectMathUtil.convertirVector3f(normal));
             }
 
-            for (QVector2 uv : objeto.uvList)
+            for (Vector2 uv : objeto.uvList)
                 listaUV.add(new TexCoord2f(uv.x, uv.y));
 
             // ------------------------CONSTRUCCION GEOMETRIA
@@ -360,13 +360,13 @@ public class Java3DUtil {
             Color3f colorEmisivo = new Color3f(
                     ((net.qoopo.engine.core.material.Material) objeto.primitiveList[0].material).getColor().r
                             * ((net.qoopo.engine.core.material.Material) objeto.primitiveList[0].material)
-                                    .getEmision(),
+                                    .getEmissionIntensity(),
                     ((net.qoopo.engine.core.material.Material) objeto.primitiveList[0].material).getColor().g
                             * ((net.qoopo.engine.core.material.Material) objeto.primitiveList[0].material)
-                                    .getEmision(),
+                                    .getEmissionIntensity(),
                     ((net.qoopo.engine.core.material.Material) objeto.primitiveList[0].material).getColor().b
                             * ((net.qoopo.engine.core.material.Material) objeto.primitiveList[0].material)
-                                    .getEmision());
+                                    .getEmissionIntensity());
 
             // Color3f colorEspecular = new Color3f(
             // ((QMaterialBas) objeto.primitivas[0].material).getColorEspecular().r,

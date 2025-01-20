@@ -7,7 +7,7 @@ package net.qoopo.engine.core.shadow;
 
 import net.qoopo.engine.core.entity.Entity;
 import net.qoopo.engine.core.entity.component.ligth.QLigth;
-import net.qoopo.engine.core.math.QVector3;
+import net.qoopo.engine.core.math.Vector3;
 import net.qoopo.engine.core.scene.Scene;
 
 /**
@@ -32,7 +32,7 @@ public abstract class QProcesadorSombra {
         this.alto = alto;
     }
 
-    public abstract float factorSombra(QVector3 vector, Entity entity);
+    public abstract float factorSombra(Vector3 vector, Entity entity);
 
     public abstract void generarSombras();
 

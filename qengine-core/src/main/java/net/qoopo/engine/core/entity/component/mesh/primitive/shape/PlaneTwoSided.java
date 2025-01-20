@@ -16,12 +16,12 @@ import net.qoopo.engine.core.material.Material;
  *
  * @author alberto
  */
-public class QPlanoBilateral extends Shape {
+public class PlaneTwoSided extends Shape {
 
     private float alto;
     private float ancho;
 
-    public QPlanoBilateral(float alto, float ancho) {
+    public PlaneTwoSided(float alto, float ancho) {
         name = "Plano";
         this.alto = alto;
         this.ancho = ancho;
@@ -53,7 +53,7 @@ public class QPlanoBilateral extends Shape {
             applyMaterial(material);
             computeNormals();
         } catch (Exception ex) {
-            Logger.getLogger(QPlanoBilateral.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(PlaneTwoSided.class.getName()).log(Level.SEVERE, null, ex);
         }
 
     }

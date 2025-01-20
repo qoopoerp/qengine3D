@@ -42,7 +42,6 @@ public class EnviromentTest extends MakeTestScene {
                 entidad.getComponents(Mesh.class).forEach(c -> {
                     for (Primitive p : ((Mesh) c).primitiveList) {
                         if (p.material instanceof Material) {
-                            ((Material) p.material).setEnvMapType(EnvProbe.FORMATO_MAPA_CUBO);
                             ((Material) p.material).setEnvMap(envProbe.getEnvMap());
                             ((Material) p.material).setHdrMap(envProbe.getHdrMap());
                             ((Material) p.material).setIor(1.45f);

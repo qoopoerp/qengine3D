@@ -7,8 +7,8 @@ package net.qoopo.engine.core.scene;
 
 import lombok.Getter;
 import lombok.Setter;
-import net.qoopo.engine.core.math.QVector3;
-import net.qoopo.engine.core.math.QVector4;
+import net.qoopo.engine.core.math.Vector3;
+import net.qoopo.engine.core.math.Vector4;
 
 /**
  * Esta clase define un plano para realizar clipping de escenas y de esta manera
@@ -23,7 +23,7 @@ public class ClipPane {
     /**
      * La normal de plano Los puntos que esten de este lado seran los visibles
      */
-    private QVector3 normal;
+    private Vector3 normal;
     /**
      * La distancia que existe desde el origen al plano
      */
@@ -36,7 +36,7 @@ public class ClipPane {
      * @param direccion
      * @param distancia
      */
-    public ClipPane(QVector3 direccion, float distancia) {
+    public ClipPane(Vector3 direccion, float distancia) {
         this.normal = direccion;
         normal.normalize();
         this.distancia = distancia;
@@ -49,9 +49,9 @@ public class ClipPane {
      * @param pos2
      * @param pos3
      */
-    public ClipPane(QVector3 pos1, QVector3 pos2, QVector3 pos3) {
-        normal = QVector3.of(pos1, pos2);
-        normal.cross(QVector3.of(pos2, pos3));
+    public ClipPane(Vector3 pos1, Vector3 pos2, Vector3 pos3) {
+        normal = Vector3.of(pos1, pos2);
+        normal.cross(Vector3.of(pos2, pos3));
         normal.normalize();
         // QVector3 center = QVector3.empty();
         // center.add(pos1, pos2, pos3);
@@ -66,17 +66,17 @@ public class ClipPane {
 
     }
 
-    public boolean isVisible(QVector3 posicion) {
+    public boolean isVisible(Vector3 posicion) {
         return (posicion.dot(normal) - distancia) > 0;
         // return (posicion.dot(normal) - distancia) < 0;
     }
 
-    public boolean isVisible(QVector4 posicion) {
+    public boolean isVisible(Vector4 posicion) {
         return (posicion.getVector3().dot(normal) - distancia) > 0;
         // return (posicion.dot(normal) - distancia) < 0;
     }
 
-    public float distancia(QVector3 posicion) {
+    public float distancia(Vector3 posicion) {
         return (posicion.dot(normal) - distancia);
     }
 

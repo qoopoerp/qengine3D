@@ -17,7 +17,7 @@ import net.qoopo.engine.core.material.node.core.ShaderNode;
 import net.qoopo.engine.core.material.node.core.perifericos.QPerColor;
 import net.qoopo.engine.core.math.QColor;
 import net.qoopo.engine.core.math.QMath;
-import net.qoopo.engine.core.math.QVector3;
+import net.qoopo.engine.core.math.Vector3;
 import net.qoopo.engine.core.renderer.RenderEngine;
 import net.qoopo.engine.core.shadow.QProcesadorSombra;
 import net.qoopo.engine.core.util.TempVars;
@@ -35,9 +35,9 @@ public class QNodoColorIluminacion extends ShaderNode {
     // ------------------ variables internas
 
     private float distanciaLuz;
-    private final QVector3 tmpPixelPos = QVector3.empty();
-    private final QVector3 vectorLuz = QVector3.empty();
-    private final QVector3 tempVector = QVector3.empty();
+    private final Vector3 tmpPixelPos = Vector3.empty();
+    private final Vector3 vectorLuz = Vector3.empty();
+    private final Vector3 tempVector = Vector3.empty();
 
     private final QIluminacion iluminacion = new QIluminacion();
     private final QColor colorEspecular = QColor.WHITE.clone();
@@ -126,15 +126,15 @@ public class QNodoColorIluminacion extends ShaderNode {
                         factorSombra = 1;
                         QProcesadorSombra proc = luz.getSombras();
                         if (proc != null && render.opciones.isSombras()) {
-                            tv.vector3f1.set(pixel.ubicacion.getVector3());
+                            tv.vector3f1.set(pixel.location.getVector3());
                             factorSombra = proc.factorSombra(TransformationVectorUtil.transformarVectorInversa(tv.vector3f1,
                                     pixel.entity, render.getCamera()), pixel.entity);
                         }
 
                         if (luz instanceof QPointLigth || luz instanceof QSpotLigth) {
-                            vectorLuz.set(pixel.ubicacion.x - luz.getEntity().getTransform().getLocation().x,
-                                    pixel.ubicacion.y - luz.getEntity().getTransform().getLocation().y,
-                                    pixel.ubicacion.z - luz.getEntity().getTransform().getLocation().z);
+                            vectorLuz.set(pixel.location.x - luz.getEntity().getTransform().getLocation().x,
+                                    pixel.location.y - luz.getEntity().getTransform().getLocation().y,
+                                    pixel.location.z - luz.getEntity().getTransform().getLocation().z);
                             // solo toma en cuenta a los puntos q estan en el area de afectacion
                             if (vectorLuz.length() > luz.radio) {
                                 continue;
@@ -142,7 +142,7 @@ public class QNodoColorIluminacion extends ShaderNode {
 
                             // si es Spot valido que este dentro del cono
                             if (luz instanceof QSpotLigth) {
-                                QVector3 coneDirection = ((QSpotLigth) luz).getDirection().clone().normalize();
+                                Vector3 coneDirection = ((QSpotLigth) luz).getDirection().clone().normalize();
                                 tv.vector3f2.set(vectorLuz);
                                 if (coneDirection.angulo(tv.vector3f2.normalize()) > ((QSpotLigth) luz)
                                         .getAnguloExterno()) {
@@ -152,22 +152,22 @@ public class QNodoColorIluminacion extends ShaderNode {
                             distanciaLuz = vectorLuz.x * vectorLuz.x + vectorLuz.y * vectorLuz.y
                                     + vectorLuz.z * vectorLuz.z;
                             QColor colorLuz = QMath.calcularColorLuz(color.clone(), colorEspecular.clone(), luz.color,
-                                    luz.energia * factorSombra, pixel.ubicacion.getVector3(),
-                                    vectorLuz.normalize().invert(), pixel.normal, 50, reflectancia);
+                                    luz.energy * factorSombra, pixel.location.getVector3(),
+                                    vectorLuz.normalize().invert(), pixel.normal, 50, reflectancia,1.0f,1.0f);
                             colorLuz.scaleLocal(1.0f / distanciaLuz);
                             iluminacion.getColorLuz().addLocal(colorLuz);
                         } else if (luz instanceof QDirectionalLigth) {
                             vectorLuz.set(((QDirectionalLigth) luz).getDirection());
                             iluminacion.getColorLuz()
                                     .addLocal(QMath.calcularColorLuz(color, colorEspecular, luz.color,
-                                            luz.energia * factorSombra, pixel.ubicacion.getVector3(),
-                                            vectorLuz.normalize().invert(), pixel.normal, 50, reflectancia));
+                                            luz.energy * factorSombra, pixel.location.getVector3(),
+                                            vectorLuz.normalize().invert(), pixel.normal, 50, reflectancia,1.0f,1.0f));
                         }
                     }
                 }
             } else {
                 // iluminacion default cuando no hay luces se asume una luz central
-                tmpPixelPos.set(pixel.ubicacion.getVector3());
+                tmpPixelPos.set(pixel.location.getVector3());
                 tmpPixelPos.normalize();
                 iluminacion.getColorAmbiente().add(-tmpPixelPos.dot(pixel.normal));
             }

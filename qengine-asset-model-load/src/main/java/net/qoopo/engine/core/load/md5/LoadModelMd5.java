@@ -36,7 +36,7 @@ import net.qoopo.engine.core.material.Material;
 import net.qoopo.engine.core.math.Cuaternion;
 import net.qoopo.engine.core.math.QColor;
 import net.qoopo.engine.core.math.Rotation;
-import net.qoopo.engine.core.math.QVector3;
+import net.qoopo.engine.core.math.Vector3;
 import net.qoopo.engine.core.texture.util.MaterialUtil;
 import net.qoopo.engine.core.util.QJOMLUtil;
 import net.qoopo.engine.core.util.Utils;
@@ -181,7 +181,7 @@ public class LoadModelMd5 implements ModelLoader {
         Mesh mesh = new Mesh();
 
         for (MD5Mesh.MD5Vertex vertex : vertices) {
-            QVector3 posicionVertice = QVector3.empty();
+            Vector3 posicionVertice = Vector3.empty();
             int pesoInicial = vertex.getStartWeight();
             int numeroPesos = vertex.getWeightCount();
             Bone[] huesos = new Bone[numeroPesos];

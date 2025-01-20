@@ -5,11 +5,11 @@
  */
 package net.qoopo.engine.renderer.shader.fragment;
 
-import net.qoopo.engine.core.entity.component.ligth.QIluminacion;
+import lombok.Getter;
+import lombok.Setter;
 import net.qoopo.engine.core.entity.component.mesh.primitive.Fragment;
 import net.qoopo.engine.core.math.QColor;
 import net.qoopo.engine.core.math.QMath;
-import net.qoopo.engine.core.math.QVector3;
 import net.qoopo.engine.core.renderer.RenderEngine;
 import net.qoopo.engine.core.scene.Fog;
 
@@ -32,22 +32,15 @@ import net.qoopo.engine.core.scene.Fog;
  * sombras.
  * 6. QFullShader. Permite todo lo anterior.
  */
+@Getter
+@Setter
 public abstract class FragmentShader {
 
     protected RenderEngine render;
 
-   
     protected static final float exposicion = 1.0f;
 
     public FragmentShader(RenderEngine render) {
-        this.render = render;
-    }
-
-    public RenderEngine getRender() {
-        return render;
-    }
-
-    public void setRender(RenderEngine render) {
         this.render = render;
     }
 
@@ -66,7 +59,7 @@ public abstract class FragmentShader {
             return color;
         }
         // float distance = length(pos);
-        float distance = pixel.ubicacion.z;
+        float distance = pixel.location.z;
         float fogFactor = (float) (1.0
                 / Math.exp((distance * neblina.getDensity()) * (distance * neblina.getDensity())));
         fogFactor = QMath.clamp(fogFactor, 0.0f, 1.0f);

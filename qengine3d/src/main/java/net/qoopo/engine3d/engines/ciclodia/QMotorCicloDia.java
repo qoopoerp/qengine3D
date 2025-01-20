@@ -10,7 +10,7 @@ import java.util.logging.Logger;
 import net.qoopo.engine.core.engine.Engine;
 import net.qoopo.engine.core.entity.component.ligth.QDirectionalLigth;
 import net.qoopo.engine.core.math.QColor;
-import net.qoopo.engine.core.math.QVector3;
+import net.qoopo.engine.core.math.Vector3;
 import net.qoopo.engine.core.scene.Scene;
 import net.qoopo.engine3d.QEngine3D;
 import net.qoopo.engine3d.core.sky.QCielo;
@@ -42,7 +42,7 @@ public class QMotorCicloDia extends Engine {
     private final QDirectionalLigth sol;
     private final Thread hiloActualizacion;
     private final float angulo = 360 / 24;
-    private final QVector3 direccionSolOriginal = QVector3.of(0, 1, 0);
+    private final Vector3 direccionSolOriginal = Vector3.of(0, 1, 0);
 
     public QMotorCicloDia(QCielo cielo, Scene scene, long duracionDiaEnSegundos, QDirectionalLigth sol,
             float horaInicial) {

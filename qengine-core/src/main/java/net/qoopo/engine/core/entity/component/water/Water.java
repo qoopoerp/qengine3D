@@ -17,7 +17,7 @@ import net.qoopo.engine.core.entity.component.terrain.Terrain;
 import net.qoopo.engine.core.entity.component.water.texture.WaterTextureProcessor;
 import net.qoopo.engine.core.material.Material;
 import net.qoopo.engine.core.math.QMath;
-import net.qoopo.engine.core.math.QVector3;
+import net.qoopo.engine.core.math.Vector3;
 import net.qoopo.engine.core.renderer.RenderEngine;
 import net.qoopo.engine.core.renderer.buffer.FrameBuffer;
 import net.qoopo.engine.core.scene.Camera;
@@ -41,9 +41,9 @@ public abstract class Water implements EntityComponent, UpdatableComponent {
 
     protected final static float VELOCIDAD_AGUA = 0.05f;
 
-    protected QVector3 velocity = QVector3.of(0.05f, 0.05f, 0.05f);
+    protected Vector3 velocity = Vector3.of(0.05f, 0.05f, 0.05f);
 
-    protected QVector3 distortion = QVector3.zero.clone();
+    protected Vector3 distortion = Vector3.zero.clone();
 
     protected final static float FUERZA_OLA = 0.005f;
 
@@ -65,8 +65,8 @@ public abstract class Water implements EntityComponent, UpdatableComponent {
     protected float factorY;
     protected float factorZ;
 
-    protected final QVector3 arriba = QVector3.unitario_y.clone();
-    protected final QVector3 abajo = QVector3.unitario_y.clone().multiply(-1.0f);
+    protected final Vector3 arriba = Vector3.unitario_y.clone();
+    protected final Vector3 abajo = Vector3.unitario_y.clone().multiply(-1.0f);
 
     protected int width;
     protected int height;
@@ -160,7 +160,7 @@ public abstract class Water implements EntityComponent, UpdatableComponent {
 
             float distancia = 2 * (mainRender.getCamera().getTransform().getLocation().y
                     - entity.getTransform().getLocation().y);
-            QVector3 nuevaPos = mainRender.getCamera().getTransform().getLocation().clone();
+            Vector3 nuevaPos = mainRender.getCamera().getTransform().getLocation().clone();
             nuevaPos.y -= distancia;
 
             // invertir angulo Pitch
@@ -190,7 +190,7 @@ public abstract class Water implements EntityComponent, UpdatableComponent {
             // Efecto fresnel
             // -> Este calculo se deberia hacer para cada pixel de la superficie, pues el
             // angulo es diferente para cada punto de la superficie del agua
-            QVector3 vision = mainRender.getCamera().getTransform().getLocation().clone()
+            Vector3 vision = mainRender.getCamera().getTransform().getLocation().clone()
                     .subtract(entity.getTransform().getLocation().clone());
             // el factor fresnel representa que tanta refraccion se aplica
             float factorFresnel = arriba.dot(vision.normalize());

@@ -64,9 +64,9 @@ import net.qoopo.engine.core.material.AbstractMaterial;
 import net.qoopo.engine.core.material.Material;
 import net.qoopo.engine.core.math.Cuaternion;
 import net.qoopo.engine.core.math.QColor;
-import net.qoopo.engine.core.math.QMatriz4;
+import net.qoopo.engine.core.math.Matrix4;
 import net.qoopo.engine.core.math.Rotation;
-import net.qoopo.engine.core.math.QVector3;
+import net.qoopo.engine.core.math.Vector3;
 import net.qoopo.engine.core.scene.Camera;
 import net.qoopo.engine.core.texture.Texture;
 import net.qoopo.engine.core.texture.procesador.InvertTexture;
@@ -230,14 +230,14 @@ public class AssimpModelLoader implements ModelLoader {
         result = Assimp.aiGetMaterialColor(aiMaterial, Assimp.AI_MATKEY_COLOR_SPECULAR, aiTextureType_NONE, 0, colour);
         if (result == 0) {
             specular = new QColor(colour.a(), colour.r(), colour.g(), colour.b());
-            material.setColorEspecular(specular);
+            material.setSpecularColour(specular);
         }
 
         QColor emissiveColour = QColor.WHITE;
         result = Assimp.aiGetMaterialColor(aiMaterial, Assimp.AI_MATKEY_COLOR_EMISSIVE, aiTextureType_NONE, 0, colour);
         if (result == 0) {
             emissiveColour = new QColor(colour.a(), colour.r(), colour.g(), colour.b());
-            material.setEmision(emissiveColour.r);
+            material.setEmissionIntensity(emissiveColour.r);
         }
 
         QColor alphaColour = QColor.WHITE;
@@ -447,11 +447,11 @@ public class AssimpModelLoader implements ModelLoader {
                         break;
                     case Assimp.aiLightSource_DIRECTIONAL:
                         dir = aiLuz.mDirection();
-                        luz = new QDirectionalLigth(QVector3.of(dir.x(), dir.y(), dir.z()));
+                        luz = new QDirectionalLigth(Vector3.of(dir.x(), dir.y(), dir.z()));
                         break;
                     case Assimp.aiLightSource_SPOT:
                         dir = aiLuz.mDirection();
-                        luz = new QSpotLigth(QVector3.of(dir.x(), dir.y(), dir.z()), aiLuz.mAngleOuterCone(),
+                        luz = new QSpotLigth(Vector3.of(dir.x(), dir.y(), dir.z()), aiLuz.mAngleOuterCone(),
                                 aiLuz.mAngleInnerCone());
                         break;
                 }
@@ -563,7 +563,7 @@ public class AssimpModelLoader implements ModelLoader {
     private Bone crearHueso(int id, Node nodo, Skeleton esqueleto, Integer maxId,
             Integer contadorNodosSinPadre) {
         Bone hueso = new Bone(id, nodo.getName());
-        QMatriz4 matriz = nodo.getTransformacion();
+        Matrix4 matriz = nodo.getTransformacion();
         hueso.setTransform(new Transform(Rotation.CUATERNION));
         hueso.getTransform().fromMatrix(matriz);
         Node nodoPadre = nodo.getParent();
@@ -850,10 +850,10 @@ public class AssimpModelLoader implements ModelLoader {
      * @param aiMatrix4x4
      * @return
      */
-    public static QMatriz4 toMatrix(AIMatrix4x4 aiMatrix4x4) {
+    public static Matrix4 toMatrix(AIMatrix4x4 aiMatrix4x4) {
 
         // return QJOMLUtil.convertirQMatriz4(toMatrix_2(aiMatrix4x4));
-        QMatriz4 result = new QMatriz4(
+        Matrix4 result = new Matrix4(
                 aiMatrix4x4.a1(), aiMatrix4x4.a2(), aiMatrix4x4.a3(), aiMatrix4x4.a4(),
                 aiMatrix4x4.b1(), aiMatrix4x4.b2(), aiMatrix4x4.b3(), aiMatrix4x4.b4(),
                 aiMatrix4x4.c1(), aiMatrix4x4.c2(), aiMatrix4x4.c3(), aiMatrix4x4.c4(),

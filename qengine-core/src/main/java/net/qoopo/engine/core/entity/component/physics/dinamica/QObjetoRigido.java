@@ -5,7 +5,7 @@
  */
 package net.qoopo.engine.core.entity.component.physics.dinamica;
 
-import net.qoopo.engine.core.math.QVector3;
+import net.qoopo.engine.core.math.Vector3;
 
 /**
  *
@@ -13,17 +13,17 @@ import net.qoopo.engine.core.math.QVector3;
  */
 public class QObjetoRigido extends QObjetoDinamico {
 
-    public QVector3 velocidadLinear = QVector3.zero.clone();
-    public QVector3 velocidadAngular = QVector3.zero.clone();
-    public QVector3 fuerzaInercial = QVector3.zero.clone();
+    public Vector3 velocidadLinear = Vector3.zero.clone();
+    public Vector3 velocidadAngular = Vector3.zero.clone();
+    public Vector3 fuerzaInercial = Vector3.zero.clone();
 
     // cada objeto tiene una afectacion diferente de la gravedad
     // este vector peso sera el resultado de multiplicar la gravedad por la masa
-    public QVector3 peso = QVector3.zero.clone();
+    public Vector3 peso = Vector3.zero.clone();
 
     // la fuerza que se aplica en cada pasada a la velocidad
-    public QVector3 fuerzaTotal = QVector3.zero.clone();
-    public QVector3 fuerzaTorque = QVector3.zero.clone();
+    public Vector3 fuerzaTotal = Vector3.zero.clone();
+    public Vector3 fuerzaTorque = Vector3.zero.clone();
 
     private float masa = 1.0f;
     private float friccion = 0.5f;
@@ -53,11 +53,11 @@ public class QObjetoRigido extends QObjetoDinamico {
      *
      * @param nuevaFuerza
      */
-    public void agregarFuerzas(QVector3... nuevaFuerza) {
+    public void agregarFuerzas(Vector3... nuevaFuerza) {
         fuerzaTotal.add(nuevaFuerza);
     }
 
-    public void agregarFuerzasTorque(QVector3... nuevaFuerza) {
+    public void agregarFuerzasTorque(Vector3... nuevaFuerza) {
         fuerzaTorque.add(nuevaFuerza);
     }
 
@@ -91,7 +91,7 @@ public class QObjetoRigido extends QObjetoDinamico {
         fuerzaTorque.set(0, 0, 0);
     }
 
-    public void addForceAtPosition(QVector3 force, QVector3 position) {
+    public void addForceAtPosition(Vector3 force, Vector3 position) {
         agregarFuerzasTorque(position.clone().cross(force));
     }
 
@@ -100,13 +100,13 @@ public class QObjetoRigido extends QObjetoDinamico {
         velocidadLinear.set(0, 0, 0);
     }
 
-    public void calcularPeso(QVector3 gravedad) {
+    public void calcularPeso(Vector3 gravedad) {
         if (masa != 0f) {
             this.peso = gravedad.clone().multiply(masa);
         }
     }
 
-    public QVector3 getPeso() {
+    public Vector3 getPeso() {
         return peso.clone();
     }
 
@@ -114,7 +114,7 @@ public class QObjetoRigido extends QObjetoDinamico {
         return masa;
     }
 
-    public void setMasa(float masa, QVector3 inercia) {
+    public void setMasa(float masa, Vector3 inercia) {
         if (masa == 0f) {
             // this.tipoDinamico = ESTATICO;
         } else {
@@ -129,11 +129,11 @@ public class QObjetoRigido extends QObjetoDinamico {
 
     }
 
-    public QVector3 getFuerzaInercial() {
+    public Vector3 getFuerzaInercial() {
         return fuerzaInercial;
     }
 
-    public void setFuerzaInercial(QVector3 fuerzaInercial) {
+    public void setFuerzaInercial(Vector3 fuerzaInercial) {
         this.fuerzaInercial = fuerzaInercial;
     }
 

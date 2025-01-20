@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.qoopo.engine.core.entity.component.physics.collision.detector.CollisionShape;
-import net.qoopo.engine.core.math.QVector3;
+import net.qoopo.engine.core.math.Vector3;
 
 /**
  * Define una esfera contenedora del objeto
@@ -27,7 +27,7 @@ public class QColisionCompuesta extends CollisionShape {
         hijos.add(hijo);
     }
 
-    public void agregarHijo(CollisionShape forma, QVector3 ubicacion) {
+    public void agregarHijo(CollisionShape forma, Vector3 ubicacion) {
         hijos.add(new QColisionCompuestaHija(forma, ubicacion));
     }
 

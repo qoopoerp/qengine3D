@@ -13,7 +13,7 @@ import net.qoopo.engine.core.entity.component.modifier.generate.InflateModifier;
 import net.qoopo.engine.core.entity.component.modifier.generate.SubdivisionModifier;
 import net.qoopo.engine.core.material.Material;
 import net.qoopo.engine.core.math.QMath;
-import net.qoopo.engine.core.math.QVector3;
+import net.qoopo.engine.core.math.Vector3;
 import net.qoopo.engine.core.util.array.IntArray;
 
 /**
@@ -286,7 +286,7 @@ public class GeoSphere extends Shape {
     // find middle point of 2 vertices
     // NOTE: new vertex must be resized, so the length is equal to the radius
     ///////////////////////////////////////////////////////////////////////////////
-    private void computeHalfVertex(QVector3 v1, QVector3 v2, QVector3 newV) {
+    private void computeHalfVertex(Vector3 v1, Vector3 v2, Vector3 newV) {
         // newV[0] = v1[0] + v2[0]; // x
         // newV[1] = v1[1] + v2[1]; // y
         // newV[2] = v1[2] + v2[2]; // z

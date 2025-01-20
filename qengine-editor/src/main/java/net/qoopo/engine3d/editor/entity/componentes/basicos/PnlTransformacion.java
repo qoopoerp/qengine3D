@@ -175,12 +175,6 @@ public class PnlTransformacion extends javax.swing.JPanel {
 
             transformacion.getScale().set(getFloatFromSpinner(spnScaleX), getFloatFromSpinner(spnScaleY),
                     getFloatFromSpinner(spnScaleZ));
-
-            // if (entidad instanceof QGeometria) {
-            // for (QPoligono face : ((QGeometria) entidad).listaPoligonos) {
-            // face.smooth = btnObjectoSuavizado.isSelected();
-            // }
-            // }
         }
     }
 

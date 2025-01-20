@@ -14,10 +14,9 @@ import net.qoopo.engine.core.entity.component.mesh.primitive.Fragment;
 import net.qoopo.engine.core.material.Material;
 import net.qoopo.engine.core.math.QColor;
 import net.qoopo.engine.core.math.QMath;
-import net.qoopo.engine.core.math.QVector3;
+import net.qoopo.engine.core.math.Vector3;
 import net.qoopo.engine.core.renderer.RenderEngine;
 import net.qoopo.engine.core.shadow.QProcesadorSombra;
-import net.qoopo.engine.core.texture.TextureUtil;
 import net.qoopo.engine.core.texture.procesador.MipmapTexture;
 import net.qoopo.engine.core.util.QGlobal;
 import net.qoopo.engine.core.util.TempVars;
@@ -131,7 +130,7 @@ public class EnviromentMapFragmentShader extends FragmentShader {
         if (material.getMetallicMap() != null) {
             factorMetalico = material.getMetallicMap().getQColor(pixel.u, pixel.v).r;
         } else {
-            factorMetalico = material.getMetallic();
+            factorMetalico = material.getMetalness();
         }
 
         computeEnviromentColor(pixel, color);
@@ -178,9 +177,9 @@ public class EnviromentMapFragmentShader extends FragmentShader {
      */
     protected void calcularIluminacion(Fragment fragment, QIluminacion iluminacion, QColor color) {
 
-        QVector3 vectorLuz = QVector3.empty();
+        Vector3 vectorLuz = Vector3.empty();
         float distanciaLuz;
-        QVector3 tmpPixelPos = QVector3.empty();
+        Vector3 tmpPixelPos = Vector3.empty();
 
         // La iluminacion se calcula en el sistema de coordenadas de la camara
         fragment.normal.normalize();
@@ -192,9 +191,9 @@ public class EnviromentMapFragmentShader extends FragmentShader {
             iluminacion.setColorAmbiente(colorEmisivo.clone().add(render.getScene().getAmbientColor()));
         } else {
             // si tiene factor de emision toma ese valor solamente
-            if (material.getEmision() > 0) {
+            if (material.getEmissionIntensity() > 0) {
                 // illumination.dR = material.getFactorEmision();
-                float factorEmision = material.getEmision();
+                float factorEmision = material.getEmissionIntensity();
                 iluminacion.setColorAmbiente(new QColor(factorEmision, factorEmision, factorEmision));
                 return;// no hago mas calculos
             } else {
@@ -226,7 +225,7 @@ public class EnviromentMapFragmentShader extends FragmentShader {
                         QProcesadorSombra proc = luz.getSombras();
                         if (proc != null && render.opciones.isSombras() && material.isSombrasRecibir()) {
                             factorSombra = proc.factorSombra(TransformationVectorUtil.transformarVectorInversa(
-                                    fragment.ubicacion.getVector3(), fragment.entity, render.getCamera()),
+                                    fragment.location.getVector3(), fragment.entity, render.getCamera()),
                                     fragment.entity);
                         }
 
@@ -235,8 +234,8 @@ public class EnviromentMapFragmentShader extends FragmentShader {
                             // luz.entity.getTransformacion().getLocation().x, pixel.ubicacion.y -
                             // luz.entity.getTransformacion().getLocation().y, pixel.ubicacion.z -
                             // luz.entity.getTransformacion().getLocation().z);
-                            vectorLuz.set(fragment.ubicacion.getVector3().clone().subtract(
-                                    TransformationVectorUtil.transformarVector(QVector3.zero, luz.getEntity(),
+                            vectorLuz.set(fragment.location.getVector3().clone().subtract(
+                                    TransformationVectorUtil.transformarVector(Vector3.zero, luz.getEntity(),
                                             render.getCamera())));
                             distanciaLuz = vectorLuz.length();
                             // solo toma en cuenta a los puntos q estan en el area de afectacion
@@ -247,7 +246,7 @@ public class EnviromentMapFragmentShader extends FragmentShader {
                             float alfa = 0.0f;
                             // si es Spot valido que este dentro del cono
                             if (luz instanceof QSpotLigth) {
-                                QVector3 coneDirection = ((QSpotLigth) luz).getDirectionTransformada().normalize();
+                                Vector3 coneDirection = ((QSpotLigth) luz).getDirectionTransformada().normalize();
                                 alfa = coneDirection.angulo(vectorLuz.clone().normalize());
                                 if (alfa > ((QSpotLigth) luz).getAnguloExterno()) {
                                     continue;
@@ -255,9 +254,9 @@ public class EnviromentMapFragmentShader extends FragmentShader {
                             }
 
                             QColor colorLuz = QMath.calcularColorLuz(color, colorEspecular, luz.color,
-                                    luz.energia * factorSombra * factorSombraSAO, fragment.ubicacion.getVector3(),
+                                    luz.energy * factorSombra * factorSombraSAO, fragment.location.getVector3(),
                                     vectorLuz.invert().normalize(), fragment.normal, material.getSpecularExponent(),
-                                    reflectancia);
+                                    reflectancia, 1.0f, 1.0f);
                             // atenuacion
                             // float attenuationInv = light.att.constant + light.att.interpolateLinear *
                             // distance +
@@ -283,16 +282,16 @@ public class EnviromentMapFragmentShader extends FragmentShader {
                             vectorLuz.set(((QDirectionalLigth) luz).getDirectionTransformada());
                             iluminacion.getColorLuz()
                                     .addLocal(QMath.calcularColorLuz(color, colorEspecular, luz.color,
-                                            luz.energia * factorSombra * factorSombraSAO,
-                                            fragment.ubicacion.getVector3(),
+                                            luz.energy * factorSombra * factorSombraSAO,
+                                            fragment.location.getVector3(),
                                             vectorLuz.invert().normalize(), fragment.normal,
-                                            material.getSpecularExponent(), reflectancia));
+                                            material.getSpecularExponent(), reflectancia, 1.0f, 1.0f));
                         }
                     }
                 }
             } else {
                 // iluminacion default cuando no hay luces se asume una luz central
-                tmpPixelPos.set(fragment.ubicacion.getVector3());
+                tmpPixelPos.set(fragment.location.getVector3());
                 tmpPixelPos.normalize();
                 iluminacion.getColorAmbiente().add(-tmpPixelPos.dot(fragment.normal));
             }
@@ -346,7 +345,7 @@ public class EnviromentMapFragmentShader extends FragmentShader {
                 // volvemos a calcularla en las coordenadas del mundo
                 // tm.vector3f1.set(currentPixel.ubicacion.getVector3());
                 tm.vector3f1.set(TransformationVectorUtil.transformarVector(
-                        TransformationVectorUtil.transformarVectorInversa(fragment.ubicacion, fragment.entity,
+                        TransformationVectorUtil.transformarVectorInversa(fragment.location, fragment.entity,
                                 render.getCamera()),
                         fragment.entity).getVector3());
                 // ahora restamos la posicion de la camara a la posicion del mundo
@@ -358,10 +357,13 @@ public class EnviromentMapFragmentShader extends FragmentShader {
                 // ************************************************************
                 if (material.isReflexion()) {
                     tm.vector3f3.set(QMath.reflejarVector(tm.vector3f1, tm.vector3f2));
-                    colorReflejo = TextureUtil.getEnviromentMapColor(tm.vector3f3, material.getEnvMap(),
-                            material.getEnvMapType());
-                    // colorReflejo = QTexturaUtil.getColorMapaEntorno(tm.vector3f2,
-                    // material.getMapaEntorno(), material.getTipoMapaEntorno());
+
+                    colorReflejo = material.getEnvMap().getColor(tm.vector3f3);
+
+                    // colorReflejo = TextureUtil.getEnviromentMapColor(tm.vector3f3,
+                    // material.getEnvMap(),
+                    // material.getEnvMapType());
+
                 } else {
                     colorReflejo = null;
                 }
@@ -370,8 +372,12 @@ public class EnviromentMapFragmentShader extends FragmentShader {
                 // ***********************************************************
                 if (material.isRefraccion() && material.getIor() > 0) {
                     tm.vector3f4.set(QMath.refractarVector(tm.vector3f1, tm.vector3f2, material.getIor()));
-                    colorRefraccion = TextureUtil.getEnviromentMapColor(tm.vector3f4, material.getEnvMap(),
-                            material.getEnvMapType());
+
+                    colorRefraccion = material.getEnvMap().getColor(tm.vector3f4);
+
+                    // colorRefraccion = TextureUtil.getEnviromentMapColor(tm.vector3f4,
+                    // material.getEnvMap(),
+                    // material.getEnvMapType());
                 } else {
                     colorRefraccion = null;
                 }
@@ -395,7 +401,7 @@ public class EnviromentMapFragmentShader extends FragmentShader {
                 // color.r = QMath.mix(color.r, colorEntorno.r, Math.min(factorMetalico,0.9f));
                 // color.g = QMath.mix(color.g, colorEntorno.g, Math.min(factorMetalico,0.9f));
                 // color.b = QMath.mix(color.b, colorEntorno.b, Math.min(factorMetalico,0.9f));
-               color.set (QMath.mix(color, colorEntorno, Math.min(factorMetalico, 0.9f)));
+                color.set(QMath.mix(color, colorEntorno, Math.min(factorMetalico, 0.9f)));
             } catch (Exception e) {
                 // System.out.println("error reflexion " + e.getMessage());
             } finally {

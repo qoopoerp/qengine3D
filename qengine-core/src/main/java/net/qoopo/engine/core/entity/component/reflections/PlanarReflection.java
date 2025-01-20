@@ -11,7 +11,7 @@ import net.qoopo.engine.core.assets.AssetManager;
 import net.qoopo.engine.core.entity.Entity;
 import net.qoopo.engine.core.entity.component.EntityComponent;
 import net.qoopo.engine.core.entity.component.UpdatableComponent;
-import net.qoopo.engine.core.math.QVector3;
+import net.qoopo.engine.core.math.Vector3;
 import net.qoopo.engine.core.renderer.RenderEngine;
 import net.qoopo.engine.core.scene.Camera;
 import net.qoopo.engine.core.scene.Scene;
@@ -86,7 +86,7 @@ public class PlanarReflection implements EntityComponent, UpdatableComponent {
         } else if (metodo == 2) {
             // metodo 2
             // el vector del rayo de vision
-            QVector3 vision = QVector3.empty();
+            Vector3 vision = Vector3.empty();
             vision.set(
                     entity.getTransform().getLocation().x
                             - mainRender.getCamera().getTransform().getLocation().x,
@@ -99,13 +99,13 @@ public class PlanarReflection implements EntityComponent, UpdatableComponent {
             // QVector3 rayoReflejado = vision.add(
             // entity.getDireccion().clone().multiply(vision.clone().dot(entity.getDireccion().clone())).multiply(-2)
             // );
-            QVector3 rayoReflejado = entity.getDirection().clone().multiply(entity.getDirection().clone().dot(vision))
+            Vector3 rayoReflejado = entity.getDirection().clone().multiply(entity.getDirection().clone().dot(vision))
                     .multiply(2).add(vision.clone().multiply(-1));
 
             try {
                 // hasta ahorita tengo el rayo reflejado, pero necesito que este en la posicion
                 // contraria
-                QVector3 nuevaPos = entity.getTransform().getLocation().clone()
+                Vector3 nuevaPos = entity.getTransform().getLocation().clone()
                         .add(rayoReflejado.multiply(0.25f));
                 // ya tenemos en la posicion correcta pero hay un problema, esta renderizando a
                 // su propia geometia y colapsa la vision (ya se corrigio con la bandera de

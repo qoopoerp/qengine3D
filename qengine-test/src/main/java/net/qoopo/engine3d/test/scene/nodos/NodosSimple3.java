@@ -65,7 +65,6 @@ public class NodosSimple3 extends MakeTestScene {
                 mat4.setReflexion(true);
                 mat4.setRefraccion(false);                
                 mat4.setEnvMap(mapa.getEnvMap());
-                mat4.setEnvMapType(EnvProbe.FORMATO_MAPA_CUBO);
                 cubo4.addComponent(MaterialUtil.applyMaterial(esfera1, mat4));
                 cubo4.addComponent(mapa);
                 mapa.aplicar(EnvProbe.FORMATO_MAPA_CUBO);

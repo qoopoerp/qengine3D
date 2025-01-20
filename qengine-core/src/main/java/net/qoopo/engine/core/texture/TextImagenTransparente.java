@@ -22,7 +22,6 @@ import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 
-import net.qoopo.engine.core.util.QGlobal;
 import net.qoopo.engine.core.util.image.ImgReader;
 
 /**

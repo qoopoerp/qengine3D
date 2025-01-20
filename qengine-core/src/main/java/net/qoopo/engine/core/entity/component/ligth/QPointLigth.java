@@ -26,7 +26,7 @@ public class QPointLigth extends QLigth {
 
     @Override
     public QLigth clone() {
-        QLigth newLight = new QPointLigth(energia, color, radio, proyectarSombras, sombraDinamica);
+        QLigth newLight = new QPointLigth(energy, color, radio, proyectarSombras, sombraDinamica);
         newLight.entity = this.entity.clone();
         newLight.setEnable(this.enable);
         newLight.setResolucionMapaSombra(resolucionMapaSombra);

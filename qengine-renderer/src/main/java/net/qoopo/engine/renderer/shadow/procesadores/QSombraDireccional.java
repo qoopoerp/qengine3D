@@ -7,7 +7,7 @@ package net.qoopo.engine.renderer.shadow.procesadores;
 
 import net.qoopo.engine.core.entity.Entity;
 import net.qoopo.engine.core.entity.component.ligth.QDirectionalLigth;
-import net.qoopo.engine.core.math.QVector3;
+import net.qoopo.engine.core.math.Vector3;
 import net.qoopo.engine.core.scene.Camera;
 import net.qoopo.engine.core.scene.Scene;
 import net.qoopo.engine.core.shadow.QProcesadorSombra;
@@ -35,7 +35,7 @@ public class QSombraDireccional extends QProcesadorSombra {
     }
 
     @Override
-    public float factorSombra(QVector3 vector, Entity entity) {
+    public float factorSombra(Vector3 vector, Entity entity) {
         return renderSombra.factorSombra(vector, entity);
     }
 
@@ -47,7 +47,7 @@ public class QSombraDireccional extends QProcesadorSombra {
         actualizar = false;
     }
 
-    public void actualizarDireccion(QVector3 direccion) {
+    public void actualizarDireccion(Vector3 direccion) {
         if (renderSombra != null) {
             renderSombra.setDireccion(direccion);
         }

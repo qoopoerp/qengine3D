@@ -15,8 +15,8 @@ import net.qoopo.engine.core.entity.component.mesh.primitive.Vertex;
 import net.qoopo.engine.core.entity.component.mesh.primitive.shape.IcoSphere;
 import net.qoopo.engine.core.entity.component.modifier.ModifierComponent;
 import net.qoopo.engine.core.math.QMath;
-import net.qoopo.engine.core.math.QVector2;
-import net.qoopo.engine.core.math.QVector3;
+import net.qoopo.engine.core.math.Vector2;
+import net.qoopo.engine.core.math.Vector3;
 import net.qoopo.engine.core.util.array.IntArray;
 
 @Getter
@@ -100,8 +100,8 @@ public class SubdivisionModifier implements ModifierComponent {
         log.info("[+] Apply subdivision modifier - simple [" + (entity != null ? entity.getName() : "") + "]");
         Vertex[] vertexListPrevious = Arrays.copyOf(mesh.vertexList, mesh.vertexList.length);
         Primitive[] primitiveListPrevious = Arrays.copyOf(mesh.primitiveList, mesh.primitiveList.length);
-        QVector3[] normalListPrevious = Arrays.copyOf(mesh.normalList, mesh.normalList.length);
-        QVector2[] uvListPrevious = Arrays.copyOf(mesh.uvList, mesh.uvList.length);
+        Vector3[] normalListPrevious = Arrays.copyOf(mesh.normalList, mesh.normalList.length);
+        Vector2[] uvListPrevious = Arrays.copyOf(mesh.uvList, mesh.uvList.length);
 
         mesh.destroy();
         int c = 0;
@@ -332,8 +332,8 @@ public class SubdivisionModifier implements ModifierComponent {
         log.info("[+] Apply subdivision modifier - catmull-clark [" + (entity != null ? entity.getName() : "") + "]");
         Vertex[] vertexListPrevious = Arrays.copyOf(mesh.vertexList, mesh.vertexList.length);
         Primitive[] primitiveListPrevious = Arrays.copyOf(mesh.primitiveList, mesh.primitiveList.length);
-        QVector3[] normalListPrevious = Arrays.copyOf(mesh.normalList, mesh.normalList.length);
-        QVector2[] uvListPrevious = Arrays.copyOf(mesh.uvList, mesh.uvList.length);
+        Vector3[] normalListPrevious = Arrays.copyOf(mesh.normalList, mesh.normalList.length);
+        Vector2[] uvListPrevious = Arrays.copyOf(mesh.uvList, mesh.uvList.length);
         mesh.destroy();
         int descartados = 0;
         int c = 0;

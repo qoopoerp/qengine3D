@@ -15,7 +15,7 @@ import net.qoopo.engine.core.animation.AnimationPair;
 import net.qoopo.engine.core.entity.Entity;
 import net.qoopo.engine.core.entity.component.EntityComponent;
 import net.qoopo.engine.core.entity.component.transform.Transform;
-import net.qoopo.engine.core.math.QMatriz4;
+import net.qoopo.engine.core.math.Matrix4;
 import net.qoopo.engine.core.util.QGlobal;
 
 /**
@@ -77,7 +77,7 @@ public class AnimationComponent implements EntityComponent {
         animacion.setLoop(true);
         AnimationFrame qFrame = new AnimationFrame(0.00f);
         for (Bone hueso : esqueleto.getBones()) {
-            QMatriz4 mat4 = hueso.getTransform().toMatrix();
+            Matrix4 mat4 = hueso.getTransform().toMatrix();
             Transform transformacion = new Transform();
             transformacion.fromMatrix(mat4);
             qFrame.addPair(new AnimationPair(hueso, transformacion));

@@ -7,8 +7,8 @@ import lombok.Getter;
 import lombok.Setter;
 import net.qoopo.engine.core.entity.component.animation.Bone;
 import net.qoopo.engine.core.math.QColor;
-import net.qoopo.engine.core.math.QVector3;
-import net.qoopo.engine.core.math.QVector4;
+import net.qoopo.engine.core.math.Vector3;
+import net.qoopo.engine.core.math.Vector4;
 
 /**
  * Representa un vértice de los modelos 3D. Un vértice contiene coordenadas en
@@ -23,9 +23,9 @@ public class Vertex implements Serializable {
 
     public static final Vertex ZERO = new Vertex(0, 0, 0, 1);
 
-    public QVector4 location = new QVector4();
-    public QVector3 up = QVector3.unitario_y.clone();
-    public QVector3 right = QVector3.unitario_x.clone();
+    public Vector4 location = new Vector4();
+    public Vector3 up = Vector3.unitario_y.clone();
+    public Vector3 right = Vector3.unitario_x.clone();
     public QColor color = QColor.WHITE;
     public boolean normalInversa = false;
 
@@ -50,7 +50,7 @@ public class Vertex implements Serializable {
         location.w = 1; // un vertice es de posicion siempre
     }
 
-    public Vertex(QVector4 vector4) {
+    public Vertex(Vector4 vector4) {
         location.x = vector4.x;
         location.y = vector4.y;
         location.z = vector4.z;
@@ -82,6 +82,10 @@ public class Vertex implements Serializable {
         location.x = x;
         location.y = y;
         location.z = z;
+    }
+
+    public void set(Vector4 value) {
+        set(value.x, value.y, value.z, value.w);
     }
 
     public void set(Vertex vertice) {

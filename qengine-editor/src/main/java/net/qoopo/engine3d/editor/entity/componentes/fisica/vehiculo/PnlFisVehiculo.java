@@ -18,7 +18,7 @@ import net.qoopo.engine.core.entity.component.mesh.primitive.Vertex;
 import net.qoopo.engine.core.entity.component.physics.collision.detector.shape.primitivas.AABB;
 import net.qoopo.engine.core.entity.component.physics.vehiculo.QRueda;
 import net.qoopo.engine.core.entity.component.physics.vehiculo.QVehiculo;
-import net.qoopo.engine.core.math.QVector3;
+import net.qoopo.engine.core.math.Vector3;
 import net.qoopo.engine.core.scene.Scene;
 import net.qoopo.engine.core.util.ComponentUtil;
 
@@ -356,28 +356,28 @@ public class PnlFisVehiculo extends javax.swing.JPanel {
             AABB tmp = new AABB(geometria.vertexList[0].clone(), geometria.vertexList[0].clone());
 
             for (Vertex vertice : geometria.vertexList) {
-                if (vertice.location.x < tmp.aabMinimo.location.x) {
-                    tmp.aabMinimo.location.x = vertice.location.x;
+                if (vertice.location.x < tmp.min.x) {
+                    tmp.min.x = vertice.location.x;
                 }
-                if (vertice.location.y < tmp.aabMinimo.location.y) {
-                    tmp.aabMinimo.location.y = vertice.location.y;
+                if (vertice.location.y < tmp.min.y) {
+                    tmp.min.y = vertice.location.y;
                 }
-                if (vertice.location.z < tmp.aabMinimo.location.z) {
-                    tmp.aabMinimo.location.z = vertice.location.z;
+                if (vertice.location.z < tmp.min.z) {
+                    tmp.min.z = vertice.location.z;
                 }
-                if (vertice.location.x > tmp.aabMaximo.location.x) {
-                    tmp.aabMaximo.location.x = vertice.location.x;
+                if (vertice.location.x > tmp.max.x) {
+                    tmp.max.x = vertice.location.x;
                 }
-                if (vertice.location.y > tmp.aabMaximo.location.y) {
-                    tmp.aabMaximo.location.y = vertice.location.y;
+                if (vertice.location.y > tmp.max.y) {
+                    tmp.max.y = vertice.location.y;
                 }
-                if (vertice.location.z > tmp.aabMaximo.location.z) {
-                    tmp.aabMaximo.location.z = vertice.location.z;
+                if (vertice.location.z > tmp.max.z) {
+                    tmp.max.z = vertice.location.z;
                 }
             }
 
-            txtAncho.setText(String.valueOf(tmp.aabMaximo.location.x - tmp.aabMinimo.location.x));
-            txtRadio.setText(String.valueOf((tmp.aabMaximo.location.y - tmp.aabMinimo.location.y) / 2));
+            txtAncho.setText(String.valueOf(tmp.max.x - tmp.min.x));
+            txtRadio.setText(String.valueOf((tmp.max.y - tmp.min.y) / 2));
         }
     }// GEN-LAST:event_cboRuedaActionPerformed
 
@@ -397,7 +397,7 @@ public class PnlFisVehiculo extends javax.swing.JPanel {
             rueda.setSuspensionStiffness(Float.parseFloat(txtSusRigidez.getText()));
             try {
                 String[] valores = txtUbicacion.getText().split(",");
-                rueda.setUbicacion(QVector3.of(Float.parseFloat(valores[0]), Float.parseFloat(valores[1]),
+                rueda.setUbicacion(Vector3.of(Float.parseFloat(valores[0]), Float.parseFloat(valores[1]),
                         Float.parseFloat(valores[2])));
             } catch (Exception e) {
             }

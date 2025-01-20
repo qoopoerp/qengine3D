@@ -9,7 +9,7 @@ import net.qoopo.engine.core.entity.component.mesh.Mesh;
 import net.qoopo.engine.core.entity.component.mesh.primitive.Poly;
 import net.qoopo.engine.core.entity.component.mesh.primitive.Primitive;
 import net.qoopo.engine.core.entity.component.mesh.primitive.Vertex;
-import net.qoopo.engine.core.math.QVector3;
+import net.qoopo.engine.core.math.Vector3;
 
 /**
  *
@@ -51,7 +51,7 @@ public class NormalUtil {
                         poly.setNormalIndexList(poly.vertexIndexList); // le indico que los indices de las normales son iguales a
                                                              // de los vertices
                         if (poly.vertexIndexList.length >= 3) {
-                            if (poly.getNormal().equals(QVector3.zero) || forzar) {
+                            if (poly.getNormal().equals(Vector3.zero) || forzar) {
                                 poly.computeNormalCenter();// calcula la normal de la cara
                             }
                             // le da a los vertices la normal de la cara
@@ -72,12 +72,12 @@ public class NormalUtil {
                     // vertice.normal.normalize();
                     // vertice.normalInversa = false;
                     // recorre todas las caras que hace uso de este vértice
-                    QVector3 vertexNormal = QVector3.empty();
+                    Vector3 vertexNormal = Vector3.empty();
                     for (Primitive face : mesh.primitiveList) {
                         if (face instanceof Poly) {
                             Poly poly = (Poly) face;
                             if (poly.vertexIndexList.length >= 3) {
-                                if (poly.getNormal().equals(QVector3.zero) || forzar) {
+                                if (poly.getNormal().equals(Vector3.zero) || forzar) {
                                     poly.computeNormalCenter();// calcula la normal de la cara
                                 }
 

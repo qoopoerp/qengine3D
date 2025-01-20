@@ -11,9 +11,9 @@ import net.qoopo.engine.core.entity.component.mesh.primitive.Poly;
 import net.qoopo.engine.core.entity.component.mesh.primitive.Primitive;
 import net.qoopo.engine.core.entity.component.mesh.primitive.Vertex;
 import net.qoopo.engine.core.material.AbstractMaterial;
-import net.qoopo.engine.core.math.QVector2;
-import net.qoopo.engine.core.math.QVector3;
-import net.qoopo.engine.core.math.QVector4;
+import net.qoopo.engine.core.math.Vector2;
+import net.qoopo.engine.core.math.Vector3;
+import net.qoopo.engine.core.math.Vector4;
 import net.qoopo.engine.core.texture.util.MaterialUtil;
 import net.qoopo.engine.core.util.mesh.NormalUtil;
 
@@ -36,8 +36,8 @@ public class Mesh implements EntityComponent {
     public int type = GEOMETRY_TYPE_MESH;
     public String name = "";// usada para identificar los objetos cargados , luego la eliminamos
     public Vertex[] vertexList = new Vertex[0];
-    public QVector3[] normalList = new QVector3[0];
-    public QVector2[] uvList = new QVector2[0];
+    public Vector3[] normalList = new Vector3[0];
+    public Vector2[] uvList = new Vector2[0];
     public Primitive[] primitiveList = new Primitive[0];
 
     public Mesh() {
@@ -49,7 +49,7 @@ public class Mesh implements EntityComponent {
     }
 
     public void clearNormals() {
-        normalList = new QVector3[0];
+        normalList = new Vector3[0];
     }
 
     public void removeVertex(int indice) {
@@ -74,14 +74,14 @@ public class Mesh implements EntityComponent {
         return nuevo;
     }
 
-    public Vertex addVertex(QVector3 posicion) {
+    public Vertex addVertex(Vector3 posicion) {
         Vertex nuevo = new Vertex(posicion.x, posicion.y, posicion.z);
         vertexList = Arrays.copyOf(vertexList, vertexList.length + 1);
         vertexList[vertexList.length - 1] = nuevo;
         return nuevo;
     }
 
-    public Vertex addVertex(QVector4 posicion) {
+    public Vertex addVertex(Vector4 posicion) {
         Vertex nuevo = new Vertex(posicion.x, posicion.y, posicion.z, posicion.w);
         vertexList = Arrays.copyOf(vertexList, vertexList.length + 1);
         vertexList[vertexList.length - 1] = nuevo;
@@ -117,27 +117,27 @@ public class Mesh implements EntityComponent {
     // return nuevo;
     // }
 
-    public QVector3 addNormal(QVector3 normal) {
+    public Vector3 addNormal(Vector3 normal) {
         normalList = Arrays.copyOf(normalList, normalList.length + 1);
         normalList[normalList.length - 1] = normal;
         return normal;
     }
 
-    public QVector3 addNormal(float x, float y, float z) {
-        QVector3 nuevo = new QVector3(x, y, z);
+    public Vector3 addNormal(float x, float y, float z) {
+        Vector3 nuevo = new Vector3(x, y, z);
         normalList = Arrays.copyOf(normalList, normalList.length + 1);
         normalList[normalList.length - 1] = nuevo;
         return nuevo;
     }
 
-    public QVector2 addUV(QVector2 newUV) {
+    public Vector2 addUV(Vector2 newUV) {
         uvList = Arrays.copyOf(uvList, uvList.length + 1);
         uvList[uvList.length - 1] = newUV;
         return newUV;
     }
 
-    public QVector2 addUV(float u, float v) {
-        QVector2 nuevo = new QVector2(u, v);
+    public Vector2 addUV(float u, float v) {
+        Vector2 nuevo = new Vector2(u, v);
         uvList = Arrays.copyOf(uvList, uvList.length + 1);
         uvList[uvList.length - 1] = nuevo;
         return nuevo;
@@ -145,7 +145,7 @@ public class Mesh implements EntityComponent {
 
     public Line addLine(int... vertices) throws Exception {
         validarVertices(vertices);
-        Line nuevo = new Line(this, vertices,vertices,vertices);
+        Line nuevo = new Line(this, vertices, vertices, vertices);
         primitiveList = Arrays.copyOf(primitiveList, primitiveList.length + 1);
         primitiveList[primitiveList.length - 1] = nuevo;
         return nuevo;
@@ -153,7 +153,7 @@ public class Mesh implements EntityComponent {
 
     public Line addLine(AbstractMaterial material, int... vertices) throws Exception {
         validarVertices(vertices);
-        Line nuevo = new Line(this, vertices,vertices,vertices);
+        Line nuevo = new Line(this, vertices, vertices, vertices);
         nuevo.material = material;
         primitiveList = Arrays.copyOf(primitiveList, primitiveList.length + 1);
         primitiveList[primitiveList.length - 1] = nuevo;
@@ -234,10 +234,10 @@ public class Mesh implements EntityComponent {
             // nuevo.addVertex(current.location.x, current.location.y, current.location.z);
             nuevo.addVertex(current);
         }
-        for (QVector3 normal : this.normalList) {
+        for (Vector3 normal : this.normalList) {
             nuevo.addNormal(normal.x, normal.y, normal.z);
         }
-        for (QVector2 uv : this.uvList) {
+        for (Vector2 uv : this.uvList) {
             nuevo.addUV(uv.x, uv.y);
         }
         for (Primitive face : primitiveList) {
@@ -254,8 +254,6 @@ public class Mesh implements EntityComponent {
         }
         return nuevo;
     }
-
-
 
     @Override
     public void destroy() {
@@ -282,7 +280,7 @@ public class Mesh implements EntityComponent {
     protected void deleteData() {
         this.vertexList = new Vertex[0];
         this.primitiveList = new Primitive[0];
-        this.normalList = new QVector3[0];
+        this.normalList = new Vector3[0];
     }
 
     public void invertNormals() {
@@ -307,8 +305,9 @@ public class Mesh implements EntityComponent {
         return this;
     }
 
-    public void applyMaterial(AbstractMaterial material) {
+    public Mesh applyMaterial(AbstractMaterial material) {
         MaterialUtil.applyMaterial(this, material);
+        return this;
     }
 
     public void updateTimeMark() {

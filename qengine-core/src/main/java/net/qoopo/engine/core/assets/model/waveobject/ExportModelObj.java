@@ -18,8 +18,8 @@ import net.qoopo.engine.core.entity.component.mesh.primitive.Poly;
 import net.qoopo.engine.core.entity.component.mesh.primitive.Primitive;
 import net.qoopo.engine.core.entity.component.mesh.primitive.Vertex;
 import net.qoopo.engine.core.material.Material;
-import net.qoopo.engine.core.math.QVector2;
-import net.qoopo.engine.core.math.QVector3;
+import net.qoopo.engine.core.math.Vector2;
+import net.qoopo.engine.core.math.Vector3;
 import net.qoopo.engine.core.util.QGlobal;
 
 public class ExportModelObj implements ModelExporter {
@@ -58,7 +58,7 @@ public class ExportModelObj implements ModelExporter {
                 writer.write("mtlib " + fileName.replace(".obj", ".mtl"));
                 writer.newLine();
             }
-            exportEntity(output, QVector3.zero, entity, writer, 0, 0, 0);
+            exportEntity(output, Vector3.zero, entity, writer, 0, 0, 0);
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
@@ -70,7 +70,7 @@ public class ExportModelObj implements ModelExporter {
         }
     }
 
-    private void exportEntity(OutputStream output, QVector3 parentLocation, Entity entity, BufferedWriter writer,
+    private void exportEntity(OutputStream output, Vector3 parentLocation, Entity entity, BufferedWriter writer,
             int vertextCount, int uvCount, int normalCount) {
         try {
             int vertextCountLocal = 0;
@@ -99,13 +99,13 @@ public class ExportModelObj implements ModelExporter {
                     }
 
                     // escribe las coordenadas de texturas
-                    for (QVector2 uv : mesh.uvList) {
+                    for (Vector2 uv : mesh.uvList) {
                         writer.write(String.format("vt %.6f %.6f", uv.x, uv.y).replace(",", "."));
                         writer.newLine();
                     }
 
                     // escribe las normales
-                    for (QVector3 normal : mesh.normalList) {
+                    for (Vector3 normal : mesh.normalList) {
                         // vertex.normal.normalize();
                         writer.write(String.format("vn %.4f %.4f %.4f", normal.x, normal.y, normal.z)
                                 .replace(",", "."));
@@ -211,9 +211,9 @@ public class ExportModelObj implements ModelExporter {
                 writer.newLine();
                 // writer.write("Ks " + String.format("%.3f %.3f %.3f", QColor.WHITE.r,
                 // QColor.WHITE.g, QColor.WHITE.b));
-                writer.write("Kd " + String.format("%.3f %.3f %.3f", material.getColorEspecular().r,
-                        material.getColorEspecular().g,
-                        material.getColorEspecular().b).replace(",", "."));
+                writer.write("Kd " + String.format("%.3f %.3f %.3f", material.getSpecularColour().r,
+                        material.getSpecularColour().g,
+                        material.getSpecularColour().b).replace(",", "."));
                 writer.newLine();
                 writer.write("Ns " + String.format("%d", material.getSpecularExponent()).replace(",", "."));
                 writer.newLine();

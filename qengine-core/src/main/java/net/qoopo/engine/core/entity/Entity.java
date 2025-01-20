@@ -7,11 +7,12 @@ import java.util.List;
 
 import net.qoopo.engine.core.entity.component.EntityComponent;
 import net.qoopo.engine.core.entity.component.mesh.Mesh;
+import net.qoopo.engine.core.entity.component.physics.collision.detector.shape.primitivas.AABB;
 import net.qoopo.engine.core.entity.component.transform.Transform;
 import net.qoopo.engine.core.math.Cuaternion;
-import net.qoopo.engine.core.math.QMatriz3;
-import net.qoopo.engine.core.math.QMatriz4;
-import net.qoopo.engine.core.math.QVector3;
+import net.qoopo.engine.core.math.Matrix3;
+import net.qoopo.engine.core.math.Matrix4;
+import net.qoopo.engine.core.math.Vector3;
 import net.qoopo.engine.core.util.ComponentUtil;
 import net.qoopo.engine.core.util.TempVars;
 
@@ -51,7 +52,9 @@ public class Entity implements Serializable {
     protected boolean toRender = true;
     protected boolean toDelete = false;
     protected long cached_time = 0;
-    protected QMatriz4 cachedMatriz;
+    protected Matrix4 cachedMatriz;
+
+    protected AABB aabb;
 
     // indica si es una entity billboard
     /**
@@ -138,11 +141,11 @@ public class Entity implements Serializable {
         this.transform.getLocation().set(x, y, z);
     }
 
-    public void move(QVector3 location) {
+    public void move(Vector3 location) {
         move(location.x, location.y, location.z);
     }
 
-    public void scale(QVector3 vector) {
+    public void scale(Vector3 vector) {
         transform.getScale().set(vector);
     }
 
@@ -167,7 +170,7 @@ public class Entity implements Serializable {
 
     }
 
-    public void rotate(QVector3 angles) {
+    public void rotate(Vector3 angles) {
         transform.getRotation().setEulerAngles(angles);
     }
 
@@ -210,15 +213,15 @@ public class Entity implements Serializable {
         this.transform.getRotation().aumentarRotZ(aumento);
     }
 
-    public QVector3 getDirection() {
+    public Vector3 getDirection() {
         return transform.getRotation().getCuaternion().getRotationColumn(Cuaternion.DIRECCION);
     }
 
-    public QVector3 getLeft() {
+    public Vector3 getLeft() {
         return transform.getRotation().getCuaternion().getRotationColumn(Cuaternion.IZQUIERDA);
     }
 
-    public QVector3 getUp() {
+    public Vector3 getUp() {
         return transform.getRotation().getCuaternion().getRotationColumn(Cuaternion.ARRIBA);
     }
 
@@ -229,7 +232,7 @@ public class Entity implements Serializable {
      * @param valor
      */
     public void moveForward(float valor) {
-        QVector3 tmp = transform.getLocation().clone();
+        Vector3 tmp = transform.getLocation().clone();
         tmp.add(getDirection().multiply(-valor));
         move(tmp);
         // la diferencia la suma a los hijos
@@ -241,7 +244,7 @@ public class Entity implements Serializable {
      * @param valor
      */
     public void moveLeft(float valor) {
-        QVector3 tmp = transform.getLocation().clone();
+        Vector3 tmp = transform.getLocation().clone();
         tmp.add(getLeft().multiply(valor));
         move(tmp);
     }
@@ -252,7 +255,7 @@ public class Entity implements Serializable {
      * @param valor
      */
     public void moveUp(float valor) {
-        QVector3 tmp = transform.getLocation().clone();
+        Vector3 tmp = transform.getLocation().clone();
         tmp.add(getUp().multiply(valor));
         move(tmp);
     }
@@ -299,7 +302,7 @@ public class Entity implements Serializable {
      *
      * @param camaraVista
      */
-    public void actualizarRotacionBillboard(QMatriz4 camaraVista) {
+    public void actualizarRotacionBillboard(Matrix4 camaraVista) {
         if (isBillboard()) {
             TempVars tv = TempVars.get();
             try {
@@ -313,7 +316,7 @@ public class Entity implements Serializable {
 
                 // metodo tomado de jme3engine
                 // coopt left for our own purposes.
-                QVector3 xzp = getLeft();
+                Vector3 xzp = getLeft();
                 // The xzp vector is the projection of the tv.vector3f1 vector on the xz plane
                 xzp.set(tv.vector3f1.x, 0, tv.vector3f1.z);
 
@@ -321,7 +324,7 @@ public class Entity implements Serializable {
                 xzp.normalize();
                 float cosp = tv.vector3f1.dot(xzp);
 
-                QMatriz3 orient = new QMatriz3();
+                Matrix3 orient = new Matrix3();
                 orient.set(0, 0, xzp.z);
                 orient.set(0, 1, xzp.x * -tv.vector3f1.y);
                 orient.set(0, 2, xzp.x * cosp);
@@ -340,7 +343,7 @@ public class Entity implements Serializable {
         }
     }
 
-    public QMatriz4 getMatrizTransformacion(long time) {
+    public Matrix4 getMatrizTransformacion(long time) {
         try {
             if (time != cached_time || cachedMatriz == null) {
                 if (transform == null) {
@@ -450,11 +453,11 @@ public class Entity implements Serializable {
         this.cached_time = cached_time;
     }
 
-    public QMatriz4 getCachedMatriz() {
+    public Matrix4 getCachedMatriz() {
         return cachedMatriz;
     }
 
-    public void setCachedMatriz(QMatriz4 cachedMatriz) {
+    public void setCachedMatriz(Matrix4 cachedMatriz) {
         this.cachedMatriz = cachedMatriz;
     }
 
@@ -462,4 +465,19 @@ public class Entity implements Serializable {
         return components;
     }
 
+    public AABB getAABB() {
+        if (aabb == null) {
+            List<EntityComponent> lstComponents = (List<EntityComponent>) getComponents(Mesh.class);
+            if (lstComponents != null && !lstComponents.isEmpty()) {
+                Mesh[] meshList = new Mesh[lstComponents.size()];
+                for (int i = 0; i < lstComponents.size(); i++) {
+                    meshList[i] = (Mesh) lstComponents.get(i);
+                }
+                if (meshList.length > 0) {
+                    aabb = new AABB(meshList);
+                }
+            }
+        }
+        return aabb;
+    }
 }

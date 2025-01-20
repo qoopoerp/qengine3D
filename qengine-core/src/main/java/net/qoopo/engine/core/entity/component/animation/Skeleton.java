@@ -12,7 +12,7 @@ import lombok.Getter;
 import lombok.Setter;
 import net.qoopo.engine.core.entity.Entity;
 import net.qoopo.engine.core.entity.component.EntityComponent;
-import net.qoopo.engine.core.math.QMatriz4;
+import net.qoopo.engine.core.math.Matrix4;
 
 /**
  *
@@ -84,7 +84,7 @@ public class Skeleton implements EntityComponent {
             // si es el hueso raiz
             if (hueso.getParent() == null) {
                 // System.out.println("Hueso raiz=" + hueso.getNombre());
-                hueso.calcularTransformacionInversa(new QMatriz4());
+                hueso.calcularTransformacionInversa(new Matrix4());
                 // return;
             }
         }

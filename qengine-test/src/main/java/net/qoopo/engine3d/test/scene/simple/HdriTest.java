@@ -9,7 +9,6 @@ import java.io.File;
 
 import net.qoopo.engine.core.assets.AssetManager;
 import net.qoopo.engine.core.entity.Entity;
-import net.qoopo.engine.core.entity.component.environment.EnvProbe;
 import net.qoopo.engine.core.entity.component.mesh.Mesh;
 import net.qoopo.engine.core.entity.component.mesh.primitive.Primitive;
 import net.qoopo.engine.core.material.Material;
@@ -18,6 +17,7 @@ import net.qoopo.engine.core.renderer.post.filters.blur.BlurFilter;
 import net.qoopo.engine.core.renderer.post.filters.color.BloomFilter;
 import net.qoopo.engine.core.scene.Camera;
 import net.qoopo.engine.core.scene.Scene;
+import net.qoopo.engine.core.texture.HDRITexture;
 import net.qoopo.engine.core.texture.Texture;
 import net.qoopo.engine.core.texture.procesador.MipmapTexture;
 import net.qoopo.engine3d.test.scene.MakeTestScene;
@@ -36,9 +36,10 @@ public class HdriTest extends MakeTestScene {
         this.scene = mundo;
 
         Texture texture = AssetManager.get().loadTexture("entornoDifuso",
-                new File("assets/hdri/qwantani_dusk_2_2k.png"));
-        Texture envMap = new MipmapTexture(texture, 5, MipmapTexture.TIPO_BLUR);
-        Texture hdrMap = new Texture();
+                new File("assets/hdri/ibl_hdr_radiance.png"));
+
+        Texture envMap = new MipmapTexture(new HDRITexture(texture.getImagen()), 5, MipmapTexture.TIPO_BLUR);
+        Texture hdrMap = new HDRITexture();
         // texture.getWidth() / 2, texture.getHeight() / 2
         BloomFilter bloom = new BloomFilter();// ,0.6f);
         BlurFilter blur = new BlurFilter(20);
@@ -51,12 +52,13 @@ public class HdriTest extends MakeTestScene {
                 entidad.getComponents(Mesh.class).forEach(c -> {
                     for (Primitive p : ((Mesh) c).primitiveList) {
                         if (p.material instanceof Material) {
-                            ((Material) p.material).setEnvMapType(EnvProbe.FORMATO_MAPA_HDRI);
                             ((Material) p.material).setEnvMap(envMap);
                             ((Material) p.material).setHdrMap(hdrMap);
                             // ((Material) p.material).setIor(1.45f);
                             // ((Material) p.material).setRefraccion(true);
-                            // ((Material) p.material).setReflexion(true);
+                            ((Material) p.material).setReflexion(true);
+                            // ((Material) p.material).setRoughness(0.1f);
+                            // ((Material) p.material).setMetalness(0.8f);
                         }
                     }
                 });

@@ -8,8 +8,8 @@ package net.qoopo.engine.core.entity.component.mesh.primitive;
 import lombok.Getter;
 import lombok.Setter;
 import net.qoopo.engine.core.math.QColor;
-import net.qoopo.engine.core.math.QVector2;
-import net.qoopo.engine.core.math.QVector3;
+import net.qoopo.engine.core.math.Vector2;
+import net.qoopo.engine.core.math.Vector3;
 
 /**
  * Contiene la información despues de realizar la transformación
@@ -22,8 +22,8 @@ public class VertexBuffer {
 
     private Vertex[] vertexList = null;
     private QColor[] colorList = null;
-    private QVector3[] normalList = null;
-    private QVector2[] uvList = null;
+    private Vector3[] normalList = null;
+    private Vector2[] uvList = null;
 
     public VertexBuffer() {
 
@@ -33,8 +33,8 @@ public class VertexBuffer {
         if (vertexList == null) {
             vertexList = new Vertex[vertexCount];
             colorList = new QColor[vertexCount];
-            normalList = new QVector3[normalCount];
-            uvList = new QVector2[uvCount];
+            normalList = new Vector3[normalCount];
+            uvList = new Vector2[uvCount];
         } else {
             // si ya tiene instancias compruebo las longitudes para no volver a isntanciar
             if (vertexList.length != vertexCount) {
@@ -46,11 +46,11 @@ public class VertexBuffer {
             }
 
             if (normalList.length != normalCount) {
-                normalList = new QVector3[normalCount];
+                normalList = new Vector3[normalCount];
             }
 
             if (uvList.length != uvCount) {
-                uvList = new QVector2[uvCount];
+                uvList = new Vector2[uvCount];
             }
         }
     }
@@ -87,7 +87,7 @@ public class VertexBuffer {
         }
     }
 
-    public QVector3 getNormal(int i) {
+    public Vector3 getNormal(int i) {
         // if (normalList.length > i) {
         return normalList[i];
         // } else {
@@ -95,13 +95,13 @@ public class VertexBuffer {
         // }
     }
 
-    public void setNormal(QVector3 normal, int i) {
+    public void setNormal(Vector3 normal, int i) {
         if (normalList.length > i) {
             normalList[i] = normal;
         }
     }
 
-    public QVector2 getUV(int i) {
+    public Vector2 getUV(int i) {
         // if (uvList.length > i) {
         return uvList[i];
         // } else {
@@ -109,7 +109,7 @@ public class VertexBuffer {
         // }
     }
 
-    public void setUV(QVector2 uv, int i) {
+    public void setUV(Vector2 uv, int i) {
         if (uvList.length > i) {
             uvList[i] = uv;
         }

@@ -7,7 +7,7 @@ import lombok.Setter;
 import net.qoopo.engine.core.entity.Entity;
 import net.qoopo.engine.core.entity.component.EntityComponent;
 import net.qoopo.engine.core.material.Material;
-import net.qoopo.engine.core.math.QVector3;
+import net.qoopo.engine.core.math.Vector3;
 
 @Getter
 @Setter
@@ -58,13 +58,13 @@ public abstract class Terrain implements EntityComponent {
             float xCoord = (terrenoX % gridSquareSize) / gridSquareSize;
             float zCoord = (terrenoZ % gridSquareSize) / gridSquareSize;
             if (xCoord <= (1 - zCoord)) {
-                return barryCentric(QVector3.of(0, heights[gridX][gridZ], 0),
-                        QVector3.of(1, heights[gridX + 1][gridZ], 0), QVector3.of(0, heights[gridX][gridZ + 1], 1),
-                        QVector3.of(xCoord, zCoord, 0));
+                return barryCentric(Vector3.of(0, heights[gridX][gridZ], 0),
+                        Vector3.of(1, heights[gridX + 1][gridZ], 0), Vector3.of(0, heights[gridX][gridZ + 1], 1),
+                        Vector3.of(xCoord, zCoord, 0));
             } else {
-                return barryCentric(QVector3.of(1, heights[gridX + 1][gridZ], 0),
-                        QVector3.of(1, heights[gridX + 1][gridZ + 1], 1), QVector3.of(0, heights[gridX][gridZ + 1], 1),
-                        QVector3.of(xCoord, zCoord, 0));
+                return barryCentric(Vector3.of(1, heights[gridX + 1][gridZ], 0),
+                        Vector3.of(1, heights[gridX + 1][gridZ + 1], 1), Vector3.of(0, heights[gridX][gridZ + 1], 1),
+                        Vector3.of(xCoord, zCoord, 0));
             }
         } catch (Exception e) {
             return Float.NEGATIVE_INFINITY;
@@ -72,7 +72,7 @@ public abstract class Terrain implements EntityComponent {
 
     }
 
-    private static float barryCentric(QVector3 p1, QVector3 p2, QVector3 p3, QVector3 pos) {
+    private static float barryCentric(Vector3 p1, Vector3 p2, Vector3 p3, Vector3 pos) {
         float det = (p2.z - p3.z) * (p1.x - p3.x) + (p3.x - p2.x) * (p1.z - p3.z);
         float l1 = ((p2.z - p3.z) * (pos.x - p3.x) + (p3.x - p2.x) * (pos.y - p3.z)) / det;
         float l2 = ((p3.z - p1.z) * (pos.x - p3.x) + (p1.x - p3.x) * (pos.y - p3.z)) / det;

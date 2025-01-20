@@ -5,7 +5,7 @@
  */
 package net.qoopo.engine.core.entity.component.physics.dinamica;
 
-import net.qoopo.engine.core.math.QVector3;
+import net.qoopo.engine.core.math.Vector3;
 
 /**
  *
@@ -13,11 +13,11 @@ import net.qoopo.engine.core.math.QVector3;
  */
 public class QObjetoSuave extends QObjetoDinamico {
 
-    public QVector3 velocidadLinear = QVector3.zero;
-    public QVector3 velocidadAngular = QVector3.zero;
-    public QVector3 fuerzaInercial = QVector3.zero;
-    public QVector3 fuerzaTotal = QVector3.zero;
-    public QVector3 fueraTorque = QVector3.zero;
+    public Vector3 velocidadLinear = Vector3.zero;
+    public Vector3 velocidadAngular = Vector3.zero;
+    public Vector3 fuerzaInercial = Vector3.zero;
+    public Vector3 fuerzaTotal = Vector3.zero;
+    public Vector3 fueraTorque = Vector3.zero;
 
     public float masa;
 

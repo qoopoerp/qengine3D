@@ -22,12 +22,14 @@ import net.qoopo.engine.core.entity.component.mesh.primitive.Primitive;
 import net.qoopo.engine.core.material.Material;
 import net.qoopo.engine.core.math.QColor;
 import net.qoopo.engine.core.math.QMath;
-import net.qoopo.engine.core.math.QVector3;
+import net.qoopo.engine.core.math.Vector3;
 import net.qoopo.engine.core.renderer.RenderEngine;
 import net.qoopo.engine.core.renderer.post.filters.blur.BlurFilter;
 import net.qoopo.engine.core.renderer.post.filters.color.BloomFilter;
 import net.qoopo.engine.core.scene.Camera;
 import net.qoopo.engine.core.scene.Scene;
+import net.qoopo.engine.core.texture.CubeMapTexture;
+import net.qoopo.engine.core.texture.HDRITexture;
 import net.qoopo.engine.core.texture.Texture;
 import net.qoopo.engine.core.texture.procesador.MipmapTexture;
 import net.qoopo.engine.core.util.QGlobal;
@@ -58,9 +60,9 @@ public class EnvProbe implements EntityComponent, UpdatableComponent {
      * Se realiza un Mapeo cubico, 6 textures uno por cada lado del cubo
      */
     transient private RenderEngine render;
-    private QVector3[] faceDirections;
+    private Vector3[] faceDirections;
     private Texture[] textures;
-    private QVector3[] faceUps;
+    private Vector3[] faceUps;
 
     private int mapType = FORMATO_MAPA_CUBO;
 
@@ -84,23 +86,23 @@ public class EnvProbe implements EntityComponent, UpdatableComponent {
     }
 
     public EnvProbe(int resolution) {
-        faceDirections = new QVector3[6];
+        faceDirections = new Vector3[6];
 
         // -------------------------------------
-        faceDirections[0] = QVector3.of(0, -1, 0); // abajo
-        faceDirections[1] = QVector3.of(0, 1, 0); // arriba
-        faceDirections[2] = QVector3.of(0, 0, -1); // atras
-        faceDirections[3] = QVector3.of(0, 0, 1); // adelante
-        faceDirections[5] = QVector3.of(-1, 0, 0); // izquierda
-        faceDirections[4] = QVector3.of(1, 0, 0); // derecha
+        faceDirections[0] = Vector3.of(0, -1, 0); // abajo
+        faceDirections[1] = Vector3.of(0, 1, 0); // arriba
+        faceDirections[2] = Vector3.of(0, 0, -1); // atras
+        faceDirections[3] = Vector3.of(0, 0, 1); // adelante
+        faceDirections[5] = Vector3.of(-1, 0, 0); // izquierda
+        faceDirections[4] = Vector3.of(1, 0, 0); // derecha
         // -------------------------------------
-        faceUps = new QVector3[6];
-        faceUps[0] = QVector3.of(0, 0, -1); // arriba
-        faceUps[1] = QVector3.of(0, 0, 1); // abajo
-        faceUps[2] = QVector3.of(0, 1, 0); // adelante
-        faceUps[3] = QVector3.of(0, 1, 0); // atras
-        faceUps[4] = QVector3.of(0, 1, 0); // izquierda
-        faceUps[5] = QVector3.of(0, 1, 0); // derecha
+        faceUps = new Vector3[6];
+        faceUps[0] = Vector3.of(0, 0, -1); // arriba
+        faceUps[1] = Vector3.of(0, 0, 1); // abajo
+        faceUps[2] = Vector3.of(0, 1, 0); // adelante
+        faceUps[3] = Vector3.of(0, 1, 0); // atras
+        faceUps[4] = Vector3.of(0, 1, 0); // izquierda
+        faceUps[5] = Vector3.of(0, 1, 0); // derecha
 
         textures = new Texture[6];
         for (int i = 0; i < 6; i++) {
@@ -135,7 +137,7 @@ public class EnvProbe implements EntityComponent, UpdatableComponent {
     public EnvProbe(int tipo, Texture positivoX, Texture positivoY, Texture positivoZ, Texture negativoX,
             Texture negativoY, Texture negativoZ) {
         this.size = positivoX.getWidth();
-        faceDirections = new QVector3[6];
+        faceDirections = new Vector3[6];
         textures = new Texture[6];
         textures[0] = positivoY;
         textures[1] = negativoY;
@@ -149,7 +151,7 @@ public class EnvProbe implements EntityComponent, UpdatableComponent {
         dinamico = false;
         mapType = tipo;
         updateTexture();
-        faceUps = new QVector3[6];
+        faceUps = new Vector3[6];
     }
 
     public void build(int size) {
@@ -195,7 +197,7 @@ public class EnvProbe implements EntityComponent, UpdatableComponent {
             for (Material mat : lst) {
                 mat.setEnvMap(envMap);
                 mat.setHdrMap(hdrMap);
-                mat.setEnvMapType(getMapType());// mapa cubico o HDRI
+                // mat.setEnvMapType(getMapType());// mapa cubico o HDRI
             }
         }
         actualizar = true;// obliga a actualizar el mapa
@@ -206,7 +208,7 @@ public class EnvProbe implements EntityComponent, UpdatableComponent {
      *
      * @param posicion
      */
-    public void update(QVector3 posicion) {
+    public void update(Vector3 posicion) {
         logger.info("[>] Actualizando mapa de entorno");
         for (int i = 0; i < 6; i++) {
             // for (int i = 5; i >= 0; i--) {
@@ -219,7 +221,7 @@ public class EnvProbe implements EntityComponent, UpdatableComponent {
     /**
      * Actualiza una cara del cubeMap
      */
-    private void updateFace(int face, QVector3 posicion) {
+    private void updateFace(int face, Vector3 posicion) {
         logger.info("[>] Generado " + (face + 1) + "/" + 6);
         render.getCamera().lookAt(posicion, faceDirections[face], faceUps[face]);
         render.update();
@@ -267,19 +269,28 @@ public class EnvProbe implements EntityComponent, UpdatableComponent {
         switch (mapType) {
             case FORMATO_MAPA_CUBO:
             default:
-                envMap.loadTexture(buildCubeMap());
+                envMap.loadTexture(new CubeMapTexture(buildCubeMap()));
                 break;
             case FORMATO_MAPA_HDRI:
-                envMap.loadTexture(buildHDRI(buildCubeMap()));
+                envMap.loadTexture(new HDRITexture(buildHDRI(buildCubeMap())));
                 break;
         }
 
         if (generarIrradiacion) {
             logger.info("[>] Generando irradiacion");
             // envMap.getWidth() / 2, envMap.getHeight() / 2
-            BloomFilter bloom = new BloomFilter(0.6f);
-            BlurFilter blur = new BlurFilter(20);
-            hdrMap.loadTexture(blur.apply(bloom.apply(envMap)).getImagen());
+            BloomFilter bloom = new BloomFilter(0.5f, 0.6f);
+            BlurFilter blur = new BlurFilter(0.5f, 20);
+
+            switch (mapType) {
+                case FORMATO_MAPA_CUBO:
+                default:
+                    hdrMap.loadTexture(new CubeMapTexture(blur.apply(bloom.apply(envMap)).getImagen()));
+                    break;
+                case FORMATO_MAPA_HDRI:
+                    hdrMap.loadTexture(new HDRITexture(blur.apply(bloom.apply(envMap)).getImagen()));
+                    break;
+            }
         }
         // texturaIrradiacion.loadTexture(proc.getBufferSalida().getImagen());
     }

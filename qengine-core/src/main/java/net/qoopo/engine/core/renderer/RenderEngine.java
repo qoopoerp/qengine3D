@@ -21,14 +21,14 @@ import net.qoopo.engine.core.entity.component.mesh.primitive.VertexBuffer;
 import net.qoopo.engine.core.entity.component.mesh.primitive.Vertex;
 import net.qoopo.engine.core.input.QDefaultListener;
 import net.qoopo.engine.core.math.QColor;
-import net.qoopo.engine.core.math.QMatriz4;
-import net.qoopo.engine.core.math.QVector2;
+import net.qoopo.engine.core.math.Matrix4;
+import net.qoopo.engine.core.math.Vector2;
 import net.qoopo.engine.core.renderer.buffer.FrameBuffer;
 import net.qoopo.engine.core.renderer.post.FilterTexture;
 import net.qoopo.engine.core.renderer.superficie.Superficie;
 import net.qoopo.engine.core.scene.Camera;
 import net.qoopo.engine.core.scene.ClipPane;
-import net.qoopo.engine.core.scene.QOrigen;
+import net.qoopo.engine.core.scene.Axis;
 import net.qoopo.engine.core.scene.Scene;
 import net.qoopo.engine.core.texture.Texture;
 import net.qoopo.engine.core.util.image.ImgReader;
@@ -153,7 +153,7 @@ public abstract class RenderEngine extends Engine {
     // protected Accion accionSeleccionar = null;//la accion que debe ejecutar
     // cuando selecciona un objeto
 
-    protected QOrigen entidadOrigen;
+    protected Axis entidadOrigen;
 
     public RenderEngine(Scene escena, Superficie superficie, int ancho, int alto) {
         this(escena, "Nuevo Renderer", superficie, ancho, alto);
@@ -177,7 +177,7 @@ public abstract class RenderEngine extends Engine {
         }
         prepararInputListener();
 
-        entidadOrigen = new QOrigen();
+        entidadOrigen = new Axis();
     }
 
     public void setShader(Object shader) {
@@ -226,7 +226,7 @@ public abstract class RenderEngine extends Engine {
      * @param mouseLocation
      * @return
      */
-    public abstract Entity selectEntity(QVector2 mouseLocation);
+    public abstract Entity selectEntity(Vector2 mouseLocation);
 
     // public float getCameraRotationZ() {
     //     return camera.getTransform().getRotation().getEulerAngles().z;
@@ -359,7 +359,7 @@ public abstract class RenderEngine extends Engine {
      * @param p1
      * @param p2
      */
-    public abstract void renderLine(QMatriz4 matViewModel, Primitive primitiva, Vertex... vertex);
+    public abstract void renderLine(Matrix4 matViewModel, Primitive primitiva, Vertex... vertex);
 
     /**
      * Realiza la rasterización de un polígono
@@ -368,9 +368,9 @@ public abstract class RenderEngine extends Engine {
      * @param primitiva
      * @param wire
      */
-    public abstract void render(QMatriz4 matViewModel, VertexBuffer bufferVertices, Primitive primitiva, boolean wire);
+    public abstract void render(Matrix4 matViewModel, VertexBuffer bufferVertices, Primitive primitiva, boolean wire);
 
-    public abstract void renderEntity(Entity entity, QMatriz4 matrizVista, QMatriz4 matrizVistaInvertidaBillboard,
+    public abstract void renderEntity(Entity entity, Matrix4 matrizVista, Matrix4 matrizVistaInvertidaBillboard,
             boolean transparentes);
 
     // public abstract void render() throws Exception;

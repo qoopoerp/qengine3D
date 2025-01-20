@@ -17,13 +17,18 @@ import net.qoopo.engine.core.texture.Texture;
 public class BrigthFilter implements FilterTexture {
 
     private float umbral = 0.7f;
+    private float scale = 1.0f;
 
     public BrigthFilter() {
 
     }
 
     public BrigthFilter(float umbral) {
+        this.umbral = umbral;
+    }
 
+    public BrigthFilter(float scale, float umbral) {
+        this.scale = scale;
         this.umbral = umbral;
     }
 
@@ -32,8 +37,7 @@ public class BrigthFilter implements FilterTexture {
         QColor color;
         float brillo;
         Texture textura = buffer[0];
-        Texture output = new Texture(textura.getWidth(), textura.getHeight());
-
+        Texture output = new Texture((int) (textura.getWidth() * scale), (int) (textura.getHeight() * scale));
         try {
             for (int x = 0; x < textura.getWidth(); x++) {
                 for (int y = 0; y < textura.getHeight(); y++) {

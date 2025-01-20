@@ -9,9 +9,9 @@ import net.qoopo.engine.core.entity.component.mesh.primitive.Primitive;
 import net.qoopo.engine.core.entity.component.mesh.primitive.VertexBuffer;
 import net.qoopo.engine.core.entity.component.mesh.primitive.Vertex;
 import net.qoopo.engine.core.math.QMath;
-import net.qoopo.engine.core.math.QMatriz4;
-import net.qoopo.engine.core.math.QVector2;
-import net.qoopo.engine.core.math.QVector3;
+import net.qoopo.engine.core.math.Matrix4;
+import net.qoopo.engine.core.math.Vector2;
+import net.qoopo.engine.core.math.Vector3;
 import net.qoopo.engine.core.scene.Camera;
 
 /**
@@ -30,7 +30,7 @@ public interface AbstractRaster {
      * @param p1
      * @param p2
      */
-    public void rasterLine(QMatriz4 matViewModel, Primitive primitiva, Vertex... vertex);
+    public void rasterLine(Matrix4 matViewModel, Primitive primitiva, Vertex... vertex);
 
     /**
      * Realiza la rasterización de un polígono
@@ -39,7 +39,7 @@ public interface AbstractRaster {
      * @param primitiva
      * @param wire
      */
-    public void raster(QMatriz4 matViewModel, VertexBuffer bufferVertices, Primitive primitiva, boolean wire);
+    public void raster(Matrix4 matViewModel, VertexBuffer bufferVertices, Primitive primitiva, boolean wire);
 
     /**
      * Realiza el clipping de los vertices
@@ -50,16 +50,16 @@ public interface AbstractRaster {
      */
     public static ClippedData clipping(Camera camara, int[] vertexIndex, int[] normalIndex, int[] uvIndex,
             Vertex[] vertextInput,
-            QVector3[] normalInput, QVector2[] uvInput) {
+            Vector3[] normalInput, Vector2[] uvInput) {
         ClippedData clippedData = new ClippedData();
         Vertex[] vertexTemp = new Vertex[2];
-        QVector3[] normalTemp = new QVector3[2];
-        QVector2[] uvTemp = new QVector2[2];
+        Vector3[] normalTemp = new Vector3[2];
+        Vector2[] uvTemp = new Vector2[2];
 
         float alfa;
         Vertex interpolatedVertex;
-        QVector3 interpolatedNormal;
-        QVector2 interporlatedUV;
+        Vector3 interpolatedNormal;
+        Vector2 interporlatedUV;
         // recorre los vertices y verifica si estan dentro del campo de vision, si no es
         // asi, encuentra el vertice que corresponderia dentro del campo de vision
         for (int i = 0; i < vertexIndex.length; i++) {
@@ -75,8 +75,8 @@ public interface AbstractRaster {
                 normalTemp[0] = normalInput[normalIndex[i]];
                 normalTemp[1] = normalInput[normalIndex[(i + 1) % normalIndex.length]];
             } else {
-                normalTemp[0] = new QVector3();
-                normalTemp[1] = new QVector3();
+                normalTemp[0] = new Vector3();
+                normalTemp[1] = new Vector3();
             }
             if (uvIndex.length > i
                     && uvInput.length > uvIndex[i]
@@ -85,8 +85,8 @@ public interface AbstractRaster {
                 uvTemp[0] = uvInput[uvIndex[i]];
                 uvTemp[1] = uvInput[uvIndex[(i + 1) % uvIndex.length]];
             } else {
-                uvTemp[0] = new QVector2();
-                uvTemp[1] = new QVector2();
+                uvTemp[0] = new Vector2();
+                uvTemp[1] = new Vector2();
             }
 
             // si los 2 vertices a procesar estan en el campo de vision
@@ -114,8 +114,8 @@ public interface AbstractRaster {
                         vertexTemp[1].location.getVector3());
 
                 interpolatedVertex = new Vertex();
-                interpolatedNormal = new QVector3();
-                interporlatedUV = new QVector2();
+                interpolatedNormal = new Vector3();
+                interporlatedUV = new Vector2();
                 QMath.interpolateLinear(interpolatedVertex, alfa, vertexTemp[0], vertexTemp[1]);
                 QMath.interpolateLinear(interpolatedNormal, alfa, normalTemp[0], normalTemp[1]);
                 QMath.interpolateLinear(interporlatedUV, alfa, uvTemp[0], uvTemp[1]);

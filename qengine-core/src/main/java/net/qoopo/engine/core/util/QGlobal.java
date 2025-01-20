@@ -5,7 +5,7 @@
  */
 package net.qoopo.engine.core.util;
 
-import net.qoopo.engine.core.math.QVector3;
+import net.qoopo.engine.core.math.Vector3;
 
 /**
  *
@@ -23,7 +23,7 @@ public class QGlobal {
 
     // esta gravedad representa a la gravedad en el motor, se calcula en funcion d
     // elos frames por segundo
-    public static QVector3 gravedad;
+    public static Vector3 gravedad;
 
     // Permite usar la aproximacion de la inversa de la raiz cuadrada de un número
     // mejorando la velocidad de calculo, aunq no es 100% exacto

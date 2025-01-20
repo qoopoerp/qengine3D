@@ -78,8 +78,8 @@ import net.qoopo.engine.core.entity.component.physics.collision.detector.shape.p
 import net.qoopo.engine.core.input.QInputManager;
 import net.qoopo.engine.core.lwjgl.renderer.OpenGlRenderer;
 import net.qoopo.engine.core.math.QColor;
-import net.qoopo.engine.core.math.QVector2;
-import net.qoopo.engine.core.math.QVector3;
+import net.qoopo.engine.core.math.Vector2;
+import net.qoopo.engine.core.math.Vector3;
 import net.qoopo.engine.core.renderer.RenderEngine;
 import net.qoopo.engine.core.renderer.RenderOptions;
 import net.qoopo.engine.core.renderer.post.FilterTexture;
@@ -99,9 +99,11 @@ import net.qoopo.engine.core.util.QGlobal;
 import net.qoopo.engine.java3d.renderer.Java3DRenderer;
 import net.qoopo.engine.renderer.SoftwareRenderer;
 import net.qoopo.engine.renderer.shader.fragment.basico.StandardFragmentShader;
+import net.qoopo.engine.renderer.shader.fragment.basico.parciales.EnviromentMapFragmentShader;
 import net.qoopo.engine.renderer.shader.fragment.basico.parciales.FlatFragmentShader;
 import net.qoopo.engine.renderer.shader.fragment.basico.parciales.OnlyColorFragmentShader;
-import net.qoopo.engine.renderer.shader.fragment.basico.parciales.PhongFramentShader;
+import net.qoopo.engine.renderer.shader.fragment.basico.parciales.PhongFragmentShader;
+import net.qoopo.engine.renderer.shader.fragment.basico.parciales.TexturedFragmentShader;
 import net.qoopo.engine.renderer.shader.fragment.pbr.BRDFFragmentShader;
 import net.qoopo.engine.terrain.HeightMapTerrain;
 import net.qoopo.engine3d.QEngine3D;
@@ -190,7 +192,7 @@ public class Principal extends javax.swing.JFrame {
         engine.setIniciarFisica(false);
         engine.setIniciarInteligencia(false);
         engine.setIniciarAnimaciones(false);
-        agregarRenderer("Main", QVector3.of(0, 5, 5), QVector3.of(0, 0, 0), RenderEngine.RENDER_INTERNO);
+        agregarRenderer("Main", Vector3.of(0, 5, 5), Vector3.of(0, 0, 0), RenderEngine.RENDER_INTERNO);
         renderer.opciones.setDibujarLuces(true);
         // motor.setRenderEngine(renderer);
         engine.start();
@@ -246,9 +248,9 @@ public class Principal extends javax.swing.JFrame {
         agregarRenderer(nombre, new Camera(nombre), tipoRenderer);
     }
 
-    public void agregarRenderer(String nombre, QVector3 posicionCam, QVector3 posicionObjetivo, int tipoRenderer) {
+    public void agregarRenderer(String nombre, Vector3 posicionCam, Vector3 posicionObjetivo, int tipoRenderer) {
         Camera nuevaCamara = new Camera("Cam. " + nombre);
-        nuevaCamara.lookAtTarget(posicionCam, posicionObjetivo, QVector3.unitario_y.clone());
+        nuevaCamara.lookAtTarget(posicionCam, posicionObjetivo, Vector3.unitario_y.clone());
         agregarRenderer(nombre, nuevaCamara, tipoRenderer);
     }
 
@@ -323,7 +325,7 @@ public class Principal extends javax.swing.JFrame {
         // nuevoRenderer.setAccionSeleccionar(accionSeleccionar);
 
         // if (QGlobal.ENABLE_GAMMA_FIX)
-        //     nuevoRenderer.addFilter(gammaFixFilter);
+        // nuevoRenderer.addFilter(gammaFixFilter);
 
         for (RenderEngine render : engine.getRendererList()) {
             render.resize();
@@ -1914,6 +1916,14 @@ public class Principal extends javax.swing.JFrame {
         // shader
         JMenu mnuShader = new JMenu("Shader");
 
+        JMenuItem mnuShaderPBR = new JMenuItem("BRDF (PBR)");
+        mnuShaderPBR.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                renderer.setShader(new BRDFFragmentShader(renderer));
+            }
+        });
+        mnuShader.add(mnuShaderPBR);
+
         JMenuItem mnuShaderStandar = new JMenuItem("Estándard");
         mnuShaderStandar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -1922,13 +1932,29 @@ public class Principal extends javax.swing.JFrame {
         });
         mnuShader.add(mnuShaderStandar);
 
-        JMenuItem mnuShaderPBR = new JMenuItem("PBR");
-        mnuShaderPBR.addActionListener(new java.awt.event.ActionListener() {
+        JMenuItem mnuEnviromentFragmentShader = new JMenuItem("Reflejos");
+        mnuEnviromentFragmentShader.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                renderer.setShader(new BRDFFragmentShader(renderer));
+                renderer.setShader(new EnviromentMapFragmentShader(renderer));
             }
         });
-        mnuShader.add(mnuShaderPBR);
+        mnuShader.add(mnuEnviromentFragmentShader);
+
+        JMenuItem mnuTexturedShader = new JMenuItem("Textured");
+        mnuTexturedShader.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                renderer.setShader(new TexturedFragmentShader(renderer));
+            }
+        });
+        mnuShader.add(mnuTexturedShader);
+
+        JMenuItem mnoPhongShader = new JMenuItem("Solid (Smooth)");
+        mnoPhongShader.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                renderer.setShader(new PhongFragmentShader(renderer));
+            }
+        });
+        mnuShader.add(mnoPhongShader);
 
         JMenuItem mnuFlatShader = new JMenuItem("Solid (Flat)");
         mnuFlatShader.addActionListener(new java.awt.event.ActionListener() {
@@ -1937,14 +1963,6 @@ public class Principal extends javax.swing.JFrame {
             }
         });
         mnuShader.add(mnuFlatShader);
-
-        JMenuItem mnoPhongShader = new JMenuItem("Solid (Smooth)");
-        mnoPhongShader.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                renderer.setShader(new PhongFramentShader(renderer));
-            }
-        });
-        mnuShader.add(mnoPhongShader);
 
         JMenuItem mnuColor = new JMenuItem("Color");
         mnuColor.addActionListener(new java.awt.event.ActionListener() {
@@ -2482,7 +2500,7 @@ public class Principal extends javax.swing.JFrame {
     private void mnuLuzConicaActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_mnuLuzConicaActionPerformed
         Entity nuevaLuz = new Entity("Luz Cónica");
         nuevaLuz.addComponent(new QSpotLigth(0.75f, new QColor(Color.white), Float.POSITIVE_INFINITY,
-                QVector3.of(0, -1, 0), (float) Math.toRadians(45), (float) Math.toRadians(40), false, false));
+                Vector3.of(0, -1, 0), (float) Math.toRadians(45), (float) Math.toRadians(40), false, false));
         engine.getScene().addEntity(nuevaLuz);
         actualizarArbolEscena();
         seleccionarEntidad(nuevaLuz);
@@ -3240,7 +3258,7 @@ public class Principal extends javax.swing.JFrame {
             public void mousePressed(MouseEvent evt) {
 
                 if (SwingUtilities.isLeftMouseButton(evt)) {
-                    selectedObject = renderer.selectEntity(new QVector2(evt.getX(), evt.getY()));
+                    selectedObject = renderer.selectEntity(new Vector2(evt.getX(), evt.getY()));
                     if (selectedObject instanceof Gizmo // || selectedObject instanceof QGizmoParte
                     ) {
                         return;

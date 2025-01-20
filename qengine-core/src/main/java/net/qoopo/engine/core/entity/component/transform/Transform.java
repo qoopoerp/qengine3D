@@ -10,9 +10,9 @@ import lombok.Setter;
 import net.qoopo.engine.core.entity.Entity;
 import net.qoopo.engine.core.entity.component.EntityComponent;
 import net.qoopo.engine.core.math.QMath;
-import net.qoopo.engine.core.math.QMatriz4;
+import net.qoopo.engine.core.math.Matrix4;
 import net.qoopo.engine.core.math.Rotation;
-import net.qoopo.engine.core.math.QVector3;
+import net.qoopo.engine.core.math.Vector3;
 
 /**
  * Representa una transformacion (Traslacion, Escala y Rotacion)
@@ -25,9 +25,9 @@ public class Transform implements EntityComponent {
 
     private Entity entity;
 
-    private final QMatriz4 matriz = new QMatriz4();
-    private QVector3 location = QVector3.zero.clone();
-    private QVector3 scale = QVector3.unitario_xyz.clone();
+    private final Matrix4 matriz = new Matrix4();
+    private Vector3 location = Vector3.zero.clone();
+    private Vector3 scale = Vector3.unitario_xyz.clone();
     private Rotation rotation = new Rotation(Rotation.ANGULOS_EULER);
 
     public Transform() {
@@ -38,14 +38,14 @@ public class Transform implements EntityComponent {
         rotation.setTipo(tipoRotacion);
     }
 
-    public void fromMatrix(QMatriz4 matriz) {
+    public void fromMatrix(Matrix4 matriz) {
         location.set(matriz.toTranslationVector());
         scale.set(matriz.toScaleVector());
         rotation.setCuaternion(matriz.toRotationQuat());
         rotation.updateEuler();
     }
 
-    public QMatriz4 toMatrix() {
+    public Matrix4 toMatrix() {
         matriz.loadIdentity();
         matriz.setTranslation(location);
         matriz.setRotationCuaternion(rotation.getCuaternion());
@@ -72,7 +72,7 @@ public class Transform implements EntityComponent {
         location.set(x, y, z);
     }
 
-    public void move(QVector3 nuevaPosicion) {
+    public void move(Vector3 nuevaPosicion) {
         location.set(nuevaPosicion);
     }
 
@@ -80,7 +80,7 @@ public class Transform implements EntityComponent {
         scale.set(x, y, z);
     }
 
-    public void scale(QVector3 valor) {
+    public void scale(Vector3 valor) {
         scale.set(valor);
     }
 

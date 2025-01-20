@@ -8,7 +8,7 @@ package net.qoopo.engine.renderer.shader.fragment.basico.parciales;
 import net.qoopo.engine.core.entity.component.mesh.primitive.Fragment;
 import net.qoopo.engine.core.material.Material;
 import net.qoopo.engine.core.math.QColor;
-import net.qoopo.engine.core.math.QVector3;
+import net.qoopo.engine.core.math.Vector3;
 import net.qoopo.engine.core.renderer.RenderEngine;
 import net.qoopo.engine.renderer.shader.fragment.FragmentShader;
 
@@ -21,9 +21,9 @@ import net.qoopo.engine.renderer.shader.fragment.FragmentShader;
  *
  * @author alberto
  */
-public class PhongFramentShader extends FragmentShader {
+public class PhongFragmentShader extends FragmentShader {
 
-    public PhongFramentShader(RenderEngine render) {
+    public PhongFragmentShader(RenderEngine render) {
         super(render);
     }
 
@@ -46,11 +46,11 @@ public class PhongFramentShader extends FragmentShader {
         fragment.normal.normalize();
 
         // si tiene emision , lo ilumina con eso
-        if (fragment.material instanceof Material && ((Material) fragment.material).getEmision() > 0) {
+        if (fragment.material instanceof Material && ((Material) fragment.material).getEmissionIntensity() > 0) {
             Material material = (Material) fragment.material;
-            color.scale(material.getEmision());
+            color.scale(material.getEmissionIntensity());
         } else {
-            QVector3 tmpPixelPos = fragment.ubicacion.getVector3();
+            Vector3 tmpPixelPos = fragment.location.getVector3();
             tmpPixelPos.normalize();
             // Iluminacion default no toma en cuenta las luces del entorno
             color.scale(render.getScene().getAmbientColor().clone().add(-tmpPixelPos.dot(fragment.normal)));

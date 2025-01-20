@@ -90,7 +90,7 @@ import net.qoopo.engine.core.material.AbstractMaterial;
 import net.qoopo.engine.core.material.Material;
 import net.qoopo.engine.core.material.node.MaterialNode;
 import net.qoopo.engine.core.math.QColor;
-import net.qoopo.engine.core.math.QVector3;
+import net.qoopo.engine.core.math.Vector3;
 import net.qoopo.engine.core.renderer.RenderEngine;
 import net.qoopo.engine.core.renderer.superficie.QJPanel;
 import net.qoopo.engine.core.renderer.superficie.Superficie;
@@ -288,7 +288,7 @@ public class EditorEntidad extends javax.swing.JPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 entity.addComponent(new QSpotLigth(1.5f, new QColor(Color.white), Float.POSITIVE_INFINITY,
-                        QVector3.of(0, -1, 0), (float) Math.toRadians(45), (float) Math.toRadians(40), false, false));
+                        Vector3.of(0, -1, 0), (float) Math.toRadians(45), (float) Math.toRadians(40), false, false));
                 editarEntidad(entity);
             }
         });
@@ -680,11 +680,11 @@ public class EditorEntidad extends javax.swing.JPanel {
             renderVistaPrevia = AssetManager.get().getRendererFactory().createRenderEngine(escena, "Vista Previa",
                     new Superficie(pnl), 0, 0);
             Camera camara = new Camera("Material");
-            camara.lookAtTarget(QVector3.of(10, 10, 10), QVector3.of(0, 0, 0), QVector3.of(0, 1, 0));
+            camara.lookAtTarget(Vector3.of(10, 10, 10), Vector3.of(0, 0, 0), Vector3.of(0, 1, 0));
             camara.frustrumLejos = 20.0f;
             renderVistaPrevia.setCamera(camara);
             Entity luz = new Entity("luz");
-            luz.addComponent(new QDirectionalLigth(QVector3.of(-1, -1, -1)));
+            luz.addComponent(new QDirectionalLigth(Vector3.of(-1, -1, -1)));
 
             fondoVistaPrevia = crearFondoCuadros();
             // entidadVistaPrevia = crearTestCubo(new QMaterial(QColor.LIGHT_GRAY,

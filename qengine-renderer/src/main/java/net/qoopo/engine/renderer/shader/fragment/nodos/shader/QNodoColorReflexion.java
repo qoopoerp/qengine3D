@@ -105,7 +105,7 @@ public class QNodoColorReflexion extends ShaderNode {
                 // volvemos a calcularla en las coordenadas del mundo
                 // tm.vector3f1.set(currentPixel.ubicacion.getVector3());
                 tm.vector3f1.set(TransformationVectorUtil.transformarVector(
-                        TransformationVectorUtil.transformarVectorInversa(pixel.ubicacion, pixel.entity,
+                        TransformationVectorUtil.transformarVectorInversa(pixel.location, pixel.entity,
                                 render.getCamera()),
                         pixel.entity).getVector3());
                 // ahora restamos la posicion de la camara a la posicion del mundo

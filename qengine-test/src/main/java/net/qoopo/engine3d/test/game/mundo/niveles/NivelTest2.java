@@ -24,7 +24,7 @@ import net.qoopo.engine.core.entity.component.terrain.Terrain;
 import net.qoopo.engine.core.entity.component.water.WaterDuDv;
 import net.qoopo.engine.core.material.Material;
 import net.qoopo.engine.core.math.QColor;
-import net.qoopo.engine.core.math.QVector3;
+import net.qoopo.engine.core.math.Vector3;
 import net.qoopo.engine.core.scene.QEscenario;
 import net.qoopo.engine.core.scene.Scene;
 import net.qoopo.engine.core.texture.Texture;
@@ -169,7 +169,7 @@ public class NivelTest2 extends QEscenario {
                         pino.move(x, y + 2, z);
 
                         QObjetoRigido pinoRigido = new QObjetoRigido(QObjetoDinamico.ESTATICO);
-                        pinoRigido.setMasa(5, QVector3.zero);
+                        pinoRigido.setMasa(5, Vector3.zero);
                         pinoRigido.tipoContenedorColision = QComponenteColision.TIPO_CONTENEDOR_AABB;
                         pinoRigido.crearContenedorColision(pinoG, pino.getTransform());
                         pino.addComponent(pinoRigido);
@@ -282,7 +282,7 @@ public class NivelTest2 extends QEscenario {
                         lampara.move(x, y, z);
 
                         QObjetoRigido rigido = new QObjetoRigido(QObjetoDinamico.ESTATICO);
-                        rigido.setMasa(5, QVector3.zero);
+                        rigido.setMasa(5, Vector3.zero);
                         rigido.tipoContenedorColision = QComponenteColision.TIPO_CONTENEDOR_AABB;
                         rigido.setFormaColision(new QColisionCaja(0.25f, 2.25f, 0.25f));
                         lampara.addComponent(rigido);
@@ -405,7 +405,7 @@ public class NivelTest2 extends QEscenario {
 
         // sol
         Entity sol = new Entity("Sol");
-        QDirectionalLigth solLuz = new QDirectionalLigth(1.1f, QColor.WHITE, 1, QVector3.of(0, 0, 0), true, true);
+        QDirectionalLigth solLuz = new QDirectionalLigth(1.1f, QColor.WHITE, 1, Vector3.of(0, 0, 0), true, true);
         sol.addComponent(solLuz);
         universo.addEntity(sol);
 

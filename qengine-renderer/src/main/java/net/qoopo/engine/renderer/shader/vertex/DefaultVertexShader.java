@@ -8,10 +8,10 @@ package net.qoopo.engine.renderer.shader.vertex;
 import net.qoopo.engine.core.entity.component.animation.Bone;
 import net.qoopo.engine.core.entity.component.mesh.primitive.Vertex;
 import net.qoopo.engine.core.math.QColor;
-import net.qoopo.engine.core.math.QMatriz4;
-import net.qoopo.engine.core.math.QVector2;
-import net.qoopo.engine.core.math.QVector3;
-import net.qoopo.engine.core.math.QVector4;
+import net.qoopo.engine.core.math.Matrix4;
+import net.qoopo.engine.core.math.Vector2;
+import net.qoopo.engine.core.math.Vector3;
+import net.qoopo.engine.core.math.Vector4;
 import net.qoopo.engine.core.util.QGlobal;
 import net.qoopo.engine.core.util.TempVars;
 
@@ -34,15 +34,15 @@ public class DefaultVertexShader implements VertexShader {
      */
     public VertexShaderOutput apply(
             Vertex vertex,
-            QVector3 normal,
-            QVector2 uv,
+            Vector3 normal,
+            Vector2 uv,
             QColor color,
-            QMatriz4 matrizVistaModelo) {
+            Matrix4 matrizVistaModelo) {
         Vertex shadedVertex = new Vertex();
         shadedVertex.setColor(color);
-        QVector3 shadedNormal = new QVector3();
-        QVector4 tmpNormal = new QVector4();
-        QVector4 tmpNormalBone = new QVector4();
+        Vector3 shadedNormal = new Vector3();
+        Vector4 tmpNormal = new Vector4();
+        Vector4 tmpNormalBone = new Vector4();
         try {
             // Pasos
             // 1.En caso de existir un esqueleto, Modificar la posición del vértice de
@@ -52,7 +52,7 @@ public class DefaultVertexShader implements VertexShader {
             // ******* PASO 1 ******************************
             if (vertex.getListaHuesos() != null && vertex.getListaHuesos().length > 0) {
                 Bone hueso;
-                QMatriz4 matrizTransformacionHueso;
+                Matrix4 matrizTransformacionHueso;
                 shadedVertex.location.set(0, 0, 0, 1);// posicion final
                 tmpNormal.set(0, 0, 0, 0);// normal final
                 float peso = 0;

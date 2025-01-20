@@ -7,9 +7,13 @@ package net.qoopo.engine.core.texture.procesador;
 
 import java.awt.Dimension;
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.util.logging.Logger;
 
+import javax.imageio.ImageIO;
+
 import net.qoopo.engine.core.math.QColor;
+import net.qoopo.engine.core.math.Vector3;
 import net.qoopo.engine.core.renderer.post.FilterTexture;
 import net.qoopo.engine.core.renderer.post.filters.antialiasing.MsaaFilter;
 import net.qoopo.engine.core.renderer.post.filters.blur.BlurFilter;
@@ -27,7 +31,7 @@ public class MipmapTexture extends Texture {
 
     public static final int TIPO_BLUR = 1;
     public static final int TIPO_ANTIALIASING = 2;
-    private Texture texturaAtlas;
+    private Texture mipmap;
     private Texture[] textureArray; // permite meyor velocidad
     private Texture currentTexture;
     private int maxLevel;
@@ -40,7 +44,7 @@ public class MipmapTexture extends Texture {
         this.type = tipo;
         textureArray = new Texture[niveles];
         if (textura != null && textura.getWidth() != 0 && textura.getHeight() != 0) {
-            generarMipMap(textura, niveles, tipo);
+            build(textura, niveles, tipo);
             setLevel(1);
         }
     }
@@ -50,19 +54,22 @@ public class MipmapTexture extends Texture {
         this.maxLevel = niveles;
         textureArray = new Texture[niveles];
         if (textura != null && textura.getWidth() != 0 && textura.getHeight() != 0) {
-            generarMipMap(textura, niveles, type);
+            build(textura, niveles, type);
             setLevel(1);
         }
     }
 
     public Texture generarMipMap(Texture textura) {
-        return generarMipMap(textura, maxLevel, type);
+        return build(textura, maxLevel, type);
     }
 
     public void loadTexture(BufferedImage img) {
         Texture texture = new Texture();
         texture.loadTexture(img);
+        generarMipMap(texture);
+    }
 
+    public void loadTexture(Texture texture) {
         generarMipMap(texture);
     }
 
@@ -78,7 +85,7 @@ public class MipmapTexture extends Texture {
      *                 QProcesadorMipMap.TIPO_ANTIALIASING)
      * @return La textura con los mipmap generados
      */
-    public Texture generarMipMap(Texture textura, int maxLevel, int tipo) {
+    public Texture build(Texture textura, int maxLevel, int tipo) {
         logger.info("[+] Generando mipmap");
         // calculo el ancho necesario
         textureArray = new Texture[maxLevel];
@@ -88,25 +95,25 @@ public class MipmapTexture extends Texture {
         for (int iNivel = 2; iNivel <= maxLevel; iNivel++) {
             totalAncho += textura.getWidth() / iNivel;
         }
-        Texture mipmap = new Texture(totalAncho, textura.getHeight());
-
+        mipmap = new Texture(totalAncho, textura.getHeight());
         int xGlobal = 0;
         for (int iNivel = 1; iNivel <= maxLevel; iNivel++) {
             Texture tmp = new Texture();
-
+            logger.info("[+] Generando mipmap  Nivel -> " + iNivel);
             if (iNivel > 1) {
                 FilterTexture filter = null;
                 // textura.getWidth() / iNivel, textura.getHeight() / iNivel
                 switch (tipo) {
                     case TIPO_BLUR:
-                        filter = new BlurFilter(iNivel * 2);
+                        filter = new BlurFilter(1.0f / iNivel, iNivel * 2);
                         break;
                     default:
                     case TIPO_ANTIALIASING:
-                        filter = new MsaaFilter();
+                        filter = new MsaaFilter(1.0f / iNivel);
                         break;
                 }
-                tmp.loadTexture(filter.apply(textura).getImagen());
+                // tmp.loadTexture(filter.apply(textura).getImagen());
+                tmp=filter.apply(textura);
             } else {
                 tmp = textura;// si es el primer nivel guarda la textura sin procesar
             }
@@ -120,19 +127,22 @@ public class MipmapTexture extends Texture {
             textureArray[iNivel - 1] = tmp;
             xGlobal += tmp.getWidth();
         }
-        texturaAtlas = mipmap;
-
         procesar();
         logger.info("[+] Mipmap generado");
+        try {
+            ImageIO.write(mipmap.getImagen(), "png", new File("/tmp/mimap.png"));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         return mipmap;
     }
 
-    public Texture getTexturaAtlas() {
-        return texturaAtlas;
+    public Texture getMipmap() {
+        return mipmap;
     }
 
-    public void setTexturaAtlas(Texture texturaAtlas) {
-        this.texturaAtlas = texturaAtlas;
+    public void setMipmap(Texture texturaAtlas) {
+        this.mipmap = texturaAtlas;
     }
 
     public Texture[] getTextureArray() {
@@ -191,9 +201,9 @@ public class MipmapTexture extends Texture {
 
     @Override
     public void destroy() {
-        if (texturaAtlas != null) {
-            texturaAtlas.destroy();
-            texturaAtlas = null;
+        if (mipmap != null) {
+            mipmap.destroy();
+            mipmap = null;
         }
     }
 
@@ -211,6 +221,11 @@ public class MipmapTexture extends Texture {
 
     public int getHeight() {
         return currentTexture.getHeight();
+    }
+
+    @Override
+    public QColor getColor(Vector3 vector) {
+        return currentTexture.getColor(vector);
     }
 
 }

@@ -16,8 +16,8 @@ import javax.vecmath.Vector3f;
 
 import net.qoopo.engine.core.math.Cuaternion;
 import net.qoopo.engine.core.math.QColor;
-import net.qoopo.engine.core.math.QMatriz3;
-import net.qoopo.engine.core.math.QVector3;
+import net.qoopo.engine.core.math.Matrix3;
+import net.qoopo.engine.core.math.Vector3;
 
 //import javax.vecmath.Point3d;
 //import javax.vecmath.Point3f;
@@ -37,27 +37,27 @@ public class QVectMathUtil {
         return new Color3f(color.r, color.g, color.b);
     }
 
-    public static QVector3 convertirQVector3(Vector3f vector) {
-        return QVector3.of(vector.x, vector.y, vector.z);
+    public static Vector3 convertirQVector3(Vector3f vector) {
+        return Vector3.of(vector.x, vector.y, vector.z);
     }
 
-    public static Vector3f convertirVector3f(QVector3 vector) {
+    public static Vector3f convertirVector3f(Vector3 vector) {
         return new Vector3f(vector.x, vector.y, vector.z);
     }
 
-    public static Vector3d convertirVector3d(QVector3 vector) {
+    public static Vector3d convertirVector3d(Vector3 vector) {
         return new Vector3d(vector.x, vector.y, vector.z);
     }
 
-    public static Point3f convertirPoint3f(QVector3 vector) {
+    public static Point3f convertirPoint3f(Vector3 vector) {
         return new Point3f(vector.x, vector.y, vector.z);
     }
 
-    public static Point3d convertirPoint3d(QVector3 vector) {
+    public static Point3d convertirPoint3d(Vector3 vector) {
         return new Point3d(vector.x, vector.y, vector.z);
     }
 
-    public static Matrix3f convertirMatriz3f(QMatriz3 matriz) {
+    public static Matrix3f convertirMatriz3f(Matrix3 matriz) {
         Matrix3f mat = new Matrix3f(
                 matriz.get(0, 0),
                 matriz.get(0, 1),

@@ -11,7 +11,7 @@ import net.qoopo.engine.core.entity.component.mesh.primitive.Shape;
 import net.qoopo.engine.core.entity.component.mesh.primitive.Vertex;
 import net.qoopo.engine.core.entity.component.modifier.generate.RevolutionModifier;
 import net.qoopo.engine.core.material.Material;
-import net.qoopo.engine.core.math.QVector3;
+import net.qoopo.engine.core.math.Vector3;
 
 /**
  * Genera un toroide con el modificador de revolucion
@@ -72,9 +72,9 @@ public class Torus2 extends Shape {
         Vertex inicial = this.addVertex(0, minorRadius, 0); // primer vertice
         addUV(0, 1);
 
-        QVector3 vector = QVector3.of(inicial.location.x, inicial.location.y, inicial.location.z);
+        Vector3 vector = Vector3.of(inicial.location.x, inicial.location.y, inicial.location.z);
         float angulo = 360.0f / sideCount;
-        QVector3 tmp = vector;
+        Vector3 tmp = vector;
         // se crean las sectorCount menos la ultima
         for (int i = 1; i < sideCount; i++) {
             tmp = tmp.rotateZ((float) Math.toRadians(angulo));

@@ -13,7 +13,6 @@ import net.qoopo.engine.core.math.QColor;
 import net.qoopo.engine.core.math.QMath;
 import net.qoopo.engine.core.renderer.RenderEngine;
 import net.qoopo.engine.core.scene.Scene;
-import net.qoopo.engine.core.texture.util.MaterialUtil;
 import net.qoopo.engine3d.test.scene.MakeTestScene;
 
 /**
@@ -28,11 +27,11 @@ public class PbrTest extends MakeTestScene {
 
     }
 
-    public void make(Scene escena) {
-        this.scene = escena;
+    public void make(Scene scene) {
+        this.scene = scene;
 
-        int nrRows = 5;
-        int nrColumns = 5;
+        int nrRows = 7;
+        int nrColumns = 7;
         float spacing = 2.5f;
 
         Mesh mesh = new Sphere();
@@ -42,13 +41,13 @@ public class PbrTest extends MakeTestScene {
                 float roughness = (float) QMath.round((float) col / (float) nrColumns, 2);
                 float metalness = (float) QMath.round((float) row / (float) nrRows, 2);
                 Material material = new Material("PBR-" + roughness + " " + metalness);
-                material.setColor(QColor.RED);
+                material.setColor(QColor.DEFAULT);
                 material.setRoughness(roughness);
-                material.setMetallic(metalness);
+                material.setMetalness(metalness);
                 Entity objeto = new Entity("PBR-" + roughness + " " + metalness);
                 objeto.move((col - (nrColumns / 2)) * spacing, (row - (nrRows / 2)) * spacing, 0);
-                objeto.addComponent(MaterialUtil.applyMaterial(mesh.clone(), material));
-                escena.addEntity(objeto);
+                objeto.addComponent(mesh.clone().applyMaterial(material));
+                scene.addEntity(objeto);
             }
         }
 

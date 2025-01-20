@@ -2,20 +2,20 @@ package net.qoopo.engine.core.lwjgl.asset;
 
 import org.lwjgl.assimp.AIBone;
 
-import net.qoopo.engine.core.math.QMatriz4;
+import net.qoopo.engine.core.math.Matrix4;
 
 public class AssimpBone {
 
     private final int boneId;
     private int boneParentId;
     private final String boneName;
-    private QMatriz4 offsetMatrix;
+    private Matrix4 offsetMatrix;
     private AIBone aiBone;
     
     //cadena utilizada para ordenar la lista desde los nodos mas cercanos a la raiz hasta los nodos que estan mas debajo en la jerarquia
     private String rutaJerarquia;
 
-    public AssimpBone(int boneId, String boneName, QMatriz4 offsetMatrix, AIBone aiBone) {
+    public AssimpBone(int boneId, String boneName, Matrix4 offsetMatrix, AIBone aiBone) {
         this.boneId = boneId;
         this.boneName = boneName;
         this.offsetMatrix = offsetMatrix;
@@ -38,7 +38,7 @@ public class AssimpBone {
         return boneName;
     }
 
-    public QMatriz4 getOffsetMatrix() {
+    public Matrix4 getOffsetMatrix() {
         return offsetMatrix;
     }
 

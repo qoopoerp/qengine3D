@@ -35,12 +35,14 @@ import net.qoopo.engine.core.entity.component.mesh.primitive.shape.Sphere;
 import net.qoopo.engine.core.entity.component.mesh.primitive.shape.Teapot;
 import net.qoopo.engine.core.material.Material;
 import net.qoopo.engine.core.math.QColor;
-import net.qoopo.engine.core.math.QVector3;
+import net.qoopo.engine.core.math.Vector3;
 import net.qoopo.engine.core.renderer.RenderEngine;
 import net.qoopo.engine.core.renderer.superficie.QJPanel;
 import net.qoopo.engine.core.renderer.superficie.Superficie;
 import net.qoopo.engine.core.scene.Camera;
 import net.qoopo.engine.core.scene.Scene;
+import net.qoopo.engine.core.texture.CubeMapTexture;
+import net.qoopo.engine.core.texture.HDRITexture;
 import net.qoopo.engine.core.texture.Texture;
 import net.qoopo.engine.core.texture.procesador.MipmapTexture;
 import net.qoopo.engine.core.texture.util.MaterialUtil;
@@ -125,12 +127,12 @@ public class EditorMaterial extends javax.swing.JPanel {
             renderVistaPrevia = AssetManager.get().getRendererFactory().createRenderEngine(scene, "Vista Previa",
                     new Superficie(pnl), 0, 0);
             Camera camara = new Camera("Material");
-            camara.lookAtTarget(QVector3.of(1.2f, 1.2f, 1.2f), QVector3.of(0, 0, 0), QVector3.of(0, 1, 0));
+            camara.lookAtTarget(Vector3.of(1.2f, 1.2f, 1.2f), Vector3.of(0, 0, 0), Vector3.of(0, 1, 0));
             camara.frustrumLejos = 20.0f;
             renderVistaPrevia.setCamera(camara);
 
             Entity luz = new Entity("luz");
-            luz.addComponent(new QDirectionalLigth(QVector3.of(-1f, -0.5f, -1.5f)));
+            luz.addComponent(new QDirectionalLigth(Vector3.of(-1f, -0.5f, -1.5f)));
 
             fondoVistaPrevia = crearFondoCuadros();
             entidadVistaPrevia = crearTestEsfera(new Material(QColor.LIGHT_GRAY, 50));
@@ -169,7 +171,7 @@ public class EditorMaterial extends javax.swing.JPanel {
             }
             spnSpecExp.setValue((float) material.getSpecularExponent());
             sldAlpha.setValue((int) (material.getTransAlfa() * sldAlpha.getMaximum()));
-            sldMetalico.setValue((int) (material.getMetallic() * sldMetalico.getMaximum()));
+            sldMetalico.setValue((int) (material.getMetalness() * sldMetalico.getMaximum()));
             sldRugosidad.setValue((int) (material.getRoughness() * sldRugosidad.getMaximum()));
             // sldEspecularidad.setValue((int) (material.getEspecular() *
             // sldEspecularidad.getMaximum()));
@@ -213,8 +215,9 @@ public class EditorMaterial extends javax.swing.JPanel {
                         pnlNormalMap);
             }
             // if (material.getMapaDesplazamiento() != null) {
-            //     mapaDesplazamiento.getGraphics()
-            //             .drawImage(material.getMapaDesplazamiento().getImagen(pnlDispMap.getSize()), 0, 0, pnlDispMap);
+            // mapaDesplazamiento.getGraphics()
+            // .drawImage(material.getMapaDesplazamiento().getImagen(pnlDispMap.getSize()),
+            // 0, 0, pnlDispMap);
             // }
             if (material.getEnvMap() != null) {
                 mapaEntorno.getGraphics().drawImage(material.getEnvMap().getImagen(pnlEntornoMap.getSize()), 0, 0,
@@ -252,12 +255,12 @@ public class EditorMaterial extends javax.swing.JPanel {
             pnlIrrMap.paint(pnlIrrMap.getGraphics());
             // spnNormalAmount.setValue(material.getFactorNormal());
             spnFactorRefraccion.setValue(material.getIor());
-            spnFactorEmision.setValue(material.getEmision());
+            spnFactorEmision.setValue(material.getEmissionIntensity());
             chkTransparencia.setSelected(material.isTransparent());
             chkReflexion.setSelected(material.isReflexion());
             chkRefraccion.setSelected(material.isRefraccion());
-            optCubo.setSelected(material.getEnvMapType() == 1);
-            optHDRI.setSelected(material.getEnvMapType() == 2);
+            optCubo.setSelected(material.getEnvMap() instanceof CubeMapTexture);
+            optHDRI.setSelected(material.getEnvMap() instanceof HDRITexture);
             objectLock = false;
         } catch (Exception e) {
             e.printStackTrace();
@@ -336,26 +339,26 @@ public class EditorMaterial extends javax.swing.JPanel {
             activeMaterial.setTransAlfa((float) sldAlpha.getValue() / sldAlpha.getMaximum());
             // activeMaterial.setFactorNormal(getFloatFromSpinner(spnNormalAmount));
             activeMaterial.setRoughness((float) sldRugosidad.getValue() / sldRugosidad.getMaximum());
-            activeMaterial.setMetallic((float) sldMetalico.getValue() / sldMetalico.getMaximum());
+            activeMaterial.setMetalness((float) sldMetalico.getValue() / sldMetalico.getMaximum());
             // activeMaterial.setEspecular((float) sldEspecularidad.getValue() /
             // sldEspecularidad.getMaximum());
 
             sldRugosidad.setToolTipText("Rugosidad (" + activeMaterial.getRoughness() + "):");
-            sldMetalico.setToolTipText("Metalico (" + activeMaterial.getMetallic() + "):");
+            sldMetalico.setToolTipText("Metalico (" + activeMaterial.getMetalness() + "):");
             // sldEspecularidad.setToolTipText("Especularidad (" +
             // activeMaterial.getEspecular() + "):");
 
             // activeMaterial.setFactorReflexion(getFloatFromSpinner(spnFactorReflexion));
             activeMaterial.setIor(getFloatFromSpinner(spnFactorRefraccion));
-            activeMaterial.setEmision(getFloatFromSpinner(spnFactorEmision));
+            activeMaterial.setEmissionIntensity(getFloatFromSpinner(spnFactorEmision));
             activeMaterial.setTransparent(chkTransparencia.isSelected());
             activeMaterial.setReflexion(chkReflexion.isSelected());
             activeMaterial.setRefraccion(chkRefraccion.isSelected());
 
             if (optHDRI.isSelected()) {
-                activeMaterial.setEnvMapType(2);
+                // activeMaterial.setEnvMapType(2);
             } else {
-                activeMaterial.setEnvMapType(1);
+                // activeMaterial.setEnvMapType(1);
             }
             if (activeMaterial.getColorMap() != null) {
                 activeMaterial.getColorMap().setMuestrasU(Float.parseFloat(txtMU_Difusa.getText()));
@@ -374,8 +377,8 @@ public class EditorMaterial extends javax.swing.JPanel {
                 activeMaterial.getNormalMap().setMuestrasV(Float.parseFloat(txtMV_Normal.getText()));
             }
             // if (activeMaterial.getMapaDesplazamiento() != null) {
-            //     activeMaterial.getMapaDesplazamiento().setMuestrasU(Float.parseFloat(txtMU_Disp.getText()));
-            //     activeMaterial.getMapaDesplazamiento().setMuestrasV(Float.parseFloat(txtMV_Disp.getText()));
+            // activeMaterial.getMapaDesplazamiento().setMuestrasU(Float.parseFloat(txtMU_Disp.getText()));
+            // activeMaterial.getMapaDesplazamiento().setMuestrasV(Float.parseFloat(txtMV_Disp.getText()));
             // }
             if (activeMaterial.getAlphaMap() != null) {
                 activeMaterial.getAlphaMap().setMuestrasU(Float.parseFloat(txtMU_Transp.getText()));
@@ -2756,7 +2759,7 @@ public class EditorMaterial extends javax.swing.JPanel {
 
                 activeMaterial
                         .setEnvMap(new MipmapTexture(tmp.getEnvMap(), 5, MipmapTexture.TIPO_BLUR));
-                activeMaterial.setEnvMapType(EnvProbe.FORMATO_MAPA_CUBO);// mapa cubico
+                // activeMaterial.setEnvMapType(EnvProbe.FORMATO_MAPA_CUBO);// mapa cubico
                 populateMaterialControl(activeMaterial);
                 tmp.destroy();
                 tmp = null;
@@ -2867,9 +2870,16 @@ public class EditorMaterial extends javax.swing.JPanel {
                     new FileNameExtensionFilter("Archivos soportados", "png", "jpg", "jpeg", "bmp", "gif", "hdr"));
             if (chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
                 try {
-                    activeMaterial.setEnvMap(new MipmapTexture(
-                            new Texture(ImageIO.read(chooser.getSelectedFile())), 5, MipmapTexture.TIPO_BLUR));
-                    activeMaterial.setEnvMapType(2);// por default HDRI
+                    if (optHDRI.isSelected())
+                        activeMaterial
+                                .setEnvMap(new MipmapTexture(new HDRITexture(ImageIO.read(chooser.getSelectedFile())),
+                                        5, MipmapTexture.TIPO_BLUR));
+                    else
+                        activeMaterial
+                                .setEnvMap(
+                                        new MipmapTexture(new CubeMapTexture(ImageIO.read(chooser.getSelectedFile())),
+                                                5, MipmapTexture.TIPO_BLUR));
+                    // activeMaterial.setEnvMapType(2);// por default HDRI
                     populateMaterialControl(activeMaterial);
                 } catch (IOException ex) {
                     Logger.getLogger(Principal.class.getName()).log(Level.SEVERE, null, ex);
@@ -3082,7 +3092,6 @@ public class EditorMaterial extends javax.swing.JPanel {
                         textures[5]);
 
                 activeMaterial.setHdrMap(tmp.getEnvMap());
-                activeMaterial.setEnvMapType(EnvProbe.FORMATO_MAPA_CUBO);// mapa cubico
                 populateMaterialControl(activeMaterial);
                 tmp.destroy();
                 tmp = null;

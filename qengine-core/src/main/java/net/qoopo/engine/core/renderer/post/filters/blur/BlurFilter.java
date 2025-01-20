@@ -33,7 +33,7 @@ public class BlurFilter implements FilterTexture {
     private static final int KERNEL_SIZE = 11;
     // private static final int MITAD = KERNEL_SIZE / 2;
     private static final int MITAD = 5;
-    private float escala = 0.25f;
+    private float scale = 0.25f;
     private int repeticiones = 1;
 
     // 31
@@ -44,34 +44,33 @@ public class BlurFilter implements FilterTexture {
     // 0.000538f, 0.000169f, 0.000048f, 0.000012f, 0.000003f, 0.000001f};
     // private static int kernel_size = 31;
     // private static int mitad = 15;
-    private boolean usarEscala = false;
 
-    public BlurFilter(float escala, int repeticiones) {
-        this.escala = escala;
+    public BlurFilter(float scale, int repeticiones) {
+        this.scale = scale;
         this.repeticiones = repeticiones;
-        usarEscala = true;
+
     }
 
     public BlurFilter(int repeticiones) {
         this.repeticiones = repeticiones;
-        usarEscala = false;
+
     }
 
     public BlurFilter() {
-        usarEscala = false;
+
     }
 
     @Override
     public Texture apply(Texture... buffer) {
         Texture output = new Texture();
         try {
-            int ancho = buffer[0].getWidth();
-            int alto = buffer[0].getHeight();
+            int ancho = (int) (buffer[0].getWidth() * scale);
+            int alto = (int) (buffer[0].getHeight() * scale);
             output.loadTexture(buffer[0].getImagen());
-            if (usarEscala) {
-                ancho = (int) (output.getWidth() * escala);
-                alto = (int) (output.getHeight() * escala);
-            }
+            // if (usarEscala) {
+            // ancho = (int) (output.getWidth() * scale);
+            // alto = (int) (output.getHeight() * scale);
+            // }
             for (int i = 1; i <= repeticiones; i++) {
                 output = transpuestodHBlur(transpuestodHBlur(output, ancho, alto), alto, ancho);
             }

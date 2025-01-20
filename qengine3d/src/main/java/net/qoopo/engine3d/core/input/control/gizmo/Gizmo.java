@@ -5,6 +5,8 @@
  */
 package net.qoopo.engine3d.core.input.control.gizmo;
 
+import lombok.Getter;
+import lombok.Setter;
 import net.qoopo.engine.core.entity.Entity;
 
 /**
@@ -14,6 +16,8 @@ import net.qoopo.engine.core.entity.Entity;
  *
  * @author alberto
  */
+@Getter
+@Setter
 public abstract class Gizmo extends Entity {
 
     /**
@@ -25,14 +29,6 @@ public abstract class Gizmo extends Entity {
 
     public void updateLocationGizmo() {
 
-    }
-
-    public Entity getEntidad() {
-        return entity;
-    }
-
-    public void setEntidad(Entity entity) {
-        this.entity = entity;
     }
 
     public static float getDelta(float deltaX, float deltaY) {

@@ -20,7 +20,7 @@ import net.qoopo.engine.core.entity.component.physics.dinamica.QObjetoDinamico;
 import net.qoopo.engine.core.entity.component.physics.dinamica.QObjetoRigido;
 import net.qoopo.engine.core.material.Material;
 import net.qoopo.engine.core.math.QColor;
-import net.qoopo.engine.core.math.QVector3;
+import net.qoopo.engine.core.math.Vector3;
 import net.qoopo.engine.core.texture.Texture;
 import net.qoopo.engine.core.texture.util.MaterialUtil;
 import net.qoopo.engine.core.util.ComponentUtil;
@@ -47,7 +47,7 @@ public class QEmisorNieve extends ParticleEmissor {
         }
     }
 
-    public QEmisorNieve(AABB ambito, float tiempoVida, int maximoParticulas, int velocidadEmision, QVector3 direccion) {
+    public QEmisorNieve(AABB ambito, float tiempoVida, int maximoParticulas, int velocidadEmision, Vector3 direccion) {
         super(ambito, tiempoVida, maximoParticulas, velocidadEmision, direccion);
         cargarMaterial();
     }
@@ -72,7 +72,7 @@ public class QEmisorNieve extends ParticleEmissor {
                 entParticula.addComponent(colision);
 
                 QObjetoRigido rigido = new QObjetoRigido(QObjetoDinamico.DINAMICO);
-                rigido.setMasa(0.00005f, QVector3.zero.clone());
+                rigido.setMasa(0.00005f, Vector3.zero.clone());
                 // rigido.setMasa(0.0005f, QVector3.zero.clone());
                 rigido.setFormaColision(colision);
                 entParticula.addComponent(rigido);
@@ -83,13 +83,13 @@ public class QEmisorNieve extends ParticleEmissor {
                 // ubicacion inicial de la particula
                 entParticula.move(
                         entity.getMatrizTransformacion(System.currentTimeMillis()).toTranslationVector().x
-                                + rnd.nextFloat() * (ambito.aabMaximo.location.x - ambito.aabMinimo.location.x)
-                                + ambito.aabMinimo.location.x,
+                                + rnd.nextFloat() * (ambito.max.x - ambito.min.x)
+                                + ambito.min.x,
                         entity.getMatrizTransformacion(System.currentTimeMillis()).toTranslationVector().y
-                                + ambito.aabMaximo.location.y,
+                                + ambito.max.y,
                         entity.getMatrizTransformacion(System.currentTimeMillis()).toTranslationVector().z
-                                + rnd.nextFloat() * (ambito.aabMaximo.location.z - ambito.aabMinimo.location.z)
-                                + ambito.aabMinimo.location.z);
+                                + rnd.nextFloat() * (ambito.max.z - ambito.min.z)
+                                + ambito.min.z);
                 entParticula.rotate(0, (float) (rnd.nextFloat() * Math.toRadians(180)), 0);
                 nueva.objeto = entParticula;
                 // nueva.objeto.setPadre(this.entity);
@@ -107,7 +107,7 @@ public class QEmisorNieve extends ParticleEmissor {
             // copo.setTiempoVida(copo.getTiempoVida() - 0.1f);
             // si ya paso su tiempo de vida o ya esta fuera del ambito en la altura
             if ((System.currentTimeMillis() - particula.getTiempoCreacion()) / 1000 > particula.getTiempoVida()
-                    || (particula.objeto.getTransform().getLocation().y < ambito.aabMinimo.location.y)) {
+                    || (particula.objeto.getTransform().getLocation().y < ambito.min.y)) {
                 particulasEliminadas.add(particula);
                 actuales--;
                 particula.objeto.setToRender(false);
@@ -130,7 +130,7 @@ public class QEmisorNieve extends ParticleEmissor {
 
         for (Particle copo : this.particulas) {
             QObjetoRigido rigido = (QObjetoRigido) ComponentUtil.getComponent(copo.objeto, QObjetoRigido.class);
-            rigido.agregarFuerzas(QVector3.of(
+            rigido.agregarFuerzas(Vector3.of(
                     rnd.nextFloat() * (maxMov - miniMov) + miniMov,
                     rnd.nextFloat() * (maxMov - miniMov) + miniMov,
                     rnd.nextFloat() * (maxMov - miniMov) + miniMov));

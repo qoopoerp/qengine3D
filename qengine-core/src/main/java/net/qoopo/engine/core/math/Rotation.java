@@ -17,7 +17,7 @@ public class Rotation implements Serializable {
     public static final int CUATERNION = 2;
     private int tipo = ANGULOS_EULER;
     private Cuaternion cuaternion = new Cuaternion();
-    private QVector3 eulerAngles = new QVector3();
+    private Vector3 eulerAngles = new Vector3();
 
     public Rotation() {
         tipo = ANGULOS_EULER;
@@ -54,7 +54,7 @@ public class Rotation implements Serializable {
         this.cuaternion = cuaternion;
     }
 
-    public QVector3 getEulerAngles() {
+    public Vector3 getEulerAngles() {
         if (tipo == CUATERNION) {
             updateEuler();
         }
@@ -70,7 +70,7 @@ public class Rotation implements Serializable {
         cuaternion.fromAngles(eulerAngles.x, eulerAngles.y, eulerAngles.z);
     }
 
-    public void setEulerAngles(QVector3 angulos) {
+    public void setEulerAngles(Vector3 angulos) {
         this.eulerAngles = angulos;
         updateCuaternion();
     }

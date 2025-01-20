@@ -8,7 +8,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 
-import net.qoopo.engine.core.math.QVector3;
+import net.qoopo.engine.core.math.Vector3;
 
 public class AdvancedTriangleRasterizer {
 
@@ -147,7 +147,7 @@ public class AdvancedTriangleRasterizer {
                 Color textureColor = sampleTexture(texture, u, v);
 
                 // Aplicar iluminación
-                Color shadedColor = applyLighting(textureColor,  QVector3.of(0f, 0f, -1.0f));
+                Color shadedColor = applyLighting(textureColor,  Vector3.of(0f, 0f, -1.0f));
 
                 // Dibujar píxel
                 canvas.setRGB(x, y, shadedColor.getRGB());
@@ -155,11 +155,11 @@ public class AdvancedTriangleRasterizer {
         }
     }
 
-    private static Color applyLighting(Color color, QVector3 normal) {
+    private static Color applyLighting(Color color, Vector3 normal) {
         double ambient = 0.2;
         double diffuse = 0.8;
 
-        QVector3 lightDir = QVector3.of(0, 0, -1).normalize();
+        Vector3 lightDir = Vector3.of(0, 0, -1).normalize();
         double intensity = Math.max(0, normal.dot(lightDir));
 
         int r = (int) (color.getRed() * (ambient + diffuse * intensity));

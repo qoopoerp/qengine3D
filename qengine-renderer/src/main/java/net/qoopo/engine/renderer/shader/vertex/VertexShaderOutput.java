@@ -7,8 +7,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import net.qoopo.engine.core.entity.component.mesh.primitive.Vertex;
 import net.qoopo.engine.core.math.QColor;
-import net.qoopo.engine.core.math.QVector2;
-import net.qoopo.engine.core.math.QVector3;
+import net.qoopo.engine.core.math.Vector2;
+import net.qoopo.engine.core.math.Vector3;
 
 @Getter
 @Setter
@@ -17,7 +17,7 @@ import net.qoopo.engine.core.math.QVector3;
 @Builder
 public class VertexShaderOutput {
     private Vertex vertex;
-    private QVector3 normal;
-    private QVector2 uv;
+    private Vector3 normal;
+    private Vector2 uv;
     private QColor color;
 }

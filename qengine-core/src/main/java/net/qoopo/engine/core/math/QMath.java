@@ -162,18 +162,18 @@ final public class QMath {
         // newVertex.normal.z = interpolateLinear(alpha, start.normal.z, end.normal.z);
     }
 
-    public static void interpolateLinear(QVector2 newVector, float alpha, QVector2 start, QVector2 end) {
+    public static void interpolateLinear(Vector2 newVector, float alpha, Vector2 start, Vector2 end) {
         newVector.x = interpolateLinear(alpha, start.x, end.x);
         newVector.y = interpolateLinear(alpha, start.y, end.y);
     }
 
-    public static void interpolateLinear(QVector3 newVector, float alpha, QVector3 start, QVector3 end) {
+    public static void interpolateLinear(Vector3 newVector, float alpha, Vector3 start, Vector3 end) {
         newVector.x = interpolateLinear(alpha, start.x, end.x);
         newVector.y = interpolateLinear(alpha, start.y, end.y);
         newVector.z = interpolateLinear(alpha, start.z, end.z);
     }
 
-    public static void interpolateLinear(QVector4 newVector, float alpha, QVector4 start, QVector4 end) {
+    public static void interpolateLinear(Vector4 newVector, float alpha, Vector4 start, Vector4 end) {
         newVector.x = interpolateLinear(alpha, start.x, end.x);
         newVector.y = interpolateLinear(alpha, start.y, end.y);
         newVector.z = interpolateLinear(alpha, start.z, end.z);
@@ -790,14 +790,14 @@ final public class QMath {
                 mix(a.b, b.b, factor));
     }
 
-    public static QVector3 mix(QVector3 a, QVector3 b, float factor) {
-        return QVector3.of(
+    public static Vector3 mix(Vector3 a, Vector3 b, float factor) {
+        return Vector3.of(
                 mix(a.x, b.x, factor),
                 mix(a.y, b.y, factor),
                 mix(a.z, b.z, factor));
     }
 
-    public static QVector3 max(QVector3 a, QVector3 b) {
+    public static Vector3 max(Vector3 a, Vector3 b) {
         // return QVector3.of(
         // Math.max(a.x, b.x),
         // Math.max(a.y, b.y),
@@ -805,8 +805,8 @@ final public class QMath {
         return a.length() > b.length() ? a : b;
     }
 
-    public static QVector3 min(QVector3 a, QVector3 b) {
-        return QVector3.of(
+    public static Vector3 min(Vector3 a, Vector3 b) {
+        return Vector3.of(
                 Math.min(a.x, b.x),
                 Math.min(a.y, b.y),
                 Math.min(a.z, b.z));
@@ -825,7 +825,7 @@ final public class QMath {
      * @param normal
      * @return
      */
-    public static QVector3 reflejarVector(QVector3 vectorIncidente, QVector3 normal) {
+    public static Vector3 reflejarVector(Vector3 vectorIncidente, Vector3 normal) {
         // out = incidentVec - 2.f * Dot(incidentVec, normal) * normal;
         TempVars tmp = TempVars.get();
         tmp.vector3f1.set(vectorIncidente);
@@ -846,7 +846,7 @@ final public class QMath {
      * @param idr    Indice de refraccion de la superficie
      * @return
      */
-    public static QVector3 refractarVector(QVector3 vector, QVector3 normal, float idr) {
+    public static Vector3 refractarVector(Vector3 vector, Vector3 normal, float idr) {
         // return refractarVector2(vector, normal, idr); //esa funcion no necesita
         // invertir el indice de refraccion
         idr = idr > 0.0f ? 1.0f / idr : 0.0f; // indice del aire sobre indice del material
@@ -864,7 +864,7 @@ final public class QMath {
      * @param idr    Indice de refraccion entrante / indice refraccion material
      * @return
      */
-    private static QVector3 refractarVectorGL(QVector3 vector, QVector3 normal, float idr) {
+    private static Vector3 refractarVectorGL(Vector3 vector, Vector3 normal, float idr) {
         TempVars tmp = TempVars.get();
         float N_dot_I = vector.dot(normal); // cos angulo
         float k = 1.0f - idr * idr * (1.0f - N_dot_I * N_dot_I);
@@ -898,15 +898,15 @@ final public class QMath {
      * @param idr    Indice de refraccion entrante / indice regraccion material
      * @return
      */
-    private static QVector3 refractarVector1(QVector3 vector, QVector3 normal, float idr) {
+    private static Vector3 refractarVector1(Vector3 vector, Vector3 normal, float idr) {
         float N_dot_I = -vector.dot(normal); // cos angulo
         float k = idr * idr * (1.f - N_dot_I * N_dot_I);
         if (k > 1.f) {
-            return QVector3.empty();
+            return Vector3.empty();
         } else {
             float cosT2 = (float) Math.sqrt(1 - k);
-            return QVector3.multiply(idr, vector).add(
-                    QVector3.multiply((float) (idr * N_dot_I - cosT2), normal));
+            return Vector3.multiply(idr, vector).add(
+                    Vector3.multiply((float) (idr * N_dot_I - cosT2), normal));
         }
     }
 
@@ -918,10 +918,10 @@ final public class QMath {
      * @param idr
      * @return
      */
-    private static QVector3 refractarVector2(QVector3 vector, QVector3 normal, float idr) {
+    private static Vector3 refractarVector2(Vector3 vector, Vector3 normal, float idr) {
         float cosi = clamp(-1, 1, vector.dot(normal));
         float idr_e = 1, idr_s = 1 / idr; // ior;
-        QVector3 n = normal.clone();
+        Vector3 n = normal.clone();
         if (cosi < 0) {
             cosi = -cosi;
         } else {
@@ -934,9 +934,9 @@ final public class QMath {
 
         float k = 1 - idr * idr * (1 - cosi * cosi);
         if (k < 0.f) {
-            return QVector3.empty();
+            return Vector3.empty();
         } else {
-            return QVector3.multiply(idr, vector).add(QVector3.multiply((float) (idr * cosi - Math.sqrt(k)), normal));
+            return Vector3.multiply(idr, vector).add(Vector3.multiply((float) (idr * cosi - Math.sqrt(k)), normal));
         }
 
     }
@@ -950,7 +950,7 @@ final public class QMath {
      * @param idr
      * @return
      */
-    public static float factorFresnel(QVector3 vector, QVector3 normal, float idr) {
+    public static float factorFresnel(Vector3 vector, Vector3 normal, float idr) {
         TempVars tmp = TempVars.get();
         tmp.vector3f1.set(vector);
         // factorFresnel= tm.vector3f1.clone().multiply(-1f).dot(tm.vector3f2);
@@ -965,12 +965,12 @@ final public class QMath {
     }
 
     // https://elcodigografico.wordpress.com/2014/03/29/coordenadas-baricentricas-en-triangulos/
-    public static float barycentricSide(float x, float y, QVector2 pa, QVector2 pb) {
+    public static float barycentricSide(float x, float y, Vector2 pa, Vector2 pb) {
         return (pa.y - pb.y) * x + (pb.x - pa.x) * y + pa.x * pb.y - pb.x * pa.y;
     }
 
-    public static void getBarycentricCoordinates(QVector3 salida, float x, float y, QVector2 v1, QVector2 v2,
-            QVector2 v3) {
+    public static void getBarycentricCoordinates(Vector3 salida, float x, float y, Vector2 v1, Vector2 v2,
+            Vector2 v3) {
         // alpha
         salida.x = barycentricSide(x, y, v2, v3) / barycentricSide(v1.x, v1.y, v2, v3);
         // theta
@@ -987,7 +987,8 @@ final public class QMath {
     // gamma = barycentricSide( x, y, v1, v2 ) / r3;
     // }
     public static QColor calcularColorLuz(QColor colorDifuso, QColor colorEspecular, QColor colorLuz, float intensidad,
-            QVector3 posicion, QVector3 vectorHaciaLuz, QVector3 normal, float exponenteEspecular, float reflectancia) {
+            Vector3 posicion, Vector3 vectorHaciaLuz, Vector3 normal, float exponenteEspecular, float reflectancia,
+            float atenuacion, float spotFactor) {
         QColor diffuseColour;
         QColor specColour;
 
@@ -996,27 +997,16 @@ final public class QMath {
         diffuseColour = colorDifuso.clone().scale(colorLuz.clone().scale(intensidad * diffuseFactor));
 
         // Specular Light
-        QVector3 camera_direction = posicion.clone().invert().normalize();
+        Vector3 camera_direction = posicion.clone().invert().normalize();
         // QVector3 camera_direction = posicion.clone().normalize();
-        QVector3 vectorDesdeLuz = vectorHaciaLuz.invert();
+        Vector3 vectorDesdeLuz = vectorHaciaLuz.invert();
         // QVector3 from_light_dir = vectorLuz;
-        QVector3 luzReflejada = QMath.reflejarVector(vectorDesdeLuz, normal).normalize();
+        Vector3 luzReflejada = QMath.reflejarVector(vectorDesdeLuz, normal).normalize();
         float specularFactor = Math.max(camera_direction.dot(luzReflejada), 0.0f);
         specularFactor = (float) Math.pow(specularFactor, exponenteEspecular);
         specColour = colorEspecular.clone().scale(colorLuz.clone().scale(intensidad * specularFactor * reflectancia));
 
-        return diffuseColour.add(specColour);
-    }
-
-    public static QColor calcularColorLuzPBR(QColor colorDifuso, QColor colorEspecular, QColor colorLuz,
-            float intensidad, QVector3 posicion, QVector3 vectorLuz, QVector3 normal, float exponenteEspecular,
-            float reflectancia) {
-        QColor diffuseColour;
-        float cosTheta = Math.max(vectorLuz.dot(normal), 0.0f);
-        // float atenuacion=calculateAttenuation(posicion, lightPos);
-        diffuseColour = colorLuz.clone().scale(intensidad * cosTheta);
-
-        return diffuseColour;
+        return diffuseColour.add(specColour).scaleLocal(atenuacion * spotFactor);
     }
 
     // ---------------------------------------------------- FUNCIONES PARA EL
@@ -1030,9 +1020,9 @@ final public class QMath {
      * @param F0
      * @return
      */
-    public static QVector3 fresnelSchlick(float HdotV, QVector3 F0) {
+    public static Vector3 fresnelSchlick(float HdotV, Vector3 F0) {
         // return F0 +(1.0 - F0) * pow(1.0 - dot(H,V), 5.0);
-        return F0.clone().add(QVector3.of(1.0f).subtract(F0).multiply(QMath.pow(1.0f - HdotV, 5.0f)));
+        return F0.clone().add(Vector3.of(1.0f).subtract(F0).multiply(QMath.pow(1.0f - HdotV, 5.0f)));
     }
 
     /**
@@ -1045,9 +1035,9 @@ final public class QMath {
      * @param roughness
      * @return
      */
-    public static QVector3 fresnelSchlick(float HdotV, QVector3 F0, float roughness) {
+    public static Vector3 fresnelSchlick(float HdotV, Vector3 F0, float roughness) {
         // return F0 + (max(vec3(1.0 - roughness), F0) - F0) * pow(1.0 - cosTheta, 5.0);
-        return F0.clone().add(QMath.max(QVector3.unitario_xyz.clone().add(-roughness), F0).subtract(F0)
+        return F0.clone().add(QMath.max(Vector3.unitario_xyz.clone().add(-roughness), F0).subtract(F0)
                 .multiply(QMath.pow(1.0f - HdotV, 5.0f)));
     }
 
@@ -1075,7 +1065,7 @@ final public class QMath {
         return NdotV / (NdotV * (1.0f - k) + k);
     }
 
-    public static float GeometrySmith(QVector3 N, QVector3 V, QVector3 L, float roughness) {
+    public static float GeometrySmith(Vector3 N, Vector3 V, Vector3 L, float roughness) {
         float NdotV = (float) Math.max(N.dot(V), 0.0);
         float NdotL = (float) Math.max(N.dot(L), 0.0);
         float ggx2 = GeometrySchlickGGX(NdotV, roughness);
@@ -1102,12 +1092,12 @@ final public class QMath {
         return ggx1 * ggx2;
     }
 
-    public static QVector3 EnvBRDFApprox(QVector3 kS, float roughness, float NoV) {
-        QVector4 c0 = new QVector4(-1, -0.0275f, -0.572f, 0.022f);
-        QVector4 c1 = new QVector4(1, 0.0425f, 1.04f, -0.04f);
-        QVector4 r = c0.multiply(roughness).add(c1);
+    public static Vector3 EnvBRDFApprox(Vector3 kS, float roughness, float NoV) {
+        Vector4 c0 = new Vector4(-1, -0.0275f, -0.572f, 0.022f);
+        Vector4 c1 = new Vector4(1, 0.0425f, 1.04f, -0.04f);
+        Vector4 r = c0.multiply(roughness).add(c1);
         float a004 = Math.min(r.x * r.x, (float) Math.pow(2, -9.28f * NoV)) * r.x + r.y;
-        QVector2 AB = new QVector2(-1.04f, 1.04f).multiply(a004).add(new QVector2(r.z, r.w));
+        Vector2 AB = new Vector2(-1.04f, 1.04f).multiply(a004).add(new Vector2(r.z, r.w));
         return kS.multiply(AB.x).add(AB.y);
     }
 
@@ -1120,15 +1110,15 @@ final public class QMath {
      *                     new
      *                     vector object is created and returned.
      */
-    public static QVector3 sphericalToCartesian(final QVector3 sphereCoords, final QVector3 store) {
+    public static Vector3 sphericalToCartesian(final Vector3 sphereCoords, final Vector3 store) {
         final float a = sphereCoords.x * cos(sphereCoords.z);
         final float x = a * cos(sphereCoords.y);
         final float y = sphereCoords.x * sin(sphereCoords.z);
         final float z = a * sin(sphereCoords.y);
 
-        QVector3 rVal = store;
+        Vector3 rVal = store;
         if (rVal == null) {
-            rVal = QVector3.empty();
+            rVal = Vector3.empty();
         }
         rVal.set(x, y, z);
         return rVal;
@@ -1144,7 +1134,7 @@ final public class QMath {
      *                   new
      *                   vector object is created and returned.
      */
-    public static QVector3 cartesianToSpherical(final QVector3 cartCoords, final QVector3 store) {
+    public static Vector3 cartesianToSpherical(final Vector3 cartCoords, final Vector3 store) {
         final float cartX = (float) (Math.abs(cartCoords.x) <= DBL_EPSILON ? DBL_EPSILON : cartCoords.x);
         final float cartY = cartCoords.y;
         final float cartZ = cartCoords.z;
@@ -1153,9 +1143,9 @@ final public class QMath {
         final float y = atan(cartZ / cartX) + (cartX < 0.0 ? PI : 0);
         final float z = asin(cartY / x);
 
-        QVector3 rVal = store;
+        Vector3 rVal = store;
         if (rVal == null) {
-            rVal = QVector3.empty();
+            rVal = Vector3.empty();
         }
         rVal.set(x, y, z);
         return rVal;
@@ -1170,15 +1160,15 @@ final public class QMath {
      *                     new
      *                     vector object is created and returned.
      */
-    public static QVector3 sphericalToCartesianZ(final QVector3 sphereCoords, final QVector3 store) {
+    public static Vector3 sphericalToCartesianZ(final Vector3 sphereCoords, final Vector3 store) {
         final float a = sphereCoords.x * cos(sphereCoords.z);
         final float x = a * cos(sphereCoords.y);
         final float y = a * sin(sphereCoords.y);
         final float z = sphereCoords.x * sin(sphereCoords.z);
 
-        QVector3 rVal = store;
+        Vector3 rVal = store;
         if (rVal == null) {
-            rVal = QVector3.empty();
+            rVal = Vector3.empty();
         }
         rVal.set(x, y, z);
         return rVal;
@@ -1194,7 +1184,7 @@ final public class QMath {
      *                   new
      *                   vector object is created and returned.
      */
-    public static QVector3 cartesianZToSpherical(final QVector3 cartCoords, final QVector3 store) {
+    public static Vector3 cartesianZToSpherical(final Vector3 cartCoords, final Vector3 store) {
         final float cartX = (float) (Math.abs(cartCoords.x) <= DBL_EPSILON ? DBL_EPSILON : cartCoords.x);
         final float cartY = cartCoords.y;
         final float cartZ = cartCoords.z;
@@ -1203,9 +1193,9 @@ final public class QMath {
         final float y = asin(cartY / x);
         final float z = atan(cartZ / cartX) + (cartX < 0.0 ? PI : 0);
 
-        QVector3 rVal = store;
+        Vector3 rVal = store;
         if (rVal == null) {
-            rVal = QVector3.empty();
+            rVal = Vector3.empty();
         }
         rVal.set(x, y, z);
         return rVal;

@@ -52,8 +52,8 @@ public class MaterialUtil {
             material = new Material();
             material.setTransAlfa(alpha);
             material.setColor(colorDifuso);
-            material.setColorEspecular(colorEspecular);
-            material.setEmision(factorEmisionLuz);
+            material.setSpecularColour(colorEspecular);
+            material.setEmissionIntensity(factorEmisionLuz);
             material.setSpecularExponent(specularExponent);
         } catch (Exception e) {
             e.printStackTrace();
@@ -68,8 +68,8 @@ public class MaterialUtil {
             material = new Material();
             material.setTransAlfa(alpha);
             material.setColor(new QColor(1, r, g, b));
-            material.setColorEspecular(new QColor(1, rS, gS, bS));
-            material.setEmision(factorEmisionLuz);
+            material.setSpecularColour(new QColor(1, rS, gS, bS));
+            material.setEmissionIntensity(factorEmisionLuz);
             material.setSpecularExponent(specularExponent);
         } catch (Exception e) {
             e.printStackTrace();
@@ -85,7 +85,7 @@ public class MaterialUtil {
             material.setTransAlfa(alpha);
             material.setTransparent(alpha < 1.0f);
             material.setColor(new QColor(1, r, g, b));
-            material.setColorEspecular(new QColor(1, rS, gS, bS));
+            material.setSpecularColour(new QColor(1, rS, gS, bS));
             material.setSpecularExponent(specularExponent);
         } catch (Exception e) {
             e.printStackTrace();

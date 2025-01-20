@@ -20,6 +20,7 @@ public class BloomFilter implements FilterTexture {
     private BrigthFilter brillo = null;
     private MixFilter combina = null;
     private HightContrastFilter contraste = null;
+    private float scale = 0.25f;
 
     public BloomFilter() {
 
@@ -37,10 +38,18 @@ public class BloomFilter implements FilterTexture {
         this.contraste = new HightContrastFilter(0.3f);
     }
 
+    public BloomFilter(float brillo, float scale) {
+        this.scale = scale;
+        this.blur = new BlurFilter(scale, 10);
+        this.brillo = new BrigthFilter(scale, brillo);
+        this.combina = new MixFilter();
+        this.contraste = new HightContrastFilter(0.3f);
+    }
+
     @Override
     public Texture apply(Texture... buffer) {
         Texture textura = buffer[0];
-        Texture output = new Texture(textura.getWidth(), textura.getHeight());
+        Texture output = new Texture((int) (textura.getWidth() * scale), (int) (textura.getHeight() * scale));
         try {
             output.loadTexture(contraste.apply(combina.apply(textura, blur.apply(brillo.apply(textura)))).getImagen());
         } catch (Exception e) {

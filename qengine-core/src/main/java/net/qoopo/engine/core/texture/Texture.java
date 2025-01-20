@@ -14,6 +14,7 @@ import java.io.Serializable;
 import lombok.Getter;
 import lombok.Setter;
 import net.qoopo.engine.core.math.QColor;
+import net.qoopo.engine.core.math.Vector3;
 
 /**
  *
@@ -116,6 +117,20 @@ public class Texture implements Serializable {
         }
     }
 
+    public void loadTexture(Texture texture) {
+        try {
+            width = texture.getWidth();
+            height = texture.getHeight();
+            if (imagen == null) {
+                imagen = new QImage(texture.getImagen());
+            } else {
+                imagen.setImage(texture.getImagen());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     /**
      * Coordenadas normalizadas
      *
@@ -136,6 +151,16 @@ public class Texture implements Serializable {
         } catch (Exception e) {
             return (0 << 24 + 0 << 16 + 0 << 8 + 0);
         }
+    }
+
+    /**
+     * Coordenadas normalizadas, solo se toma X, y
+     * 
+     * @param vector
+     * @return
+     */
+    public QColor getColor(Vector3 vector) {
+        return getQColor(vector.x, vector.y);
     }
 
     /**

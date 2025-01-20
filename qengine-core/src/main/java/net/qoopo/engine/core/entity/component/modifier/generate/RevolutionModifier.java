@@ -11,7 +11,7 @@ import net.qoopo.engine.core.entity.Entity;
 import net.qoopo.engine.core.entity.component.mesh.Mesh;
 import net.qoopo.engine.core.entity.component.mesh.generator.MeshGenerator;
 import net.qoopo.engine.core.entity.component.modifier.ModifierComponent;
-import net.qoopo.engine.core.math.QVector3;
+import net.qoopo.engine.core.math.Vector3;
 import net.qoopo.engine.core.util.array.IntArray;
 
 @Getter
@@ -94,7 +94,7 @@ public class RevolutionModifier implements ModifierComponent {
         for (int i = 1; i < lados; i++) {
             // recorremos los puntos iniciales solamente
             for (int j = 0; j < puntos_iniciales; j++) {
-                QVector3 tmp = QVector3.of(mesh.vertexList[j].location.x, mesh.vertexList[j].location.y,
+                Vector3 tmp = Vector3.of(mesh.vertexList[j].location.x, mesh.vertexList[j].location.y,
                         mesh.vertexList[j].location.z);
                 // se rota en el ejey de las Y cada punto
                 tmp.rotateY(angulo * i);// se rota solo en Eje de Y

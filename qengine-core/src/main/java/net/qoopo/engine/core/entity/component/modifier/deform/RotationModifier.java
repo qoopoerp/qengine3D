@@ -9,7 +9,7 @@ import net.qoopo.engine.core.entity.component.mesh.Mesh;
 import net.qoopo.engine.core.entity.component.mesh.primitive.Vertex;
 import net.qoopo.engine.core.entity.component.modifier.ModifierComponent;
 import net.qoopo.engine.core.math.Cuaternion;
-import net.qoopo.engine.core.math.QVector3;
+import net.qoopo.engine.core.math.Vector3;
 
 @Getter
 @Setter
@@ -31,14 +31,14 @@ public class RotationModifier implements ModifierComponent {
     private boolean changed;
 
     public RotationModifier(Cuaternion cuaternion) {
-        QVector3 angles = QVector3.empty();
+        Vector3 angles = Vector3.empty();
         this.radiansX = cuaternion.toAngleAxis(angles);
         this.radiansX = angles.x;
         this.radiansY = angles.y;
         this.radiansZ = angles.z;
     }
 
-    public RotationModifier(QVector3 angles) {
+    public RotationModifier(Vector3 angles) {
         this.radiansX = angles.x;
         this.radiansY = angles.y;
         this.radiansZ = angles.z;

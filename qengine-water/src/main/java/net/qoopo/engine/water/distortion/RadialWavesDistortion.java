@@ -7,8 +7,8 @@ import lombok.Setter;
 import net.qoopo.engine.core.engine.EngineTime;
 import net.qoopo.engine.core.entity.component.mesh.Mesh;
 import net.qoopo.engine.core.entity.component.mesh.primitive.Vertex;
-import net.qoopo.engine.core.math.QVector3;
-import net.qoopo.engine.core.math.QVector4;
+import net.qoopo.engine.core.math.Vector3;
+import net.qoopo.engine.core.math.Vector4;
 import net.qoopo.engine.core.util.mesh.NormalUtil;
 
 @Getter
@@ -17,7 +17,7 @@ import net.qoopo.engine.core.util.mesh.NormalUtil;
 @NoArgsConstructor
 public class RadialWavesDistortion implements WaveDistortion {
 
-    private QVector3 origin = QVector3.of(0f, 0f, 0.f);
+    private Vector3 origin = Vector3.of(0f, 0f, 0.f);
     private float amplitude = 3.0f; // amplitud inicial de la ola
     private float wavelength = 20.0f; // longitud de onda
     private float speed = 1.0f; // velocidad de propagacion
@@ -35,11 +35,11 @@ public class RadialWavesDistortion implements WaveDistortion {
 
         // actualizo los vértices
         for (Vertex vertex : mesh.vertexList) {
-            QVector4 original = vertex.location;
+            Vector4 original = vertex.location;
 
             // Calcula la distancia al centro de las olas
-            float distance = QVector3.of(original.x, 0, original.z)
-                    .add(QVector3.of(origin.x, 0, origin.z).multiply(-1.0f)).length();
+            float distance = Vector3.of(original.x, 0, original.z)
+                    .add(Vector3.of(origin.x, 0, origin.z).multiply(-1.0f)).length();
             // Atenuación de la amplitud en función de la distancia
             float attenuatedAmplitude = amplitude * (float) Math.exp(-distance / decay);
 

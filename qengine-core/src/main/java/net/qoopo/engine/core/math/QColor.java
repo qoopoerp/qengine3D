@@ -16,6 +16,7 @@ import java.io.Serializable;
 public class QColor implements Serializable {
 
     // Colores constantes
+    public static final QColor DEFAULT = QColor.of(21, 94, 149);
     public static final QColor WHITE = new QColor(Color.WHITE);
     public static final QColor YELLOW = new QColor(Color.YELLOW);
     public static final QColor BLUE = new QColor(Color.BLUE);
@@ -48,6 +49,20 @@ public class QColor implements Serializable {
         a = r = g = b = 1.0f;
     }
 
+    public QColor(Vector3 rgb) {
+        a = 1;
+        r = rgb.x;
+        g = rgb.y;
+        b = rgb.z;
+    }
+
+    public QColor(Vector4 rgba) {
+        r = rgba.x;
+        g = rgba.y;
+        b = rgba.z;
+        a = rgba.w;
+    }
+
     public QColor(float r, float g, float b) {
         this.a = 1;
         this.r = valida(r);
@@ -70,10 +85,10 @@ public class QColor implements Serializable {
         this(color.getAlpha() / 255.0f, color.getRed() / 255.0f, color.getGreen() / 255.0f, color.getBlue() / 255.0f);
     }
 
-
     public static QColor of(int r, int g, int b) {
-        return QColor.of(r/255.0f, g/255.0f, b/255.0f);
+        return QColor.of(r / 255.0f, g / 255.0f, b / 255.0f);
     }
+
     public static QColor of(float r, float g, float b) {
         return new QColor(r, g, b);
     }
@@ -114,10 +129,12 @@ public class QColor implements Serializable {
     }
 
     public QColor addLocal(QColor rgb) {
-        a = valida(a + rgb.a);
-        r = valida(r + rgb.r);
-        g = valida(g + rgb.g);
-        b = valida(b + rgb.b);
+        if (rgb != null) {
+            a = valida(a + rgb.a);
+            r = valida(r + rgb.r);
+            g = valida(g + rgb.g);
+            b = valida(b + rgb.b);
+        }
         return this;
     }
 
@@ -132,6 +149,21 @@ public class QColor implements Serializable {
         r = valida(r + value);
         g = valida(g + value);
         b = valida(b + value);
+        return this;
+    }
+
+    public QColor add(Vector3 rgb) {
+        r = valida(r + rgb.x);
+        g = valida(g + rgb.y);
+        b = valida(b + rgb.z);
+        return this;
+    }
+
+    public QColor add(Vector4 rgba) {
+        r = valida(r + rgba.x);
+        g = valida(g + rgba.y);
+        b = valida(b + rgba.z);
+        a = valida(a + rgba.w);
         return this;
     }
 
@@ -161,6 +193,13 @@ public class QColor implements Serializable {
         r = valida(r * otro.r);
         g = valida(g * otro.g);
         b = valida(b * otro.b);
+        return this;
+    }
+
+    public QColor scale(Vector3 otro) {
+        r = valida(r * otro.x);
+        g = valida(g * otro.y);
+        b = valida(b * otro.z);
         return this;
     }
 
@@ -222,25 +261,25 @@ public class QColor implements Serializable {
         return new QColor(a, r, g, b);
     }
 
-    public QVector3 rgb() {
-        return QVector3.of(r, g, b);
+    public Vector3 rgb() {
+        return Vector3.of(r, g, b);
     }
 
-    public QVector2 rg() {
-        return new QVector2(r, g);
+    public Vector2 rg() {
+        return new Vector2(r, g);
     }
 
-    public QVector2 rb() {
-        return new QVector2(r, b);
+    public Vector2 rb() {
+        return new Vector2(r, b);
     }
 
-    public QVector2 gb() {
-        return new QVector2(g, b);
+    public Vector2 gb() {
+        return new Vector2(g, b);
     }
 
     // /**
-    //  * Realiza la correción de gamma para la imagen final
-    //  */
+    // * Realiza la correción de gamma para la imagen final
+    // */
     public void fixGamma() {
         set(a, QMath.pow(r, gammaExp), QMath.pow(g, gammaExp),
                 QMath.pow(b, gammaExp));

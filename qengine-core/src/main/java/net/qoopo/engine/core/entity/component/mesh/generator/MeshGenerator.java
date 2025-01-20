@@ -11,7 +11,7 @@ import net.qoopo.engine.core.entity.component.mesh.primitive.Primitive;
 import net.qoopo.engine.core.entity.component.mesh.primitive.Vertex;
 import net.qoopo.engine.core.entity.component.modifier.generate.RevolutionModifier;
 import net.qoopo.engine.core.material.Material;
-import net.qoopo.engine.core.math.QVector3;
+import net.qoopo.engine.core.math.Vector3;
 import net.qoopo.engine.core.texture.util.MaterialUtil;
 import net.qoopo.engine.core.util.mesh.NormalUtil;
 
@@ -56,7 +56,7 @@ public class MeshGenerator {
         Mesh objeto = new Mesh();
         Material material = new Material("Esfera");
         Vertex inicial = objeto.addVertex(0, radio, 0); // primer vertice
-        QVector3 vector = QVector3.of(inicial.location.x, inicial.location.y, inicial.location.z);
+        Vector3 vector = Vector3.of(inicial.location.x, inicial.location.y, inicial.location.z);
         float angulo = 360 / secciones;
         // generamos los vertices el contorno para luego generar el objeto por medio de
         // revolucion

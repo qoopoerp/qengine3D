@@ -19,6 +19,8 @@ import net.qoopo.engine.core.renderer.RenderEngine;
 import net.qoopo.engine.core.scene.Scene;
 import net.qoopo.engine3d.test.scene.MakeTestScene;
 import net.qoopo.engine3d.test.scene.ligths.SunTestScene;
+import net.qoopo.engine3d.test.scene.pbr.PbrTest;
+import net.qoopo.engine3d.test.scene.simple.HdriTest;
 
 /**
  *
@@ -43,21 +45,16 @@ public class InitialScene extends MakeTestScene {
                         Material material = new Material();
                         // material.setColorMap(AssetManager.get().loadTexture("difusa",
                         // new File("assets/textures/uv.png")));
-                        // material.setColor(QColor.of(203, 157, 240));
-                        // material.setColor(QColor.of(21, 94, 149));
-                        material.setColor(QColor.of(255, 246, 179));
-
-                        material.setRoughness(0.5f);
-                        material.setMetallic(0.5f);
+                        material.setColor(QColor.of(21, 94, 149));
 
                         Entity box = new Entity("Box");
                         // Mesh mesh = new Box(1.0f);
                         Mesh mesh = new Suzane();
                         mesh.applyMaterial(material);
                         box.addComponent(mesh);
-                        box.scale(2.0f);
+                        // box.scale(2.0f);
                         // box.addComponent(new QColisionCaja(1, 1, 1));
-                        scene.addEntity(box);
+                        // scene.addEntity(box);
 
                         List<MakeTestScene> ejemplo = new ArrayList<>();
                         // ejemplo.add(new TriangleTest());
@@ -103,7 +100,7 @@ public class InitialScene extends MakeTestScene {
                         // ejemplo.add(new NodosUniversoBoxs());
                         // ejemplo.add(new NodosVarios());//Entorno, difuso, emisivo, reflexion
                         // materiales PBR
-                        // ejemplo.add(new PbrTest());
+                        ejemplo.add(new PbrTest());
                         // ejemplo.add(new PbrEnviromentTest());
                         // ejemplo.add(new PbrSphereTest());
                         // ejemplo.add(new PbrCubeTest());
@@ -113,7 +110,7 @@ public class InitialScene extends MakeTestScene {
                         // ejemplo.add(new RotateItemsTest());
                         // ejemplo.add(new CinematicTest());
                         // ejemplo.add(new FloorTestScene());
-                        // ejemplo.add(new HdriTest());
+                        ejemplo.add(new HdriTest());
                         // ejemplo.add(new EnviromentTest());
                         // ejemplo.add(new TestSimpleTerrain());
                         // ejemplo.add(new TestTerrainHeightMap());
@@ -121,6 +118,8 @@ public class InitialScene extends MakeTestScene {
                         // ejemplo.add(new SkyBoxTest());
                         ejemplo.add(new SunTestScene());
                         // ejemplo.add(new PointLigthsTest());
+                        // ejemplo.add(new SpotLigthsTest());
+
                         for (MakeTestScene ejem : ejemplo) {
                                 ejem.make(scene);
                         }

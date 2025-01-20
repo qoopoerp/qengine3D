@@ -8,7 +8,7 @@ import net.qoopo.engine.core.engine.EngineTime;
 import net.qoopo.engine.core.entity.Entity;
 import net.qoopo.engine.core.entity.component.EntityComponent;
 import net.qoopo.engine.core.entity.component.UpdatableComponent;
-import net.qoopo.engine.core.math.QVector3;
+import net.qoopo.engine.core.math.Vector3;
 import net.qoopo.engine.core.renderer.RenderEngine;
 import net.qoopo.engine.core.scene.Scene;
 
@@ -26,7 +26,7 @@ public class JumpComponent implements EntityComponent, UpdatableComponent {
     // la distancia que va a saltar
     private float height = 3;
     private float currentHeight = 0.f;
-    private QVector3 direction = new QVector3(0, 0.01f, 0);
+    private Vector3 direction = new Vector3(0, 0.01f, 0);
     private float fDirection = 1.0f;
 
     public JumpComponent(float height) {
@@ -46,11 +46,11 @@ public class JumpComponent implements EntityComponent, UpdatableComponent {
             fDirection = -1.0f;
         }
 
-        QVector3 jump = direction.clone();
+        Vector3 jump = direction.clone();
         jump.multiply(EngineTime.deltaMS);
         currentHeight += fDirection * jump.length();
 
-        QVector3 newPosition = entity.getTransform().getLocation();
+        Vector3 newPosition = entity.getTransform().getLocation();
         newPosition.add(jump);
 
         entity.move(newPosition);

@@ -10,7 +10,7 @@ import java.util.logging.Logger;
 
 import net.qoopo.engine.core.entity.Entity;
 import net.qoopo.engine.core.entity.component.water.Water;
-import net.qoopo.engine.core.math.QVector3;
+import net.qoopo.engine.core.math.Vector3;
 import net.qoopo.engine.core.renderer.RenderEngine;
 import net.qoopo.engine.core.scene.Scene;
 import net.qoopo.engine.water.Ocean;
@@ -27,7 +27,7 @@ public class RadialWaterTest extends MakeTestScene {
         try {
             this.scene = mundo;
             Entity entity = new Entity("Agua");
-            Water water = new Ocean(mundo, 500, 500, 80, new RadialWavesDistortion(QVector3.zero,3.0f, 20.0f, 1.0f,50.0f));
+            Water water = new Ocean(mundo, 500, 500, 80, new RadialWavesDistortion(Vector3.zero,3.0f, 20.0f, 1.0f,50.0f));
             entity.addComponent(water);
             water.build();
             entity.scale(0.1f);

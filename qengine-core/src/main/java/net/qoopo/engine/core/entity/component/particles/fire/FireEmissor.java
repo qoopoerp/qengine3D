@@ -24,7 +24,7 @@ import net.qoopo.engine.core.entity.component.physics.dinamica.QObjetoDinamico;
 import net.qoopo.engine.core.entity.component.physics.dinamica.QObjetoRigido;
 import net.qoopo.engine.core.material.Material;
 import net.qoopo.engine.core.math.QColor;
-import net.qoopo.engine.core.math.QVector3;
+import net.qoopo.engine.core.math.Vector3;
 import net.qoopo.engine.core.texture.Texture;
 import net.qoopo.engine.core.texture.procesador.AtlasSequentialTexture;
 import net.qoopo.engine.core.texture.util.MaterialUtil;
@@ -77,7 +77,7 @@ public class FireEmissor extends ParticleEmissor {
         return material;
     }
 
-    public FireEmissor(AABB ambito, float tiempoVida, int maximoParticulas, int velocidadEmision, QVector3 direccion, boolean agregarLuces) {
+    public FireEmissor(AABB ambito, float tiempoVida, int maximoParticulas, int velocidadEmision, Vector3 direccion, boolean agregarLuces) {
         super(ambito, tiempoVida, maximoParticulas, velocidadEmision, direccion);
         this.agregarLuces = agregarLuces;
 //        crearMaterial();
@@ -103,7 +103,7 @@ public class FireEmissor extends ParticleEmissor {
 
                 QObjetoRigido rigido = new QObjetoRigido(QObjetoDinamico.DINAMICO);
                 rigido.setFormaColision(new QColisionCaja(0.15f, 0.15f, 0.01f));
-                rigido.setMasa(-0.001f, QVector3.zero.clone());
+                rigido.setMasa(-0.001f, Vector3.zero.clone());
                 particula.addComponent(rigido);
 
                 nueva.setTiempoVida(2 * tiempoVida / 3 + (rnd.nextFloat() * tiempoVida / 3));
@@ -111,9 +111,9 @@ public class FireEmissor extends ParticleEmissor {
 
                 //ubicacion inicial de la particula
                 particula.move(
-                        entity.getMatrizTransformacion(System.currentTimeMillis()).toTranslationVector().x + rnd.nextFloat() * (ambito.aabMaximo.location.x - ambito.aabMinimo.location.x) + ambito.aabMinimo.location.x,
-                        entity.getMatrizTransformacion(System.currentTimeMillis()).toTranslationVector().y + ambito.aabMinimo.location.y,
-                        entity.getMatrizTransformacion(System.currentTimeMillis()).toTranslationVector().z + rnd.nextFloat() * (ambito.aabMaximo.location.z - ambito.aabMinimo.location.z) + ambito.aabMinimo.location.z
+                        entity.getMatrizTransformacion(System.currentTimeMillis()).toTranslationVector().x + rnd.nextFloat() * (ambito.max.x - ambito.min.x) + ambito.min.x,
+                        entity.getMatrizTransformacion(System.currentTimeMillis()).toTranslationVector().y + ambito.min.y,
+                        entity.getMatrizTransformacion(System.currentTimeMillis()).toTranslationVector().z + rnd.nextFloat() * (ambito.max.z - ambito.min.z) + ambito.min.z
                 );
 //                particula.rotar(0, (float) (rnd.nextFloat() * Math.toRadians(180)), 0);
 
@@ -146,7 +146,7 @@ public class FireEmissor extends ParticleEmissor {
         for (Particle particula : this.particulas) {
             //si ya paso su tiempo de vida o ya esta fuera del ambito en la altura
             if ((System.currentTimeMillis() - particula.getTiempoCreacion()) > particula.getTiempoVida()
-                    || (particula.objeto.getTransform().getLocation().y > ambito.aabMaximo.location.y)) {
+                    || (particula.objeto.getTransform().getLocation().y > ambito.max.y)) {
                 particulasEliminadas.add(particula);
                 actuales--;
                 particula.objeto.setToRender(false);
@@ -179,7 +179,7 @@ public class FireEmissor extends ParticleEmissor {
                     dx = particula.objeto.getTransform().getLocation().x / Math.abs(particula.objeto.getTransform().getLocation().x) * -1;
                     dz = particula.objeto.getTransform().getLocation().z / Math.abs(particula.objeto.getTransform().getLocation().z) * -1;
 
-                    ((QObjetoRigido) componente).agregarFuerzas(QVector3.of(
+                    ((QObjetoRigido) componente).agregarFuerzas(Vector3.of(
                             dx * rnd.nextFloat() * (maxMov - miniMov) + miniMov,
                             0,
                             dz * rnd.nextFloat() * (maxMov - miniMov) + miniMov));

@@ -19,7 +19,7 @@ import net.qoopo.engine.core.entity.component.gui.QMouseReceptor;
 import net.qoopo.engine.core.entity.component.gui.QTecladoReceptor;
 import net.qoopo.engine.core.input.QInputManager;
 import net.qoopo.engine.core.math.QMath;
-import net.qoopo.engine.core.math.QVector3;
+import net.qoopo.engine.core.math.Vector3;
 import net.qoopo.engine.core.scene.Camera;
 
 /**
@@ -47,8 +47,8 @@ public class CameraController implements EntityComponent {
     private Camera camara;
     private QMouseReceptor mouseReceptor;
     private QTecladoReceptor tecladoReceptor;
-    private final QVector3 coordenadasEsfericas = QVector3.empty();
-    private final QVector3 target = QVector3.empty();
+    private final Vector3 coordenadasEsfericas = Vector3.empty();
+    private final Vector3 target = Vector3.empty();
 
     public CameraController(Camera camara) {
         this.camara = camara;
@@ -93,13 +93,13 @@ public class CameraController implements EntityComponent {
     public void updateCamera() {
         float distance = camara.getTransform().getLocation().clone().subtract(target).length();
         // QVector3 ubicacion = QVector3.empty();
-        QVector3 ubicacion = QVector3.of(
+        Vector3 ubicacion = Vector3.of(
                 distance * (float) (Math.cos(coordenadasEsfericas.x) * Math.sin(coordenadasEsfericas.y)),
                 distance * (float) Math.sin(coordenadasEsfericas.x),
                 distance * (float) (Math.cos(coordenadasEsfericas.x) * Math.cos(coordenadasEsfericas.y)));
 
         // QMath.sphericalToCartesian(coordenadasEsfericas, ubicacion);
-        camara.lookAtTarget(ubicacion.add(target), target, QVector3.unitario_y);
+        camara.lookAtTarget(ubicacion.add(target), target, Vector3.unitario_y);
     }
 
     private void configurar() {
@@ -196,21 +196,21 @@ public class CameraController implements EntityComponent {
                 switch (evt.getKeyCode()) {
                     case KeyEvent.VK_NUMPAD1:
                         if (QInputManager.isCtrl())
-                            camara.lookAtTarget(QVector3.of(0, 0, -10), QVector3.zero, QVector3.unitario_y);
+                            camara.lookAtTarget(Vector3.of(0, 0, -10), Vector3.zero, Vector3.unitario_y);
                         else
-                            camara.lookAtTarget(QVector3.of(0, 0, 10), QVector3.zero, QVector3.unitario_y);
+                            camara.lookAtTarget(Vector3.of(0, 0, 10), Vector3.zero, Vector3.unitario_y);
                         break;
                     case KeyEvent.VK_NUMPAD3:
                         if (QInputManager.isCtrl())
-                            camara.lookAtTarget(QVector3.of(-10, 0, 0), QVector3.zero, QVector3.unitario_y);
+                            camara.lookAtTarget(Vector3.of(-10, 0, 0), Vector3.zero, Vector3.unitario_y);
                         else
-                            camara.lookAtTarget(QVector3.of(10, 0, 0), QVector3.zero, QVector3.unitario_y);
+                            camara.lookAtTarget(Vector3.of(10, 0, 0), Vector3.zero, Vector3.unitario_y);
                         break;
                     case KeyEvent.VK_NUMPAD7:
                         if (QInputManager.isCtrl())
-                            camara.lookAtTarget(QVector3.of(0, -20, 0), QVector3.zero, QVector3.unitario_z);
+                            camara.lookAtTarget(Vector3.of(0, -20, 0), Vector3.zero, Vector3.unitario_z);
                         else
-                            camara.lookAtTarget(QVector3.of(0, 20, 0), QVector3.zero, QVector3.unitario_z.clone().multiply(-1));
+                            camara.lookAtTarget(Vector3.of(0, 20, 0), Vector3.zero, Vector3.unitario_z.clone().multiply(-1));
                         break;
 
                     case KeyEvent.VK_NUMPAD5: {
@@ -297,7 +297,7 @@ public class CameraController implements EntityComponent {
         QInputManager.removeKeyboardListener(tecladoReceptor);
     }
 
-    public QVector3 getTarget() {
+    public Vector3 getTarget() {
         return target;
     }
 

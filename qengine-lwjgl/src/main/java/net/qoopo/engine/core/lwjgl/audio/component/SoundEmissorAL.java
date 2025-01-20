@@ -24,7 +24,7 @@ import lombok.Getter;
 import lombok.Setter;
 import net.qoopo.engine.core.entity.Entity;
 import net.qoopo.engine.core.entity.component.EntityComponent;
-import net.qoopo.engine.core.math.QVector3;
+import net.qoopo.engine.core.math.Vector3;
 
 public class SoundEmissorAL implements EntityComponent {
 
@@ -51,11 +51,11 @@ public class SoundEmissorAL implements EntityComponent {
         alSourcei(sourceId, AL_BUFFER, bufferId);
     }
 
-    public void setPosition(QVector3 position) {
+    public void setPosition(Vector3 position) {
         alSource3f(sourceId, AL_POSITION, position.x, position.y, position.z);
     }
 
-    public void setSpeed(QVector3 speed) {
+    public void setSpeed(Vector3 speed) {
         alSource3f(sourceId, AL_VELOCITY, speed.x, speed.y, speed.z);
     }
 

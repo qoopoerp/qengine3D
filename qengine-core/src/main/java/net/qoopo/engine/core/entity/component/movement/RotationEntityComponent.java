@@ -9,7 +9,7 @@ import net.qoopo.engine.core.entity.Entity;
 import net.qoopo.engine.core.entity.component.EntityComponent;
 import net.qoopo.engine.core.entity.component.UpdatableComponent;
 import net.qoopo.engine.core.math.Cuaternion;
-import net.qoopo.engine.core.math.QVector3;
+import net.qoopo.engine.core.math.Vector3;
 import net.qoopo.engine.core.renderer.RenderEngine;
 import net.qoopo.engine.core.scene.Scene;
 
@@ -24,15 +24,15 @@ public class RotationEntityComponent implements EntityComponent, UpdatableCompon
 
     private Entity entity;
 
-    private QVector3 rotation = new QVector3(0, (float) Math.toRadians(10f), 0);
+    private Vector3 rotation = new Vector3(0, (float) Math.toRadians(5f), 0);
 
-    private QVector3 totalRotation = new QVector3(Float.MIN_VALUE);
+    private Vector3 totalRotation = new Vector3(Float.MIN_VALUE);
 
     public RotationEntityComponent(Cuaternion cuaternion) {
         cuaternion.toAngleAxis(rotation);
     }
 
-    public RotationEntityComponent(QVector3 angles) {
+    public RotationEntityComponent(Vector3 angles) {
         this.rotation = angles;
     }
 
@@ -45,7 +45,8 @@ public class RotationEntityComponent implements EntityComponent, UpdatableCompon
         if (totalRotation.x == Float.MIN_VALUE) {
             totalRotation.set(entity.getTransform().getRotation().getEulerAngles());
         }
-        totalRotation.add(rotation.multiply(EngineTime.deltaS));
+        // totalRotation.add(rotation.clone().multiply(EngineTime.deltaS));
+        totalRotation.add(EngineTime.deltaS, rotation);
         entity.rotate(totalRotation);
     }
 

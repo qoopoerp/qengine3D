@@ -3,7 +3,7 @@ package net.qoopo.engine.core.entity.component.mesh.primitive;
 import java.util.Arrays;
 
 import net.qoopo.engine.core.entity.component.mesh.Mesh;
-import net.qoopo.engine.core.math.QVector3;
+import net.qoopo.engine.core.math.Vector3;
 
 /**
  * Un poligono se dibuja agregando vertices en el orden contrario a las agujas
@@ -13,9 +13,9 @@ import net.qoopo.engine.core.math.QVector3;
  */
 public class Poly extends Primitive implements Comparable<Poly> {
 
-    private QVector3 normal = QVector3.empty();
+    private Vector3 normal = Vector3.empty();
     // la normal transformada
-    private QVector3 normalCopy = QVector3.empty();
+    private Vector3 normalCopy = Vector3.empty();
     private boolean smooth = false;
     private Vertex center = new Vertex();
     // cel centor transformado
@@ -41,11 +41,11 @@ public class Poly extends Primitive implements Comparable<Poly> {
         super(parent, vertexList, normalList, uvList);
     }
 
-    public boolean verificarPuntoEnPlano(QVector3 punto) {
+    public boolean verificarPuntoEnPlano(Vector3 punto) {
         return verificarPuntoEnPlano(punto, 0);
     }
 
-    public boolean verificarPuntoEnPlano(QVector3 punto, float tolerancia) {
+    public boolean verificarPuntoEnPlano(Vector3 punto, float tolerancia) {
         // primero calculamos la distancia al plano
         float distancia = punto.dot(this.normal);
         if (distancia >= -tolerancia && distancia <= tolerancia) {
@@ -65,7 +65,7 @@ public class Poly extends Primitive implements Comparable<Poly> {
         if (vertexList.length >= 3) {
             try {
                 normal.set(vertexList[vertexIndexList[0]], vertexList[vertexIndexList[1]]);
-                normal.cross(QVector3.of(vertexList[vertexIndexList[0]], vertexList[vertexIndexList[2]]));
+                normal.cross(Vector3.of(vertexList[vertexIndexList[0]], vertexList[vertexIndexList[2]]));
                 normal.normalize();
                 int count = 0;
                 center.location.set(0, 0, 0, 1);
@@ -93,19 +93,19 @@ public class Poly extends Primitive implements Comparable<Poly> {
         // return Float.valueOf(other.centerCopy.z).compareTo(centerCopy.z);
     }
 
-    public QVector3 getNormal() {
+    public Vector3 getNormal() {
         return normal;
     }
 
-    public void setNormal(QVector3 normal) {
+    public void setNormal(Vector3 normal) {
         this.normal = normal;
     }
 
-    public QVector3 getNormalCopy() {
+    public Vector3 getNormalCopy() {
         return normalCopy;
     }
 
-    public void setNormalCopy(QVector3 normalCopy) {
+    public void setNormalCopy(Vector3 normalCopy) {
         this.normalCopy = normalCopy;
     }
 

@@ -120,7 +120,7 @@ public class PnlLuz extends javax.swing.JPanel {
             txtMapaSombraResolucion.setText(String.valueOf(luz.getResolucionMapaSombra()));
             chkSombraDinamica.setSelected(luz.isSombraDinamica());
             txtLuzRadio.setText(String.valueOf(luz.radio));
-            spnEnergia.setValue(luz.energia);
+            spnEnergia.setValue(luz.energy);
             if (luz instanceof QSpotLigth) {
                 spnAngCono.setValue(Math.toDegrees(((QSpotLigth) luz).getAnguloExterno()));
                 spnAngCono2.setValue(Math.toDegrees(((QSpotLigth) luz).getAnguloInterno()));
@@ -151,7 +151,7 @@ public class PnlLuz extends javax.swing.JPanel {
     private void applyLightControl() {
         try {
             if (!lock && luz != null) {
-                luz.energia = getFloatFromSpinner(spnEnergia);
+                luz.energy = getFloatFromSpinner(spnEnergia);
                 luz.color = new QColor(pnlColorLuz.getBackground());
                 luz.setEnable(bolEstadoLuz.isSelected());
                 luz.setProyectarSombras(chkProyectarSombra.isSelected());

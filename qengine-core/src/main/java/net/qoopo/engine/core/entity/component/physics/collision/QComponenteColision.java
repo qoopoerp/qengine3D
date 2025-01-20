@@ -17,7 +17,7 @@ import net.qoopo.engine.core.entity.component.physics.collision.detector.Collisi
 import net.qoopo.engine.core.entity.component.physics.collision.detector.shape.primitivas.AABB;
 import net.qoopo.engine.core.entity.component.physics.collision.detector.shape.primitivas.QColisionEsfera;
 import net.qoopo.engine.core.entity.component.transform.Transform;
-import net.qoopo.engine.core.math.QVector3;
+import net.qoopo.engine.core.math.Vector3;
 
 /**
  *
@@ -89,35 +89,35 @@ public class QComponenteColision implements EntityComponent {
         // pero seria mejro que existan clases que sobrecarguen este metodo de acuerdo a
         // una geometria predefinida
         for (Vertex vertice : geometria.vertexList) {
-            if (vertice.location.x < tmp.aabMinimo.location.x) {
-                tmp.aabMinimo.location.x = vertice.location.x;
+            if (vertice.location.x < tmp.min.x) {
+                tmp.min.x = vertice.location.x;
             }
-            if (vertice.location.y < tmp.aabMinimo.location.y) {
-                tmp.aabMinimo.location.y = vertice.location.y;
+            if (vertice.location.y < tmp.min.y) {
+                tmp.min.y = vertice.location.y;
             }
-            if (vertice.location.z < tmp.aabMinimo.location.z) {
-                tmp.aabMinimo.location.z = vertice.location.z;
+            if (vertice.location.z < tmp.min.z) {
+                tmp.min.z = vertice.location.z;
             }
-            if (vertice.location.x > tmp.aabMaximo.location.x) {
-                tmp.aabMaximo.location.x = vertice.location.x;
+            if (vertice.location.x > tmp.max.x) {
+                tmp.max.x = vertice.location.x;
             }
-            if (vertice.location.y > tmp.aabMaximo.location.y) {
-                tmp.aabMaximo.location.y = vertice.location.y;
+            if (vertice.location.y > tmp.max.y) {
+                tmp.max.y = vertice.location.y;
             }
-            if (vertice.location.z > tmp.aabMaximo.location.z) {
-                tmp.aabMaximo.location.z = vertice.location.z;
+            if (vertice.location.z > tmp.max.z) {
+                tmp.max.z = vertice.location.z;
             }
 
         }
 
         // actualizo la coordenads con la posicion del objeto en el espacio tambien
-        tmp.aabMinimo.location.x += transformacion.getLocation().x;
-        tmp.aabMinimo.location.y += transformacion.getLocation().y;
-        tmp.aabMinimo.location.z += transformacion.getLocation().z;
+        tmp.min.x += transformacion.getLocation().x;
+        tmp.min.y += transformacion.getLocation().y;
+        tmp.min.z += transformacion.getLocation().z;
 
-        tmp.aabMaximo.location.x += transformacion.getLocation().x;
-        tmp.aabMaximo.location.y += transformacion.getLocation().y;
-        tmp.aabMaximo.location.z += transformacion.getLocation().z;
+        tmp.max.x += transformacion.getLocation().x;
+        tmp.max.y += transformacion.getLocation().y;
+        tmp.max.z += transformacion.getLocation().z;
 
         // System.out.println("AAAB Calculado " + ((AABB) formaColision).aabMinimo + " -
         // " + ((AABB) formaColision).aabMaximo);
@@ -128,7 +128,7 @@ public class QComponenteColision implements EntityComponent {
         float radio = 0;
         // primero calculamos el rectangulo AABB para obtener el centro y radio
         crearAABB(geometria, transformacion);
-        QVector3 tmp = QVector3.of(((AABB) formaColision).aabMinimo, ((AABB) formaColision).aabMaximo);
+        Vector3 tmp = Vector3.of(((AABB) formaColision).min, ((AABB) formaColision).max);
 
         radio = tmp.length() * 0.5f;// el radio es igual a la mitad de la diagonal de cubo
 

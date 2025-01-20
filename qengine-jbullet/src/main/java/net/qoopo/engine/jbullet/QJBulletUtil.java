@@ -197,9 +197,9 @@ public class QJBulletUtil {
         } else if (formaColision instanceof AABB) {
             float alto, ancho, largo;
             AABB aabb = (AABB) formaColision;
-            ancho = Math.abs(aabb.aabMaximo.location.x - aabb.aabMinimo.location.x);
-            alto = Math.abs(aabb.aabMaximo.location.y - aabb.aabMinimo.location.y);
-            largo = Math.abs(aabb.aabMaximo.location.z - aabb.aabMinimo.location.z);
+            ancho = Math.abs(aabb.max.x - aabb.min.x);
+            alto = Math.abs(aabb.max.y - aabb.min.y);
+            largo = Math.abs(aabb.max.z - aabb.min.z);
             colShape = new BoxShape(new Vector3f(ancho / 2, alto / 2, largo / 2));
         }
 

@@ -37,7 +37,7 @@ public class SkyBoxTest extends MakeTestScene {
         // agrego una esfera para cargar un mapa como entorno
         Entity entorno = new Entity("Entorno");
         Material matEntorno = new Material("Entorno");
-        matEntorno.setEmision(1.0f);
+        matEntorno.setEmissionIntensity(1.0f);
         matEntorno.setColorMap(texture);
         entorno.addComponent(MaterialUtil.applyMaterial(NormalUtil.invertirNormales(new Sphere(50)), matEntorno));
         mundo.addEntity(entorno);

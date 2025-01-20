@@ -10,7 +10,7 @@ import java.awt.image.BufferedImage;
 import net.qoopo.engine.core.entity.component.environment.EnvProbe;
 import net.qoopo.engine.core.math.QColor;
 import net.qoopo.engine.core.math.QMath;
-import net.qoopo.engine.core.math.QVector3;
+import net.qoopo.engine.core.math.Vector3;
 
 /**
  * Util que permite
@@ -19,7 +19,7 @@ import net.qoopo.engine.core.math.QVector3;
  */
 public class TextureUtil {
 
-    public static QColor getEnviromentMapColor(QVector3 vector, Texture mapaEntorno, int tipoMapaEntorno) {
+    public static QColor getEnviromentMapColor(Vector3 vector, Texture mapaEntorno, int tipoMapaEntorno) {
         if (mapaEntorno == null)
             return QColor.BLACK;
         switch (tipoMapaEntorno) {
@@ -39,7 +39,7 @@ public class TextureUtil {
      * @param mapaEntorno
      * @return
      */
-    public static QColor getHdriTextureColor(QVector3 vector, Texture mapaEntorno) {
+    public static QColor getHdriTextureColor(Vector3 vector, Texture mapaEntorno) {
         try {
             BufferedImage img = mapaEntorno.getImagen();
             int hdriWidth = img.getWidth();
@@ -61,7 +61,7 @@ public class TextureUtil {
      * @param mapaEntorno
      * @return
      */
-    public static QColor getCubemapTextureColor(QVector3 vector, Texture mapaEntorno) {
+    public static QColor getCubemapTextureColor(Vector3 vector, Texture mapaEntorno) {
         try {
 
             float absX = QMath.abs(vector.x);
@@ -167,7 +167,7 @@ public class TextureUtil {
      * @param mapaEntorno
      * @return
      */
-    public static QColor getCubemapTextureColor(QVector3 vector, Texture[] mapaEntorno) {
+    public static QColor getCubemapTextureColor(Vector3 vector, Texture[] mapaEntorno) {
         try {
             float absX = QMath.abs(vector.x);
             float absY = QMath.abs(vector.y);

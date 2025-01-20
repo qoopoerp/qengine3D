@@ -17,7 +17,7 @@ import net.qoopo.engine.core.entity.component.physics.collision.detector.shape.p
 import net.qoopo.engine.core.entity.component.physics.dinamica.QObjetoDinamico;
 import net.qoopo.engine.core.entity.component.physics.dinamica.QObjetoRigido;
 import net.qoopo.engine.core.material.Material;
-import net.qoopo.engine.core.math.QVector3;
+import net.qoopo.engine.core.math.Vector3;
 import net.qoopo.engine.core.scene.Scene;
 import net.qoopo.engine.core.texture.Texture;
 import net.qoopo.engine.core.texture.util.MaterialUtil;
@@ -51,7 +51,7 @@ public class EjemploFisica2 extends FisicaDisparar {
         piso.addComponent(colision);
 
         QObjetoRigido pisoRigidez = new QObjetoRigido(QObjetoDinamico.ESTATICO);
-        pisoRigidez.setMasa(0, QVector3.zero.clone());
+        pisoRigidez.setMasa(0, Vector3.zero.clone());
         pisoRigidez.setFormaColision(colision);
 
         piso.addComponent(pisoRigidez);
@@ -82,7 +82,7 @@ public class EjemploFisica2 extends FisicaDisparar {
         float alto = -altoLadrillo / 2;
         for (int j = 0; j < 15; j++) {
             for (int i = 0; i < 16; i++) {
-                QVector3 vt = QVector3.of(i * anchoLadrillo + inicio - 7, altoLadrillo + alto, 0);
+                Vector3 vt = Vector3.of(i * anchoLadrillo + inicio - 7, altoLadrillo + alto, 0);
                 hacerLadrillo(vt, mundo);
             }
             inicio = -inicio;
@@ -90,14 +90,14 @@ public class EjemploFisica2 extends FisicaDisparar {
         }
     }
 
-    private void hacerLadrillo(QVector3 loc, Scene mundo) {
+    private void hacerLadrillo(Vector3 loc, Scene mundo) {
         Entity bloque = new Entity();
         bloque.move(loc);
         Mesh geometria = new Box(altoLadrillo, anchoLadrillo, largoLadrillo);
         MaterialUtil.applyMaterial(geometria, materialLadrillo);
         QColisionCaja formaColision = new QColisionCaja(anchoLadrillo, altoLadrillo, largoLadrillo);
         QObjetoRigido bloquefisica = new QObjetoRigido(QObjetoDinamico.DINAMICO);
-        bloquefisica.setMasa(4f, QVector3.zero.clone());
+        bloquefisica.setMasa(4f, Vector3.zero.clone());
         bloquefisica.setFormaColision(formaColision);
         bloque.addComponent(bloquefisica);
         bloque.addComponent(formaColision);

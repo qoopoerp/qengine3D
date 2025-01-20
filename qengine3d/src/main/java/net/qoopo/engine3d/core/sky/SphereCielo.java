@@ -38,7 +38,7 @@ public class SphereCielo extends QCielo {
 //        QGeometria cieloG = new Sphere(radio, 8);
 //        QGeometria cieloG = new Sphere(radio, 4);
         Material material = new Material();
-        material.setEmision(1);//finge emision de luz para no ser afectado por las luces
+        material.setEmissionIntensity(1);//finge emision de luz para no ser afectado por las luces
         procesadorTextura = new MixTexture(texturaDia, texturaNoche);
         procesadorTextura.setRazon(0);
         material.setColorMap(procesadorTextura);

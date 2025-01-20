@@ -22,7 +22,7 @@ public class Material extends AbstractMaterial {
      * Si es brillante, será más baja (cercano a 0.0).
      */
 
-    private float roughness = 0.8f;
+    private float roughness = 0.5f;
 
     /**
      * Indica si la superficie es metalica o dieléctrica
@@ -38,10 +38,9 @@ public class Material extends AbstractMaterial {
      * distinción entre metales y dieléctricos, ambos reciben un tratamiento
      * diferente en el proceso de PBR
      */
-    private float metallic = 0.0f;
+    private float metalness = 0.0f;
 
-    // Propiedades heredadas de la iluminación Phong
-    private float emision = 0;
+    private float emissionIntensity = 0;
 
     // ***************** TRANSPARENCIA *********************
     private boolean transparent = false;
@@ -53,10 +52,10 @@ public class Material extends AbstractMaterial {
     // nivel de brillo, maximo 500
     private int specularExponent = 50;
     // Color de luz especular
-    private QColor colorEspecular = QColor.WHITE.clone();
+    private QColor specularColour = QColor.WHITE.clone();
 
     // ***************** ENTORNO *********************
-    private int envMapType = EnvProbe.FORMATO_MAPA_CUBO;// 1. Mapa cubico, 2. Mapa HDRI,
+    // private int envMapType = EnvProbe.FORMATO_MAPA_CUBO;// 1. Mapa cubico, 2. Mapa HDRI,
 
     // ***************** REFLEXION *********************
     private boolean reflexion = false;
@@ -116,14 +115,14 @@ public class Material extends AbstractMaterial {
 
     /** Valida que el valor esté en estos rangos 0.1-0.8 */
     public void setRoughness(float roughness) {
-        this.roughness = Math.min(roughness, 0.95f);
-        this.roughness = Math.max(this.roughness, 0.05f);
+        this.roughness = Math.min(roughness, 1f);
+        this.roughness = Math.max(this.roughness, 0.0f);
     }
 
     /** Valida que el valor esté en estos rangos */
-    public void setMetallic(float metallic) {
-        this.metallic = Math.min(metallic, 0.99f);
-        this.metallic = Math.max(this.metallic, 0.f);
+    public void setMetalness(float metallic) {
+        this.metalness = Math.min(metallic, 1f);
+        this.metalness = Math.max(this.metalness, 0.f);
     }
 
     public void destroy() {

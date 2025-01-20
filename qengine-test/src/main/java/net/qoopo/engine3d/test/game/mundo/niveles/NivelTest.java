@@ -26,7 +26,7 @@ import net.qoopo.engine.core.entity.component.water.WaterDuDv;
 import net.qoopo.engine.core.lwjgl.audio.component.SoundEmissorAL;
 import net.qoopo.engine.core.material.Material;
 import net.qoopo.engine.core.math.QColor;
-import net.qoopo.engine.core.math.QVector3;
+import net.qoopo.engine.core.math.Vector3;
 import net.qoopo.engine.core.scene.QEscenario;
 import net.qoopo.engine.core.scene.Scene;
 import net.qoopo.engine.core.texture.Texture;
@@ -114,7 +114,7 @@ public class NivelTest extends QEscenario {
                         fogata.move(x, y, z);
                         try {
                             SoundEmissorAL emisorAudio = new SoundEmissorAL(true, false);
-                            emisorAudio.setPosition(QVector3.of(x, y, z));
+                            emisorAudio.setPosition(Vector3.of(x, y, z));
                             emisorAudio.setBuffer(bufFuego.getBufferId());
                             emisorAudio.setReproducirAlInicio(true);
                             emisorAudio.setGain(0.1f);
@@ -168,7 +168,7 @@ public class NivelTest extends QEscenario {
                         try {
                             // manager.addSoundBuffer(buffBeep);
                             SoundEmissorAL sourceBeep = new SoundEmissorAL(true, false);
-                            sourceBeep.setPosition(QVector3.of(x, y + 2, z));
+                            sourceBeep.setPosition(Vector3.of(x, y + 2, z));
                             sourceBeep.setBuffer(bufAves.getBufferId());
                             sourceBeep.setReproducirAlInicio(true);
                             sourceBeep.setGain(0.02f);
@@ -419,7 +419,7 @@ public class NivelTest extends QEscenario {
 
         // sol
         Entity sol = new Entity("Sol");
-        QDirectionalLigth solLuz = new QDirectionalLigth(1.1f, QColor.WHITE, 1, QVector3.of(0, 0, 0), true, true);
+        QDirectionalLigth solLuz = new QDirectionalLigth(1.1f, QColor.WHITE, 1, Vector3.of(0, 0, 0), true, true);
         sol.addComponent(solLuz);
         universo.addEntity(sol);
 

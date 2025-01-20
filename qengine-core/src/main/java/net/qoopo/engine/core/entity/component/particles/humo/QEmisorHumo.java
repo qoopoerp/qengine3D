@@ -18,7 +18,7 @@ import net.qoopo.engine.core.entity.component.physics.collision.detector.shape.p
 import net.qoopo.engine.core.material.AbstractMaterial;
 import net.qoopo.engine.core.material.Material;
 import net.qoopo.engine.core.math.QColor;
-import net.qoopo.engine.core.math.QVector3;
+import net.qoopo.engine.core.math.Vector3;
 import net.qoopo.engine.core.texture.Texture;
 import net.qoopo.engine.core.texture.procesador.AtlasSequentialTexture;
 import net.qoopo.engine.core.texture.util.MaterialUtil;
@@ -102,9 +102,9 @@ public class QEmisorHumo extends ParticleEmissor {
 
                 //ubicacion inicial de la particula
                 particula.move(
-                        entity.getMatrizTransformacion(System.currentTimeMillis()).toTranslationVector().x + rnd.nextFloat() * (ambito.aabMaximo.location.x - ambito.aabMinimo.location.x) + ambito.aabMinimo.location.x,
-                        entity.getMatrizTransformacion(System.currentTimeMillis()).toTranslationVector().y + ambito.aabMinimo.location.y,
-                        entity.getMatrizTransformacion(System.currentTimeMillis()).toTranslationVector().z + rnd.nextFloat() * (ambito.aabMaximo.location.z - ambito.aabMinimo.location.z) + ambito.aabMinimo.location.z
+                        entity.getMatrizTransformacion(System.currentTimeMillis()).toTranslationVector().x + rnd.nextFloat() * (ambito.max.x - ambito.min.x) + ambito.min.x,
+                        entity.getMatrizTransformacion(System.currentTimeMillis()).toTranslationVector().y + ambito.min.y,
+                        entity.getMatrizTransformacion(System.currentTimeMillis()).toTranslationVector().z + rnd.nextFloat() * (ambito.max.z - ambito.min.z) + ambito.min.z
                 );
 //                particula.rotar(0, (float) (rnd.nextFloat() * Math.toRadians(180)), 0);
 
@@ -121,7 +121,7 @@ public class QEmisorHumo extends ParticleEmissor {
 
             //si ya paso su tiempo de vida o ya esta fuera del ambito en la altura
             if ((System.currentTimeMillis() - particula.getTiempoCreacion()) > particula.getTiempoVida()
-                    || (particula.objeto.getTransform().getLocation().y > ambito.aabMaximo.location.y)) {
+                    || (particula.objeto.getTransform().getLocation().y > ambito.max.y)) {
                 particulasEliminadas.add(particula);
                 actuales--;
                 particula.objeto.setToRender(false);
@@ -137,14 +137,14 @@ public class QEmisorHumo extends ParticleEmissor {
     private void modificarParticulas(long deltaTime) {
         float miniMov = -0.0000009f;
         float maxMov = 0.0000009f;
-        QVector3 velocidad = QVector3.of(0, 0.005f, 0);
+        Vector3 velocidad = Vector3.of(0, 0.005f, 0);
         for (Particle particula : this.particulas) {
 
             float delta = deltaTime / 1000.0f;
             float dx = velocidad.x * delta;
             float dy = velocidad.y * delta;
             float dz = velocidad.z * delta;
-            QVector3 pos = particula.objeto.getTransform().getLocation();
+            Vector3 pos = particula.objeto.getTransform().getLocation();
 
             particula.objeto.move(pos.x + dx, pos.y + dy, pos.z + dz);
 

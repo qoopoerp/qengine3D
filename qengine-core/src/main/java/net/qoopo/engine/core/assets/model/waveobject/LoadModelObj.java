@@ -28,8 +28,8 @@ import net.qoopo.engine.core.entity.component.physics.dinamica.QObjetoDinamico;
 import net.qoopo.engine.core.entity.component.physics.dinamica.QObjetoRigido;
 import net.qoopo.engine.core.material.Material;
 import net.qoopo.engine.core.math.QColor;
-import net.qoopo.engine.core.math.QVector2;
-import net.qoopo.engine.core.math.QVector3;
+import net.qoopo.engine.core.math.Vector2;
+import net.qoopo.engine.core.math.Vector3;
 import net.qoopo.engine.core.texture.Texture;
 import net.qoopo.engine.core.util.image.ImgReader;
 
@@ -77,7 +77,7 @@ public class LoadModelObj implements ModelLoader {
                                 Float.parseFloat(att[2]), Float.parseFloat(att[3])));
                     } else if (materialLine.startsWith("Ks ")) {
                         String[] att = materialLine.split("\\s+");
-                        readingMaterial.setColorEspecular(new QColor(1, Float.parseFloat(att[1]),
+                        readingMaterial.setSpecularColour(new QColor(1, Float.parseFloat(att[1]),
                                 Float.parseFloat(att[2]), Float.parseFloat(att[3])));
                     } else if (materialLine.startsWith("d ")) {
                         String[] att = materialLine.split("\\s+");
@@ -259,11 +259,11 @@ public class LoadModelObj implements ModelLoader {
                             break;
 
                         case "vt":
-                            readingMesh.addUV(new QVector2(Float.parseFloat(tokens[1]), Float.parseFloat(tokens[2])));
+                            readingMesh.addUV(new Vector2(Float.parseFloat(tokens[1]), Float.parseFloat(tokens[2])));
                             break;
                         case "vn":
                             // String[] att = line.split("\\s+");
-                            readingMesh.addNormal(new QVector3(Float.parseFloat(tokens[1]), Float.parseFloat(tokens[2]),
+                            readingMesh.addNormal(new Vector3(Float.parseFloat(tokens[1]), Float.parseFloat(tokens[2]),
                                     Float.parseFloat(tokens[3])));
                             vertexNormalSpecified = true;
                             break;

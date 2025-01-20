@@ -11,7 +11,7 @@ import lombok.Getter;
 import lombok.Setter;
 import net.qoopo.engine.core.entity.Entity;
 import net.qoopo.engine.core.entity.component.EntityComponent;
-import net.qoopo.engine.core.math.QVector3;
+import net.qoopo.engine.core.math.Vector3;
 
 public class SoundListenerAL implements EntityComponent {
 
@@ -20,23 +20,23 @@ public class SoundListenerAL implements EntityComponent {
     private Entity entity;
 
     public SoundListenerAL() {
-        this(QVector3.of(0, 0, 0));
+        this(Vector3.of(0, 0, 0));
     }
 
-    public SoundListenerAL(QVector3 position) {
+    public SoundListenerAL(Vector3 position) {
         alListener3f(AL_POSITION, position.x, position.y, position.z);
         alListener3f(AL_VELOCITY, 0, 0, 0);
     }
 
-    public void setSpeed(QVector3 speed) {
+    public void setSpeed(Vector3 speed) {
         alListener3f(AL_VELOCITY, speed.x, speed.y, speed.z);
     }
 
-    public void setPosition(QVector3 position) {
+    public void setPosition(Vector3 position) {
         alListener3f(AL_POSITION, position.x, position.y, position.z);
     }
 
-    public void setOrientation(QVector3 at, QVector3 up) {
+    public void setOrientation(Vector3 at, Vector3 up) {
         float[] data = new float[6];
         data[0] = at.x;
         data[1] = at.y;

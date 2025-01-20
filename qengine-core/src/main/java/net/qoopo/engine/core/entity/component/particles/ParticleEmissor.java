@@ -13,7 +13,7 @@ import lombok.Setter;
 import net.qoopo.engine.core.entity.Entity;
 import net.qoopo.engine.core.entity.component.EntityComponent;
 import net.qoopo.engine.core.entity.component.physics.collision.detector.shape.primitivas.AABB;
-import net.qoopo.engine.core.math.QVector3;
+import net.qoopo.engine.core.math.Vector3;
 
 /**
  *
@@ -51,7 +51,7 @@ public abstract class ParticleEmissor implements EntityComponent {
     /**
      * Direccion de emision de las particulas
      */
-    protected QVector3 direccion;
+    protected Vector3 direccion;
 
     /**
      * Emite las particulas. Se llama en cada pasada de renderizado
@@ -59,7 +59,7 @@ public abstract class ParticleEmissor implements EntityComponent {
     public abstract void emitir(long deltaTime);
 
     public ParticleEmissor(AABB ambito, float tiempoVida, int maximoParticulas, int velocidadEmision,
-            QVector3 direccion) {
+            Vector3 direccion) {
         this.ambito = ambito;
         this.tiempoVida = tiempoVida;
         this.maximoParticulas = maximoParticulas;

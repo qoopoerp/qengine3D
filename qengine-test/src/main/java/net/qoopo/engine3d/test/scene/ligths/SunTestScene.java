@@ -24,7 +24,8 @@ public class SunTestScene extends MakeTestScene {
         mundo.setAmbientColor(QColor.of(0.10f, 0.10f, 0.10f));
         // agrega luz direccional que es el Sol
         Sun sun = new Sun("Sol");
-        sun.rotate(Math.toRadians(45), 0, Math.toRadians(-45));
+        // sun.rotate(Math.toRadians(45), 0, Math.toRadians(-45));
+        sun.rotate(0, 0, Math.toRadians(90));
         mundo.addEntity(sun);
     }
 

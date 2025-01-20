@@ -14,10 +14,10 @@ import net.qoopo.engine.core.entity.component.mesh.Mesh;
 import net.qoopo.engine.core.entity.component.mesh.primitive.Vertex;
 import net.qoopo.engine.core.material.Material;
 import net.qoopo.engine.core.math.QColor;
-import net.qoopo.engine.core.math.QMatriz4;
-import net.qoopo.engine.core.math.QVector2;
-import net.qoopo.engine.core.math.QVector3;
-import net.qoopo.engine.core.math.QVector4;
+import net.qoopo.engine.core.math.Matrix4;
+import net.qoopo.engine.core.math.Vector2;
+import net.qoopo.engine.core.math.Vector3;
+import net.qoopo.engine.core.math.Vector4;
 import net.qoopo.engine.core.util.ComponentUtil;
 import net.qoopo.engine.core.util.TempVars;
 import net.qoopo.engine.core.util.array.IntArray;
@@ -82,7 +82,7 @@ public class Camera extends Entity {
     /**
      * Matriz para aplicar la proyeccion
      */
-    private final QMatriz4 matrizProyeccion = new QMatriz4();
+    private final Matrix4 matrizProyeccion = new Matrix4();
 
     public Camera() {
         super("Cam ", false);
@@ -115,7 +115,7 @@ public class Camera extends Entity {
     }
 
     public void iniciar() {
-        transform.getLocation().set(QVector3.zero);
+        transform.getLocation().set(Vector3.zero);
         transform.getRotation().reset();
         escalaOrtogonal = 1.0f;
         frustrumCerca = 1.0f;
@@ -157,7 +157,7 @@ public class Camera extends Entity {
      * @param v2
      * @return
      */
-    public float getClipedVerticeAlfa(QVector3 v1, QVector3 v2) {
+    public float getClipedVerticeAlfa(Vector3 v1, Vector3 v2) {
         float alfa = 0.0f;
         // for (int i = 0; i < 2; i++) { //solo far plane y near plane
         for (int i = 0; i < 6; i++) {
@@ -186,7 +186,7 @@ public class Camera extends Entity {
      * @param vertice
      * @return
      */
-    public boolean isVisible(QVector3 vertice) {
+    public boolean isVisible(Vector3 vertice) {
         return isVisible(vertice.x, vertice.y, vertice.z);
     }
 
@@ -195,7 +195,7 @@ public class Camera extends Entity {
      * @param vertice
      * @return
      */
-    public boolean isVisible(QVector4 vertice) {
+    public boolean isVisible(Vector4 vertice) {
         return isVisible(vertice.x, vertice.y, vertice.z);
     }
 
@@ -245,7 +245,7 @@ public class Camera extends Entity {
         matrizProyeccion.fromFrustum(frustrumCerca, frustrumLejos, frustumIzquierda, frustumDerecha, frustumArriba,
                 frustumAbajo, ortogonal);
 
-        QVector3[] esquinas = getEsquinasFrustum();
+        Vector3[] esquinas = getEsquinasFrustum();
         construirPlanosRecorte(esquinas);
         // construirGeometria(esquinas);
         cached_time = -1L;
@@ -259,17 +259,17 @@ public class Camera extends Entity {
      *         https://stackoverflow.com/questions/13665932/calculating-the-viewing-frustum-in-a-3d-space
      *
      */
-    public QVector3[] getEsquinasFrustum() {
-        QVector3[] esquinas = new QVector3[8];
+    public Vector3[] getEsquinasFrustum() {
+        Vector3[] esquinas = new Vector3[8];
 
         // en coordenadas de la camara
-        QVector3 centro = QVector3.empty();
-        QVector3 camaraDireccion = QVector3.of(0, 0, -1.0f);
-        QVector3 arriba = QVector3.of(0, 1.0f, 0);
-        QVector3 izquierda = QVector3.of(-1.0f, 0, 0);
+        Vector3 centro = Vector3.empty();
+        Vector3 camaraDireccion = Vector3.of(0, 0, -1.0f);
+        Vector3 arriba = Vector3.of(0, 1.0f, 0);
+        Vector3 izquierda = Vector3.of(-1.0f, 0, 0);
         // -----------------
-        QVector3 centroCerca = centro.clone().add(camaraDireccion.clone().normalize().multiply(frustrumCerca));
-        QVector3 centroLejos = centro.clone().add(camaraDireccion.clone().normalize().multiply(frustrumLejos));
+        Vector3 centroCerca = centro.clone().add(camaraDireccion.clone().normalize().multiply(frustrumCerca));
+        Vector3 centroLejos = centro.clone().add(camaraDireccion.clone().normalize().multiply(frustrumLejos));
 
         float cercaAlto = 2 * (float) Math.tan(FOV / 2) * frustrumCerca;
         float cercaAncho = cercaAlto * aspectRatio;
@@ -313,7 +313,7 @@ public class Camera extends Entity {
         return esquinas;
     }
 
-    private void construirPlanosRecorte(QVector3[] esquinas) {
+    private void construirPlanosRecorte(Vector3[] esquinas) {
         // Plano cercano
         clipPane[0] = new ClipPane(esquinas[6], esquinas[4], esquinas[5]);
         // Plano lejano
@@ -331,10 +331,10 @@ public class Camera extends Entity {
     /**
      * Construye una geometria para ver la camara
      */
-    private void construirGeometria(QVector3[] esquinas) {
+    private void construirGeometria(Vector3[] esquinas) {
         try {
             GEOMETRIA_FRUSTUM.destroy();
-            for (QVector3 vector : esquinas) {
+            for (Vector3 vector : esquinas) {
                 GEOMETRIA_FRUSTUM.addVertex(vector);
             }
 
@@ -364,7 +364,7 @@ public class Camera extends Entity {
      * @param vector
      * @return vector en coordenadas normalizadas (-1:1)
      */
-    public QVector3 proyectar(QVector4 vector) {
+    public Vector3 proyectar(Vector4 vector) {
         // metodo matricial
         // pasos
         // http://www.songho.ca/opengl/gl_transform.html
@@ -377,7 +377,7 @@ public class Camera extends Entity {
         TempVars tmp = TempVars.get();
         try {
             // Primero proyeccion. Al proyectar la deja en coordenadas homogeneas (de-1 a 1)
-            QVector4 p = getMatrizProyeccion().mult(vector);
+            Vector4 p = getMatrizProyeccion().mult(vector);
             // 1.2 Ahora vamos a normalizar las coordendas dividiendo para el componente W
             // (Perspectiva)
             tmp.vector3f2.set(p.x / p.w, p.y / p.w, p.z / p.w); // division de perspertiva
@@ -393,7 +393,7 @@ public class Camera extends Entity {
      * @param vector de coordenadas normalizadas
      * @return
      */
-    private QVector3 coordenadasPantalla(QVector3 vector, int pantallaAncho, int pantallaAlto) {
+    private Vector3 coordenadasPantalla(Vector3 vector, int pantallaAncho, int pantallaAlto) {
         // http://www.songho.ca/opengl/gl_transform.html
         TempVars tmp = TempVars.get();
         try {
@@ -418,8 +418,8 @@ public class Camera extends Entity {
      * @param pantallaAncho
      * @param pantallaAlto
      */
-    public void getCoordenadasPantalla(QVector2 onScreen, QVector4 vector, int pantallaAncho, int pantallaAlto) {
-        QVector3 tmp = coordenadasPantalla(proyectar(vector), pantallaAncho, pantallaAlto);
+    public void getCoordenadasPantalla(Vector2 onScreen, Vector4 vector, int pantallaAncho, int pantallaAlto) {
+        Vector3 tmp = coordenadasPantalla(proyectar(vector), pantallaAncho, pantallaAlto);
         if (tmp != null) {
             onScreen.x = (int) tmp.x;
             onScreen.y = (int) tmp.y;
@@ -444,7 +444,7 @@ public class Camera extends Entity {
      * @param objetivo
      * @param up
      */
-    public void lookAtTarget(QVector3 posicion, QVector3 objetivo, QVector3 up) {
+    public void lookAtTarget(Vector3 posicion, Vector3 objetivo, Vector3 up) {
         lookAt(posicion, posicion.clone().subtract(objetivo), up);
     }
 
@@ -455,7 +455,7 @@ public class Camera extends Entity {
      * @param direction
      * @param up
      */
-    public void lookAt(QVector3 location, QVector3 direction, QVector3 up) {
+    public void lookAt(Vector3 location, Vector3 direction, Vector3 up) {
         transform.getLocation().set(location);
         transform.getRotation().getCuaternion().lookAt(direction, up);
         transform.getRotation().updateEuler();

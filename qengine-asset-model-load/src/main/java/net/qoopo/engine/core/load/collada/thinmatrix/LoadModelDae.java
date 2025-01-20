@@ -32,7 +32,7 @@ import net.qoopo.engine.core.load.collada.thinmatrix.data.MeshData;
 import net.qoopo.engine.core.load.collada.thinmatrix.data.SkeletonData;
 import net.qoopo.engine.core.load.collada.thinmatrix.loader.ColladaLoader;
 import net.qoopo.engine.core.material.Material;
-import net.qoopo.engine.core.math.QMatriz4;
+import net.qoopo.engine.core.math.Matrix4;
 import net.qoopo.engine.core.util.QJOMLUtil;
 
 /**
@@ -101,7 +101,7 @@ public class LoadModelDae implements ModelLoader {
         for (JointTransformData joinTransFormData : frameData.jointTransforms) {
             hueso = esqueleto.getBone(joinTransFormData.jointNameId);
             if (hueso != null) {
-                QMatriz4 mat4 = QJOMLUtil.convertirQMatriz4(joinTransFormData.jointLocalTransform);
+                Matrix4 mat4 = QJOMLUtil.convertirQMatriz4(joinTransFormData.jointLocalTransform);
                 transformacion = new Transform();
                 transformacion.fromMatrix(mat4);
                 qFrame.addPair(new AnimationPair(hueso, transformacion));
@@ -120,7 +120,7 @@ public class LoadModelDae implements ModelLoader {
      */
     private static Bone crearHueso(JointData joint) {
         Bone hueso = new Bone(joint.index, joint.nameId);
-        QMatriz4 mat4 = QJOMLUtil.convertirQMatriz4(joint.bindLocalTransform);
+        Matrix4 mat4 = QJOMLUtil.convertirQMatriz4(joint.bindLocalTransform);
         // hueso.transformacion = new QTransformacion(QRotacion.CUATERNION);
         hueso.setTransform(new Transform());
         hueso.getTransform().fromMatrix(mat4);

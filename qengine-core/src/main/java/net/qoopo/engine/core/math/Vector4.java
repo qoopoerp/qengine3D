@@ -4,34 +4,33 @@ import java.io.Serializable;
 
 import net.qoopo.engine.core.util.QGlobal;
 
-public class QVector4 implements Serializable {
+public class Vector4 implements Serializable {
 
-    public static QVector4 zero = new QVector4(0, 0, 0, 0);
-    // public static QVector3 gravedad=QVector3.of(0, -10, 0);
+    public static Vector4 zero = new Vector4(0, 0, 0, 0);
 
-    public static QVector4 unitario_x = new QVector4(1, 0, 0, 0);
-    public static QVector4 unitario_y = new QVector4(0, 1, 0, 0);
-    public static QVector4 unitario_z = new QVector4(0, 0, 1, 0);
-    public static QVector4 unitario_w = new QVector4(0, 0, 0, 1);
-    public static QVector4 unitario_xyzw = new QVector4(1, 1, 1, 1);
+    public static Vector4 unitario_x = new Vector4(1, 0, 0, 0);
+    public static Vector4 unitario_y = new Vector4(0, 1, 0, 0);
+    public static Vector4 unitario_z = new Vector4(0, 0, 1, 0);
+    public static Vector4 unitario_w = new Vector4(0, 0, 0, 1);
+    public static Vector4 unitario_xyzw = new Vector4(1, 1, 1, 1);
 
     public float x, y, z, w;
 
-    public QVector4() {
+    public Vector4() {
         x = 0;
         y = 0;
         z = 0;
         w = 0;
     }
 
-    public QVector4(float x, float y, float z, float w) {
+    public Vector4(float x, float y, float z, float w) {
         this.x = x;
         this.y = y;
         this.z = z;
         this.w = w;
     }
 
-    public QVector4(QVector3 vector, float w) {
+    public Vector4(Vector3 vector, float w) {
         this.x = vector.x;
         this.y = vector.y;
         this.z = vector.z;
@@ -45,21 +44,21 @@ public class QVector4 implements Serializable {
         this.w = w;
     }
 
-    public void set(QVector4 vector) {
+    public void set(Vector4 vector) {
         this.x = vector.x;
         this.y = vector.y;
         this.z = vector.z;
         this.w = vector.w;
     }
 
-    public void set(QVector3 vector) {
+    public void set(Vector3 vector) {
         this.x = vector.x;
         this.y = vector.y;
         this.z = vector.z;
         this.w = 1;
     }
 
-    public void set(QVector3 vector, float w) {
+    public void set(Vector3 vector, float w) {
         this.x = vector.x;
         this.y = vector.y;
         this.z = vector.z;
@@ -82,14 +81,14 @@ public class QVector4 implements Serializable {
         }
     }
 
-    public QVector4 invert() {
+    public Vector4 invert() {
         x = -x;
         y = -y;
         z = -z;
         return this;
     }
 
-    public QVector4 add(float value) {
+    public Vector4 add(float value) {
         x += value;
         y += value;
         z += value;
@@ -97,7 +96,7 @@ public class QVector4 implements Serializable {
         return this;
     }
 
-    public QVector4 subtract(float value) {
+    public Vector4 subtract(float value) {
         x -= value;
         y -= value;
         z -= value;
@@ -105,8 +104,8 @@ public class QVector4 implements Serializable {
         return this;
     }
 
-    public QVector4 add(QVector4... others) {
-        for (QVector4 other : others) {
+    public Vector4 add(Vector4... others) {
+        for (Vector4 other : others) {
             x += other.x;
             y += other.y;
             z += other.z;
@@ -121,11 +120,11 @@ public class QVector4 implements Serializable {
         z = -z;
     }
 
-    public void copyXYZ(QVector4 vector) {
+    public void copyXYZ(Vector4 vector) {
         set(vector.x, vector.y, vector.z, vector.w);
     }
 
-    public QVector4 multiply(float alpha) {
+    public Vector4 multiply(float alpha) {
         x *= alpha;
         y *= alpha;
         z *= alpha;
@@ -141,11 +140,11 @@ public class QVector4 implements Serializable {
         }
     }
 
-    public float dot(QVector4 other) {
+    public float dot(Vector4 other) {
         return (this.x * other.x + this.y * other.y + this.z * other.z + this.w * other.w);
     }
 
-    public QVector4 rotateX(float angle) {
+    public Vector4 rotateX(float angle) {
         float cosAngle = (float) QMath.cos(angle);
         float sinAngle = (float) QMath.sin(angle);
         float tempY = y * cosAngle - z * sinAngle;
@@ -154,7 +153,7 @@ public class QVector4 implements Serializable {
         return this;
     }
 
-    public QVector4 rotateY(float angle) {
+    public Vector4 rotateY(float angle) {
         float cosAngle = (float) QMath.cos(angle);
         float sinAngle = (float) QMath.sin(angle);
         float tempZ = z * cosAngle - x * sinAngle;
@@ -163,7 +162,7 @@ public class QVector4 implements Serializable {
         return this;
     }
 
-    public QVector4 rotateZ(float angle) {
+    public Vector4 rotateZ(float angle) {
         float cosAngle = (float) QMath.cos(angle);
         float sinAngle = (float) QMath.sin(angle);
         float tempX = x * cosAngle - y * sinAngle;
@@ -173,13 +172,13 @@ public class QVector4 implements Serializable {
     }
 
     @Override
-    public QVector4 clone() {
-        return new QVector4(x, y, z, w);
+    public Vector4 clone() {
+        return new Vector4(x, y, z, w);
     }
 
-    public static QVector4 addNewVector(QVector4 v1, QVector4... others) {
-        QVector4 result = v1.clone();
-        for (QVector4 other : others) {
+    public static Vector4 addNewVector(Vector4 v1, Vector4... others) {
+        Vector4 result = v1.clone();
+        for (Vector4 other : others) {
             result.x += other.x;
             result.y += other.y;
             result.z += other.z;
@@ -188,20 +187,20 @@ public class QVector4 implements Serializable {
         return result;
     }
 
-    public static float dotProduct(QVector4 v1, QVector4 v2) {
+    public static float dotProduct(Vector4 v1, Vector4 v2) {
         return (v1.x * v2.x + v1.y * v2.y + v1.z * v2.z);
     }
 
-    public static QVector4 crossProduct(QVector4 v1, QVector4 v2) {
-        return new QVector4(
+    public static Vector4 crossProduct(Vector4 v1, Vector4 v2) {
+        return new Vector4(
                 v1.y * v2.z - v1.z * v2.y,
                 v1.z * v2.x - v1.x * v2.z,
                 v1.x * v2.y - v1.y * v2.x,
                 v1.w * v2.w);
     }
 
-    public static QVector4 multiply(float alpha, QVector4 vector) {
-        return new QVector4(alpha * vector.x,
+    public static Vector4 multiply(float alpha, Vector4 vector) {
+        return new Vector4(alpha * vector.x,
                 alpha * vector.y, alpha * vector.z, alpha * vector.w);
     }
 
@@ -223,8 +222,8 @@ public class QVector4 implements Serializable {
         throw new IllegalArgumentException("index must be either 0, 1 or 2");
     }
 
-    public QVector3 getVector3() {
-        return QVector3.of(x, y, z);
+    public Vector3 getVector3() {
+        return Vector3.of(x, y, z);
     }
 
     @Override
@@ -248,7 +247,7 @@ public class QVector4 implements Serializable {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        final QVector4 other = (QVector4) obj;
+        final Vector4 other = (Vector4) obj;
         if (Float.floatToIntBits(this.x) != Float.floatToIntBits(other.x)) {
             return false;
         }

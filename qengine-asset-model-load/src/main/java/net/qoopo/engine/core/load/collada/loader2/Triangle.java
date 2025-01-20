@@ -1,6 +1,6 @@
 package net.qoopo.engine.core.load.collada.loader2;
 
-import net.qoopo.engine.core.math.QVector4;
+import net.qoopo.engine.core.math.Vector4;
 
 /**
  * Triangle class.
@@ -9,15 +9,15 @@ import net.qoopo.engine.core.math.QVector4;
  */
 public class Triangle {
 
-    private final QVector4[] points = new QVector4[3];
+    private final Vector4[] points = new Vector4[3];
 
-    public Triangle(QVector4 a, QVector4 b, QVector4 c) {
+    public Triangle(Vector4 a, Vector4 b, Vector4 c) {
         points[0] = a;
         points[1] = b;
         points[2] = c;
     }
 
-    public QVector4[] getPoints() {
+    public Vector4[] getPoints() {
         return points;
     }
     

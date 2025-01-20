@@ -16,61 +16,37 @@ import net.qoopo.engine.core.math.QColor;
  *
  * @author alberto
  */
-public class QOrigen extends Entity {
+public class Axis extends Entity {
 
-    public QOrigen() {
+    public Axis() {
         super("Origen");
         build();
     }
 
-    /**
-     * Esta geometria
-     */
     private void build() {
         try {
 
             Material matX = new Material("x");
             matX.setColor(QColor.RED);
-            matX.setEmision(1.0f);
+            matX.setEmissionIntensity(1.0f);
 
             Material matY = new Material("y");
             matY.setColor(QColor.GREEN);
-            matY.setEmision(1.0f);
+            matY.setEmissionIntensity(1.0f);
 
             Material matZ = new Material("z");
             matZ.setColor(QColor.BLUE);
-            matZ.setEmision(1.0f);
+            matZ.setEmissionIntensity(1.0f);
 
-            // Mesh mesh = new Mesh();
-            // mesh.addVertex(0, 0, 0); // 0
-            // mesh.addVertex(1.0f, 0, 0); // 1
-            // mesh.addVertex(0, 1.0f, 0); // 2
-            // mesh.addVertex(0, 0, 1.0f); // 3
-
-            // mesh.addNormal(0, 0, 0);
-            // mesh.addNormal(0, 0, 0);
-            // mesh.addNormal(0, 0, 0);
-            // mesh.addNormal(0, 0, 0);
-
-            // mesh.addUV(0, 0);
-            // mesh.addUV(0, 0);
-            // mesh.addUV(0, 0);
-            // mesh.addUV(0, 0);
-
-            // mesh.addLine(matX, 0, 1);
-            // mesh.addLine(matY, 0, 2);
-            // mesh.addLine(matZ, 0, 3);
-            // addComponent(mesh);
-
-            Box boxX = new Box(1f, 0.1f, 0.1f);
+            Box boxX = new Box(1f, 0.05f, 0.1f);
             boxX.applyMaterial(matX);
             addComponent(boxX);
 
-            Box boxY = new Box(0.1f, 1f, 0.1f);
+            Box boxY = new Box(0.05f, 1f, 0.1f);
             boxY.applyMaterial(matY);
             addComponent(boxY);
 
-            Box boxZ = new Box(0.1f, 0.1f, 1f);
+            Box boxZ = new Box(0.05f, 0.1f, 1f);
             boxZ.applyMaterial(matZ);
             addComponent(boxZ);
         } catch (Exception e) {

@@ -32,10 +32,11 @@ import net.qoopo.engine.core.entity.component.particles.Particle;
 import net.qoopo.engine.core.entity.component.particles.ParticleEmissor;
 import net.qoopo.engine.core.material.Material;
 import net.qoopo.engine.core.material.node.MaterialNode;
-import net.qoopo.engine.core.math.QMatriz4;
-import net.qoopo.engine.core.math.QVector2;
-import net.qoopo.engine.core.math.QVector3;
-import net.qoopo.engine.core.math.QVector4;
+import net.qoopo.engine.core.math.Matrix4;
+import net.qoopo.engine.core.math.QColor;
+import net.qoopo.engine.core.math.Vector2;
+import net.qoopo.engine.core.math.Vector3;
+import net.qoopo.engine.core.math.Vector4;
 import net.qoopo.engine.core.renderer.RenderEngine;
 import net.qoopo.engine.core.renderer.RenderOptions;
 import net.qoopo.engine.core.renderer.superficie.Superficie;
@@ -132,8 +133,8 @@ public class SoftwareRenderer extends RenderEngine {
             // La Matriz de vista es la inversa de la matriz de la camara.
             // Esto es porque la camara siempre estara en el centro y movemos el mundo
             // en direccion contraria a la camara.
-            QMatriz4 matrizVista = camera.getMatrizTransformacion(QGlobal.time).invert();
-            QMatriz4 matrizVistaInvertidaBillboard = camera.getMatrizTransformacion(QGlobal.time);
+            Matrix4 matrizVista = camera.getMatrizTransformacion(QGlobal.time).invert();
+            Matrix4 matrizVistaInvertidaBillboard = camera.getMatrizTransformacion(QGlobal.time);
             // caras solidas
             scene.getEntities().stream()
                     .filter(entity -> entity.isToRender())
@@ -254,7 +255,7 @@ public class SoftwareRenderer extends RenderEngine {
      * @param matrizVista
      * @param matrizVistaInvertidaBillboard
      */
-    public void renderEntity(Entity entity, QMatriz4 matrizVista, QMatriz4 matrizVistaInvertidaBillboard,
+    public void renderEntity(Entity entity, Matrix4 matrizVista, Matrix4 matrizVistaInvertidaBillboard,
             boolean transparentes) {
 
         // logger.info("[+] Renderizando entidad : " + entity.getName());
@@ -263,11 +264,11 @@ public class SoftwareRenderer extends RenderEngine {
         // De esta forma es la matriz que se usa para transformar el modelo a las
         // coordenadas del mundo
         // luego de estas coordenadas se transforma a las coordenadas de la camara
-        QMatriz4 matVistaModelo;
+        Matrix4 matVistaModelo;
 
         // La matriz modelo contiene la información del modelo
         // Traslación, rotacion (en su propio eje ) y escala
-        QMatriz4 matrizModelo;
+        Matrix4 matrizModelo;
 
         // salta las camaras si no esta activo el dibujo de las camaras
         if (entity instanceof Camera && !opciones.isDibujarLuces()) {
@@ -340,7 +341,7 @@ public class SoftwareRenderer extends RenderEngine {
     /*
      * Renderiza una malla
      */
-    private void renderMesh(Mesh mesh, boolean transparentes, QMatriz4 matVistaModelo, VertexShader vertexShader) {
+    private void renderMesh(Mesh mesh, boolean transparentes, Matrix4 matVistaModelo, VertexShader vertexShader) {
 
         if (mesh != null) {
             Entity entity = mesh.getEntity();
@@ -412,8 +413,8 @@ public class SoftwareRenderer extends RenderEngine {
                                         uvIndex = primitive.uvIndexList[polyVertexIndex];
 
                                     Vertex vertex = new Vertex();
-                                    QVector3 vertexNormal = new QVector3();
-                                    QVector2 vertexUV = new QVector2();
+                                    Vector3 vertexNormal = new Vector3();
+                                    Vector2 vertexUV = new Vector2();
 
                                     // el vertice que corresponde de la malla
                                     vertex.set(modifiedMesh.vertexList[vertexIndex]);
@@ -517,10 +518,10 @@ public class SoftwareRenderer extends RenderEngine {
 
                                 // la direccion de la luz en el espacio de la camara (Se usa para el calculo de
                                 // la iluminacion)
-                                QVector3 direccionLuzEspacioCamara = QVector3.zero;
+                                Vector3 direccionLuzEspacioCamara = Vector3.zero;
                                 // la direccion de la luz en el espacio mundial(no se aplica la transformacion
                                 // de la camara) (Se usa en el calculo de la sombra)
-                                QVector3 direccionLuzMapaSombra = QVector3.zero;
+                                Vector3 direccionLuzMapaSombra = Vector3.zero;
 
                                 if (luz instanceof QDirectionalLigth) {
                                     direccionLuzEspacioCamara = ((QDirectionalLigth) componente).getDirection();
@@ -621,7 +622,7 @@ public class SoftwareRenderer extends RenderEngine {
      * @param mouseLocation
      * @return
      */
-    public Entity selectEntity(QVector2 mouseLocation) {
+    public Entity selectEntity(Vector2 mouseLocation) {
         try {
             if (opciones.isForzarResolucion() && this.getSuperficie() != null) {
                 mouseLocation.x = mouseLocation.x * opciones.getAncho()
@@ -630,15 +631,15 @@ public class SoftwareRenderer extends RenderEngine {
                         / this.getSuperficie().getComponente().getHeight();
             }
 
-            QVector2 ubicacionLuz = new QVector2();
-            QVector3 tmp;
+            Vector2 ubicacionLuz = new Vector2();
+            Vector3 tmp;
             // Selección de luces
             for (Entity entity : scene.getEntities()) {
                 if (entity.isToRender()) {
                     for (EntityComponent componente : entity.getComponents()) {
                         if (componente instanceof QLigth) {
-                            tmp = TransformationVectorUtil.transformarVector(QVector3.zero, entity, camera);
-                            camera.getCoordenadasPantalla(ubicacionLuz, new QVector4(tmp, 1), frameBuffer.getWidth(),
+                            tmp = TransformationVectorUtil.transformarVector(Vector3.zero, entity, camera);
+                            camera.getCoordenadasPantalla(ubicacionLuz, new Vector4(tmp, 1), frameBuffer.getWidth(),
                                     frameBuffer.getHeight());
                             if ((ubicacionLuz.x - mouseLocation.x)
                                     * (ubicacionLuz.x - mouseLocation.x)
@@ -693,12 +694,12 @@ public class SoftwareRenderer extends RenderEngine {
     }
 
     @Override
-    public void renderLine(QMatriz4 matViewModel, Primitive primitiva, Vertex... vertex) {
+    public void renderLine(Matrix4 matViewModel, Primitive primitiva, Vertex... vertex) {
         raster.rasterLine(matViewModel, primitiva, vertex);
     }
 
     @Override
-    public void render(QMatriz4 matViewModel, VertexBuffer bufferVertices, Primitive primitiva, boolean wire) {
+    public void render(Matrix4 matViewModel, VertexBuffer bufferVertices, Primitive primitiva, boolean wire) {
         raster.raster(matViewModel, bufferVertices, primitiva, wire);
     }
 

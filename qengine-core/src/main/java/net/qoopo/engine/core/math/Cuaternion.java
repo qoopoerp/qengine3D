@@ -33,7 +33,7 @@ public final class Cuaternion implements Cloneable, java.io.Serializable {
     public static final Cuaternion ZERO = new Cuaternion(0, 0, 0, 0);
 
     static {
-        DIRECTION_Z.fromAxes(QVector3.unitario_x, QVector3.unitario_y, QVector3.unitario_z);
+        DIRECTION_Z.fromAxes(Vector3.unitario_x, Vector3.unitario_y, Vector3.unitario_z);
     }
     public float x, y, z, w;
 
@@ -281,7 +281,7 @@ public final class Cuaternion implements Cloneable, java.io.Serializable {
      *
      * @param matrix the matrix that defines the rotation.
      */
-    public Cuaternion fromRotationMatrix(QMatriz3 matrix) {
+    public Cuaternion fromRotationMatrix(Matrix3 matrix) {
         return fromRotationMatrix(matrix.m00, matrix.m01, matrix.m02, matrix.m10,
                 matrix.m11, matrix.m12, matrix.m20, matrix.m21, matrix.m22);
     }
@@ -361,8 +361,8 @@ public final class Cuaternion implements Cloneable, java.io.Serializable {
      *
      * @return the rotation matrix representation of this quaternion.
      */
-    public QMatriz3 toRotationMatrix() {
-        QMatriz3 matrix = new QMatriz3();
+    public Matrix3 toRotationMatrix() {
+        Matrix3 matrix = new Matrix3();
         return toRotationMatrix(matrix);
     }
 
@@ -373,7 +373,7 @@ public final class Cuaternion implements Cloneable, java.io.Serializable {
      * @param result The QMatriz3 to store the result in.
      * @return the rotation matrix representation of this quaternion.
      */
-    public QMatriz3 toRotationMatrix(QMatriz3 result) {
+    public Matrix3 toRotationMatrix(Matrix3 result) {
 
         float norm = norm();
         // we explicitly test norm against one here, saving a division
@@ -418,9 +418,9 @@ public final class Cuaternion implements Cloneable, java.io.Serializable {
      * @param result The QMatriz4 to store the result in.
      * @return the rotation matrix representation of this quaternion.
      */
-    public QMatriz4 toRotationMatrix(QMatriz4 result) {
+    public Matrix4 toRotationMatrix(Matrix4 result) {
 
-        QVector3 originalScale = QVector3.empty();
+        Vector3 originalScale = Vector3.empty();
 
         result.toScaleVector(originalScale);
         result.setScale(1, 1, 1);
@@ -467,7 +467,7 @@ public final class Cuaternion implements Cloneable, java.io.Serializable {
      * @param i the column to retrieve. Must be between 0 and 2.
      * @return the column specified by the index.
      */
-    public QVector3 getRotationColumn(int i) {
+    public Vector3 getRotationColumn(int i) {
         return getRotationColumn(i, null);
     }
 
@@ -481,9 +481,9 @@ public final class Cuaternion implements Cloneable, java.io.Serializable {
      *              is created.
      * @return the column specified by the index.
      */
-    public QVector3 getRotationColumn(int i, QVector3 store) {
+    public Vector3 getRotationColumn(int i, Vector3 store) {
         if (store == null) {
-            store = QVector3.empty();
+            store = Vector3.empty();
         }
 
         float norm = norm();
@@ -534,8 +534,8 @@ public final class Cuaternion implements Cloneable, java.io.Serializable {
      * @param axis  the axis of rotation.
      * @return this quaternion
      */
-    public Cuaternion fromAngleAxis(float angle, QVector3 axis) {
-        QVector3 normAxis = axis.clone();
+    public Cuaternion fromAngleAxis(float angle, Vector3 axis) {
+        Vector3 normAxis = axis.clone();
         normAxis.normalize();
         fromAngleNormalAxis(angle, normAxis);
         return this;
@@ -548,7 +548,7 @@ public final class Cuaternion implements Cloneable, java.io.Serializable {
      * @param angle the angle to rotate (in radians).
      * @param axis  the axis of rotation (already normalized).
      */
-    public Cuaternion fromAngleNormalAxis(float angle, QVector3 axis) {
+    public Cuaternion fromAngleNormalAxis(float angle, Vector3 axis) {
         if (axis.x == 0 && axis.y == 0 && axis.z == 0) {
             loadIdentity();
         } else {
@@ -571,7 +571,7 @@ public final class Cuaternion implements Cloneable, java.io.Serializable {
      * @param axisStore the object we'll store the computed axis in.
      * @return the angle of rotation in radians.
      */
-    public float toAngleAxis(QVector3 axisStore) {
+    public float toAngleAxis(Vector3 axisStore) {
         float sqrLength = x * x + y * y + z * z;
         float angle;
         if (sqrLength == 0.0f) {
@@ -829,7 +829,7 @@ public final class Cuaternion implements Cloneable, java.io.Serializable {
      *
      * @param matrix the matrix to apply to this quaternion.
      */
-    public void apply(QMatriz3 matrix) {
+    public void apply(Matrix3 matrix) {
         float oldX = x, oldY = y, oldZ = z, oldW = w;
         fromRotationMatrix(matrix);
         float tempX = x, tempY = y, tempZ = z, tempW = w;
@@ -851,7 +851,7 @@ public final class Cuaternion implements Cloneable, java.io.Serializable {
      * @param axis the array containing the three vectors representing the
      *             coordinate system.
      */
-    public Cuaternion fromAxes(QVector3[] axis) {
+    public Cuaternion fromAxes(Vector3[] axis) {
         if (axis.length != 3) {
             throw new IllegalArgumentException(
                     "Axis array must have three elements");
@@ -871,7 +871,7 @@ public final class Cuaternion implements Cloneable, java.io.Serializable {
      * @param yAxis vector representing the y-axis of the coordinate system.
      * @param zAxis vector representing the z-axis of the coordinate system.
      */
-    public Cuaternion fromAxes(QVector3 xAxis, QVector3 yAxis, QVector3 zAxis) {
+    public Cuaternion fromAxes(Vector3 xAxis, Vector3 yAxis, Vector3 zAxis) {
         return fromRotationMatrix(xAxis.x, yAxis.x, zAxis.x, xAxis.y, yAxis.y,
                 zAxis.y, xAxis.z, yAxis.z, zAxis.z);
     }
@@ -884,8 +884,8 @@ public final class Cuaternion implements Cloneable, java.io.Serializable {
      *
      * @param axis the array of vectors to be filled.
      */
-    public void toAxes(QVector3 axis[]) {
-        QMatriz3 tempMat = toRotationMatrix();
+    public void toAxes(Vector3 axis[]) {
+        Matrix3 tempMat = toRotationMatrix();
         axis[0] = tempMat.getColumn(0, axis[0]);
         axis[1] = tempMat.getColumn(1, axis[1]);
         axis[2] = tempMat.getColumn(2, axis[2]);
@@ -898,7 +898,7 @@ public final class Cuaternion implements Cloneable, java.io.Serializable {
      * @param v the vector to multiply this quaternion by.
      * @return the new vector.
      */
-    public QVector3 mult(QVector3 v) {
+    public Vector3 mult(Vector3 v) {
         return mult(v, null);
     }
 
@@ -909,7 +909,7 @@ public final class Cuaternion implements Cloneable, java.io.Serializable {
      * @param v the vector to multiply this quaternion by.
      * @return v
      */
-    public QVector3 multLocal(QVector3 v) {
+    public Vector3 multLocal(Vector3 v) {
         float tempX, tempY;
         tempX = w * w * v.x + 2 * y * w * v.z - 2 * z * w * v.y + x * x * v.x
                 + 2 * y * x * v.y + 2 * z * x * v.z - z * z * v.x - y * y * v.x;
@@ -974,9 +974,9 @@ public final class Cuaternion implements Cloneable, java.io.Serializable {
      *              store to be the same object.
      * @return the result vector.
      */
-    public QVector3 mult(QVector3 v, QVector3 store) {
+    public Vector3 mult(Vector3 v, Vector3 store) {
         if (store == null) {
-            store = QVector3.empty();
+            store = Vector3.empty();
         }
         if (v.x == 0 && v.y == 0 && v.z == 0) {
             store.set(0, 0, 0);
@@ -1229,11 +1229,11 @@ public final class Cuaternion implements Cloneable, java.io.Serializable {
      *                  1,
      *                  0} in jME.)
      */
-    public void lookAt(QVector3 direction, QVector3 up) {
-        QVector3 ejeDerecha = up.clone().cross(direction);
+    public void lookAt(Vector3 direction, Vector3 up) {
+        Vector3 ejeDerecha = up.clone().cross(direction);
         ejeDerecha.normalize();
-        QVector3 ejeArriba = direction.clone().cross(ejeDerecha);
-        QVector3 ejeAdelante = direction.clone();
+        Vector3 ejeArriba = direction.clone().cross(ejeDerecha);
+        Vector3 ejeAdelante = direction.clone();
         ejeAdelante.normalize();
         fromAxes(ejeDerecha, ejeArriba, ejeAdelante);
     }
@@ -1262,7 +1262,7 @@ public final class Cuaternion implements Cloneable, java.io.Serializable {
             store = new Cuaternion();
         }
 
-        QVector3 axis = QVector3.empty();
+        Vector3 axis = Vector3.empty();
         float angle = toAngleAxis(axis);
 
         store.fromAngleAxis(QMath.PI + angle, axis);

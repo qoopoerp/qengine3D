@@ -16,7 +16,7 @@ import net.qoopo.engine.core.entity.component.physics.dinamica.QObjetoDinamico;
 import net.qoopo.engine.core.entity.component.physics.dinamica.QObjetoRigido;
 import net.qoopo.engine.core.material.Material;
 import net.qoopo.engine.core.math.QColor;
-import net.qoopo.engine.core.math.QVector3;
+import net.qoopo.engine.core.math.Vector3;
 import net.qoopo.engine.core.renderer.RenderEngine;
 import net.qoopo.engine.core.scene.Scene;
 import net.qoopo.engine.core.texture.util.MaterialUtil;
@@ -45,7 +45,7 @@ public class FisicaDisparar extends MakeTestScene {
     @Override
     public void accion(int numAccion, RenderEngine render) {
         Entity nuevoBalon;
-        QVector3 nuevaFuerza;
+        Vector3 nuevaFuerza;
         QObjetoRigido balon3Fisica;
         CollisionShape colision;
         switch (numAccion) {
@@ -60,7 +60,7 @@ public class FisicaDisparar extends MakeTestScene {
                 nuevoBalon.addComponent(colision);
                 balon3Fisica = new QObjetoRigido(QObjetoDinamico.DINAMICO);
                 balon3Fisica.setFormaColision(colision);
-                balon3Fisica.setMasa(2f, QVector3.zero.clone());
+                balon3Fisica.setMasa(2f, Vector3.zero.clone());
 
                 // nuevaFuerza = QUnidadMedida.velocidad(QVector3.of(0, 10, 0));
                 nuevaFuerza = render.getCamera().getDirection().clone().multiply(-1).normalize().multiply(50);
@@ -86,7 +86,7 @@ public class FisicaDisparar extends MakeTestScene {
                 nuevoBalon.addComponent(colision);
                 balon3Fisica = new QObjetoRigido(QObjetoDinamico.DINAMICO);
                 balon3Fisica.setFormaColision(colision);
-                balon3Fisica.setMasa(1f, QVector3.zero.clone());
+                balon3Fisica.setMasa(1f, Vector3.zero.clone());
 
                 // nuevaFuerza = QUnidadMedida.velocidad(QVector3.of(0, 10, 0));
                 nuevaFuerza = render.getCamera().getDirection().clone().multiply(-1).normalize().multiply(50);
@@ -107,9 +107,9 @@ public class FisicaDisparar extends MakeTestScene {
 
                         // obtengo la posicion de las 2 entidades y luego agrego un impulso con un
                         // vector igual a la diferencia del 2 con el primero
-                        QVector3 posA = ob1.getMatrizTransformacion(QGlobal.time).toTranslationVector();
-                        QVector3 posB = ob2.getMatrizTransformacion(QGlobal.time).toTranslationVector();
-                        QVector3 direccion = posB.add(posA.multiply(-1));
+                        Vector3 posA = ob1.getMatrizTransformacion(QGlobal.time).toTranslationVector();
+                        Vector3 posB = ob2.getMatrizTransformacion(QGlobal.time).toTranslationVector();
+                        Vector3 direccion = posB.add(posA.multiply(-1));
                         direccion.normalize();
                         QObjetoRigido rig = (QObjetoRigido) ComponentUtil.getComponent(ob2, QObjetoRigido.class);
                         rig.agregarFuerzas(direccion.multiply(30));
