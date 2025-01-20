@@ -172,14 +172,14 @@ public class BRDFFragmentShader extends FragmentShader {
             V.invert();// Cam-WordPos
             V.normalize();
 
-            V = TransformationVectorUtil.transformarVector(
-                    TransformationVectorUtil.transformarVectorInversa(fragment.location,
-                            fragment.entity,
-                            render.getCamera()),
-                    fragment.entity).getVector3();
-            // ahora restamos la posicion de la camara a la posicion del mundo
-            V.subtract(render.getCamera().getMatrizTransformacion(QGlobal.time).toTranslationVector());
-            V.normalize();
+            // V = TransformationVectorUtil.transformarVector(
+            //         TransformationVectorUtil.transformarVectorInversa(fragment.location,
+            //                 fragment.entity,
+            //                 render.getCamera()),
+            //         fragment.entity).getVector3();
+            // // ahora restamos la posicion de la camara a la posicion del mundo
+            // V.subtract(render.getCamera().getMatrizTransformacion(QGlobal.time).toTranslationVector());
+            // V.normalize();
 
             // *********************************************************************************************
             // ****** VECTOR NORMAL
@@ -187,13 +187,13 @@ public class BRDFFragmentShader extends FragmentShader {
             Vector3 N = fragment.normal;
             N.normalize();
 
-            N = (TransformationVectorUtil.transformarVectorNormal(
-                    TransformationVectorUtil.transformarVectorNormalInversa(fragment.normal,
-                            fragment.entity,
-                            render.getCamera()),
-                    fragment.entity != null ? fragment.entity.getMatrizTransformacion(QGlobal.time)
-                            : Matrix4.IDENTITY));
-            N.normalize();
+            // N = (TransformationVectorUtil.transformarVectorNormal(
+            //         TransformationVectorUtil.transformarVectorNormalInversa(fragment.normal,
+            //                 fragment.entity,
+            //                 render.getCamera()),
+            //         fragment.entity != null ? fragment.entity.getMatrizTransformacion(QGlobal.time)
+            //                 : Matrix4.IDENTITY));
+            // N.normalize();
 
             // el vector F0 debe tener los valores segun el nivel de metalico
             /*
